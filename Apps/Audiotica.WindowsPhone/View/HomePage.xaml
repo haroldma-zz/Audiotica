@@ -9,6 +9,33 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Grid>
+        <StackPanel>
+            <!-- material design inspired card -->
+            <Grid>
+                <!-- content goes here -->
+                <Border Height="150" Name="CardContent" CornerRadius="5" Margin="20,10" Background="White" Padding="10"
+                        Canvas.ZIndex="2">
+                    <TextBlock Text="Testing card" FontSize="20" FontFamily="Segoe UI Light" />
+                </Border>
+                <!-- improvising a simple drop shadow -->
+                <Border Height="{Binding ElementName=CardContent, Path=Height}" CornerRadius="5"
+                        Margin="22,14,20,10"
+                        Background="#FFC6C6C6" />
+            </Grid>
 
+            <!-- material design inspired card -->
+            <Grid>
+                <!-- content goes here -->
+                <Border Height="200" Name="CardContent2" CornerRadius="5" Margin="20,10" Background="White"
+                        Padding="10"
+                        Canvas.ZIndex="2">
+                    <TextBlock Text="Testing card 2" FontSize="20" FontFamily="Segoe UI Light" />
+                </Border>
+                <!-- improvising a simple drop shadow -->
+                <Border Height="{Binding ElementName=CardContent2, Path=Height}" CornerRadius="5"
+                        Margin="22,14,20,10"
+                        Background="#FFC6C6C6" />
+            </Grid>
+        </StackPanel>
     </Grid>
 </Page>
