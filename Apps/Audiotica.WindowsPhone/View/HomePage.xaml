@@ -10,14 +10,75 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Grid>
-        <StackPanel>
-            <common:MaterialCard>
-                <TextBlock Text="Testing card control" FontSize="30" Foreground="Black" />
+        <ListView ItemContainerStyle="{StaticResource NoFeedbackListViewItem}" SelectionMode="None">
+            <common:MaterialCard HeaderText="Featured">
+                <FlipView Height="134">
+                    <Image Source="http://i.imgur.com/NrzYn3L.png" />
+                </FlipView>
             </common:MaterialCard>
 
-            <common:MaterialCard>
-                <Grid Background="Red" Height="500" />
+            <common:MaterialCard HeaderText="Collection">
+                <!-- material design option -->
+                <ListView Height="100" HorizontalAlignment="Center">
+                    
+                    <StackPanel Width="75" VerticalAlignment="Center">
+                        <FontIcon Glyph="&#xe142;" FontSize="30" Foreground="#FF333333" />
+                        <TextBlock Text="Music" TextAlignment="Center" />
+                    </StackPanel>
+
+                    <Rectangle Width="1" Fill="#FFE4E4E4"/>
+                    
+                    <StackPanel Width="75" VerticalAlignment="Center">
+                        <FontIcon Glyph="&#xe118;" FontSize="30" Foreground="#FF333333" />
+                        <TextBlock Text="Downloading" TextAlignment="Center" />
+                    </StackPanel>
+
+                    <Rectangle Width="1" Fill="#FFE4E4E4"/>
+
+                    <StackPanel Width="75" VerticalAlignment="Center">
+                        <FontIcon Glyph="&#xe115;" FontSize="30" Foreground="#FF333333" />
+                        <TextBlock Text="Settings" TextAlignment="Center" />
+                    </StackPanel>
+
+                    <ListView.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <VirtualizingStackPanel Orientation="Horizontal" />
+                        </ItemsPanelTemplate>
+                    </ListView.ItemsPanel>
+                </ListView>
             </common:MaterialCard>
-        </StackPanel>
+            
+            <common:MaterialCard HeaderText="New Releases">
+                <ListView>
+                    <StackPanel Width="150" Margin="0,5,5,0">
+                        <Image
+                            Source="http://a5.mzstatic.com/us/r30/Music2/v4/b9/3d/8e/b93d8e1c-0b75-db5a-8793-ab02a82357a7/UMG_cvrart_00602537863204_01_RGB72_1500x1500_14UMGIM18763.170x170-75.jpg" />
+                        <TextBlock Text="5 Seconds of Summer" FontSize="12" TextTrimming="CharacterEllipsis" />
+                        <TextBlock Text="Something" FontSize="15" TextTrimming="CharacterEllipsis" />
+                    </StackPanel>
+                    <ListView.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <VirtualizingStackPanel Orientation="Horizontal" />
+                        </ItemsPanelTemplate>
+                    </ListView.ItemsPanel>
+                </ListView>
+            </common:MaterialCard>
+
+            <common:MaterialCard HeaderText="Featured">
+                <ListView>
+                    <StackPanel Width="150" Margin="0,5,5,0">
+                        <Image
+                            Source="http://a5.mzstatic.com/us/r30/Music2/v4/b9/3d/8e/b93d8e1c-0b75-db5a-8793-ab02a82357a7/UMG_cvrart_00602537863204_01_RGB72_1500x1500_14UMGIM18763.170x170-75.jpg" />
+                        <TextBlock Text="5 Seconds of Summer" FontSize="12" TextTrimming="CharacterEllipsis" />
+                        <TextBlock Text="Something" FontSize="15" TextTrimming="CharacterEllipsis" />
+                    </StackPanel>
+                    <ListView.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <VirtualizingStackPanel Orientation="Horizontal" />
+                        </ItemsPanelTemplate>
+                    </ListView.ItemsPanel>
+                </ListView>
+            </common:MaterialCard>
+        </ListView>
     </Grid>
 </Page>

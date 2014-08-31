@@ -5,8 +5,12 @@ using System;
 using System.Diagnostics;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
+using Windows.UI;
+using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Media.Animation;
+using Windows.UI.Xaml.Navigation;
 using Audiotica.View;
 
 #endregion
@@ -71,18 +75,18 @@ namespace Audiotica
             if (rootFrame.Content == null)
             {
 #if WINDOWS_PHONE_APP
-    // Removes the turnstile navigation for startup.
+                // Removes the turnstile navigation for startup.
                 if (rootFrame.ContentTransitions != null)
                 {
-                    this.transitions = new TransitionCollection();
+                    transitions = new TransitionCollection();
                     foreach (var c in rootFrame.ContentTransitions)
                     {
-                        this.transitions.Add(c);
+                        transitions.Add(c);
                     }
                 }
 
                 rootFrame.ContentTransitions = null;
-                rootFrame.Navigated += this.RootFrame_FirstNavigated;
+                rootFrame.Navigated += RootFrame_FirstNavigated;
 #endif
 
                 // When the navigation stack isn't restored navigate to the first page,
@@ -99,16 +103,19 @@ namespace Audiotica
         }
 
 #if WINDOWS_PHONE_APP
-    /// <summary>
-    /// Restores the content transitions after the app has launched.
-    /// </summary>
-    /// <param name="sender">The object where the handler is attached.</param>
-    /// <param name="e">Details about the navigation event.</param>
+        /// <summary>
+        ///     Restores the content transitions after the app has launched.
+        /// </summary>
+        /// <param name="sender">The object where the handler is attached.</param>
+        /// <param name="e">Details about the navigation event.</param>
         private void RootFrame_FirstNavigated(object sender, NavigationEventArgs e)
         {
             var rootFrame = sender as Frame;
-            rootFrame.ContentTransitions = this.transitions ?? new TransitionCollection() { new NavigationThemeTransition() };
-            rootFrame.Navigated -= this.RootFrame_FirstNavigated;
+            rootFrame.ContentTransitions = transitions ?? new TransitionCollection {new NavigationThemeTransition()};
+            rootFrame.Navigated -= RootFrame_FirstNavigated;
+
+            //Make sure the statusbar foreground is always black
+            StatusBar.GetForCurrentView().ForegroundColor = Colors.Black;
         }
 #endif
 

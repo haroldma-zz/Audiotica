@@ -5,6 +5,7 @@
     xmlns:common="using:Audiotica.Core.Common">
 
     <Style TargetType="common:MaterialCard">
+        <Setter Property="Foreground" Value="Black" />
         <Setter Property="Margin" Value="20,5" />
         <Setter Property="Template">
             <Setter.Value>
@@ -13,10 +14,17 @@
                     <Grid>
                         <!-- content goes here -->
                         <Border x:Name="CardContent" CornerRadius="5" Margin="0,0,0,5" Background="White"
-                                Padding="20"
                                 Canvas.ZIndex="2">
-                            <ContentPresenter Content="{TemplateBinding Content}"
-                                              ContentTemplate="{TemplateBinding ContentTemplate}" />
+                            <Grid>
+                                <StackPanel Margin="20">
+                                    <TextBlock Text="{TemplateBinding HeaderText}" FontSize="20"
+                                               FontFamily="Global User Interface" />
+                                    <ContentPresenter Content="{TemplateBinding Content}"
+                                                      ContentTemplate="{TemplateBinding ContentTemplate}"
+                                                      VerticalAlignment="Top" />
+                                </StackPanel>
+<!--                                <Button Content="..." HorizontalAlignment="Right" VerticalAlignment="Top" />-->
+                            </Grid>
                         </Border>
                         <!-- improvising a simple drop shadow -->
                         <Border CornerRadius="5"

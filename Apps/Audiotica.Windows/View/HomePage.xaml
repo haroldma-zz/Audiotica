@@ -12,7 +12,9 @@
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <StackPanel Width="500" VerticalAlignment="Center">
             <common:MaterialCard>
-                <TextBlock Text="Testing card control" FontSize="30" Foreground="Black" />
+                <Grid>
+                    <FlipView Height="200" />
+                </Grid>
             </common:MaterialCard>
 
             <common:MaterialCard>
