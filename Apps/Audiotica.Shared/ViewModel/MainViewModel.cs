@@ -1,34 +1,65 @@
+#region
+
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Threading.Tasks;
+using Audiotica.Data.Service.Interfaces;
 using GalaSoft.MvvmLight;
+using Microsoft.Xbox.Music.Platform.Contract.DataModel;
+
+#endregion
 
 namespace Audiotica.ViewModel
 {
-    /// <summary>
-    /// This class contains properties that the main View can data bind to.
-    /// <para>
-    /// Use the <strong>mvvminpc</strong> snippet to add bindable properties to this ViewModel.
-    /// </para>
-    /// <para>
-    /// You can also use Blend to data bind with the tool's support.
-    /// </para>
-    /// <para>
-    /// See http://www.galasoft.ch/mvvm
-    /// </para>
-    /// </summary>
     public class MainViewModel : ViewModelBase
     {
+        private readonly IXboxMusicService _service;
+        private List<XboxAlbum> _featuredReleases;
+        private List<XboxArtist> _featuredSlider;
+        private List<XboxAlbum> _newAlbums;
+
         /// <summary>
-        /// Initializes a new instance of the MainViewModel class.
+        ///     Initializes a new instance of the MainViewModel class.
         /// </summary>
-        public MainViewModel()
+        public MainViewModel(IXboxMusicService service)
         {
-            ////if (IsInDesignMode)
-            ////{
-            ////    // Code runs in Blend --> create design time data.
-            ////}
-            ////else
-            ////{
-            ////    // Code runs "for real"
-            ////}
+            _service = service;
+
+            //Load data automatically
+            LoadChartDataAsync();
+        }
+
+        public List<XboxAlbum> NewAlbums
+        {
+            get { return _newAlbums; }
+            set { Set(ref _newAlbums, value); }
+        }
+
+        public List<XboxAlbum> FeatureAlbums
+        {
+            get { return _featuredReleases; }
+            set { Set(ref _featuredReleases, value); }
+        }
+
+        public List<XboxArtist> FeaturedSliderArtists
+        {
+            get { return _featuredSlider; }
+            set { Set(ref _featuredSlider, value); }
+        }
+
+        public async Task LoadChartDataAsync()
+        {
+            try
+            {
+                FeaturedSliderArtists = (await _service.GetFeaturedArtist()).Items;
+                FeatureAlbums = (await _service.GetFeaturedAlbums()).Items;
+                NewAlbums = (await _service.GetNewAlbums()).Items;
+            }
+            catch (Exception e)
+            {
+                Debugger.Break();
+            }
         }
     }
 }

@@ -1,6 +1,1 @@
-Audiotica
-=========
-
-Music player powered by Vk, YouTube and Soundcloud.
-
-**Repo will be back up soon, after legal issues with MSFT.**
+Audiotica=========Music player powered by Vk, YouTube and Soundcloud.## RequirementsAudiotica uses my fork of the XboxMusicClient SDK.  The binary is already in the Dependencies folder. But you can also download the source [here](https://github.com/zumicts/XboxMusicClient) or get the binary [here](https://github.com/zumicts/XboxMusicClient/releases/latest).  Should be unnecessary as I maintain the binar

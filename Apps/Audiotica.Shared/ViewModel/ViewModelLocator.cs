@@ -1,5 +1,9 @@
 #region
 
+using Audiotica.Data.Service.DesignTime;
+using Audiotica.Data.Service.Interfaces;
+using Audiotica.Data.Service.RunTime;
+using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Ioc;
 using Microsoft.Practices.ServiceLocation;
 
@@ -19,6 +23,15 @@ namespace Audiotica.ViewModel
         public ViewModelLocator()
         {
             ServiceLocator.SetLocatorProvider(() => SimpleIoc.Default);
+
+            if (ViewModelBase.IsInDesignModeStatic)
+            {
+                SimpleIoc.Default.Register<IXboxMusicService, DesignXboxMusicService>();
+            }
+            else
+            {
+                SimpleIoc.Default.Register<IXboxMusicService, XboxMusicService>();
+            }
 
             SimpleIoc.Default.Register<MainViewModel>();
         }

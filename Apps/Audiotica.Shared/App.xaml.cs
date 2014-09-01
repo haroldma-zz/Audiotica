@@ -45,10 +45,10 @@ namespace Audiotica
         protected override void OnLaunched(LaunchActivatedEventArgs e)
         {
 #if DEBUG
-            if (Debugger.IsAttached)
-            {
-                DebugSettings.EnableFrameRateCounter = true;
-            }
+//            if (Debugger.IsAttached)
+//            {
+//                DebugSettings.EnableFrameRateCounter = true;
+//            }
 #endif
 
             var rootFrame = Window.Current.Content as Frame;
@@ -116,6 +116,7 @@ namespace Audiotica
 
             //Make sure the statusbar foreground is always black
             StatusBar.GetForCurrentView().ForegroundColor = Colors.Black;
+            ApplicationView.GetForCurrentView().SetDesiredBoundsMode(ApplicationViewBoundsMode.UseCoreWindow);
         }
 #endif
 

@@ -40,11 +40,14 @@
     <TargetPlatform Include="Windows, Version=8.1" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ApiKeys.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Service\DesignTime\DesignXboxMusicService.cs" />
+    <Compile Include="Service\Interfaces\IXboxMusicService.cs" />
+    <Compile Include="Service\RunTime\XboxMusicService.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Model\" />
-    <Folder Include="Service\" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="GalaSoft.MvvmLight">
@@ -58,9 +61,22 @@
     <Reference Include="Microsoft.Practices.ServiceLocation">
       <HintPath>..\packages\CommonServiceLocator.1.3\lib\portable-net4+sl5+netcore45+wpa81+wp8\Microsoft.Practices.ServiceLocation.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Xbox.Music.Platform.Client">
+      <HintPath>..\Dependencies\Microsoft.Xbox.Music.Platform.Client.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Xbox.Music.Platform.Contract">
+      <HintPath>..\Dependencies\Microsoft.Xbox.Music.Platform.Contract.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="ApiKeys.cs.template" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Audiotica.Core\Audiotica.Core.csproj">
+      <Project>{49668872-a57c-4e70-834b-83608e6cef23}</Project>
+      <Name>Audiotica.Core</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
