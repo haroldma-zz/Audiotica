@@ -58,7 +58,9 @@ namespace Audiotica.ViewModel
             }
             catch (Exception e)
             {
-                Debugger.Break();
+                //Debugger.Break();         // Good for debugging, but not so much for release
+                Windows.UI.Popups.MessageDialog msg = new Windows.UI.Popups.MessageDialog(e.Message, "An Error has occured");
+                msg.ShowAsync();
             }
         }
     }
