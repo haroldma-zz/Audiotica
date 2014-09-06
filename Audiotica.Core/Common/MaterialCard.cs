@@ -10,8 +10,6 @@ using Windows.UI.Xaml.Controls;
 
 #endregion
 
-// The Templated Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234235
-
 namespace Audiotica.Core.Common
 {
     public sealed class MaterialCard : ContentControl
@@ -19,6 +17,10 @@ namespace Audiotica.Core.Common
         public static readonly DependencyProperty HeaderTextProperty =
             DependencyProperty.RegisterAttached("HeaderText", typeof (string), typeof (MaterialCard),
                 null);
+
+        public static readonly DependencyProperty IsLoadingProperty =
+            DependencyProperty.RegisterAttached("IsLoading", typeof (bool), typeof (MaterialCard),
+                new PropertyMetadata(false));
 
         public MaterialCard()
         {
@@ -33,6 +35,16 @@ namespace Audiotica.Core.Common
         public static string GetHeaderText(DependencyObject element)
         {
             return (string) element.GetValue(HeaderTextProperty);
+        }
+
+        public static void SetIsLoading(DependencyObject element, bool value)
+        {
+            element.SetValue(IsLoadingProperty, value);
+        }
+
+        public static bool GetIsLoading(DependencyObject element)
+        {
+            return (bool) element.GetValue(IsLoadingProperty);
         }
     }
 }

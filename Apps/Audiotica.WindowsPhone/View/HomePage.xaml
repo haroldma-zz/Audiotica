@@ -12,7 +12,7 @@
 
     <Grid>
         <ListView ItemContainerStyle="{StaticResource NoFeedbackListViewItem}" SelectionMode="None" Padding="0,30,0,0">
-            <common:MaterialCard HeaderText="Featured">
+            <common:MaterialCard IsLoading="{Binding IsSliderLoading}" HeaderText="Featured">
                 <FlipView Height="150" ItemsSource="{Binding FeaturedSliderArtists}">
                     <FlipView.ItemTemplate>
                         <DataTemplate>
@@ -58,7 +58,7 @@
                 </ListView>
             </common:MaterialCard>
 
-            <common:MaterialCard HeaderText="Featured Albums">
+            <common:MaterialCard IsLoading="{Binding IsFeaturedLoading}" HeaderText="Featured Albums">
                 <ListView ItemsSource="{Binding FeatureAlbums}"
                           ScrollViewer.HorizontalScrollBarVisibility="Auto"
                           ScrollViewer.VerticalScrollBarVisibility="Disabled"
@@ -84,7 +84,7 @@
                 </ListView>
             </common:MaterialCard>
             
-            <common:MaterialCard HeaderText="New Releases">
+            <common:MaterialCard IsLoading="{Binding IsNewLoading}" HeaderText="New Releases">
                 <ListView ItemsSource="{Binding NewAlbums}"
                           ScrollViewer.HorizontalScrollBarVisibility="Auto"
                           ScrollViewer.VerticalScrollBarVisibility="Disabled"

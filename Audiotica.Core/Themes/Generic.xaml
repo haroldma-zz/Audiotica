@@ -3,7 +3,9 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:Audiotica"
     xmlns:common="using:Audiotica.Core.Common">
-
+    
+	
+    
     <Style TargetType="common:MaterialCard">
         <Setter Property="Foreground" Value="Black" />
         <Setter Property="Margin" Value="20,5" />
@@ -12,6 +14,9 @@
                 <ControlTemplate TargetType="common:MaterialCard">
                     <!-- material design inspired card -->
                     <Grid>
+                        <Grid.Resources>
+                            <common:VisibilityConverter x:Key="VisibilityConverter" />
+                        </Grid.Resources>
                         <!-- content goes here -->
                         <Border x:Name="CardContent" CornerRadius="5" Margin="0,0,0,5" Background="White"
                                 Canvas.ZIndex="2">
@@ -19,6 +24,7 @@
                                 <StackPanel Margin="20">
                                     <TextBlock Text="{TemplateBinding HeaderText}" FontSize="20"
                                                FontFamily="Global User Interface" />
+                                    <ProgressBar IsIndeterminate="{TemplateBinding IsLoading}" Visibility="{Binding RelativeSource={RelativeSource Mode=Self}, Path=IsIndeterminate, Converter={StaticResource VisibilityConverter}}" />
                                     <ContentPresenter Content="{TemplateBinding Content}"
                                                       ContentTemplate="{TemplateBinding ContentTemplate}"
                                                       VerticalAlignment="Top" />
@@ -34,5 +40,6 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+        <Setter Property="FontFamily" Value="Global User Interface"/>
     </Style>
 </ResourceDictionary>
