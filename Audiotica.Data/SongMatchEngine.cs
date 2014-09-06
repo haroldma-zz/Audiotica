@@ -56,7 +56,7 @@ namespace Audiotica.Data
                     {"s", title + " " + artist },
                     {"type", "1"},
                     {"offset", "0"},
-                    {"limit", "1"},
+                    {"limit", "5"},
                     {"total", "true"}
                 };
 
@@ -69,11 +69,10 @@ namespace Audiotica.Data
 
                     if (parseResp.result.songs == null) return null;
 
-                    var match = parseResp.result.songs.FirstOrDefault();
+                    var match = parseResp.result.songs.FirstOrDefault(s => String.Equals(s.name, title, StringComparison.CurrentCultureIgnoreCase) &&
+                        s.artists.Count(p => String.Equals(p.name, artist, StringComparison.CurrentCultureIgnoreCase)) != 0);
 
                     if (match == null) return null;
-                    if (!match.name.ToLower().Contains(title.ToLower()) &&
-                        match.artists.Count(p => p.name.ToLower().Contains(artist.ToLower())) <= 0) return null;
 
                     //Now lets get the mp3 urls for it
                     var detailResp = await client.GetAsync(string.Format(NeteaseDetailApi, match.id));
