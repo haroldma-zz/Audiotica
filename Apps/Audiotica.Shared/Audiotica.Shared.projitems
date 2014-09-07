@@ -15,6 +15,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)NavigationHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PageBase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SuspensionManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModel\AlbumViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModel\MainViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModel\ViewModelLocator.cs" />
   </ItemGroup>

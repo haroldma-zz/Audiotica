@@ -34,11 +34,17 @@ namespace Audiotica.ViewModel
             }
 
             SimpleIoc.Default.Register<MainViewModel>();
+            SimpleIoc.Default.Register<AlbumViewModel>();
         }
 
         public MainViewModel Main
         {
             get { return ServiceLocator.Current.GetInstance<MainViewModel>(); }
+        }
+
+        public AlbumViewModel Album
+        {
+            get { return ServiceLocator.Current.GetInstance<AlbumViewModel>(); }
         }
 
         public static void Cleanup()

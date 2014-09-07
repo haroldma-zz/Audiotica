@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using Audiotica.Data.Model;
 using Audiotica.Data.Service.Interfaces;
 using GalaSoft.MvvmLight;
 using Microsoft.Xbox.Music.Platform.Contract.DataModel;
@@ -16,8 +17,8 @@ namespace Audiotica.ViewModel
     {
         private readonly IXboxMusicService _service;
         private List<XboxAlbum> _featuredReleases;
-        private List<XboxArtist> _featuredSlider;
         private List<XboxAlbum> _newAlbums;
+        private List<XboxItem> _spotlightItems;
         private bool _isFeaturedLoading;
         private bool _isSliderLoading;
         private bool _isNewLoading;
@@ -45,12 +46,6 @@ namespace Audiotica.ViewModel
             set { Set(ref _featuredReleases, value); }
         }
 
-        public List<XboxArtist> FeaturedSliderArtists
-        {
-            get { return _featuredSlider; }
-            set { Set(ref _featuredSlider, value); }
-        }
-
         public bool IsFeaturedLoading
         {
             get { return _isFeaturedLoading; }
@@ -69,6 +64,12 @@ namespace Audiotica.ViewModel
             set { Set(ref _isNewLoading, value); }
         }
 
+        public List<XboxItem> SpotlightItems
+        {
+            get { return _spotlightItems; }
+            set { Set(ref _spotlightItems, value); }
+        }
+
         public async Task LoadChartDataAsync()
         {
             try
@@ -77,7 +78,7 @@ namespace Audiotica.ViewModel
                 IsFeaturedLoading = true;
                 IsNewLoading = true;
 
-                FeaturedSliderArtists = (await _service.GetFeaturedArtist()).Items;
+                SpotlightItems = await _service.GetSpotlight();
                 IsSliderLoading = false;
 
                 FeatureAlbums = (await _service.GetFeaturedAlbums()).Items;

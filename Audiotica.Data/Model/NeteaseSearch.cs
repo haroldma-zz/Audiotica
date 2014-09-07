@@ -59,6 +59,5 @@ namespace Audiotica.Data.Model
     public class NeteaseRoot
     {
         public NeteaseResult result { get; set; }
-        public int code { get; set; }
     }
 }

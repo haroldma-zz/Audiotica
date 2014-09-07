@@ -65,6 +65,5 @@ namespace Audiotica.Data.Model
     public class NeteaseDetailRoot
     {
         public List<NeteaseDetailSong> songs { get; set; }
-        public int code { get; set; }
     }
 }

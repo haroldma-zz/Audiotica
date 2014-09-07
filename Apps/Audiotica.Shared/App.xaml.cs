@@ -12,6 +12,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Navigation;
 using Audiotica.View;
+using ColorHelper = Audiotica.Core.Utilities.ColorHelper;
 
 #endregion
 
@@ -115,7 +116,9 @@ namespace Audiotica
             rootFrame.Navigated -= RootFrame_FirstNavigated;
 
             //Make sure the statusbar foreground is always black
-            StatusBar.GetForCurrentView().ForegroundColor = Colors.Black;
+            StatusBar.GetForCurrentView().ForegroundColor = Colors.White;
+            StatusBar.GetForCurrentView().BackgroundColor = ColorHelper.GetColorFromHexa("#7b1fa2");
+            StatusBar.GetForCurrentView().BackgroundOpacity = 1;
             ApplicationView.GetForCurrentView().SetDesiredBoundsMode(ApplicationViewBoundsMode.UseCoreWindow);
         }
 #endif

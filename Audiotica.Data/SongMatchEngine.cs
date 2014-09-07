@@ -25,13 +25,18 @@
 
 #endregion
 
+#region
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Audiotica.Core.Exceptions;
 using Audiotica.Core.Utilities;
 using Audiotica.Data.Model;
+
+#endregion
 
 namespace Audiotica.Data
 {
@@ -53,7 +58,7 @@ namespace Audiotica.Data
                 //Lets go ahead and search for a match
                 var dict = new Dictionary<string, string>
                 {
-                    {"s", title + " " + artist },
+                    {"s", title + " " + artist},
                     {"type", "1"},
                     {"offset", "0"},
                     {"limit", "5"},
@@ -65,12 +70,15 @@ namespace Audiotica.Data
                     var resp = await client.PostAsync(NeteaseSearchApi, data);
                     var json = await resp.Content.ReadAsStringAsync();
                     var parseResp = await json.DeserializeAsync<NeteaseRoot>();
-                    // error hadling here
+                    if (!resp.IsSuccessStatusCode) throw new NetworkException();
 
                     if (parseResp.result.songs == null) return null;
 
-                    var match = parseResp.result.songs.FirstOrDefault(s => String.Equals(s.name, title, StringComparison.CurrentCultureIgnoreCase) &&
-                        s.artists.Count(p => String.Equals(p.name, artist, StringComparison.CurrentCultureIgnoreCase)) != 0);
+                    var match =
+                        parseResp.result.songs.FirstOrDefault(
+                            s => String.Equals(s.name, title, StringComparison.CurrentCultureIgnoreCase) &&
+                                 s.artists.Count(
+                                     p => String.Equals(p.name, artist, StringComparison.CurrentCultureIgnoreCase)) != 0);
 
                     if (match == null) return null;
 
@@ -78,7 +86,10 @@ namespace Audiotica.Data
                     var detailResp = await client.GetAsync(string.Format(NeteaseDetailApi, match.id));
                     var detailJson = await detailResp.Content.ReadAsStringAsync();
                     var detailParseResp = await detailJson.DeserializeAsync<NeteaseDetailRoot>();
-                    // error hadling here
+                    if (!detailResp.IsSuccessStatusCode) throw new NetworkException();
+
+                    if (detailParseResp.songs == null) return null;
+
                     var detailMatch = detailParseResp.songs.FirstOrDefault();
 
                     return detailMatch.mp3Url;
