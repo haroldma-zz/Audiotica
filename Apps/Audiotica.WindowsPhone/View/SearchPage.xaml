@@ -1,0 +1,34 @@
+﻿<audiotica:PageBase
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Audiotica.View"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:audiotica="using:Audiotica"
+    xmlns:common="using:Audiotica.Core.Common"
+    xmlns:interactivity="using:Microsoft.Xaml.Interactivity" xmlns:Core="using:Microsoft.Xaml.Interactions.Core"
+    x:Class="Audiotica.View.SearchPage"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+    DataContext="{Binding Search, Source={StaticResource Locator}}">
+
+	<Grid Margin="0,45,0,0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+		<common:MaterialCard IsLoading="{Binding IsLoading}" HeaderText="Search">
+			<TextBox Text="{Binding SearchTerm, Mode=TwoWay}">
+				<interactivity:Interaction.Behaviors>
+                    <Core:EventTriggerBehavior EventName="KeyDown">
+						<Core:InvokeCommandAction Command="{Binding KeyDownRelayCommand}" />
+					</Core:EventTriggerBehavior>
+				</interactivity:Interaction.Behaviors>
+			</TextBox>
+		</common:MaterialCard>
+
+        <ListView Margin="20,0"
+            Grid.Row="1" ItemsSource="{Binding ResultsResponse.Tracks.Items}"
+                ItemTemplate="{StaticResource XboxTrackDataTemplate}" />
+    </Grid>
+</audiotica:PageBase>

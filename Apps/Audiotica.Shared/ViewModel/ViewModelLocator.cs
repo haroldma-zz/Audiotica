@@ -35,6 +35,8 @@ namespace Audiotica.ViewModel
 
             SimpleIoc.Default.Register<MainViewModel>();
             SimpleIoc.Default.Register<AlbumViewModel>();
+            SimpleIoc.Default.Register<ArtistViewModel>();
+            SimpleIoc.Default.Register<SearchViewModel>();
         }
 
         public MainViewModel Main
@@ -45,6 +47,16 @@ namespace Audiotica.ViewModel
         public AlbumViewModel Album
         {
             get { return ServiceLocator.Current.GetInstance<AlbumViewModel>(); }
+        }
+
+        public ArtistViewModel Artist
+        {
+            get { return ServiceLocator.Current.GetInstance<ArtistViewModel>(); }
+        }
+
+        public SearchViewModel Search
+        {
+            get { return ServiceLocator.Current.GetInstance<SearchViewModel>(); }
         }
 
         public static void Cleanup()

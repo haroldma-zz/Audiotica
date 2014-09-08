@@ -23,10 +23,10 @@ namespace Audiotica.ViewModel
         {
             _service = service;
 
-            MessengerInstance.Register<GenericMessage<string>>(this, "album-id", ReceivedAlbumId);
+            MessengerInstance.Register<GenericMessage<string>>(this, "album-detail-id", ReceivedId);
 
             if (IsInDesignMode)
-                LoadAlbumDetail("music.00EB7C08-0100-11DB-89CA-0019B92A3933");
+                LoadData("music.test");
         }
 
         public XboxAlbum Album
@@ -47,14 +47,14 @@ namespace Audiotica.ViewModel
             set { Set(ref _isLoading, value); }
         }
 
-        private void ReceivedAlbumId(GenericMessage<string> msg)
+        private void ReceivedId(GenericMessage<string> msg)
         {
             Album = null;
             Tracks = null;
-            LoadAlbumDetail(msg.Content);
+            LoadData(msg.Content);
         }
 
-        private async void LoadAlbumDetail(string albumId)
+        private async void LoadData(string albumId)
         {
             IsLoading = true;
             Album = await _service.GetAlbumDetails(albumId);
