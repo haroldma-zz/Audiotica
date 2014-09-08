@@ -45,9 +45,6 @@ namespace Audiotica.Data.Service.RunTime
 {
     public class XboxMusicService : IXboxMusicService
     {
-        private const string RelatedUrl =
-            "https://eds.xboxlive.com/media/en-us/related?id={0}&desiredMediaItemTypes=MusicArtist&mediaItemType=MusicArtist&maxItems=10&fields=HkABAAAAAAAAAAAAAAAAAAYAEAY-&targetDevices=WindowsPC&firstPartyOnly=true";
-
         private readonly IXboxMusicClient _client;
 
         public XboxMusicService()
@@ -93,11 +90,22 @@ namespace Audiotica.Data.Service.RunTime
             return results.Albums.Items.FirstOrDefault();
         }
 
-        public async Task<List<XboxArtist>> GetRelatedArtists(string id)
+        public async Task<XboxArtist> GetArtistDetails(string id)
         {
-            var results = await _client.LookupAsync(id, ContentSource.Catalog, extras: ExtraDetails.RelatedArtists);
+            var results = await _client.LookupAsync(id, ContentSource.Catalog,
+                extras: ExtraDetails.TopTracks | ExtraDetails.Albums);
             ThrowIfError(results);
-            return results.Artists.Items;
+            return results.Artists.Items[0];
+        }
+
+        public async Task<ContentResponse> Search(string query, int count = 25)
+        {
+            var results =
+                await
+                    _client.SearchAsync(Namespace.music, query, ContentSource.Catalog, SearchFilter.Tracks,
+                        maxItems: count);
+            ThrowIfError(results);
+            return results;
         }
 
         #region undocumented api

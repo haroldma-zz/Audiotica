@@ -7,49 +7,69 @@
     xmlns:common="using:Audiotica.Core.Common"
     xmlns:audiotica="using:Audiotica"
     mc:Ignorable="d"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" FontFamily="Global User Interface">
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" FontFamily="Global User Interface"
+    DataContext="{Binding Source={StaticResource Locator}, Path=Artist}">
 
-    <ListView ItemContainerStyle="{StaticResource NoFeedbackListViewItem}" Padding="0,45,0,0">
-        <common:MaterialCard HeaderText="Details">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="150"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                <Image Source="http://images-eds.xboxlive.com/image?url=3BdCdbLUq.SgIUX8LCcYCX5IFJEJc1P61evhq_Jc.wNkyAhUmwCGd9JL40TLX9hJ1hkORsXL_.sGHM37C5aPVzX9UKAjhATZFHNC7JISzW8n6_beX9Sxl0nO60VXdCbU" />
-                <StackPanel Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="5,0,0,0">
-                    <TextBlock Text="Justin Bieber" FontSize="22" TextAlignment="Right" TextTrimming="CharacterEllipsis" />
-                    <TextBlock Text="Pop" FontSize="16" TextAlignment="Right" Foreground="#89000000" TextTrimming="CharacterEllipsis" />
-                </StackPanel>
-            </Grid>
-        </common:MaterialCard>
+    <Grid>
+        <ListView ItemContainerStyle="{StaticResource NoFeedbackListViewItem}" Padding="0,45,0,0">
+            <common:MaterialCard HeaderText="Details">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="150" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Image Source="{Binding Artist.ImageUrl}" />
+                    <StackPanel Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="5,0,0,0">
+                        <TextBlock Text="{Binding Artist.Name}" FontSize="22" TextAlignment="Right"
+                                   TextTrimming="CharacterEllipsis" />
+                        <TextBlock Text="{Binding Artist.Genres[0]}" FontSize="16" TextAlignment="Right"
+                                   Foreground="#89000000" TextTrimming="CharacterEllipsis" />
+                    </StackPanel>
+                </Grid>
+            </common:MaterialCard>
+            <!--        Soooo... xbox related artist isn't working :/-->
+            <!--        asking xbox support why, in the meantime I'll just comment this out-->
+            <!--        <common:MaterialCard HeaderText="Related Artists">-->
+            <!--            <ListView>-->
+            <!--                <ListView.ItemsPanel>-->
+            <!--                    <ItemsPanelTemplate>-->
+            <!--                        <VirtualizingStackPanel Orientation="Horizontal"/>-->
+            <!--                    </ItemsPanelTemplate>-->
+            <!--                </ListView.ItemsPanel>-->
+            <!--            </ListView>-->
+            <!--        </common:MaterialCard>-->
 
-        <common:MaterialCard HeaderText="Related Artists">
-            <ListView>
-                <ListView.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <VirtualizingStackPanel Orientation="Horizontal"/>
-                    </ItemsPanelTemplate>
-                </ListView.ItemsPanel>
-            </ListView>
-        </common:MaterialCard>
+            <common:MaterialCard HeaderText="Latest Albums"
+                                 ActionButtonVisibility="Visible">
+                <ListView ItemsSource="{Binding TopAlbums}"
+                          ItemTemplate="{StaticResource XboxAlbumDataTemplate}"
+                          ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                          ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                          ScrollViewer.HorizontalScrollMode="Enabled"
+                          ScrollViewer.VerticalScrollMode="Disabled"
+                          ScrollViewer.ZoomMode="Disabled"
+                          SelectionMode="None"
+                          IsItemClickEnabled="True" ItemClick="ListView_ItemClick">
+                    <ListView.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <VirtualizingStackPanel Orientation="Horizontal" />
+                        </ItemsPanelTemplate>
+                    </ListView.ItemsPanel>
+                </ListView>
+            </common:MaterialCard>
 
-        <common:MaterialCard HeaderText="Latest Albums"
-                             ActionButtonVisibility="Visible">
-            <ListView>
-                
-            </ListView>
-        </common:MaterialCard>
-        
-        <common:MaterialCard HeaderText="Top Songs"
-                             ActionButtonVisibility="Visible">
-            <ListView>
-                
-            </ListView>
-        </common:MaterialCard>
-        
-        <common:MaterialCard HeaderText="Bio">
-            <TextBlock FontSize="20" Text="This is a place holder" Margin="0,10,0,0" />
-        </common:MaterialCard>
-    </ListView>
+            <common:MaterialCard HeaderText="Top Songs"
+                                 ActionButtonVisibility="Visible">
+                <ListView ItemsSource="{Binding TopTracks}"
+                          ItemTemplate="{StaticResource XboxTrackDataTemplate}" />
+            </common:MaterialCard>
+
+            <common:MaterialCard HeaderText="Bio">
+                <TextBlock FontSize="20" Text="This is a place holder" Margin="0,10,0,0" />
+            </common:MaterialCard>
+        </ListView>
+        <Grid Visibility="{Binding IsLoading, Converter={StaticResource VisibilityConverter}}" Background="{StaticResource ApplicationPageBackgroundThemeBrush}">
+            <ProgressBar IsIndeterminate="{Binding IsLoading}" />
+        </Grid>
+    </Grid>
 </audiotica:PageBase>

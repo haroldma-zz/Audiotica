@@ -79,7 +79,7 @@
                                                                             <Storyboard>
                                                                                 <ObjectAnimationUsingKeyFrames
                                                                                     Storyboard.TargetProperty="Opacity"
-                                                                                    Storyboard.TargetName="ContentPresenter">
+                                                                                    Storyboard.TargetName="Grid">
                                                                                     <DiscreteObjectKeyFrame KeyTime="0"
                                                                                                             Value="0.5" />
                                                                                 </ObjectAnimationUsingKeyFrames>

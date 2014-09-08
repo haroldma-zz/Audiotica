@@ -31,7 +31,7 @@ namespace Audiotica.Data.Service.DesignTime
 
         private XboxArtist CreateArtist(string name, string imageUrl)
         {
-            return new XboxArtist {Id = "music.zumicts", Name = name, ImageUrl = imageUrl};
+            return new XboxArtist {Id = "music.zumicts", Name = name, ImageUrl = imageUrl, Genres = new GenreList{"Pop"}};
         }
 
         private XboxAlbum CreateAlbum(string name, string imageUrl, XboxArtist artist = null,
@@ -145,6 +145,26 @@ namespace Audiotica.Data.Service.DesignTime
                     Title = "Maroon 5",
                     Text = "V: Their new album"
                 }
+            });
+        }
+
+        public async Task<XboxArtist> GetArtistDetails(string id)
+        {
+            var artist = CreateArtist("Iggy Azalea",
+                "http://musicimage.xboxlive.com/content/music.1F154700-0200-11DB-89CA-0019B92A3933/image?locale=en-US");
+
+            artist.TopTracks = DesignTracks();
+
+            artist.Albums = await GetFeaturedAlbums(1);
+
+            return artist;
+        }
+
+        public Task<ContentResponse> Search(string query, int count = 25)
+        {
+            return Task.FromResult(new ContentResponse()
+            {
+                Tracks = DesignTracks()
             });
         }
 

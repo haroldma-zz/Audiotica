@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Audiotica.Data.Model;
 using Microsoft.Xbox.Music.Platform.Contract.DataModel;
@@ -15,7 +16,10 @@ namespace Audiotica.Data.Service.Interfaces
         Task<XboxPaginatedList<XboxAlbum>> GetFeaturedAlbums(int count = 10);
 
         Task<XboxAlbum> GetAlbumDetails(string id);
-        Task<List<XboxArtist>> GetRelatedArtists(string id);
         Task<List<XboxItem>> GetSpotlight();
+
+        Task<XboxArtist> GetArtistDetails(string id);
+
+        Task<ContentResponse> Search(string query, int count = 25);
     }
 }
