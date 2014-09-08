@@ -1,5 +1,6 @@
 ﻿#region
 
+using System;
 using System.Threading.Tasks;
 using Windows.System;
 using Windows.UI.Popups;
@@ -8,6 +9,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Audiotica.Core.Common;
 using Audiotica.Core.Exceptions;
+using Audiotica.Data;
 using Audiotica.Data.Service.Interfaces;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
@@ -25,14 +27,34 @@ namespace Audiotica.ViewModel
         private RelayCommand<KeyRoutedEventArgs> _keyDownRelayCommand;
         private ContentResponse _resultsResponse;
         private string _searchTerm;
+        private RelayCommand<ItemClickEventArgs> _songClickRelayCommand;
 
         public SearchViewModel(IXboxMusicService service)
         {
             _service = service;
             KeyDownRelayCommand = new RelayCommand<KeyRoutedEventArgs>(KeyDownExecute);
+            SongClickRelayCommand = new RelayCommand<ItemClickEventArgs>(SongClickExecute);
 
             if (IsInDesignMode)
                 SearchAsync("test");
+        }
+
+        private async void SongClickExecute(ItemClickEventArgs item)
+        {
+            var xboxTrack = item.ClickedItem as XboxTrack;
+
+            new MessageDialog("please hold while we match an mp3").ShowAsync();
+
+            //TODO [Harry,20140908] actual downloading instead of previewing
+            var url = await SongMatchEngine.GetUrlMatch(xboxTrack.Name, xboxTrack.PrimaryArtist.Name);
+
+            if (url == null)
+            {
+                new MessageDialog("no match found :/").ShowAsync();
+            }
+            
+            else
+            Launcher.LaunchUriAsync(new Uri(url));
         }
 
         public bool IsLoading
@@ -59,6 +81,12 @@ namespace Audiotica.ViewModel
             set { Set(ref _resultsResponse, value); }
         }
 
+        public RelayCommand<ItemClickEventArgs> SongClickRelayCommand
+        {
+            get { return _songClickRelayCommand; }
+            set { Set(ref _songClickRelayCommand, value); }
+        }
+
         public async Task SearchAsync(string term)
         {
             try
@@ -68,7 +96,7 @@ namespace Audiotica.ViewModel
             catch (XboxException exception)
             {
                 if (!exception.Description.Contains("not exist"))
-                    throw;
+                    new MessageDialog("damn it! network issue...").ShowAsync();
 
                 //TODO [Harry,20140908] improve error notifier
                 new MessageDialog("No search results").ShowAsync();

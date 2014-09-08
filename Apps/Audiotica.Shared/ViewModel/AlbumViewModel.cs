@@ -1,10 +1,16 @@
 ﻿#region
 
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using Windows.System;
+using Windows.UI.Popups;
+using Windows.UI.Xaml.Controls;
+using Audiotica.Data;
 using Audiotica.Data.Model;
 using Audiotica.Data.Service.Interfaces;
 using GalaSoft.MvvmLight;
+using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Messaging;
 using Microsoft.Xbox.Music.Platform.Contract.DataModel;
 
@@ -18,9 +24,11 @@ namespace Audiotica.ViewModel
         private XboxAlbum _album;
         private bool _isLoading;
         private ObservableCollection<XboxTrack> _tracks;
+        private RelayCommand<ItemClickEventArgs> _songClickRelayCommand;
 
         public AlbumViewModel(IXboxMusicService service)
         {
+            SongClickRelayCommand = new RelayCommand<ItemClickEventArgs>(SongClickExecute);
             _service = service;
 
             MessengerInstance.Register<GenericMessage<string>>(this, "album-detail-id", ReceivedId);
@@ -33,6 +41,12 @@ namespace Audiotica.ViewModel
         {
             get { return _album; }
             set { Set(ref _album, value); }
+        }
+
+        public RelayCommand<ItemClickEventArgs> SongClickRelayCommand
+        {
+            get { return _songClickRelayCommand; }
+            set { Set(ref _songClickRelayCommand, value); }
         }
 
         public ObservableCollection<XboxTrack> Tracks
@@ -60,6 +74,24 @@ namespace Audiotica.ViewModel
             Album = await _service.GetAlbumDetails(albumId);
             Tracks = new ObservableCollection<XboxTrack>(Album.Tracks.Items);
             IsLoading = false;
+        }
+
+        private async void SongClickExecute(ItemClickEventArgs item)
+        {
+            var xboxTrack = item.ClickedItem as XboxTrack;
+
+            new MessageDialog("please hold while we match an mp3").ShowAsync();
+
+            //TODO [Harry,20140908] actual downloading instead of previewing
+            var url = await SongMatchEngine.GetUrlMatch(xboxTrack.Name, xboxTrack.PrimaryArtist.Name);
+
+            if (url == null)
+            {
+                new MessageDialog("no match found :/").ShowAsync();
+            }
+
+            else
+                Launcher.LaunchUriAsync(new Uri(url));
         }
     }
 }

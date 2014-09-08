@@ -27,8 +27,14 @@
 			</TextBox>
 		</common:MaterialCard>
 
-        <ListView Margin="20,0"
+        <ListView Margin="20,0" IsItemClickEnabled="True"
             Grid.Row="1" ItemsSource="{Binding ResultsResponse.Tracks.Items}"
-                ItemTemplate="{StaticResource XboxTrackDataTemplate}" />
+                ItemTemplate="{StaticResource XboxTrackDataTemplate}" >
+        	<interactivity:Interaction.Behaviors>
+        		<Core:EventTriggerBehavior EventName="ItemClick">
+        			<Core:InvokeCommandAction Command="{Binding SongClickRelayCommand}"/>
+        		</Core:EventTriggerBehavior>
+        	</interactivity:Interaction.Behaviors>
+        </ListView>
     </Grid>
 </audiotica:PageBase>

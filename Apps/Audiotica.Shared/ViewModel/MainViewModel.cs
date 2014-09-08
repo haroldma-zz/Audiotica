@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using Windows.UI.Popups;
 using Audiotica.Data.Model;
 using Audiotica.Data.Service.Interfaces;
 using GalaSoft.MvvmLight;
@@ -89,7 +90,7 @@ namespace Audiotica.ViewModel
             }
             catch (Exception e)
             {
-                Debugger.Break();
+                new MessageDialog("not really... probably a network issue", "oops, some nasty SHIT happened.").ShowAsync();
             }
         }
     }
