@@ -76,7 +76,7 @@ namespace Audiotica.Data
 
                     var match =
                         parseResp.result.songs.FirstOrDefault(
-                            s => String.Equals(s.name, title, StringComparison.CurrentCultureIgnoreCase) &&
+                            s => String.Equals(s.name, title, StringComparison.CurrentCultureIgnoreCase) ||
                                  s.artists.Count(
                                      p => String.Equals(p.name, artist, StringComparison.CurrentCultureIgnoreCase)) != 0);
 
