@@ -24,7 +24,6 @@ namespace Audiotica.ViewModel
         private bool _isLoading;
         private RelayCommand<KeyRoutedEventArgs> _keyDownRelayCommand;
         private ContentResponse _resultsResponse;
-        private Visibility _resultsVisibility = Visibility.Collapsed;
         private string _searchTerm;
 
         public SearchViewModel(IXboxMusicService service)
@@ -60,12 +59,6 @@ namespace Audiotica.ViewModel
             set { Set(ref _resultsResponse, value); }
         }
 
-        public Visibility ResultsVisibility
-        {
-            get { return _resultsVisibility; }
-            set { Set(ref _resultsVisibility, value); }
-        }
-
         public async Task SearchAsync(string term)
         {
             try
@@ -89,7 +82,6 @@ namespace Audiotica.ViewModel
             IsLoading = true;
             ResultsResponse = null;
             ((TextBox) e.OriginalSource).IsEnabled = false;
-            ResultsVisibility = Visibility.Visible;
 
             //Close the keyboard
             //TODO [Harry,20140908] use some linq2visual for nicer and foolproof
