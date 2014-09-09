@@ -20,7 +20,7 @@
   <!--Tells Google Analytics to anonymize the information sent by the tracker objects by removing the last octet of the IP address prior to its storage. Note that this will slightly reduce the accuracy of geographic reporting. Default is false.-->
   <!--<anonymizeIp>false</anonymizeIp>-->
   <!--Enable automatic exception tracking. Default is false.-->
-  <!--<reportUncaughtExceptions>false</reportUncaughtExceptions>-->
+  <reportUncaughtExceptions>true</reportUncaughtExceptions>
   <!--The amount of time (in seconds) your application can stay in the background before the session is ended. Negative value disables EasyTracker session management. Default is 30-->
   <!--<sessionTimeout>30</sessionTimeout>-->
   <!--Enable automatic app lifetime tracking (e.g. suspend/resume). Default is false.-->
