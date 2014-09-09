@@ -1,9 +1,15 @@
 ﻿#region
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using Windows.System;
+using Windows.UI.Popups;
+using Windows.UI.Xaml.Controls;
+using Audiotica.Data;
 using Audiotica.Data.Service.Interfaces;
 using GalaSoft.MvvmLight;
+using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Messaging;
 using Microsoft.Xbox.Music.Platform.Contract.DataModel;
 
@@ -18,15 +24,23 @@ namespace Audiotica.ViewModel
         private bool _isLoading;
         private List<XboxAlbum> _topAlbums;
         private List<XboxTrack> _topTracks;
+        private RelayCommand<ItemClickEventArgs> _songClickRelayCommand;
 
         public ArtistViewModel(IXboxMusicService service)
         {
+            SongClickRelayCommand = new RelayCommand<ItemClickEventArgs>(SongClickExecute);
             _service = service;
 
             MessengerInstance.Register<GenericMessage<string>>(this, "artist-detail-id", ReceivedId);
 
             if (IsInDesignMode)
                 LoadData("music.test");
+        }
+
+        public RelayCommand<ItemClickEventArgs> SongClickRelayCommand
+        {
+            get { return _songClickRelayCommand; }
+            set { Set(ref _songClickRelayCommand, value); }
         }
 
         public XboxArtist Artist
@@ -68,6 +82,27 @@ namespace Audiotica.ViewModel
             TopTracks = Artist.TopTracks.Items.Take(5).ToList();
             TopAlbums = Artist.Albums.Items.Take(5).ToList();
             IsLoading = false;
+        }
+
+        private async void SongClickExecute(ItemClickEventArgs item)
+        {
+            var xboxTrack = item.ClickedItem as XboxTrack;
+
+            //TODO [Harry,20140909] use a ui blocker with progress indicator
+            IsLoading = true;
+
+            //TODO [Harry,20140908] actual downloading instead of previewing
+            var url = await SongMatchEngine.GetUrlMatch(xboxTrack.Name, xboxTrack.PrimaryArtist.Name);
+
+            IsLoading = false;
+
+            if (url == null)
+            {
+                await new MessageDialog("no match found :/").ShowAsync();
+            }
+
+            else
+                Launcher.LaunchUriAsync(new Uri(url));
         }
     }
 }

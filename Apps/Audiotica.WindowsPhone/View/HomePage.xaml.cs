@@ -26,5 +26,11 @@ namespace Audiotica.View
         {
             Frame.Navigate(typeof (SearchPage));
         }
+
+        private void Grid_Tapped(object sender, Windows.UI.Xaml.Input.TappedRoutedEventArgs e)
+        {
+            var artist = ((Grid) sender).DataContext as XboxArtist;
+            if (artist != null) Frame.Navigate(typeof(ArtistPage), artist.Id);
+        }
     }
 }

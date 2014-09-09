@@ -20,7 +20,7 @@ namespace Audiotica.ViewModel
         private readonly IXboxMusicService _service;
         private List<XboxAlbum> _featuredReleases;
         private List<XboxAlbum> _newAlbums;
-        private List<XboxItem> _spotlightItems;
+        private List<XboxArtist> _spotlightItems;
         private bool _isFeaturedLoading;
         private bool _isSliderLoading;
         private bool _isNewLoading;
@@ -66,7 +66,7 @@ namespace Audiotica.ViewModel
             set { Set(ref _isNewLoading, value); }
         }
 
-        public List<XboxItem> SpotlightItems
+        public List<XboxArtist> SpotlightItems
         {
             get { return _spotlightItems; }
             set { Set(ref _spotlightItems, value); }
@@ -74,12 +74,12 @@ namespace Audiotica.ViewModel
 
         public async Task LoadChartDataAsync()
         {
-            //IsSliderLoading = true;
+            IsSliderLoading = true;
             IsFeaturedLoading = true;
             IsNewLoading = true;
 
-            //SpotlightItems = await _service.GetSpotlight();
-            //IsSliderLoading = false;
+            SpotlightItems = (await _service.GetFeaturedArtist(5)).Items;
+            IsSliderLoading = false;
 
             try
             {

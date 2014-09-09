@@ -15,22 +15,21 @@
     <Grid>
         <ListView ItemContainerStyle="{StaticResource NoFeedbackListViewItem}" SelectionMode="None" Padding="0,45,0,0"
                   Margin="10,0">
-            <!--another problem with xbox music having different ids for same song-->
-            <!--            <common:MaterialCard IsLoading="{Binding IsSliderLoading}" HeaderText="Spotlight">-->
-            <!--                <FlipView MaxHeight="150" ItemsSource="{Binding SpotlightItems}">-->
-            <!--                    <FlipView.ItemTemplate>-->
-            <!--                        <DataTemplate>-->
-            <!--                            <Grid>-->
-            <!--                                <Image Stretch="UniformToFill" Source="{Binding ImageUrl}" />-->
-            <!--                                <StackPanel Background="#66000000" VerticalAlignment="Bottom">-->
-            <!--                                    <TextBlock Text="{Binding Title}" FontSize="24" Margin="15,5,5,5" Foreground="White" TextTrimming="CharacterEllipsis" />-->
-            <!--                                    <TextBlock Text="{Binding Text}" FontSize="18" Margin="15,5,5,5" Foreground="#89FFFFFF" TextTrimming="CharacterEllipsis" />-->
-            <!--                                </StackPanel>-->
-            <!--                            </Grid>-->
-            <!--                        </DataTemplate>-->
-            <!--                    </FlipView.ItemTemplate>-->
-            <!--                </FlipView>-->
-            <!--            </common:MaterialCard>-->
+                        <common:MaterialCard IsLoading="{Binding IsSliderLoading}" HeaderText="Spotlight">
+                            <FlipView MaxHeight="150" ItemsSource="{Binding SpotlightItems}">
+                                <FlipView.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid Tapped="Grid_Tapped">
+                                            <Image Stretch="UniformToFill" Source="{Binding ImageUrl}" />
+                                            <StackPanel Background="#66000000" VerticalAlignment="Bottom">
+                                                <TextBlock Text="{Binding Name}" FontSize="24" Margin="15,5,5,5" Foreground="White" TextTrimming="CharacterEllipsis" />
+                                                <TextBlock Text="{Binding Genres[0]}" FontSize="18" Margin="15,5,5,5" Foreground="#89FFFFFF" TextTrimming="CharacterEllipsis" />
+                                            </StackPanel>
+                                        </Grid>
+                                    </DataTemplate>
+                                </FlipView.ItemTemplate>
+                            </FlipView>
+                        </common:MaterialCard>
 
             <common:MaterialCard HeaderText="Collection">
                 <!-- material design option -->

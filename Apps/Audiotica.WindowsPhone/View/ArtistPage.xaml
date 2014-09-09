@@ -6,6 +6,8 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:common="using:Audiotica.Core.Common"
     xmlns:audiotica="using:Audiotica"
+    xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
+    xmlns:core="using:Microsoft.Xaml.Interactions.Core"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" FontFamily="Global User Interface"
     DataContext="{Binding Source={StaticResource Locator}, Path=Artist}">
@@ -39,7 +41,7 @@
             <!--            </ListView>-->
             <!--        </common:MaterialCard>-->
 
-            <common:MaterialCard HeaderText="Latest Albums"
+            <common:MaterialCard HeaderText="Latest Albums" IsActionButtonEnabled="False"
                                  ActionButtonVisibility="Visible">
                 <ListView ItemsSource="{Binding TopAlbums}"
                           ItemTemplate="{StaticResource XboxAlbumDataTemplate}"
@@ -59,9 +61,16 @@
             </common:MaterialCard>
 
             <common:MaterialCard HeaderText="Top Songs"
+                                 IsActionButtonEnabled="False"
                                  ActionButtonVisibility="Visible">
-                <ListView ItemsSource="{Binding TopTracks}"
-                          ItemTemplate="{StaticResource XboxTrackDataTemplate}" />
+                <ListView IsItemClickEnabled="True" ItemsSource="{Binding TopTracks}"
+                          ItemTemplate="{StaticResource XboxTrackDataTemplate}">
+                    <interactivity:Interaction.Behaviors>
+                        <core:EventTriggerBehavior EventName="ItemClick">
+                            <core:InvokeCommandAction Command="{Binding SongClickRelayCommand}"/>
+                        </core:EventTriggerBehavior>
+                    </interactivity:Interaction.Behaviors>
+                </ListView>
             </common:MaterialCard>
 
             <common:MaterialCard HeaderText="Bio">
