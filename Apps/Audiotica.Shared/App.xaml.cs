@@ -117,7 +117,7 @@ namespace Audiotica
 
             //Make sure the statusbar foreground is always black
             StatusBar.GetForCurrentView().ForegroundColor = Colors.White;
-            StatusBar.GetForCurrentView().BackgroundColor = ColorHelper.GetColorFromHexa("#7b1fa2");
+            StatusBar.GetForCurrentView().BackgroundColor = ColorHelper.GetColorFromHexa("#4B216D");
             StatusBar.GetForCurrentView().BackgroundOpacity = 1;
             ApplicationView.GetForCurrentView().SetDesiredBoundsMode(ApplicationViewBoundsMode.UseCoreWindow);
         }
