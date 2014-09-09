@@ -16,7 +16,7 @@
                             <common:VisibilityConverter x:Key="VisibilityConverter" />
                         </Grid.Resources>
                         <!-- content goes here -->
-                        <Border x:Name="CardContent" CornerRadius="5" Margin="0,0,0,5" Background="White"
+                        <Border x:Name="CardContent" Margin="0,0,0,5" Background="White"
                                 Canvas.ZIndex="2">
                             <Grid>
                                 <StackPanel Margin="20">
