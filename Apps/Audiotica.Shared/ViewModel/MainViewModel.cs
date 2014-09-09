@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Windows.UI.Popups;
+using Audiotica.Core.Exceptions;
 using Audiotica.Data.Model;
 using Audiotica.Data.Service.Interfaces;
 using GalaSoft.MvvmLight;
@@ -86,7 +87,7 @@ namespace Audiotica.ViewModel
             }
             catch (Exception e)
             {
-                ShowNetworkError();
+                ShowNetworkError(e);
             }
             finally
             {
@@ -98,7 +99,7 @@ namespace Audiotica.ViewModel
             }
             catch (Exception e)
             {
-                ShowNetworkError();
+                ShowNetworkError(e);
             }
             finally
             {
@@ -106,9 +107,14 @@ namespace Audiotica.ViewModel
             }
         }
 
-        private void ShowNetworkError()
+        private void ShowNetworkError(Exception e)
         {
             new MessageDialog("not really... probably a network issue", "oops, some nasty SHIT happened.").ShowAsync();
+
+            var ex = e.Message + "\n" + e.StackTrace;
+            if (e is XboxException)
+                ex = (e as XboxException).Description + "\n" + ex;
+            GoogleAnalytics.EasyTracker.GetTracker().SendException(ex, false);
         }
     }
 }
