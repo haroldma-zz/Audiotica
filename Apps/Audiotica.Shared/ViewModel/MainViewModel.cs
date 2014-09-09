@@ -73,25 +73,42 @@ namespace Audiotica.ViewModel
 
         public async Task LoadChartDataAsync()
         {
+            //IsSliderLoading = true;
+            IsFeaturedLoading = true;
+            IsNewLoading = true;
+
+            //SpotlightItems = await _service.GetSpotlight();
+            //IsSliderLoading = false;
+
             try
             {
-                IsSliderLoading = true;
-                IsFeaturedLoading = true;
-                IsNewLoading = true;
-
-                SpotlightItems = await _service.GetSpotlight();
-                IsSliderLoading = false;
-
                 FeatureAlbums = (await _service.GetFeaturedAlbums()).Items;
-                IsFeaturedLoading = false;
-
-                NewAlbums = (await _service.GetNewAlbums()).Items;
-                IsNewLoading = false;
             }
             catch (Exception e)
             {
-                new MessageDialog("not really... probably a network issue", "oops, some nasty SHIT happened.").ShowAsync();
+                ShowNetworkError();
             }
+            finally
+            {
+                IsFeaturedLoading = false;
+            }
+            try
+            {
+                NewAlbums = (await _service.GetNewAlbums()).Items;
+            }
+            catch (Exception e)
+            {
+                ShowNetworkError();
+            }
+            finally
+            {
+                IsNewLoading = false;
+            }
+        }
+
+        private void ShowNetworkError()
+        {
+            new MessageDialog("not really... probably a network issue", "oops, some nasty SHIT happened.").ShowAsync();
         }
     }
 }
