@@ -30,7 +30,7 @@ namespace Audiotica.View
         private void ListView_ItemClick(object sender, ItemClickEventArgs e)
         {
             var album = e.ClickedItem as XboxAlbum;
-            if (album != null) Frame.Navigate(typeof(ArtistPage), album.Id);
+            if (album != null) Frame.Navigate(typeof(AlbumPage), album.Id);
         }
     }
 }
