@@ -3,6 +3,7 @@
 using System;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
+using GoogleAnalytics;
 
 #endregion
 
@@ -67,6 +68,10 @@ namespace Audiotica
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             _navigationHelper.OnNavigatedTo(e);
+
+            var pageName = e.Content.ToString();
+            pageName = pageName.Remove(0, pageName.LastIndexOf(".", StringComparison.Ordinal) + 1);
+            EasyTracker.GetTracker().SendView(pageName);
         }
 
         protected virtual object SaveState()

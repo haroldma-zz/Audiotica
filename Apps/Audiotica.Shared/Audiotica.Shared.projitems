@@ -24,4 +24,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)ViewModel\SearchViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModel\ViewModelLocator.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="$(MSBuildThisFileDirectory)analytics.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)analytics.xsd" />
+  </ItemGroup>
 </Project>

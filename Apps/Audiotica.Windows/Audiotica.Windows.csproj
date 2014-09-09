@@ -151,6 +151,12 @@
     <Reference Include="GalaSoft.MvvmLight.Platform">
       <HintPath>..\..\packages\Portable.MvvmLightLibs.4.4.32.1\lib\netcore45\GalaSoft.MvvmLight.Platform.dll</HintPath>
     </Reference>
+    <Reference Include="GoogleAnalytics">
+      <HintPath>..\..\packages\GoogleAnalyticsSDK.1.2.12\lib\windows81\GoogleAnalytics.winmd</HintPath>
+    </Reference>
+    <Reference Include="GoogleAnalytics.Core">
+      <HintPath>..\..\packages\GoogleAnalyticsSDK.1.2.12\lib\windows81\GoogleAnalytics.Core.winmd</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Practices.ServiceLocation, Version=1.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\CommonServiceLocator.1.3\lib\portable-net4+sl5+netcore45+wpa81+wp8\Microsoft.Practices.ServiceLocation.dll</HintPath>
