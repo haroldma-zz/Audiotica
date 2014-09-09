@@ -4,7 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Windows.System;
+using Windows.UI.Core;
 using Windows.UI.Popups;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Audiotica.Data;
 using Audiotica.Data.Model;
@@ -12,6 +14,7 @@ using Audiotica.Data.Service.Interfaces;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Messaging;
+using GalaSoft.MvvmLight.Threading;
 using Microsoft.Xbox.Music.Platform.Contract.DataModel;
 
 #endregion
@@ -80,14 +83,17 @@ namespace Audiotica.ViewModel
         {
             var xboxTrack = item.ClickedItem as XboxTrack;
 
-            new MessageDialog("please hold while we match an mp3").ShowAsync();
+            //TODO [Harry,20140909] use a ui blocker with progress indicator
+            IsLoading = true;
 
             //TODO [Harry,20140908] actual downloading instead of previewing
             var url = await SongMatchEngine.GetUrlMatch(xboxTrack.Name, xboxTrack.PrimaryArtist.Name);
 
+            IsLoading = false;
+
             if (url == null)
             {
-                new MessageDialog("no match found :/").ShowAsync();
+                    await new MessageDialog("no match found :/").ShowAsync();
             }
 
             else
