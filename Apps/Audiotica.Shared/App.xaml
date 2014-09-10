@@ -16,12 +16,11 @@
         <SolidColorBrush x:Key="ApplicationPageBackgroundThemeBrush" Color="#E4E4E4" />
 
         <DataTemplate x:Key="XboxAlbumDataTemplate">
-            <StackPanel Margin="0,5,5,0">
+            <StackPanel Margin="0,5,5,0" Width="150">
                 <Image
                     Source="{Binding ImageUrl}" Height="150" Width="150" Margin="0,0,0,5" />
                 <TextBlock Text="{Binding Name}" FontSize="15" TextTrimming="CharacterEllipsis" />
-                <TextBlock Text="{Binding PrimaryArtist.Name}" FontSize="12" TextTrimming="CharacterEllipsis"
-                           FontFamily="Global User Interface" Foreground="#89000000" />
+                <TextBlock Text="{Binding PrimaryArtist.Name}" FontSize="12" TextTrimming="CharacterEllipsis" Foreground="#89000000" />
             </StackPanel>
         </DataTemplate>
 
