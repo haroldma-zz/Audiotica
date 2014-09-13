@@ -87,7 +87,7 @@ namespace Audiotica.ViewModel
             IsLoading = true;
 
             //TODO [Harry,20140908] actual downloading instead of previewing
-            var url = await SongMatchEngine.GetUrlMatch(xboxTrack.Name, xboxTrack.PrimaryArtist.Name);
+            var url = await Mp3MatchEngine.FindMp3For(xboxTrack);
 
             IsLoading = false;
 

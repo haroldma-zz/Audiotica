@@ -38,18 +38,16 @@ using Audiotica.Data.Model;
 
 #endregion
 
-namespace Audiotica.Data
+namespace Audiotica.Data.Mp3Providers
 {
-    public static class SongMatchEngine
+    public class NeteaseProvider : IMp3Provider
     {
         //AKA music.163.com
         private const string NeteaseSearchApi = "http://music.163.com/api/search/get/web";
         private const string NeteaseDetailApi = "http://music.163.com/api/song/detail/?ids=%5B{0}%5D";
 
-        public static async Task<string> GetUrlMatch(string title, string artist)
+        public async Task<string> GetMatch(string title, string artist)
         {
-            //TODO [Harry,20140906] BETA1 only using netease, implement for next beta more services.
-
             using (var client = new HttpClient())
             {
                 //Setting referer (163 doesn't work without it)
