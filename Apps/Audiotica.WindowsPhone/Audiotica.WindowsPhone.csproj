@@ -84,6 +84,10 @@
   </PropertyGroup>
   <ItemGroup>
     <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
+    <ProjectReference Include="..\..\Collections\Audiotica.Collection.Phone\Audiotica.Collection.Phone.csproj">
+      <Project>{92f09118-1696-43ae-bcaa-a1a6b87951e6}</Project>
+      <Name>Audiotica.Collection.Phone</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Audiotica.Core\Audiotica.Core.csproj">
       <Project>{49668872-a57c-4e70-834b-83608e6cef23}</Project>
       <Name>Audiotica.Core</Name>
@@ -195,12 +199,6 @@
   </ItemGroup>
   <ItemGroup>
     <SDKReference Include="BehaviorsXamlSDKManaged, Version=12.0" />
-    <SDKReference Include="Microsoft.VCLibs, version=12.0">
-      <Name>Microsoft Visual C++ 2013 Runtime Package for Windows Phone</Name>
-    </SDKReference>
-    <SDKReference Include="SQLite.WP81, Version=3.8.6">
-      <Name>SQLite for Windows Phone 8.1</Name>
-    </SDKReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '12.0' ">
     <VisualStudioVersion>12.0</VisualStudioVersion>
