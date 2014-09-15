@@ -9,7 +9,7 @@
     <ProjectGuid>{92F09118-1696-43AE-BCAA-A1A6B87951E6}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Audiotica.Collection.Phone</RootNamespace>
+    <RootNamespace>Audiotica.Collection</RootNamespace>
     <AssemblyName>Audiotica.Collection.Phone</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <TargetPlatformVersion>8.1</TargetPlatformVersion>
