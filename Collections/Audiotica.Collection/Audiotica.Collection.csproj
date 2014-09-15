@@ -112,6 +112,9 @@
     </SDKReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ICollectionService.cs" />
+    <Compile Include="IPlaylistService.cs" />
+    <Compile Include="IQueueService.cs" />
     <Compile Include="Model\Album.cs" />
     <Compile Include="Model\Artist.cs" />
     <Compile Include="Model\BaseDbEntry.cs" />
