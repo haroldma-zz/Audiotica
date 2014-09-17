@@ -1,6 +1,7 @@
 #region
 
 using Audiotica.Collection;
+using Audiotica.Collection.DesignTime;
 using Audiotica.Collection.RunTime;
 using Audiotica.Data.Service.DesignTime;
 using Audiotica.Data.Service.Interfaces;
@@ -29,6 +30,7 @@ namespace Audiotica.ViewModel
             if (ViewModelBase.IsInDesignModeStatic)
             {
                 SimpleIoc.Default.Register<IXboxMusicService, DesignXboxMusicService>();
+                SimpleIoc.Default.Register<ICollectionService, DesignCollectionService>();
             }
             else
             {
@@ -40,6 +42,7 @@ namespace Audiotica.ViewModel
             SimpleIoc.Default.Register<AlbumViewModel>();
             SimpleIoc.Default.Register<ArtistViewModel>();
             SimpleIoc.Default.Register<SearchViewModel>();
+            SimpleIoc.Default.Register<CollectionViewModel>();
         }
 
         public MainViewModel Main
@@ -60,6 +63,11 @@ namespace Audiotica.ViewModel
         public SearchViewModel Search
         {
             get { return ServiceLocator.Current.GetInstance<SearchViewModel>(); }
+        }
+
+        public CollectionViewModel Collection
+        {
+            get { return ServiceLocator.Current.GetInstance<CollectionViewModel>(); }
         }
 
         public ICollectionService CollectionService
