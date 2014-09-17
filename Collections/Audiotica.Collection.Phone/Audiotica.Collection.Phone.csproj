@@ -100,6 +100,9 @@
     <Compile Include="..\Audiotica.Collection\IQueueService.cs">
       <Link>IQueueService.cs</Link>
     </Compile>
+    <Compile Include="..\Audiotica.Collection\ISqlService.cs">
+      <Link>ISqlService.cs</Link>
+    </Compile>
     <Compile Include="..\Audiotica.Collection\Model\Album.cs">
       <Link>Model\Album.cs</Link>
     </Compile>
@@ -123,6 +126,12 @@
     </Compile>
     <Compile Include="..\Audiotica.Collection\RunTime\CollectionService.cs">
       <Link>RunTime\CollectionService.cs</Link>
+    </Compile>
+    <Compile Include="..\Audiotica.Collection\RunTime\QueueService.cs">
+      <Link>RunTime\QueueService.cs</Link>
+    </Compile>
+    <Compile Include="..\Audiotica.Collection\RunTime\SqlService.cs">
+      <Link>RunTime\SqlService.cs</Link>
     </Compile>
     <Compile Include="..\Audiotica.Collection\SQLite.cs">
       <Link>SQLite.cs</Link>

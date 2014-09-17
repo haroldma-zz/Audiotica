@@ -15,54 +15,16 @@ namespace Audiotica.Collection.RunTime
 {
     public class CollectionService : ICollectionService
     {
-        #region Private Fields
+        private readonly ISqlService _service;
 
-        private const string DbName = "Audiotica.sqlite";
-        private readonly SQLiteConnection _db;
-        private const double DatabaseVersion = 0.1;
-
-        #endregion
-
-        public CollectionService()
+        public CollectionService(ISqlService service)
         {
+            _service = service;
             Songs = new ObservableCollection<Song>();
             Artists = new ObservableCollection<Artist>();
             Albums = new ObservableCollection<Album>();
-
-            _db = new SQLiteConnection(DbName);
-            Debug.WriteLine("Created SQL connection");
-
-            var currentVersion = AppSettingsHelper.Read<double>("LibraryDatabaseVersion");
-
-            if (currentVersion.Equals(0.0))
-            {
-                Initialize();
-                AppSettingsHelper.Write("LibraryDatabaseVersion", DatabaseVersion);
-            }
-            else if (currentVersion < DatabaseVersion)
-            {
-                //In the future do changes here
-            }
-            Debug.WriteLine("Library initialize successfuly!");
         }
 
-        #region private methods
-
-        private void Initialize()
-        {
-            //Contains all the songs
-            _db.CreateTable<Song>();
-
-            //Contains all the artists
-            _db.CreateTable<Artist>();
-
-            //Contains all the albums
-            _db.CreateTable<Album>();
-
-            Debug.WriteLine("Created tables for library");
-        }
-
-        #endregion
 
         public ObservableCollection<Song> Songs { get; set; }
         public ObservableCollection<Album> Albums { get; set; }
@@ -70,9 +32,9 @@ namespace Audiotica.Collection.RunTime
 
         public void LoadLibrary()
         {
-            var songs = new ObservableCollection<Song>(_db.Table<Song>());
-            var albums = new ObservableCollection<Album>(_db.Table<Album>());
-            var artists = new ObservableCollection<Artist>(_db.Table<Artist>());
+            var songs = new ObservableCollection<Song>(_service.Connection.Table<Song>());
+            var albums = new ObservableCollection<Album>(_service.Connection.Table<Album>());
+            var artists = new ObservableCollection<Artist>(_service.Connection.Table<Artist>());
 
             foreach (var song in songs)
             {
@@ -117,7 +79,7 @@ namespace Audiotica.Collection.RunTime
 
             if (artist == null)
             {
-                await InsertAsync(song.Artist);
+                await _service.InsertAsync(song.Artist);
                 song.Album.PrimaryArtistId = song.Artist.Id;
                 Artists.Add(song.Artist);
             }
@@ -135,7 +97,7 @@ namespace Audiotica.Collection.RunTime
                 song.Album = album;
             else
             {
-                await InsertAsync(song.Album);
+                await _service.InsertAsync(song.Album);
                 Albums.Add(song.Album);
                 song.Artist.Albums.Add(song.Album);
             }
@@ -180,7 +142,7 @@ namespace Audiotica.Collection.RunTime
             song.ArtistId = song.Artist.Id;
 
             //Insert to db
-            await InsertAsync(song);
+            await _service.InsertAsync(song);
 
             if (artist == null)
                 song.Artist.Songs.Add(song);
@@ -194,44 +156,5 @@ namespace Audiotica.Collection.RunTime
         {
             throw new NotImplementedException();
         }
-
-        #region Sql async wrapper
-
-        private Task<List<T>> GetAllAsync<T>() where T : new()
-        {
-            return Task.FromResult(_db.Table<T>().ToList());
-        }
-
-        private Task<List<T>> GetWhereAsync<T>(Func<T, bool> predicate) where T : new()
-        {
-            return Task.FromResult(_db.Table<T>().Where(predicate).ToList());
-        }
-
-        private Task InsertAsync<T>(T obj)
-        {
-            return Task.FromResult(_db.Insert(obj));
-        }
-
-        private Task UpdateAsync<T>(T obj)
-        {
-            return Task.FromResult(_db.Update(obj));
-        }
-
-        private Task DeleteAsync<T>(T obj)
-        {
-            return Task.FromResult(_db.Delete(obj));
-        }
-
-        private Task DeleteAllAsync<T>()
-        {
-            return Task.FromResult(_db.DeleteAll<T>());
-        }
-
-        private Task<T> GetFirstAsync<T>(Func<T, bool> predicate) where T : new()
-        {
-            return Task.FromResult(_db.Table<T>().FirstOrDefault(predicate));
-        }
-
-        #endregion
     }
 }
