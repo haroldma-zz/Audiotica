@@ -9,7 +9,14 @@ namespace Audiotica.Collection.Model
 {
     public class BaseDbEntry
     {
+        public BaseDbEntry()
+        {
+            CreatedAt = DateTime.Now;
+        }
+
         [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
+
+        public DateTime CreatedAt { get; set; }
     }
 }

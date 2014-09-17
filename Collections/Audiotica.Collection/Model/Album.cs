@@ -10,6 +10,11 @@ namespace Audiotica.Collection.Model
 {
     public class Album : BaseDbEntry
     {
+        public Album()
+        {
+            Songs = new List<Song>();
+        }
+
         [Indexed]
         public string XboxId { get; set; }
 
