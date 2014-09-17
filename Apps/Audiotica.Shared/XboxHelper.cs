@@ -28,7 +28,7 @@ namespace Audiotica
             if (xboxAlbum.ReleaseDate != null)
                 album.ReleaseDate = (DateTime) xboxAlbum.ReleaseDate;
 
-            album.Genre = xboxAlbum.Genres[0];
+            album.Genre = xboxAlbum.Genres != null ? xboxAlbum.Genres[0] : "";
 
             return album;
         }

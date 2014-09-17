@@ -14,7 +14,7 @@
     <Grid>
         <Pivot>
             <PivotItem Header="songs">
-                <ListView ItemsSource="{Binding Service.Songs}">
+                <ListView ItemsSource="{Binding Service.Songs}" Padding="0,0,0,25">
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <common:MaterialCard Margin="0,-2">
