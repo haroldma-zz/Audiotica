@@ -26,7 +26,7 @@
                        Source="{Binding Album.ImageUrl}" />
                     <StackPanel Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="5,0,0,0">
                         <TextBlock Text="{Binding Album.Name}" FontSize="22" TextAlignment="Right" TextTrimming="CharacterEllipsis" />
-                        <TextBlock Text="{Binding Album.Artists[0].Artist.Name}" FontSize="16" TextAlignment="Right" Foreground="#89000000" TextTrimming="CharacterEllipsis" />
+                        <HyperlinkButton Content="{Binding Album.Artists[0].Artist.Name}" FontSize="16" HorizontalAlignment="Right" Foreground="#89000000" Click="HyperlinkButton_Click" />
                         <TextBlock Text="{Binding Album.Genres[0]}" FontSize="16" TextAlignment="Right" Foreground="#89000000" TextTrimming="CharacterEllipsis" />
                     </StackPanel>
                 </Grid>
