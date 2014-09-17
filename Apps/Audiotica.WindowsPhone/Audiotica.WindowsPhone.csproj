@@ -84,6 +84,10 @@
   </PropertyGroup>
   <ItemGroup>
     <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
+    <ProjectReference Include="..\..\Agents\Audiotica.WindowsPhone.Player\Audiotica.WindowsPhone.Player.csproj">
+      <Project>{7ab5b153-0855-4af1-ad6e-043ac4b5b366}</Project>
+      <Name>Audiotica.WindowsPhone.Player</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Collections\Audiotica.Collection.Phone\Audiotica.Collection.Phone.csproj">
       <Project>{92f09118-1696-43ae-bcaa-a1a6b87951e6}</Project>
       <Name>Audiotica.Collection.Phone</Name>
@@ -98,6 +102,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AudioPlayerManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="View\AlbumPage.xaml.cs">
       <DependentUpon>AlbumPage.xaml</DependentUpon>

@@ -33,7 +33,7 @@ namespace Audiotica
 
         public static ViewModelLocator Locator
         {
-            get { return Application.Current.Resources["Locator"] as ViewModelLocator; }
+            get { return Current.Resources["Locator"] as ViewModelLocator; }
         }
 
         /// <summary>
@@ -78,8 +78,10 @@ namespace Audiotica
                 // Place the frame in the current Window
                 Window.Current.Content = rootFrame;
 
-                //Load library
+                //Load collection
+                await Locator.SqlService.InitializeAsync();
                 await Locator.CollectionService.LoadLibraryAsync();
+                await Locator.QueueService.LoadQueueAsync();
             }
 
             if (rootFrame.Content == null)

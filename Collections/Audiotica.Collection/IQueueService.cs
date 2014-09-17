@@ -35,7 +35,7 @@ using Audiotica.Collection.Model;
 
 namespace Audiotica.Collection
 {
-    internal interface IQueueService
+    public interface IQueueService
     {
         ObservableCollection<QueueSong> PlaybackQueue { get; }
 
