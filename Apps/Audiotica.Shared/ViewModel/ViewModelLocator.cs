@@ -1,5 +1,7 @@
 #region
 
+using Audiotica.Collection;
+using Audiotica.Collection.RunTime;
 using Audiotica.Data.Service.DesignTime;
 using Audiotica.Data.Service.Interfaces;
 using Audiotica.Data.Service.RunTime;
@@ -31,6 +33,7 @@ namespace Audiotica.ViewModel
             else
             {
                 SimpleIoc.Default.Register<IXboxMusicService, XboxMusicService>();
+                SimpleIoc.Default.Register<ICollectionService, CollectionService>();
             }
 
             SimpleIoc.Default.Register<MainViewModel>();
@@ -57,6 +60,11 @@ namespace Audiotica.ViewModel
         public SearchViewModel Search
         {
             get { return ServiceLocator.Current.GetInstance<SearchViewModel>(); }
+        }
+
+        public ICollectionService CollectionService
+        {
+            get { return SimpleIoc.Default.GetInstance<ICollectionService>(); }
         }
 
         public static void Cleanup()

@@ -93,7 +93,7 @@ namespace Audiotica.Data.Service.RunTime
         public async Task<XboxArtist> GetArtistDetails(string id)
         {
             var results = await _client.LookupAsync(id, ContentSource.Catalog,
-                extras: ExtraDetails.TopTracks | ExtraDetails.Albums);
+                extras: ExtraDetails.TopTracks | ExtraDetails.Albums | ExtraDetails.AlbumDetails);
             ThrowIfError(results);
             return results.Artists.Items[0];
         }

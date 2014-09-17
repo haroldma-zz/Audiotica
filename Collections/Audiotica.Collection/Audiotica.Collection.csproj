@@ -123,11 +123,21 @@
     <Compile Include="Model\QueueSong.cs" />
     <Compile Include="Model\Song.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RunTime\CollectionService.cs" />
     <Compile Include="SQLite.cs" />
     <Compile Include="SQLiteAsync.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="DesignTime\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Audiotica.Core\Audiotica.Core.csproj">
+      <Project>{49668872-a57c-4e70-834b-83608e6cef23}</Project>
+      <Name>Audiotica.Core</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '12.0' ">
     <VisualStudioVersion>12.0</VisualStudioVersion>

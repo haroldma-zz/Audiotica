@@ -9,13 +9,22 @@ namespace Audiotica.Collection.Model
 {
     public class Song : BaseDbEntry
     {
+        [Indexed]
+        public string XboxId { get; set; }
+
+        [Indexed]
+        public string LastFmId { get; set; }
+
+
         public int ArtistId { get; set; }
 
         public int AlbumId { get; set; }
 
         public string Name { get; set; }
 
-        public Uri AudioUri { get; set; }
+        public int TrackNumber { get; set; }
+
+        public string AudioUrl { get; set; }
 
         public SongState SongState { get; set; }
 
@@ -26,7 +35,7 @@ namespace Audiotica.Collection.Model
         [Ignore]
         public bool IsStreaming
         {
-            get { return AudioUri.IsAbsoluteUri; }
+            get { return new Uri(AudioUrl).IsAbsoluteUri; }
         }
 
         [Ignore]

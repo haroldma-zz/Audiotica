@@ -24,7 +24,7 @@ namespace Audiotica.Data.Service.DesignTime
                 Name = name,
                 Artists = new List<Contributor> {new Contributor("Main", artist)},
                 ImageUrl = imageUrl,
-                XboxAlbum = new XboxAlbum {Id = "music.lol", Name = "Haha"},
+                Album = new XboxAlbum {Id = "music.lol", Name = "Haha"},
                 Genres = new GenreList {"Pop"}
             };
         }

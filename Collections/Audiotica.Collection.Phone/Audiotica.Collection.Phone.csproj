@@ -88,6 +88,15 @@
     </SDKReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\Audiotica.Collection\ICollectionService.cs">
+      <Link>ICollectionService.cs</Link>
+    </Compile>
+    <Compile Include="..\Audiotica.Collection\IPlaylistService.cs">
+      <Link>IPlaylistService.cs</Link>
+    </Compile>
+    <Compile Include="..\Audiotica.Collection\IQueueService.cs">
+      <Link>IQueueService.cs</Link>
+    </Compile>
     <Compile Include="..\Audiotica.Collection\Model\Album.cs">
       <Link>Model\Album.cs</Link>
     </Compile>
@@ -109,6 +118,9 @@
     <Compile Include="..\Audiotica.Collection\Model\Song.cs">
       <Link>Model\Song.cs</Link>
     </Compile>
+    <Compile Include="..\Audiotica.Collection\RunTime\CollectionService.cs">
+      <Link>RunTime\CollectionService.cs</Link>
+    </Compile>
     <Compile Include="..\Audiotica.Collection\SQLite.cs">
       <Link>SQLite.cs</Link>
     </Compile>
@@ -116,6 +128,15 @@
       <Link>SQLiteAsync.cs</Link>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="DesignTime\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Audiotica.Core\Audiotica.Core.csproj">
+      <Project>{49668872-a57c-4e70-834b-83608e6cef23}</Project>
+      <Name>Audiotica.Core</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '12.0' ">
     <VisualStudioVersion>12.0</VisualStudioVersion>

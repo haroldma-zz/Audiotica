@@ -93,11 +93,18 @@ namespace Audiotica.ViewModel
 
             if (url == null)
             {
-                    await new MessageDialog("no match found :/").ShowAsync();
+                await new MessageDialog("no match found :/").ShowAsync();
             }
 
             else
-                Launcher.LaunchUriAsync(new Uri(url));
+            {
+                xboxTrack.Album = Album;
+                var song = xboxTrack.ToSong();
+                song.AudioUrl = url;
+                await App.Locator.CollectionService.AddSongAsync(song, xboxTrack.ImageUrl);
+
+                //TODO [Harry,20140917] notification here
+            }
         }
     }
 }

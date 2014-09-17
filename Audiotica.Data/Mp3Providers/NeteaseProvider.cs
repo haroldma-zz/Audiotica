@@ -70,7 +70,7 @@ namespace Audiotica.Data.Mp3Providers
                     var parseResp = await json.DeserializeAsync<NeteaseRoot>();
                     if (!resp.IsSuccessStatusCode) throw new NetworkException();
 
-                    if (parseResp.result.songs == null) return null;
+                    if (parseResp.result == null || parseResp.result.songs == null) return null;
 
                     var match =
                         parseResp.result.songs.FirstOrDefault(

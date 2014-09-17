@@ -55,9 +55,15 @@ namespace Audiotica.ViewModel
             {
                 new MessageDialog("no match found :/").ShowAsync();
             }
-            
+
             else
-            Launcher.LaunchUriAsync(new Uri(url));
+            {
+                var song = xboxTrack.ToSong();
+                song.AudioUrl = url;
+                await App.Locator.CollectionService.AddSongAsync(song, xboxTrack.ImageUrl);
+
+                //TODO [Harry,20140917] notification here
+            }
         }
 
         public bool IsLoading
