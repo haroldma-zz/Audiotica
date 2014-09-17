@@ -40,6 +40,7 @@
     <TargetPlatform Include="Windows, Version=8.1" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Utilities\AppSettingsHelper.cs" />
     <Compile Include="Common\MaterialCard.cs" />
     <Compile Include="Common\VisibilityConverter.cs" />
     <Compile Include="Exceptions\NetworkException.cs" />
@@ -51,7 +52,9 @@
     <Compile Include="UserControls\Star.xaml.cs">
       <DependentUpon>Star.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Utilities\CollectionConstant.cs" />
     <Compile Include="Utilities\ColorHelper.cs" />
+    <Compile Include="Utilities\StorageHelper.cs" />
     <Compile Include="Utilities\StringExtensions.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -9,6 +9,12 @@ namespace Audiotica.Collection.Model
 {
     public class Artist : BaseDbEntry
     {
+        [Indexed]
+        public string XboxId { get; set; }
+
+        [Indexed]
+        public string LastFmId { get; set; }
+
         public string Name { get; set; }
 
         [Ignore]

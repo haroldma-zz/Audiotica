@@ -35,7 +35,7 @@ using Audiotica.Collection.Model;
 
 namespace Audiotica.Collection
 {
-    internal interface ICollectionService
+    public interface ICollectionService
     {
         ObservableCollection<Song> Songs { get; set; }
         ObservableCollection<Album> Albums { get; set; }
@@ -44,6 +44,8 @@ namespace Audiotica.Collection
         /// <summary>
         ///     Loads all songs, albums, artist and playlists/queue.
         /// </summary>
+        void LoadLibrary();
+
         Task LoadLibraryAsync();
 
         /// <summary>

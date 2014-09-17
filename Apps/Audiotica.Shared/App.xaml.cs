@@ -2,6 +2,7 @@
 
 // The Blank Application template is documented at http://go.microsoft.com/fwlink/?LinkId=234227
 using System;
+using System.Collections;
 using System.Diagnostics;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
@@ -11,7 +12,10 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Navigation;
+using Audiotica.Collection;
 using Audiotica.View;
+using Audiotica.ViewModel;
+using GalaSoft.MvvmLight.Ioc;
 using ColorHelper = Audiotica.Core.Utilities.ColorHelper;
 
 #endregion
@@ -26,6 +30,11 @@ namespace Audiotica
 #if WINDOWS_PHONE_APP
         private TransitionCollection transitions;
 #endif
+
+        public static ViewModelLocator Locator
+        {
+            get { return Application.Current.Resources["Locator"] as ViewModelLocator; }
+        }
 
         /// <summary>
         ///     Initializes the singleton application object.  This is the first line of authored code
@@ -43,7 +52,7 @@ namespace Audiotica
         ///     search results, and so forth.
         /// </summary>
         /// <param name="e">Details about the launch request and process.</param>
-        protected override void OnLaunched(LaunchActivatedEventArgs e)
+        protected override async void OnLaunched(LaunchActivatedEventArgs e)
         {
 #if DEBUG
 //            if (Debugger.IsAttached)
@@ -59,10 +68,7 @@ namespace Audiotica
             if (rootFrame == null)
             {
                 // Create a Frame to act as the navigation context and navigate to the first page
-                rootFrame = new Frame();
-
-                // TODO: change this value to a cache size that is appropriate for your application
-                rootFrame.CacheSize = 1;
+                rootFrame = new Frame {CacheSize = 1};
 
                 if (e.PreviousExecutionState == ApplicationExecutionState.Terminated)
                 {
@@ -71,6 +77,9 @@ namespace Audiotica
 
                 // Place the frame in the current Window
                 Window.Current.Content = rootFrame;
+
+                //Load library
+                await Locator.CollectionService.LoadLibraryAsync();
             }
 
             if (rootFrame.Content == null)

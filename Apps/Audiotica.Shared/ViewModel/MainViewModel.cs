@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Windows.UI.Popups;
+using Audiotica.Collection.Model;
 using Audiotica.Core.Exceptions;
 using Audiotica.Data.Model;
 using Audiotica.Data.Service.Interfaces;

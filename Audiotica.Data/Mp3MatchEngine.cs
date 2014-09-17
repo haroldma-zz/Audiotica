@@ -51,7 +51,7 @@ namespace Audiotica.Data
             //match engines get better results using ft instead of feat
             //so rename if it contains that
             var title = track.Name.Replace("feat.", "ft.");
-            var artist = track.PrimaryArtist.Name;
+            var artist = track.Artists[0].Artist.Name;
 
 
             var currentProvider = 0;
