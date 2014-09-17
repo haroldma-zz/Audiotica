@@ -14,15 +14,16 @@
                     <Grid>
                         <Grid.Resources>
                             <common:VisibilityConverter x:Key="VisibilityConverter" />
+                            <common:StringToVisibiltyConverter x:Key="StringToVisibiltyConverter" />
                         </Grid.Resources>
                         <!-- content goes here -->
                         <Border x:Name="CardContent" Margin="0,0,0,5" Background="White"
                                 Canvas.ZIndex="2">
                             <Grid>
                                 <StackPanel Margin="20">
-                                    <TextBlock Text="{TemplateBinding common:MaterialCard.HeaderText}" Foreground="#89000000"  FontSize="16"
-                                               FontFamily="Global User Interface" />
-                                    <ProgressBar IsIndeterminate="{TemplateBinding common:MaterialCard.IsLoading}"
+                                    <TextBlock Text="{TemplateBinding HeaderText}" Foreground="#89000000"  FontSize="16"
+                                               FontFamily="Global User Interface"  Visibility="{Binding Text, Converter={StaticResource StringToVisibiltyConverter}, RelativeSource={RelativeSource Mode=Self}}" />
+                                    <ProgressBar IsIndeterminate="{TemplateBinding IsLoading}"
                                                  Visibility="{Binding IsIndeterminate, Converter={StaticResource VisibilityConverter}, RelativeSource={RelativeSource Mode=Self}}" />
                                     <ContentPresenter Content="{TemplateBinding Content}"
                                                       ContentTemplate="{TemplateBinding ContentTemplate}"

@@ -27,9 +27,9 @@
         <DataTemplate x:Key="XboxTrackDataTemplate">
             <StackPanel>
                 <Rectangle Height="1" Fill="#1E000000" Margin="0,10,0,0" />
-                <TextBlock Margin="0,5" Text="{Binding Name}" FontSize="22" FontFamily="Global User Interface"
+                <TextBlock Margin="0,5" Text="{Binding Name}" FontSize="26" FontFamily="Global User Interface"
                            TextTrimming="CharacterEllipsis" />
-                <TextBlock Text="{Binding Artists[0].Artist.Name}" FontSize="18" FontWeight="Thin"
+                <TextBlock Text="{Binding Artists[0].Artist.Name}" FontSize="22" FontWeight="Thin"
                            FontFamily="Global User Interface" Foreground="#89000000" TextTrimming="CharacterEllipsis" />
             </StackPanel>
         </DataTemplate>

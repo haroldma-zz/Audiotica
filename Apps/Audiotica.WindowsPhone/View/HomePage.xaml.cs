@@ -49,11 +49,6 @@ namespace Audiotica.View
             if (album != null) Frame.Navigate(typeof (AlbumPage), album.Id);
         }
 
-        private void SearchButton_Click(object sender, RoutedEventArgs e)
-        {
-            Frame.Navigate(typeof (SearchPage));
-        }
-
         private void Grid_Tapped(object sender, TappedRoutedEventArgs e)
         {
             var artist = ((Grid) sender).DataContext as XboxArtist;

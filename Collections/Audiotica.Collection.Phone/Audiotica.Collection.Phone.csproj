@@ -88,6 +88,9 @@
     </SDKReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\Audiotica.Collection\DesignTime\DesignCollectionService.cs">
+      <Link>DesignTime\DesignCollectionService.cs</Link>
+    </Compile>
     <Compile Include="..\Audiotica.Collection\ICollectionService.cs">
       <Link>ICollectionService.cs</Link>
     </Compile>
@@ -129,9 +132,7 @@
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="DesignTime\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\..\Audiotica.Core\Audiotica.Core.csproj">
       <Project>{49668872-a57c-4e70-834b-83608e6cef23}</Project>

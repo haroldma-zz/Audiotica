@@ -112,6 +112,7 @@
     </SDKReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DesignTime\DesignCollectionService.cs" />
     <Compile Include="ICollectionService.cs" />
     <Compile Include="IPlaylistService.cs" />
     <Compile Include="IQueueService.cs" />
@@ -130,9 +131,7 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="DesignTime\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\..\Audiotica.Core\Audiotica.Core.csproj">
       <Project>{49668872-a57c-4e70-834b-83608e6cef23}</Project>
