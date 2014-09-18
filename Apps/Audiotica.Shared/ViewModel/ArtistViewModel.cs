@@ -69,6 +69,8 @@ namespace Audiotica.ViewModel
 
         private void ReceivedId(GenericMessage<string> msg)
         {
+            if (Artist != null && msg.Content == Artist.Id) return;
+
             Artist = null;
             TopAlbums = null;
             TopTracks = null;

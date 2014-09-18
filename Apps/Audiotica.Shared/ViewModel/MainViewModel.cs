@@ -79,8 +79,18 @@ namespace Audiotica.ViewModel
             IsFeaturedLoading = true;
             IsNewLoading = true;
 
-            SpotlightItems = (await _service.GetFeaturedArtist(5)).Items;
-            IsSliderLoading = false;
+            try
+            {
+                SpotlightItems = (await _service.GetFeaturedArtist(5)).Items;
+            }
+            catch (Exception e)
+            {
+                ShowNetworkError(e);
+            }
+            finally
+            {
+                IsSliderLoading = false;
+            }
 
             try
             {
