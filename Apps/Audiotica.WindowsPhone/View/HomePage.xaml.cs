@@ -29,17 +29,17 @@ namespace Audiotica.View
 
             if (!firstRun)
                 justUpdated = (string) ApplicationData.Current.LocalSettings.Values["CurrentBuild"]
-                              != "1409-beta1-patch3";
+                              != "1409-beta2-patch0";
             else
             {
-                ApplicationData.Current.LocalSettings.Values.Add("CurrentBuild", "1409-beta1-patch3");
-                new MessageDialog("This beta is meant for UI feedback and international testing of the charts api.", 
-                    "v1409 (BETA1) - Patch #3").ShowAsync();
+                ApplicationData.Current.LocalSettings.Values.Add("CurrentBuild", "1409-beta2-patch0");
+                new MessageDialog("This beta is meant for testing the player and saving songs.  Downloading is not available until patch #2 but you can stream.", 
+                    "v1409 (BETA2)").ShowAsync();
             }
 
             if (!justUpdated || firstRun) return;
-            new MessageDialog("changelog here", "Patch #").ShowAsync();
-            ApplicationData.Current.LocalSettings.Values["CurrentBuild"] = "1409-beta1-patch3";
+            new MessageDialog("-bg player \n-streaming \n-artist link in album page \n-fix loading data issues", "Beta2").ShowAsync();
+            ApplicationData.Current.LocalSettings.Values["CurrentBuild"] = "1409-beta2-patch0";
         }
 
         //TODO [Harry,20140908] move this to view model with RelayCommand
