@@ -7,6 +7,7 @@ using System.Diagnostics;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.UI;
+using Windows.UI.Popups;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -77,11 +78,6 @@ namespace Audiotica
 
                 // Place the frame in the current Window
                 Window.Current.Content = rootFrame;
-
-                //Load collection
-                await Locator.SqlService.InitializeAsync();
-                await Locator.CollectionService.LoadLibraryAsync();
-                await Locator.QueueService.LoadQueueAsync();
             }
 
             if (rootFrame.Content == null)
@@ -120,7 +116,7 @@ namespace Audiotica
         /// </summary>
         /// <param name="sender">The object where the handler is attached.</param>
         /// <param name="e">Details about the navigation event.</param>
-        private void RootFrame_FirstNavigated(object sender, NavigationEventArgs e)
+        private async void RootFrame_FirstNavigated(object sender, NavigationEventArgs e)
         {
             var rootFrame = sender as Frame;
             rootFrame.ContentTransitions = transitions ?? new TransitionCollection {new NavigationThemeTransition()};
@@ -131,6 +127,18 @@ namespace Audiotica
             StatusBar.GetForCurrentView().BackgroundColor = ColorHelper.GetColorFromHexa("#4B216D");
             StatusBar.GetForCurrentView().BackgroundOpacity = 1;
             ApplicationView.GetForCurrentView().SetDesiredBoundsMode(ApplicationViewBoundsMode.UseCoreWindow);
+
+            try
+            {
+                //Load collection
+                await Locator.SqlService.InitializeAsync();
+                await Locator.CollectionService.LoadLibraryAsync();
+                await Locator.QueueService.LoadQueueAsync();
+            }
+            catch (Exception)
+            {
+                new MessageDialog("tell zumicts that there is a problem loading the database").ShowAsync();
+            }
         }
 #endif
 
