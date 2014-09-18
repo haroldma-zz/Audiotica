@@ -14,7 +14,7 @@ namespace Audiotica.Collection.RunTime
     {
         #region Private Fields
 
-        private const string DbName = "Audiotica.sqlite";
+        private const string DbName = "audiotica.sqldb";
         private SQLiteConnection _db;
         private const double DatabaseVersion = 0.1;
 
@@ -29,7 +29,7 @@ namespace Audiotica.Collection.RunTime
 
             var currentVersion = AppSettingsHelper.Read<double>("DatabaseVersion");
 
-            if (currentVersion.Equals(0.0))
+            if (currentVersion.Equals(0.0) || !StorageHelper.FileExistsAsync(DbName).Result)
             {
                 CreateTables();
                 AppSettingsHelper.Write("DatabaseVersion", DatabaseVersion);
