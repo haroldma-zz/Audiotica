@@ -17,6 +17,7 @@ using Audiotica.Collection;
 using Audiotica.View;
 using Audiotica.ViewModel;
 using GalaSoft.MvvmLight.Ioc;
+using GoogleAnalytics;
 using ColorHelper = Audiotica.Core.Utilities.ColorHelper;
 
 #endregion
@@ -78,6 +79,19 @@ namespace Audiotica
 
                 // Place the frame in the current Window
                 Window.Current.Content = rootFrame;
+
+                try
+                {
+                    //Load collection
+                    await Locator.SqlService.InitializeAsync();
+                    await Locator.CollectionService.LoadLibraryAsync();
+                    await Locator.QueueService.LoadQueueAsync();
+                }
+                catch (Exception ex)
+                {
+                    EasyTracker.GetTracker().SendException(ex.Message + " " + ex.StackTrace, true);
+                    new MessageDialog(ex.Message,"problem loading the database").ShowAsync();
+                }
             }
 
             if (rootFrame.Content == null)
@@ -103,18 +117,6 @@ namespace Audiotica
                 if (!rootFrame.Navigate(typeof (HomePage), e.Arguments))
                 {
                     throw new Exception("Failed to create initial page");
-                }
-
-                try
-                {
-                    //Load collection
-                    await Locator.SqlService.InitializeAsync();
-                    await Locator.CollectionService.LoadLibraryAsync();
-                    await Locator.QueueService.LoadQueueAsync();
-                }
-                catch (Exception)
-                {
-                    new MessageDialog("tell zumicts that there is a problem loading the database").ShowAsync();
                 }
             }
 
