@@ -104,6 +104,18 @@ namespace Audiotica
                 {
                     throw new Exception("Failed to create initial page");
                 }
+
+                try
+                {
+                    //Load collection
+                    await Locator.SqlService.InitializeAsync();
+                    await Locator.CollectionService.LoadLibraryAsync();
+                    await Locator.QueueService.LoadQueueAsync();
+                }
+                catch (Exception)
+                {
+                    new MessageDialog("tell zumicts that there is a problem loading the database").ShowAsync();
+                }
             }
 
             // Ensure the current window is active
@@ -127,18 +139,6 @@ namespace Audiotica
             StatusBar.GetForCurrentView().BackgroundColor = ColorHelper.GetColorFromHexa("#4B216D");
             StatusBar.GetForCurrentView().BackgroundOpacity = 1;
             ApplicationView.GetForCurrentView().SetDesiredBoundsMode(ApplicationViewBoundsMode.UseCoreWindow);
-
-            try
-            {
-                //Load collection
-                await Locator.SqlService.InitializeAsync();
-                await Locator.CollectionService.LoadLibraryAsync();
-                await Locator.QueueService.LoadQueueAsync();
-            }
-            catch (Exception)
-            {
-                new MessageDialog("tell zumicts that there is a problem loading the database").ShowAsync();
-            }
         }
 #endif
 
