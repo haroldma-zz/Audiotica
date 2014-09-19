@@ -101,13 +101,6 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
-    <ProjectReference Include="..\..\Collections\Audiotica.Collection\Audiotica.Collection.csproj">
-      <Project>{102314c0-12d4-4101-844f-d031bee1bea1}</Project>
-      <Name>Audiotica.Collection</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="AudioTask.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

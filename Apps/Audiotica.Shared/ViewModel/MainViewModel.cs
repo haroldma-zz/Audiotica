@@ -2,14 +2,12 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Threading.Tasks;
 using Windows.UI.Popups;
-using Audiotica.Collection.Model;
 using Audiotica.Core.Exceptions;
-using Audiotica.Data.Model;
 using Audiotica.Data.Service.Interfaces;
 using GalaSoft.MvvmLight;
+using GoogleAnalytics;
 using Microsoft.Xbox.Music.Platform.Contract.DataModel;
 
 #endregion
@@ -20,11 +18,11 @@ namespace Audiotica.ViewModel
     {
         private readonly IXboxMusicService _service;
         private List<XboxAlbum> _featuredReleases;
+        private bool _isFeaturedLoading;
+        private bool _isNewLoading;
+        private bool _isSliderLoading;
         private List<XboxAlbum> _newAlbums;
         private List<XboxArtist> _spotlightItems;
-        private bool _isFeaturedLoading;
-        private bool _isSliderLoading;
-        private bool _isNewLoading;
 
         /// <summary>
         ///     Initializes a new instance of the MainViewModel class.
@@ -125,7 +123,7 @@ namespace Audiotica.ViewModel
             var ex = e.Message + "\n" + e.StackTrace;
             if (e is XboxException)
                 ex = (e as XboxException).Description + "\n" + ex;
-            GoogleAnalytics.EasyTracker.GetTracker().SendException(ex, false);
+            EasyTracker.GetTracker().SendException(ex, false);
         }
     }
 }

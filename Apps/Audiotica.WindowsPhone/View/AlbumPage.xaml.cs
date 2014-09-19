@@ -1,9 +1,8 @@
 ﻿#region
 
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Documents;
 using Windows.UI.Xaml.Navigation;
-using Audiotica.Collection.Model;
 using Audiotica.ViewModel;
 using GalaSoft.MvvmLight.Messaging;
 
@@ -29,7 +28,7 @@ namespace Audiotica.View
             Messenger.Default.Send(msg, "album-detail-id");
         }
 
-        private void HyperlinkButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        private void HyperlinkButton_Click(object sender, RoutedEventArgs e)
         {
             var vm = (sender as HyperlinkButton).DataContext as AlbumViewModel;
 
