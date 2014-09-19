@@ -1,8 +1,8 @@
 ﻿#region
 
 using Windows.UI.Xaml.Controls;
-using Audiotica.Collection;
-using Audiotica.Collection.Model;
+using Audiotica.Data.Collection;
+using Audiotica.Data.Collection.Model;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 
@@ -21,7 +21,7 @@ namespace Audiotica.ViewModel
 
         public CollectionViewModel(ICollectionService service, IQueueService queueService
 #if WINDOWS_PHONE_APP
-            ,AudioPlayerManager audioPlayer
+            , AudioPlayerManager audioPlayer
 #endif
             )
         {

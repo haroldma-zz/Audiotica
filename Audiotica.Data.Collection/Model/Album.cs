@@ -1,28 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Windows.UI.Xaml.Media.Imaging;
-using SQLite;
 
-namespace Audiotica.Collection.Model
+namespace Audiotica.Data.Collection.Model
 {
-    public class Album : BaseDbEntry
+    public class Album
     {
         public Album()
         {
             Songs = new List<Song>();
         }
 
-        [Indexed]
+        public long Id { get; set; }
+
         public string XboxId { get; set; }
 
-        [Indexed]
         public string LastFmId { get; set; }
 
-        [Indexed]
-        public int PrimaryArtistId { get; set; }
+        public long PrimaryArtistId { get; set; }
 
 
         public string Name { get; set; }
@@ -31,13 +26,10 @@ namespace Audiotica.Collection.Model
 
         public DateTime ReleaseDate { get; set; }
 
-        [Ignore]
         public List<Song> Songs { get; set; } 
 
-        [Ignore]
         public BitmapImage Artwork { get; set; }
 
-        [Ignore]
         public Artist PrimaryArtist { get; set; }
     }
 }

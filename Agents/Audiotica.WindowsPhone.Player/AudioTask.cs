@@ -1,5 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿#region
+
+using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
@@ -7,11 +8,11 @@ using Windows.ApplicationModel.Background;
 using Windows.Foundation.Collections;
 using Windows.Media;
 using Windows.Media.Playback;
-using Audiotica.Collection;
-using Audiotica.Collection.Model;
-using Audiotica.Collection.RunTime;
 using Audiotica.Core;
 using Audiotica.Core.Utilities;
+using Audiotica.Data.Collection.RunTime;
+
+#endregion
 
 namespace Audiotica.WindowsPhone.Player
 {
@@ -90,7 +91,7 @@ namespace Audiotica.WindowsPhone.Player
             if (value == null)
                 _foregroundAppState = ForegroundAppStatus.Unknown;
             else
-                _foregroundAppState = (ForegroundAppStatus)Enum.Parse(typeof(ForegroundAppStatus), value.ToString());
+                _foregroundAppState = (ForegroundAppStatus) Enum.Parse(typeof (ForegroundAppStatus), value);
 
             //Add handlers for MediaPlayer
             BackgroundMediaPlayer.Current.CurrentStateChanged += Current_CurrentStateChanged;
@@ -104,7 +105,7 @@ namespace Audiotica.WindowsPhone.Player
             //Send information to foreground that background task has been started if app is active
             if (_foregroundAppState != ForegroundAppStatus.Suspended)
             {
-                var message = new ValueSet { { PlayerConstants.BackgroundTaskStarted, "" } };
+                var message = new ValueSet {{PlayerConstants.BackgroundTaskStarted, ""}};
                 BackgroundMediaPlayer.SendMessageToForeground(message);
             }
             _backgroundTaskStarted.Set();
@@ -143,7 +144,7 @@ namespace Audiotica.WindowsPhone.Player
                 AppSettingsHelper.Write(PlayerConstants.BackgroundTaskState,
                     PlayerConstants.BackgroundTaskCancelled);
                 AppSettingsHelper.Write(PlayerConstants.AppState,
-                    Enum.GetName(typeof(ForegroundAppStatus), _foregroundAppState));
+                    Enum.GetName(typeof (ForegroundAppStatus), _foregroundAppState));
 
                 _backgroundtaskrunning = false;
                 //unsubscribe event handlers
@@ -175,9 +176,10 @@ namespace Audiotica.WindowsPhone.Player
             _systemmediatransportcontrol.PlaybackStatus = MediaPlaybackStatus.Playing;
             _systemmediatransportcontrol.DisplayUpdater.Type = MediaPlaybackType.Music;
             _systemmediatransportcontrol.DisplayUpdater.MusicProperties.Title = queueManager.CurrentTrack.Song.Name;
-            _systemmediatransportcontrol.DisplayUpdater.MusicProperties.Artist = queueManager.CurrentTrack.Song.Artist.Name;
+            _systemmediatransportcontrol.DisplayUpdater.MusicProperties.Artist =
+                queueManager.CurrentTrack.Song.Artist.Name;
             //_systemmediatransportcontrol.DisplayUpdater.Thumbnail =
-              //  RandomAccessStreamReference.CreateFromUri(Playlist.CurrentTrack.GetArtworkUri());
+            //  RandomAccessStreamReference.CreateFromUri(Playlist.CurrentTrack.GetArtworkUri());
             _systemmediatransportcontrol.DisplayUpdater.Update();
         }
 
@@ -254,8 +256,7 @@ namespace Audiotica.WindowsPhone.Player
         {
             try
             {
-
-                var currenttrack = AppSettingsHelper.Read<int>(PlayerConstants.CurrentTrack);
+                var currenttrack = AppSettingsHelper.Read<long>(PlayerConstants.CurrentTrack);
 
                 if (queueManager.CurrentTrack == null || queueManager.CurrentTrack.SongId != currenttrack)
                 {
@@ -285,7 +286,7 @@ namespace Audiotica.WindowsPhone.Player
             if (_foregroundAppState != ForegroundAppStatus.Active) return;
 
             //Message channel that can be used to send messages to foreground
-            var message = new ValueSet { { PlayerConstants.Trackchanged, sender.CurrentTrack.SongId } };
+            var message = new ValueSet {{PlayerConstants.Trackchanged, sender.CurrentTrack.SongId}};
             BackgroundMediaPlayer.SendMessageToForeground(message);
         }
 
@@ -346,7 +347,8 @@ namespace Audiotica.WindowsPhone.Player
                         Debug.WriteLine("App resuming"); // App is resumed, now subscribe to message channel
                         _foregroundAppState = ForegroundAppStatus.Active;
                         break;
-                    case PlayerConstants.StartPlayback: //Foreground App process has signalled that it is ready for playback
+                    case PlayerConstants.StartPlayback:
+                        //Foreground App process has signalled that it is ready for playback
                         Debug.WriteLine("Starting Playback");
                         //TODO [Harry,20140917] make a reload method
                         _queueManager = null;
