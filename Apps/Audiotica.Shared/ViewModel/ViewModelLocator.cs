@@ -1,8 +1,8 @@
 #region
 
-using Audiotica.Collection;
-using Audiotica.Collection.DesignTime;
-using Audiotica.Collection.RunTime;
+using Audiotica.Data.Collection;
+using Audiotica.Data.Collection.DesignTime;
+using Audiotica.Data.Collection.RunTime;
 using Audiotica.Data.Service.DesignTime;
 using Audiotica.Data.Service.Interfaces;
 using Audiotica.Data.Service.RunTime;
@@ -81,10 +81,12 @@ namespace Audiotica.ViewModel
         {
             get { return SimpleIoc.Default.GetInstance<ICollectionService>(); }
         }
+
         public IQueueService QueueService
         {
             get { return SimpleIoc.Default.GetInstance<IQueueService>(); }
         }
+
         public ISqlService SqlService
         {
             get { return SimpleIoc.Default.GetInstance<ISqlService>(); }

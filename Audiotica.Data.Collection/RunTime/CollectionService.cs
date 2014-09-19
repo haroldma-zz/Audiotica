@@ -1,17 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
-using Audiotica.Collection.Model;
+using Audiotica.Collection;
 using Audiotica.Core.Utilities;
-using SQLite;
+using Audiotica.Data.Collection.Model;
+using SQLitePCL;
 
-namespace Audiotica.Collection.RunTime
+namespace Audiotica.Data.Collection.RunTime
 {
     public class CollectionService : ICollectionService
     {
@@ -32,9 +31,9 @@ namespace Audiotica.Collection.RunTime
 
         public void LoadLibrary()
         {
-            var songs = new ObservableCollection<Song>(_service.Connection.Table<Song>());
-            var albums = new ObservableCollection<Album>(_service.Connection.Table<Album>());
-            var artists = new ObservableCollection<Artist>(_service.Connection.Table<Artist>());
+            var songs = new ObservableCollection<Song>(_service.GetSongsAsync().Result);
+            var albums = new ObservableCollection<Album>(_service.GetAlbumsAsync().Result);
+            var artists = new ObservableCollection<Artist>(_service.GetArtistsAsync().Result);
 
             foreach (var song in songs)
             {
@@ -79,13 +78,16 @@ namespace Audiotica.Collection.RunTime
 
             if (artist == null)
             {
-                await _service.InsertAsync(song.Artist);
+                await _service.InsertArtistAsync(song.Artist);
                 song.Album.PrimaryArtistId = song.Artist.Id;
                 Artists.Add(song.Artist);
             }
 
             else
+            {
                 song.Artist = artist;
+                song.Album.PrimaryArtistId = artist.Id;
+            }
 
             #endregion
 
@@ -97,7 +99,7 @@ namespace Audiotica.Collection.RunTime
                 song.Album = album;
             else
             {
-                await _service.InsertAsync(song.Album);
+                await _service.InsertAlbumAsync(song.Album);
                 Albums.Add(song.Album);
                 song.Artist.Albums.Add(song.Album);
             }
@@ -142,7 +144,7 @@ namespace Audiotica.Collection.RunTime
             song.ArtistId = song.Artist.Id;
 
             //Insert to db
-            await _service.InsertAsync(song);
+            await _service.InsertSongAsync(song);
 
             if (artist == null)
                 song.Artist.Songs.Add(song);
