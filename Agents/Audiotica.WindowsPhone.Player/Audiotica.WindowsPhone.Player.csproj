@@ -84,9 +84,9 @@
       <Project>{49668872-a57c-4e70-834b-83608e6cef23}</Project>
       <Name>Audiotica.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Collections\Audiotica.Collection.Phone\Audiotica.Collection.Phone.csproj">
-      <Project>{92f09118-1696-43ae-bcaa-a1a6b87951e6}</Project>
-      <Name>Audiotica.Collection.Phone</Name>
+    <ProjectReference Include="..\..\Audiotica.Data.Collection\Audiotica.Data.Collection.csproj">
+      <Project>{264B7B96-92A4-4FB4-A938-EB30FD288B70}</Project>
+      <Name>Audiotica.Data.Collection</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

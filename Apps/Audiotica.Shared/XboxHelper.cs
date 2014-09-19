@@ -1,8 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Audiotica.Collection.Model;
+﻿#region
+
+using System;
+using Audiotica.Data.Collection.Model;
 using Microsoft.Xbox.Music.Platform.Contract.DataModel;
+
+#endregion
 
 namespace Audiotica
 {

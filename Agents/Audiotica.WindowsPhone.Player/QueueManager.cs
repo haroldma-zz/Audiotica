@@ -1,12 +1,14 @@
-﻿using System;
+﻿#region
+
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Media.Playback;
-using Audiotica.Collection.Model;
+using Audiotica.Data.Collection.Model;
+
+#endregion
 
 namespace Audiotica.WindowsPhone.Player
 {
@@ -77,7 +79,7 @@ namespace Audiotica.WindowsPhone.Player
             // wait for media to be ready
             sender.Play();
 
-            if (CurrentTrack == null)return;
+            if (CurrentTrack == null) return;
 
             Debug.WriteLine("New Track" + CurrentTrack.Song.Name);
 
@@ -124,7 +126,7 @@ namespace Audiotica.WindowsPhone.Player
             _mediaPlayer.SetUriSource(new Uri(source));
         }
 
-        public void StartTrack(int id)
+        public void StartTrack(long id)
         {
             var source = tracks.FirstOrDefault(p => p.SongId == id).Song.AudioUrl;
             _currentTrackIndex = tracks.FindIndex(p => p.SongId == id);
@@ -145,7 +147,7 @@ namespace Audiotica.WindowsPhone.Player
         /// </summary>
         public void SkipToNext()
         {
-            StartTrackAt((_currentTrackIndex + 1) % tracks.Count);
+            StartTrackAt((_currentTrackIndex + 1)%tracks.Count);
         }
 
         /// <summary>

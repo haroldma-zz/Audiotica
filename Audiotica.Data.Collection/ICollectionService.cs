@@ -29,24 +29,35 @@
 
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
-using Audiotica.Collection.Model;
+using Audiotica.Data.Collection.Model;
 
 #endregion
 
-namespace Audiotica.Collection
+namespace Audiotica.Data.Collection
 {
-    public interface IQueueService
+    public interface ICollectionService
     {
-        ObservableCollection<QueueSong> PlaybackQueue { get; }
+        ObservableCollection<Song> Songs { get; set; }
+        ObservableCollection<Album> Albums { get; set; }
+        ObservableCollection<Artist> Artists { get; set; }
 
-        Task LoadQueueAsync();
+        /// <summary>
+        ///     Loads all songs, albums, artist and playlists/queue.
+        /// </summary>
+        void LoadLibrary();
 
-        Task ClearQueueAsync();
+        Task LoadLibraryAsync();
 
+        /// <summary>
+        ///     Adds the song to the database and collection.
+        /// </summary>
+        Task AddSongAsync(Song song, string artworkUrl);
 
-        Task AddSongAsync(Song song);
-        Task MoveFromToAsync(int oldIndex, int newIndex);
-        Task DeleteAsync(QueueSong queueSongToRemove);
+        /// <summary>
+        ///     Deletes the song from the database and collection.  Also all related files.
+        /// </summary>
+        Task DeleteSongAsync(Song song);
 
+        //TODO [Harry,20140915] everything related to the queue and playlists
     }
 }

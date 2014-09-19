@@ -1,47 +1,43 @@
 ﻿#region
 
 using System;
-using SQLite;
 
 #endregion
 
-namespace Audiotica.Collection.Model
+namespace Audiotica.Data.Collection.Model
 {
-    public class Song : BaseDbEntry
+    public class Song
     {
-        [Indexed]
+        public long Id { get; set; }
+
         public string XboxId { get; set; }
 
-        [Indexed]
         public string LastFmId { get; set; }
 
 
-        public int ArtistId { get; set; }
+        public long ArtistId { get; set; }
 
-        public int AlbumId { get; set; }
+        public long AlbumId { get; set; }
 
         public string Name { get; set; }
 
-        public int TrackNumber { get; set; }
+        public long TrackNumber { get; set; }
 
         public string AudioUrl { get; set; }
 
         public SongState SongState { get; set; }
 
-        public int PlayCount { get; set; }
+        public long PlayCount { get; set; }
 
         public HeartState HeartState { get; set; }
 
-        [Ignore]
         public bool IsStreaming
         {
             get { return new Uri(AudioUrl).IsAbsoluteUri; }
         }
 
-        [Ignore]
         public Artist Artist { get; set; }
 
-        [Ignore]
         public Album Album { get; set; }
     }
 

@@ -1,17 +1,17 @@
 ﻿#region
 
 using System.Collections.Generic;
-using SQLite;
 
 #endregion
 
-namespace Audiotica.Collection.Model
+namespace Audiotica.Data.Collection.Model
 {
-    public class Playlist : BaseDbEntry
+    public class Playlist
     {
+        public int Id { get; set; }
+
         public string Name { get; set; }
 
-        [Ignore]
         public List<PlaylistSong> Songs { get; set; }
     }
 }

@@ -1,18 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
+﻿#region
+
+using System;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Media.Playback;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
-using Audiotica.Collection.Model;
 using Audiotica.Core;
 using Audiotica.Core.Utilities;
+
+#endregion
 
 namespace Audiotica
 {
@@ -24,7 +23,7 @@ namespace Audiotica
 
             AppSettingsHelper.Write(PlayerConstants.AppState, PlayerConstants.ForegroundAppActive);
 
-           // AddMediaPlayerEventHandlers();
+            // AddMediaPlayerEventHandlers();
         }
 
         #region Private Fields and Properties
@@ -46,7 +45,7 @@ namespace Audiotica
                 {
                     return false;
                 }
-                _isMyBackgroundTaskRunning = ((String)value).Equals(PlayerConstants.BackgroundTaskRunning);
+                _isMyBackgroundTaskRunning = value.Equals(PlayerConstants.BackgroundTaskRunning);
                 return _isMyBackgroundTaskRunning;
             }
         }
@@ -143,7 +142,7 @@ namespace Audiotica
                     //Send message to initiate playback
                     if (result)
                     {
-                        var message = new ValueSet { { PlayerConstants.StartPlayback, null } };
+                        var message = new ValueSet {{PlayerConstants.StartPlayback, null}};
                         BackgroundMediaPlayer.SendMessageToBackground(message);
                     }
                     else
@@ -197,13 +196,13 @@ namespace Audiotica
             }
         }
 
-        public void PlaySong(int id)
+        public void PlaySong(long id)
         {
             AppSettingsHelper.Write(PlayerConstants.CurrentTrack, id);
 
             if (_isMyBackgroundTaskRunning)
             {
-                var message = new ValueSet { { PlayerConstants.StartPlayback, null } };
+                var message = new ValueSet {{PlayerConstants.StartPlayback, null}};
                 BackgroundMediaPlayer.SendMessageToBackground(message);
             }
             else StartBackgroundAudioTask();
@@ -214,7 +213,7 @@ namespace Audiotica
         /// </summary>
         private void PrevSong()
         {
-            var value = new ValueSet { { PlayerConstants.SkipPrevious, "" } };
+            var value = new ValueSet {{PlayerConstants.SkipPrevious, ""}};
             BackgroundMediaPlayer.SendMessageToBackground(value);
         }
 
@@ -224,7 +223,7 @@ namespace Audiotica
         /// </summary>
         private void NextSong()
         {
-            var value = new ValueSet { { PlayerConstants.SkipNext, "" } };
+            var value = new ValueSet {{PlayerConstants.SkipNext, ""}};
             BackgroundMediaPlayer.SendMessageToBackground(value);
         }
 
