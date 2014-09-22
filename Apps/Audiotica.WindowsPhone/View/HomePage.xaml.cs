@@ -5,6 +5,8 @@ using Windows.UI.Popups;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Navigation;
+using Audiotica.Data.Collection;
+using Audiotica.Data.Collection.SqlHelper;
 using Microsoft.Xbox.Music.Platform.Contract.DataModel;
 
 #endregion

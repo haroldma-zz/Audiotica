@@ -15,7 +15,7 @@
 	<Grid>
 		<Pivot>
 			<PivotItem Header="songs">
-				<ListView IsItemClickEnabled="True" ItemsSource="{Binding Service.Songs}" Padding="0,0,0,25">
+				<ListView IsItemClickEnabled="True" ItemsSource="{Binding Service.Songs}" Padding="0,0,0,25" Margin="0,0,-0.333,0">
 					<ListView.ItemTemplate>
 						<DataTemplate>
 							<common:MaterialCard Margin="0,-2">
@@ -35,11 +35,47 @@
 				</ListView>
 			</PivotItem>
 			<PivotItem Header="artists">
-				<TextBlock Text="waiting on patch #1-2 for this :)" FontSize="35" TextWrapping="Wrap" />
-			</PivotItem>
+                <ListView IsItemClickEnabled="True" ItemsSource="{Binding Service.Artists}" Padding="0,0,0,25" Margin="0,0,-0.333,0">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <common:MaterialCard Margin="0,-2">
+                                <StackPanel>
+                                    <TextBlock Margin="0,5" Text="{Binding Name}" FontSize="26" FontFamily="Global User Interface"
+										TextTrimming="CharacterEllipsis" />
+                                </StackPanel>
+                            </common:MaterialCard>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+<!--                    <Interactivity:Interaction.Behaviors>-->
+<!--                        <Core:EventTriggerBehavior EventName="ItemClick">-->
+<!--                            <Core:InvokeCommandAction Command="{Binding SongClickCommand}"/>-->
+<!--                        </Core:EventTriggerBehavior>-->
+<!--                    </Interactivity:Interaction.Behaviors>-->
+                </ListView>
+            </PivotItem>
 			<PivotItem Header="albums">
-				<TextBlock Text="waiting on patch #1-2 for this :)" FontSize="35" TextWrapping="Wrap" />
-			</PivotItem>
+                <ListView IsItemClickEnabled="True" ItemsSource="{Binding Service.Albums}" Padding="0,0,0,25" Margin="0,0,-0.333,0">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <common:MaterialCard Margin="0,-2">
+                                <StackPanel Orientation="Horizontal">
+                                    <Image Width="100" Height="100" Source="{Binding Artwork}" />
+                                    <StackPanel Margin="10">
+                                        <TextBlock Margin="0,5" Text="{Binding Name}" FontSize="26" FontFamily="Global User Interface"
+										TextTrimming="CharacterEllipsis" />
+                                        <TextBlock Text="{Binding PrimaryArtist.Name}" FontSize="22" FontWeight="Thin" Foreground="#89000000" TextTrimming="CharacterEllipsis" />
+                                    </StackPanel>
+                                </StackPanel>
+                            </common:MaterialCard>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+<!--                    <Interactivity:Interaction.Behaviors>-->
+<!--                        <Core:EventTriggerBehavior EventName="ItemClick">-->
+<!--                            <Core:InvokeCommandAction Command="{Binding SongClickCommand}"/>-->
+<!--                        </Core:EventTriggerBehavior>-->
+<!--                    </Interactivity:Interaction.Behaviors>-->
+                </ListView>
+            </PivotItem>
 		</Pivot>
 	</Grid>
 </audiotica:PageBase>

@@ -1,9 +1,10 @@
-﻿namespace Audiotica.Data.Collection.Model
-{
-    public class QueueSong
-    {
-        public long Id { get; set; }
+﻿using Audiotica.Data.Collection.SqlHelper;
 
+namespace Audiotica.Data.Collection.Model
+{
+    public class QueueSong : BaseEntry
+    {
+        [SqlIgnore]
         public Song Song { get; set; }
 
         public long SongId { get; set; }

@@ -1,22 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using Windows.UI.Xaml.Media.Imaging;
+using Audiotica.Data.Collection.SqlHelper;
 
 namespace Audiotica.Data.Collection.Model
 {
-    public class Album
+    public class Album : BaseEntry
     {
         public Album()
         {
             Songs = new List<Song>();
         }
 
-        public long Id { get; set; }
+        public string ProviderId { get; set; }
 
-        public string XboxId { get; set; }
-
-        public string LastFmId { get; set; }
-
+        [SqlProperty(ReferenceTo = typeof(Artist))]
         public long PrimaryArtistId { get; set; }
 
 
@@ -26,10 +24,13 @@ namespace Audiotica.Data.Collection.Model
 
         public DateTime ReleaseDate { get; set; }
 
-        public List<Song> Songs { get; set; } 
+        [SqlIgnore]
+        public List<Song> Songs { get; set; }
 
+        [SqlIgnore]
         public BitmapImage Artwork { get; set; }
 
+        [SqlIgnore]
         public Artist PrimaryArtist { get; set; }
     }
 }

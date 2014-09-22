@@ -31,9 +31,9 @@ namespace Audiotica.Data.Collection.RunTime
 
         public void LoadLibrary()
         {
-            var songs = new ObservableCollection<Song>(_service.GetSongsAsync().Result);
-            var albums = new ObservableCollection<Album>(_service.GetAlbumsAsync().Result);
-            var artists = new ObservableCollection<Artist>(_service.GetArtistsAsync().Result);
+            var songs = new ObservableCollection<Song>(_service.SelectAll<Song>());
+            var albums = new ObservableCollection<Album>(_service.SelectAll<Album>());
+            var artists = new ObservableCollection<Artist>(_service.SelectAll<Artist>());
 
             foreach (var song in songs)
             {
@@ -74,11 +74,11 @@ namespace Audiotica.Data.Collection.RunTime
 
             #region create artist
 
-            var artist = Artists.FirstOrDefault(entry => entry.XboxId == song.Artist.XboxId);
+            var artist = Artists.FirstOrDefault(entry => entry.ProviderId == song.Artist.ProviderId);
 
             if (artist == null)
             {
-                await _service.InsertArtistAsync(song.Artist);
+                await _service.InsertAsync(song.Artist);
                 song.Album.PrimaryArtistId = song.Artist.Id;
                 Artists.Add(song.Artist);
             }
@@ -93,13 +93,13 @@ namespace Audiotica.Data.Collection.RunTime
 
             #region create album
 
-            var album = Albums.FirstOrDefault(p => p.XboxId == song.Album.XboxId);
+            var album = Albums.FirstOrDefault(p => p.ProviderId == song.Album.ProviderId);
 
             if (album != null)
                 song.Album = album;
             else
             {
-                await _service.InsertAlbumAsync(song.Album);
+                await _service.InsertAsync(song.Album);
                 Albums.Add(song.Album);
                 song.Artist.Albums.Add(song.Album);
             }
@@ -144,7 +144,7 @@ namespace Audiotica.Data.Collection.RunTime
             song.ArtistId = song.Artist.Id;
 
             //Insert to db
-            await _service.InsertSongAsync(song);
+            await _service.InsertAsync(song);
 
             if (artist == null)
                 song.Artist.Songs.Add(song);
