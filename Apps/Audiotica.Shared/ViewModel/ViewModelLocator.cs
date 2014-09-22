@@ -27,8 +27,6 @@ namespace Audiotica.ViewModel
         {
             ServiceLocator.SetLocatorProvider(() => SimpleIoc.Default);
 
-            SimpleIoc.Default.Register<ISqlService, SqlService>();
-
 #if WINDOWS_PHONE_APP
             SimpleIoc.Default.Register<AudioPlayerManager>();
 #endif
@@ -37,12 +35,15 @@ namespace Audiotica.ViewModel
             {
                 SimpleIoc.Default.Register<IXboxMusicService, DesignXboxMusicService>();
                 SimpleIoc.Default.Register<ICollectionService, DesignCollectionService>();
+                SimpleIoc.Default.Register<IQueueService, QueueService>();
+                SimpleIoc.Default.Register<ISqlService, DesignSqlService>();
             }
             else
             {
                 SimpleIoc.Default.Register<IXboxMusicService, XboxMusicService>();
                 SimpleIoc.Default.Register<ICollectionService, CollectionService>();
                 SimpleIoc.Default.Register<IQueueService, QueueService>();
+                SimpleIoc.Default.Register<ISqlService, SqlService>();
             }
 
             SimpleIoc.Default.Register<MainViewModel>();

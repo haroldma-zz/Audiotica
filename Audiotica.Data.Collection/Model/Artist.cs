@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
+using Audiotica.Data.Collection.SqlHelper;
 
 namespace Audiotica.Data.Collection.Model
 {
-    public class Artist
+    public class Artist : BaseEntry
     {
         public Artist()
         {
@@ -10,16 +11,13 @@ namespace Audiotica.Data.Collection.Model
             Albums = new List<Album>();
         }
 
-        public long Id { get; set; }
-
-        public string XboxId { get; set; }
-
-        public string LastFmId { get; set; }
+        public string ProviderId { get; set; }
 
         public string Name { get; set; }
 
-        public List<Song> Songs { get; set; } 
-        
+        [SqlIgnore]
+        public List<Song> Songs { get; set; }
+        [SqlIgnore]
         public List<Album> Albums { get; set; } 
     }
 }

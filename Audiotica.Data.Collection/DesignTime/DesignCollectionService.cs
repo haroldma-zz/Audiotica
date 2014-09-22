@@ -48,6 +48,24 @@ namespace Audiotica.Data.Collection.DesignTime
                         }
                 }
             };
+
+            Artists = new ObservableCollection<Artist>
+            {
+                new Artist {Name = "Maroon 5"},
+                new Artist {Name = "Taylor Swift"},
+            };
+
+            Albums = new ObservableCollection<Album>
+            {
+                 new Album
+                        {
+                            Name = "V",
+                            Artwork =
+                                new BitmapImage(
+                                    new Uri("http://static.musictoday.com/store/bands/93/product_medium/IXDDM501.JPG")),
+                            PrimaryArtist = new Artist { Name = "Maroon 5"}
+                        }
+            };
         }
 
         public Task LoadLibraryAsync()

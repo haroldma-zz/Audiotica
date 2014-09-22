@@ -15,7 +15,7 @@ namespace Audiotica
             return new Artist
             {
                 Name = xboxArtist.Name,
-                XboxId = xboxArtist.Id
+                ProviderId = xboxArtist.Id
             };
         }
 
@@ -23,7 +23,7 @@ namespace Audiotica
         {
             var album = new Album
             {
-                XboxId = xboxAlbum.Id,
+                ProviderId = xboxAlbum.Id,
                 Name = xboxAlbum.Name
             };
 
@@ -39,7 +39,7 @@ namespace Audiotica
         {
             return new Song
             {
-                XboxId = track.Id,
+                ProviderId = track.Id,
                 Name = track.Name,
                 Artist = track.Artists[0].Artist.ToArtist(),
                 Album = track.Album.ToAlbum(),

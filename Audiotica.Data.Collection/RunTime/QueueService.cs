@@ -34,7 +34,7 @@ namespace Audiotica.Data.Collection.RunTime
         {
             if (PlaybackQueue.Count == 0) return;
 
-            await _sqlService.DeleteTableAsync("QueueSong");
+            await _sqlService.DeleteTableAsync<QueueSong>();
             _lookupMap.Clear();
             PlaybackQueue.Clear();
         }
@@ -53,13 +53,13 @@ namespace Audiotica.Data.Collection.RunTime
             };
 
             //Add it to the database
-            await _sqlService.InsertQueueSongAsync(newQueue);
+            await _sqlService.InsertAsync(newQueue);
 
             if (tail != null)
             {
                 //Update the next id of the previous tail
                 tail.NextId = newQueue.Id;
-                await _sqlService.UpdateQueueSongAsync(tail);
+                await _sqlService.UpdateItemAsync(tail);
             }
 
             //Add the new queue entry to the collection and map
@@ -85,7 +85,7 @@ namespace Audiotica.Data.Collection.RunTime
             if (_lookupMap.TryGetValue(queueSongToRemove.PrevId, out previousModel))
             {
                 previousModel.NextId = queueSongToRemove.NextId;
-                await _sqlService.UpdateQueueSongAsync(previousModel);
+                await _sqlService.UpdateItemAsync(previousModel);
             }
 
             QueueSong nextModel = null;
@@ -93,20 +93,20 @@ namespace Audiotica.Data.Collection.RunTime
             if (_lookupMap.TryGetValue(queueSongToRemove.NextId, out nextModel))
             {
                 nextModel.PrevId = queueSongToRemove.PrevId;
-                await _sqlService.UpdateQueueSongAsync(nextModel);
+                await _sqlService.UpdateItemAsync(nextModel);
             }
 
             PlaybackQueue.Remove(queueSongToRemove);
             _lookupMap.Remove(queueSongToRemove.Id);
 
             //Delete from database
-            await _sqlService.DeleteItemAsync(queueSongToRemove.Id, "QueueSong");
+            await _sqlService.DeleteItemAsync(queueSongToRemove);
         }
 
         public void LoadQueue()
         {
             PlaybackQueue = new ObservableCollection<QueueSong>();
-            var queue = _sqlService.GetQueueSongs();
+            var queue = _sqlService.SelectAll<QueueSong>();
             QueueSong head = null;
 
             foreach (var queueSong in queue)
