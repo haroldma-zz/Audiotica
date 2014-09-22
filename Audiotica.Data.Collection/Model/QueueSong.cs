@@ -7,6 +7,7 @@ namespace Audiotica.Data.Collection.Model
         [SqlIgnore]
         public Song Song { get; set; }
 
+        [SqlProperty(ReferenceTo = typeof(Song))]
         public long SongId { get; set; }
 
         public long PrevId { get; set; }
