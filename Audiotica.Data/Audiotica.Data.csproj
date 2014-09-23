@@ -41,11 +41,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ApiKeys.cs" />
+    <Compile Include="Model\LastFm\FmAlbum.cs" />
+    <Compile Include="Model\LastFm\FmArtist.cs" />
+    <Compile Include="Model\LastFm\FmImage.cs" />
+    <Compile Include="Model\LastFm\FmTrack.cs" />
     <Compile Include="Mp3Providers\MeileProvider.cs" />
     <Compile Include="Mp3Providers\NeteaseProvider.cs" />
     <Compile Include="Mp3Providers\SoundCloudProvider.cs" />
     <Compile Include="Mp3Providers\VkProvider.cs" />
-    <Compile Include="Model\LastFmSimilarArtist.cs" />
     <Compile Include="Model\MeileDetail.cs" />
     <Compile Include="Model\NeteaseDetail.cs" />
     <Compile Include="Model\NeteaseSearch.cs" />
