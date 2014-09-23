@@ -37,7 +37,7 @@ namespace Audiotica
 
         public static Song ToSong(this XboxTrack track)
         {
-            return new Song
+            var song = new Song
             {
                 ProviderId = track.Id,
                 Name = track.Name,
@@ -45,6 +45,8 @@ namespace Audiotica
                 Album = track.Album.ToAlbum(),
                 TrackNumber = track.TrackNumber ?? 0
             };
+            song.Album.PrimaryArtist = song.Artist;
+            return song;
         }
     }
 }

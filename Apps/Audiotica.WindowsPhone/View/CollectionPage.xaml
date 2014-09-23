@@ -58,14 +58,18 @@
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <common:MaterialCard Margin="0,-2">
-                                <StackPanel Orientation="Horizontal">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
                                     <Image Width="100" Height="100" Source="{Binding Artwork}" />
-                                    <StackPanel Margin="10">
+                                    <StackPanel Grid.Column="1" Margin="10">
                                         <TextBlock Margin="0,5" Text="{Binding Name}" FontSize="26" FontFamily="Global User Interface"
 										TextTrimming="CharacterEllipsis" />
                                         <TextBlock Text="{Binding PrimaryArtist.Name}" FontSize="22" FontWeight="Thin" Foreground="#89000000" TextTrimming="CharacterEllipsis" />
                                     </StackPanel>
-                                </StackPanel>
+                                </Grid>
                             </common:MaterialCard>
                         </DataTemplate>
                     </ListView.ItemTemplate>
