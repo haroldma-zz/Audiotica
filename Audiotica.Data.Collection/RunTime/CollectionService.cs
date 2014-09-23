@@ -5,6 +5,9 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Windows.UI.Core;
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Media.Imaging;
 using Audiotica.Collection;
 using Audiotica.Core.Utilities;
 using Audiotica.Data.Collection.Model;
@@ -45,6 +48,7 @@ namespace Audiotica.Data.Collection.RunTime
             {
                 album.Songs = songs.Where(p => p.AlbumId == album.Id).OrderBy(p => p.TrackNumber).ToList();
                 album.PrimaryArtist = artists.FirstOrDefault(p => p.Id == album.PrimaryArtistId);
+                album.Artwork = GetArtwork(album.Id);
             }
 
             foreach (var artist in artists)
@@ -56,6 +60,17 @@ namespace Audiotica.Data.Collection.RunTime
             Songs = songs;
             Artists = artists;
             Albums = albums;
+        }
+
+        private Uri GetArtwork(long id)
+        {
+            var artworkPath = string.Format(CollectionConstant.ArtworkPath, id);
+
+            var exists = StorageHelper.FileExistsAsync(artworkPath).Result;
+
+            return exists 
+                ? new Uri(CollectionConstant.LocalStorageAppPath + artworkPath) 
+                : new Uri(CollectionConstant.MissingArtworkAppPath);
         }
 
         public Task LoadLibraryAsync()
@@ -128,6 +143,8 @@ namespace Audiotica.Data.Collection.RunTime
                             )
                         {
                             await stream.CopyToAsync(fileStream);
+                            //now set it
+                            song.Album.Artwork = new Uri(CollectionConstant.LocalStorageAppPath + filePath);
                         }
                     }
                 }

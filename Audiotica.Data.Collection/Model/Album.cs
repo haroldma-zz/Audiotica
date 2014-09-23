@@ -28,7 +28,7 @@ namespace Audiotica.Data.Collection.Model
         public List<Song> Songs { get; set; }
 
         [SqlIgnore]
-        public BitmapImage Artwork { get; set; }
+        public Uri Artwork { get; set; }
 
         [SqlIgnore]
         public Artist PrimaryArtist { get; set; }
