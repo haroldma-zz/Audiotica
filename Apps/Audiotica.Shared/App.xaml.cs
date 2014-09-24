@@ -81,6 +81,7 @@ namespace Audiotica
                 // Place the frame in the current Window
                 Window.Current.Content = rootFrame;
 
+                DispatcherHelper.Initialize();
                 try
                 {
                     //Load collection
@@ -123,7 +124,6 @@ namespace Audiotica
 
             // Ensure the current window is active
             Window.Current.Activate();
-            DispatcherHelper.Initialize();
         }
 
 #if WINDOWS_PHONE_APP
