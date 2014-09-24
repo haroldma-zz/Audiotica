@@ -115,6 +115,9 @@
     <Compile Include="View\CollectionAlbumPage.xaml.cs">
       <DependentUpon>CollectionAlbumPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\CollectionArtistPage.xaml.cs">
+      <DependentUpon>CollectionArtistPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\CollectionPage.xaml.cs">
       <DependentUpon>CollectionPage.xaml</DependentUpon>
     </Compile>
@@ -160,6 +163,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\CollectionAlbumPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\CollectionArtistPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

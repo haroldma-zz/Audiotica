@@ -35,7 +35,7 @@
 				</ListView>
 			</PivotItem>
 			<PivotItem Header="artists">
-                <ListView IsItemClickEnabled="True" ItemsSource="{Binding Service.Artists}" Padding="0,0,0,25" Margin="0,0,-0.333,0">
+                <ListView IsItemClickEnabled="True" ItemsSource="{Binding Service.Artists}" Padding="0,0,0,25" Margin="0,0,-0.333,0" ItemClick="ArtistListView_ItemClick">
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <common:MaterialCard Margin="0,-2">

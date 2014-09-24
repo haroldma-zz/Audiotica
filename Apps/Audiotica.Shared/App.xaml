@@ -15,6 +15,27 @@
 
         <SolidColorBrush x:Key="ApplicationPageBackgroundThemeBrush" Color="#E4E4E4" />
 
+        <DataTemplate x:Key="SongDataTemplate">
+            <StackPanel>
+                <Rectangle Height="1" Fill="#1E000000" Margin="0,10,0,0" />
+                <TextBlock Margin="0,5" Text="{Binding Name}" FontSize="22"
+                                       FontFamily="Global User Interface" TextTrimming="CharacterEllipsis" />
+                <TextBlock Text="{Binding Artist.Name}" FontSize="18" FontWeight="Thin"
+                                       FontFamily="Global User Interface" Foreground="#89000000"
+                                       TextTrimming="CharacterEllipsis" />
+            </StackPanel>
+        </DataTemplate>
+
+        <DataTemplate x:Key="AlbumDataTemplate">
+            <StackPanel Margin="0,5,5,0" Width="150">
+                <Image
+                    Source="{Binding Artwork}" Height="150" Width="150" Margin="0,0,0,5" />
+                <TextBlock Text="{Binding Name}" FontSize="15" TextTrimming="CharacterEllipsis" />
+                <TextBlock Text="{Binding PrimaryArtist.Name}" FontSize="12" TextTrimming="CharacterEllipsis" Foreground="#89000000" FontFamily="Global User Interface" />
+            </StackPanel>
+        </DataTemplate>
+
+
         <DataTemplate x:Key="XboxAlbumDataTemplate">
             <StackPanel Margin="0,5,5,0" Width="150">
                 <Image

@@ -15,5 +15,11 @@ namespace Audiotica.View
             var album = e.ClickedItem as Album;
             Frame.Navigate(typeof (CollectionAlbumPage), album.Id);
         }
+
+        private void ArtistListView_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            var artist = e.ClickedItem as Artist;
+            Frame.Navigate(typeof(CollectionArtistPage), artist.Id);
+        }
     }
 }
