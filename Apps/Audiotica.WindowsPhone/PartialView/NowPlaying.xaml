@@ -1,0 +1,49 @@
+﻿<UserControl
+    x:Class="Audiotica.PartialView.NowPlaying"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Audiotica.PartialView"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    d:DesignHeight="800"
+    d:DesignWidth="480">
+
+    <Grid Background="{StaticResource ApplicationPageBackgroundThemeBrush}">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="0.5*" />
+            </Grid.RowDefinitions>
+            
+            <Grid Background="Purple">
+                <Grid Margin="10" VerticalAlignment="Bottom">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Image Height="250" Width="250" Margin="10"
+                       Source="http://static.musictoday.com/store/bands/93/product_medium/IXDDM501.JPG"/>
+                    <TextBlock Grid.Row="1" Text="Maps" 
+                           FontSize="32"
+                           TextAlignment="Center" 
+                           TextTrimming="CharacterEllipsis" Foreground="White"/>
+                    <TextBlock Grid.Row="2" Text="Maroon 5" 
+                           FontSize="26"
+                           TextAlignment="Center" 
+                           Foreground="#89FFFFFF"
+                            TextTrimming="CharacterEllipsis" />
+                </Grid>
+            </Grid>
+
+            <Grid Background="BlueViolet" Grid.Row="1">
+                <StackPanel Margin="10" HorizontalAlignment="Center" VerticalAlignment="Top" Orientation="Horizontal">
+                    <AppBarButton Icon="Previous" Foreground="White" />
+                    <AppBarButton Icon="Play" Foreground="White" />
+                    <AppBarButton Icon="Next" Foreground="White" />
+                </StackPanel>
+            </Grid>
+        </Grid>
+    </Grid>
+</UserControl>
