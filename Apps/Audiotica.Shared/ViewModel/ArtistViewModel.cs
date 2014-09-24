@@ -6,6 +6,7 @@ using System.Linq;
 using Windows.System;
 using Windows.UI.Popups;
 using Windows.UI.Xaml.Controls;
+using Audiotica.Core.Common;
 using Audiotica.Data;
 using Audiotica.Data.Service.Interfaces;
 using GalaSoft.MvvmLight;
@@ -93,14 +94,13 @@ namespace Audiotica.ViewModel
             //TODO [Harry,20140909] use a ui blocker with progress indicator
             IsLoading = true;
 
-            //TODO [Harry,20140908] actual downloading instead of previewing
             var url = await Mp3MatchEngine.FindMp3For(xboxTrack);
 
             IsLoading = false;
 
             if (url == null)
             {
-                await new MessageDialog("no match found :/").ShowAsync();
+                CurtainPrompt.ShowError("No match found");
             }
 
             else
@@ -108,8 +108,7 @@ namespace Audiotica.ViewModel
                 var song = xboxTrack.ToSong();
                 song.AudioUrl = url;
                 await App.Locator.CollectionService.AddSongAsync(song, xboxTrack.ImageUrl);
-
-                //TODO [Harry,20140917] notification here
+                CurtainPrompt.Show("Song saved");
             }
         }
     }

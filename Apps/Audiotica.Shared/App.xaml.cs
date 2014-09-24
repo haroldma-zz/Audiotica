@@ -14,6 +14,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Navigation;
 using Audiotica.Collection;
+using Audiotica.Core.Common;
 using Audiotica.View;
 using Audiotica.ViewModel;
 using GalaSoft.MvvmLight.Ioc;
@@ -92,7 +93,7 @@ namespace Audiotica
                 catch (Exception ex)
                 {
                     EasyTracker.GetTracker().SendException(ex.Message + " " + ex.StackTrace, true);
-                    new MessageDialog(ex.Message,"problem loading the database").ShowAsync();
+                    CurtainPrompt.ShowError("No match found");
                 }
             }
 
@@ -118,7 +119,7 @@ namespace Audiotica
                 // parameter
                 if (!rootFrame.Navigate(typeof (HomePage), e.Arguments))
                 {
-                    throw new Exception("Failed to create initial page");
+                    CurtainPrompt.ShowError("Failed to create initial page");
                 }
             }
 

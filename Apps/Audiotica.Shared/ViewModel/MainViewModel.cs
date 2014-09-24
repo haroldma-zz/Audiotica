@@ -3,10 +3,8 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Windows.UI.Popups;
+using Audiotica.Core.Common;
 using Audiotica.Core.Exceptions;
-using Audiotica.Data.Collection;
-using Audiotica.Data.Collection.Model;
 using Audiotica.Data.Service.Interfaces;
 using GalaSoft.MvvmLight;
 using GoogleAnalytics;
@@ -18,8 +16,8 @@ namespace Audiotica.ViewModel
 {
     public class MainViewModel : ViewModelBase
     {
-        private readonly IXboxMusicService _service;
         private readonly AudioPlayerManager _audioPlayer;
+        private readonly IXboxMusicService _service;
         private List<XboxAlbum> _featuredReleases;
         private bool _isFeaturedLoading;
         private bool _isNewLoading;
@@ -127,7 +125,7 @@ namespace Audiotica.ViewModel
 
         private void ShowNetworkError(Exception e)
         {
-            new MessageDialog("not really... probably a network issue", "oops, some nasty SHIT happened.").ShowAsync();
+            CurtainPrompt.ShowError("There was a network issue");
 
             var ex = e.Message + "\n" + e.StackTrace;
             if (e is XboxException)
