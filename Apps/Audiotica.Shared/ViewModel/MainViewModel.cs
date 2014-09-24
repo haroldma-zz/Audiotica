@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Windows.UI.Popups;
 using Audiotica.Core.Exceptions;
+using Audiotica.Data.Collection;
+using Audiotica.Data.Collection.Model;
 using Audiotica.Data.Service.Interfaces;
 using GalaSoft.MvvmLight;
 using GoogleAnalytics;
@@ -17,6 +19,7 @@ namespace Audiotica.ViewModel
     public class MainViewModel : ViewModelBase
     {
         private readonly IXboxMusicService _service;
+        private readonly AudioPlayerManager _audioPlayer;
         private List<XboxAlbum> _featuredReleases;
         private bool _isFeaturedLoading;
         private bool _isNewLoading;
@@ -27,9 +30,10 @@ namespace Audiotica.ViewModel
         /// <summary>
         ///     Initializes a new instance of the MainViewModel class.
         /// </summary>
-        public MainViewModel(IXboxMusicService service)
+        public MainViewModel(IXboxMusicService service, AudioPlayerManager audioPlayer)
         {
             _service = service;
+            _audioPlayer = audioPlayer;
 
             //Load data automatically
             LoadChartDataAsync();
@@ -69,6 +73,11 @@ namespace Audiotica.ViewModel
         {
             get { return _spotlightItems; }
             set { Set(ref _spotlightItems, value); }
+        }
+
+        public AudioPlayerManager AudioPlayer
+        {
+            get { return _audioPlayer; }
         }
 
         public async Task LoadChartDataAsync()

@@ -17,6 +17,7 @@ using Audiotica.Collection;
 using Audiotica.View;
 using Audiotica.ViewModel;
 using GalaSoft.MvvmLight.Ioc;
+using GalaSoft.MvvmLight.Threading;
 using GoogleAnalytics;
 using ColorHelper = Audiotica.Core.Utilities.ColorHelper;
 
@@ -122,6 +123,7 @@ namespace Audiotica
 
             // Ensure the current window is active
             Window.Current.Activate();
+            DispatcherHelper.Initialize();
         }
 
 #if WINDOWS_PHONE_APP

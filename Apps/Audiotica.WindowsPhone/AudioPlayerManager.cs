@@ -2,51 +2,64 @@
 
 using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Media.Playback;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
 using Audiotica.Core;
 using Audiotica.Core.Utilities;
+using Audiotica.Data.Collection;
+using Audiotica.Data.Collection.Model;
+using GalaSoft.MvvmLight;
+using GalaSoft.MvvmLight.Command;
+using GalaSoft.MvvmLight.Threading;
 
 #endregion
 
 namespace Audiotica
 {
-    public class AudioPlayerManager
+    public class AudioPlayerManager : ObservableObject
     {
-        public AudioPlayerManager()
+        private readonly ICollectionService _service;
+
+        public AudioPlayerManager(ICollectionService service)
         {
+            _service = service;
             _sererInitialized = new AutoResetEvent(false);
-
             AppSettingsHelper.Write(PlayerConstants.AppState, PlayerConstants.ForegroundAppActive);
-
-            // AddMediaPlayerEventHandlers();
+            _nextRelayCommand = new RelayCommand(NextSong);
+            _prevRelayCommand = new RelayCommand(PrevSong);
+            _playPauseRelayCommand = new RelayCommand(PlayPauseToggle);
         }
 
         #region Private Fields and Properties
 
         private readonly AutoResetEvent _sererInitialized;
-        private bool _isMyBackgroundTaskRunning;
+        private bool _isPlayerRunning;
+        private readonly RelayCommand _nextRelayCommand;
+        private readonly RelayCommand _prevRelayCommand;
+        private readonly RelayCommand _playPauseRelayCommand;
+        private bool _handlersAttached = false;
+        private bool _loading;
 
-        /// <summary>
-        ///     Gets the information about background task is running or not by reading the setting saved by background task
-        /// </summary>
-        private bool IsMyBackgroundTaskRunning
+        private bool IsPlayerRunning
         {
             get
             {
-                if (_isMyBackgroundTaskRunning) return true;
+                if (_isPlayerRunning) return true;
 
                 var value = AppSettingsHelper.Read(PlayerConstants.BackgroundTaskState);
                 if (value == null)
                 {
                     return false;
                 }
-                _isMyBackgroundTaskRunning = value.Equals(PlayerConstants.BackgroundTaskRunning);
-                return _isMyBackgroundTaskRunning;
+                _isPlayerRunning = value.Equals(PlayerConstants.BackgroundTaskRunning);
+                return _isPlayerRunning;
             }
         }
 
@@ -54,32 +67,30 @@ namespace Audiotica
 
         #region Background MediaPlayer Event handlers
 
-        /// <summary>
-        ///     MediaPlayer state changed event handlers.
-        ///     Note that we can subscribe to events even if Media Player is playing media in background
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="args"></param>
         private void MediaPlayer_CurrentStateChanged(MediaPlayer sender, object args)
         {
-            //NotifyPropertyChanged("CurrentTrack");
-            switch (sender.CurrentState)
+// ReSharper disable ExplicitCallerInfoArgument
+            DispatcherHelper.RunAsync(() =>
             {
-                case MediaPlayerState.Playing:
-                    //
-                    break;
-                case MediaPlayerState.Paused:
-                    //fire event
-                    break;
-                case MediaPlayerState.Opening:
-
-                    break;
-            }
+                RaisePropertyChanged("CurrentPlayPauseIcon");
+                switch (sender.CurrentState)
+                {
+                    case MediaPlayerState.Playing:
+                        IsLoading = false;
+                        RaisePropertyChanged("CurrentSong");
+                        break;
+                    default:
+                        IsLoading = false;
+                        break;
+                    case MediaPlayerState.Opening:
+                    case MediaPlayerState.Buffering:
+                        IsLoading = true;
+                        break;
+                }
+            });
+// ReSharper restore ExplicitCallerInfoArgument
         }
 
-        /// <summary>
-        ///     This event fired when a message is recieved from Background Process
-        /// </summary>
         private void BackgroundMediaPlayer_MessageReceivedFromBackground(object sender,
             MediaPlayerDataReceivedEventArgs e)
         {
@@ -95,7 +106,7 @@ namespace Audiotica
                         //Wait for Background Task to be initialized before starting playback
                         Debug.WriteLine("Background Task started");
                         _sererInitialized.Set();
-                        _isMyBackgroundTaskRunning = true;
+                        _isPlayerRunning = true;
                         break;
                 }
             }
@@ -125,6 +136,7 @@ namespace Audiotica
         /// </summary>
         private void AddMediaPlayerEventHandlers()
         {
+            _handlersAttached = true;
             BackgroundMediaPlayer.Current.CurrentStateChanged += MediaPlayer_CurrentStateChanged;
             BackgroundMediaPlayer.MessageReceivedFromBackground += BackgroundMediaPlayer_MessageReceivedFromBackground;
         }
@@ -135,20 +147,14 @@ namespace Audiotica
         private void StartBackgroundAudioTask()
         {
             AddMediaPlayerEventHandlers();
-            var backgroundtaskinitializationresult = Window.Current.Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
+            var backgroundtaskinitializationresult = DispatcherHelper.RunAsync(
                 () =>
                 {
-                    var result = _sererInitialized.WaitOne(2000);
-                    //Send message to initiate playback
-                    if (result)
-                    {
-                        var message = new ValueSet {{PlayerConstants.StartPlayback, null}};
-                        BackgroundMediaPlayer.SendMessageToBackground(message);
-                    }
-                    else
-                    {
-                        throw new Exception("Background Audio Task didn't start in expected time");
-                    }
+                    IsLoading = true;
+                    _sererInitialized.WaitOne(2000);
+                    //assuming that the task starts always
+                    var message = new ValueSet {{PlayerConstants.StartPlayback, null}};
+                    BackgroundMediaPlayer.SendMessageToBackground(message);
                 }
                 );
             backgroundtaskinitializationresult.Completed = BackgroundTaskInitializationCompleted;
@@ -170,37 +176,38 @@ namespace Audiotica
 
         #region media control
 
-        public void PlayPauseToggle()
+        public async void PlayPauseToggle()
         {
-            Debug.WriteLine("Play button pressed from App");
-            if (IsMyBackgroundTaskRunning)
+            await Task.Factory.StartNew(() =>
             {
-                if (MediaPlayerState.Playing == BackgroundMediaPlayer.Current.CurrentState)
+                if (IsPlayerRunning)
                 {
-                    BackgroundMediaPlayer.Current.Pause();
+                    if (MediaPlayerState.Playing == BackgroundMediaPlayer.Current.CurrentState)
+                    {
+                        BackgroundMediaPlayer.Current.Pause();
+                    }
+                    else if (MediaPlayerState.Paused == BackgroundMediaPlayer.Current.CurrentState)
+                    {
+                        BackgroundMediaPlayer.Current.Play();
+                    }
+                    else if (MediaPlayerState.Closed == BackgroundMediaPlayer.Current.CurrentState
+                        && !_handlersAttached)
+                    {
+                        StartBackgroundAudioTask();
+                    }
                 }
-                else if (MediaPlayerState.Paused == BackgroundMediaPlayer.Current.CurrentState)
+                else
                 {
-                    BackgroundMediaPlayer.Current.Play();
-                }
-                else if (MediaPlayerState.Closed == BackgroundMediaPlayer.Current.CurrentState)
-                {
-                    //AppSettingsHelper.Write(PlayerConstants.NowPlaying, App.Singleton.SongManager.Songs);
                     StartBackgroundAudioTask();
                 }
-            }
-            else
-            {
-                //AppSettingsHelper.Write(PlayerConstants.NowPlaying, App.Singleton.SongManager.Songs);
-                StartBackgroundAudioTask();
-            }
+            });
         }
 
         public void PlaySong(long id)
         {
             AppSettingsHelper.Write(PlayerConstants.CurrentTrack, id);
 
-            if (_isMyBackgroundTaskRunning)
+            if (IsPlayerRunning)
             {
                 var message = new ValueSet {{PlayerConstants.StartPlayback, null}};
                 BackgroundMediaPlayer.SendMessageToBackground(message);
@@ -208,19 +215,12 @@ namespace Audiotica
             else StartBackgroundAudioTask();
         }
 
-        /// <summary>
-        ///     Sends message to the background task to skip to the previous track.
-        /// </summary>
         private void PrevSong()
         {
             var value = new ValueSet {{PlayerConstants.SkipPrevious, ""}};
             BackgroundMediaPlayer.SendMessageToBackground(value);
         }
 
-
-        /// <summary>
-        ///     Tells the background audio agent to skip to the next track.
-        /// </summary>
         private void NextSong()
         {
             var value = new ValueSet {{PlayerConstants.SkipNext, ""}};
@@ -228,5 +228,47 @@ namespace Audiotica
         }
 
         #endregion
+
+        public Song CurrentSong
+        {
+            get
+            {
+                if (!IsPlayerRunning) return null;
+
+                var id = AppSettingsHelper.Read<long>(PlayerConstants.CurrentTrack);
+                return _service.Songs.FirstOrDefault(p => p.Id == id);
+            }
+        }
+
+        public IconElement CurrentPlayPauseIcon
+        {
+            get
+            {
+                return new SymbolIcon
+                {
+                    Symbol =
+                        (IsPlayerRunning && BackgroundMediaPlayer.Current.CurrentState == MediaPlayerState.Playing)
+                            ? Symbol.Pause
+                            : Symbol.Play
+                };
+            }
+        }
+
+        public bool IsLoading { get { return _loading; } set { Set(ref _loading, value); } }
+
+        public RelayCommand NextRelayCommand
+        {
+            get { return _nextRelayCommand; }
+        }
+
+        public RelayCommand PrevRelayCommand
+        {
+            get { return _prevRelayCommand; }
+        }
+
+        public RelayCommand PlayPauseRelayCommand
+        {
+            get { return _playPauseRelayCommand; }
+        }
     }
 }

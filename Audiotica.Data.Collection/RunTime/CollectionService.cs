@@ -49,7 +49,7 @@ namespace Audiotica.Data.Collection.RunTime
             {
                 album.Songs = songs.Where(p => p.AlbumId == album.Id).OrderBy(p => p.TrackNumber).ToList();
                 album.PrimaryArtist = artists.FirstOrDefault(p => p.Id == album.PrimaryArtistId);
-                album.Artwork = GetArtwork(album.Id);
+                album.ArtworkUri = GetArtwork(album.Id);
             }
 
             foreach (var artist in artists)
@@ -148,7 +148,7 @@ namespace Audiotica.Data.Collection.RunTime
                         {
                             await stream.CopyToAsync(fileStream);
                             //now set it
-                            song.Album.Artwork = new Uri(CollectionConstant.LocalStorageAppPath + filePath);
+                            song.Album.ArtworkUri = new Uri(CollectionConstant.LocalStorageAppPath + filePath);
                         }
                     }
                 }

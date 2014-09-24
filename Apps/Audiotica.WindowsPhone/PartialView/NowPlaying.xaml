@@ -7,7 +7,8 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     d:DesignHeight="800"
-    d:DesignWidth="480">
+    d:DesignWidth="480"
+    DataContext="{Binding Main, Source={StaticResource Locator}}">
 
     <Grid Background="{StaticResource ApplicationPageBackgroundThemeBrush}">
         <Grid>
@@ -24,12 +25,12 @@
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
                     <Image Height="250" Width="250" Margin="10"
-                       Source="http://static.musictoday.com/store/bands/93/product_medium/IXDDM501.JPG"/>
-                    <TextBlock Grid.Row="1" Text="Maps" 
+                       Source="{Binding AudioPlayer.CurrentSong.Album.Artwork}"/>
+                    <TextBlock Grid.Row="1" Text="{Binding AudioPlayer.CurrentSong.Name}" 
                            FontSize="32"
                            TextAlignment="Center" 
                            TextTrimming="CharacterEllipsis" Foreground="White"/>
-                    <TextBlock Grid.Row="2" Text="Maroon 5" 
+                    <TextBlock Grid.Row="2" Text="{Binding AudioPlayer.CurrentSong.Artist.Name}" 
                            FontSize="26"
                            TextAlignment="Center" 
                            Foreground="#89FFFFFF"
@@ -38,10 +39,11 @@
             </Grid>
 
             <Grid Background="#642C90" Grid.Row="1">
+                <ProgressBar IsIndeterminate="{Binding AudioPlayer.IsLoading}" Visibility="{Binding AudioPlayer.IsLoading, Converter={StaticResource VisibilityConverter}}" VerticalAlignment="Top" Style="{StaticResource WhiteIndeterminateProgressStyle}" />
                 <StackPanel Margin="10" HorizontalAlignment="Center" VerticalAlignment="Top" Orientation="Horizontal">
-                    <AppBarButton Icon="Previous" Foreground="White" />
-                    <AppBarButton Icon="Play" Foreground="White" />
-                    <AppBarButton Icon="Next" Foreground="White" />
+                    <AppBarButton Command="{Binding AudioPlayer.PrevRelayCommand}"  Icon="Previous" Foreground="White" />
+                    <AppBarButton Command="{Binding AudioPlayer.PlayPauseRelayCommand}" Icon="{Binding AudioPlayer.CurrentPlayPauseIcon}" Foreground="White" />
+                    <AppBarButton Command="{Binding AudioPlayer.NextRelayCommand}" Icon="Next" Foreground="White" />
                 </StackPanel>
             </Grid>
         </Grid>
