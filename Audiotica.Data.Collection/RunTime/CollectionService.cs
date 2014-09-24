@@ -19,7 +19,6 @@ namespace Audiotica.Data.Collection.RunTime
     public class CollectionService : ICollectionService
     {
         private readonly ISqlService _service;
-
         public CollectionService(ISqlService service)
         {
             _service = service;
@@ -173,9 +172,40 @@ namespace Audiotica.Data.Collection.RunTime
             Songs.Add(song);
         }
 
-        public Task DeleteSongAsync(Song song)
+        public async Task DeleteSongAsync(Song song)
         {
-            throw new NotImplementedException();
+            // remove it from artist and albums songs
+            var artist = Artists.FirstOrDefault(p => p.Songs.Contains(song));
+
+            var album = Albums.FirstOrDefault(p => p.Songs.Contains(song));
+            if (album != null)
+            {
+                album.Songs.Remove(song);
+                if (album.Songs.Count == 0)
+                {
+                    await _service.DeleteItemAsync(album);
+                    Albums.Remove(album);
+
+                    //can't forget to clean up
+                    var path = string.Format(CollectionConstant.ArtworkPath, song.AlbumId);
+                    await StorageHelper.DeleteFileAsync(path);
+                }
+            }
+
+            if (artist != null)
+            {
+                artist.Songs.Remove(song);
+                if (artist.Songs.Count == 0)
+                {
+                    await _service.DeleteItemAsync(artist);
+                    Artists.Remove(artist);
+                }
+            }
+
+            //good, now lets delete it from the db
+            await _service.DeleteItemAsync(song);
+
+            Songs.Remove(song);
         }
     }
 }

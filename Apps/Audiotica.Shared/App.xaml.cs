@@ -20,6 +20,7 @@ using Audiotica.ViewModel;
 using GalaSoft.MvvmLight.Ioc;
 using GalaSoft.MvvmLight.Threading;
 using GoogleAnalytics;
+using Microsoft.Practices.ServiceLocation;
 using ColorHelper = Audiotica.Core.Utilities.ColorHelper;
 
 #endregion

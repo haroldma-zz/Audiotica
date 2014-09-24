@@ -31,7 +31,7 @@ namespace Audiotica.Data.Collection.DesignTime
             throw new NotImplementedException();
         }
 
-        public Task DeleteAsync(QueueSong queueSongToRemove)
+        public Task DeleteAsync(Song songToRemove)
         {
             throw new NotImplementedException();
         }

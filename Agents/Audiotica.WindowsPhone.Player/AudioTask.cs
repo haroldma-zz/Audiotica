@@ -10,6 +10,7 @@ using Windows.Media;
 using Windows.Media.Playback;
 using Audiotica.Core;
 using Audiotica.Core.Utilities;
+using Audiotica.Data.Collection;
 using Audiotica.Data.Collection.RunTime;
 
 #endregion
@@ -47,7 +48,6 @@ namespace Audiotica.WindowsPhone.Player
                 if (_queueManager != null) return _queueManager;
 
                 var sql = new SqlService();
-                sql.Initialize();
 
                 var collectionService = new CollectionService(sql);
                 collectionService.LoadLibrary();

@@ -104,6 +104,11 @@ namespace Audiotica.ViewModel
             get { return SimpleIoc.Default.GetInstance<ISqlService>(); }
         }
 
+        public AudioPlayerManager AudioPlayer
+        {
+            get { return ServiceLocator.Current.GetInstance<AudioPlayerManager>(); }
+        }
+
         public static void Cleanup()
         {
             // TODO Clear the ViewModels
