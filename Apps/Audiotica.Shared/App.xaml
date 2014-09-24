@@ -69,8 +69,8 @@
                                     </VisualState>
                                 </VisualStateGroup>
                             </VisualStateManager.VisualStateGroups>
-                            <Grid HorizontalAlignment="Center" Height="75" Margin="0,12,0,4" Width="75">
-                                <Ellipse x:Name="Ellipse" Fill="{ThemeResource AppBarItemBackgroundThemeBrush}" Height="75" Stroke="{TemplateBinding Foreground}" StrokeThickness="2.5" UseLayoutRounding="False" Width="75"/>
+                            <Grid HorizontalAlignment="Center" Height="50" Margin="0,12,0,4" Width="50">
+                                <Ellipse x:Name="Ellipse" Fill="{ThemeResource AppBarItemBackgroundThemeBrush}" Height="50" Stroke="{TemplateBinding Foreground}" StrokeThickness="2.5" UseLayoutRounding="False" Width="50"/>
                                 <Grid x:Name="ContentRoot" Background="Transparent">
                                     <ContentPresenter x:Name="Content" AutomationProperties.AccessibilityView="Raw" Content="{TemplateBinding Icon}" Foreground="{TemplateBinding Foreground}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
                                 </Grid>
@@ -488,6 +488,23 @@
                                               Content="{TemplateBinding Content}" Margin="{TemplateBinding Padding}"
                                               VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
                         </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style TargetType="HubSection">
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="HubSection">
+                        <Grid Background="{TemplateBinding Background}" Margin="{StaticResource HubSectionMarginThickness}">
+                            <Grid.RenderTransform>
+                                <CompositeTransform x:Name="WrappingTransform"/>
+                            </Grid.RenderTransform>
+                            <ContentPresenter x:Name="ContentPresenter" ContentTemplate="{TemplateBinding ContentTemplate}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" Grid.Row="2" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                        </Grid>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>

@@ -8,80 +8,73 @@
     xmlns:userControls="using:Audiotica.Core.UserControls"
     xmlns:audiotica="using:Audiotica"
     xmlns:Interactivity="using:Microsoft.Xaml.Interactivity" xmlns:Core="using:Microsoft.Xaml.Interactions.Core"
+    xmlns:partialView="using:Audiotica.PartialView"
     x:Class="Audiotica.View.HomePage"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
     DataContext="{Binding Main, Source={StaticResource Locator}}">
+    <Hub Margin="0">
+        <HubSection>
+            <DataTemplate>
+                <Grid>
+                    <ListView ItemContainerStyle="{StaticResource NoFeedbackListViewItem}" SelectionMode="None" Padding="0,45,0,0">
+                        <common:MaterialCard common:MaterialCard.IsLoading="{Binding IsSliderLoading}" common:MaterialCard.HeaderText="Spotlight">
+                            <FlipView MaxHeight="150" ItemsSource="{Binding SpotlightItems}">
+                                <FlipView.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid Tapped="Grid_Tapped">
+                                            <Image Stretch="UniformToFill" Source="{Binding ImageUrl}" />
+                                            <StackPanel Background="#66000000" VerticalAlignment="Bottom">
+                                                <TextBlock Text="{Binding Name}" FontSize="24" Margin="15,5,5,5" Foreground="White" TextTrimming="CharacterEllipsis" />
+                                                <TextBlock Text="{Binding Genres[0]}" FontSize="18" Margin="15,5,5,5" Foreground="#89FFFFFF" TextTrimming="CharacterEllipsis" />
+                                            </StackPanel>
+                                        </Grid>
+                                    </DataTemplate>
+                                </FlipView.ItemTemplate>
+                            </FlipView>
+                        </common:MaterialCard>
 
-	<Grid>
-		<ListView ItemContainerStyle="{StaticResource NoFeedbackListViewItem}" SelectionMode="None" Padding="0,45,0,0"
-			Margin="10,0">
-			<common:MaterialCard common:MaterialCard.IsLoading="{Binding IsSliderLoading}" common:MaterialCard.HeaderText="Spotlight">
-				<FlipView MaxHeight="150" ItemsSource="{Binding SpotlightItems}">
-					<FlipView.ItemTemplate>
-						<DataTemplate>
-							<Grid Tapped="Grid_Tapped">
-								<Image Stretch="UniformToFill" Source="{Binding ImageUrl}" />
-								<StackPanel Background="#66000000" VerticalAlignment="Bottom">
-									<TextBlock Text="{Binding Name}" FontSize="24" Margin="15,5,5,5" Foreground="White" TextTrimming="CharacterEllipsis" />
-									<TextBlock Text="{Binding Genres[0]}" FontSize="18" Margin="15,5,5,5" Foreground="#89FFFFFF" TextTrimming="CharacterEllipsis" />
-								</StackPanel>
-							</Grid>
-						</DataTemplate>
-					</FlipView.ItemTemplate>
-				</FlipView>
-			</common:MaterialCard>
+                        <common:MaterialCard common:MaterialCard.HeaderText="Collection">
+                            <!-- material design option -->
+                            <ListView Height="100" HorizontalAlignment="Center">
 
-			<common:MaterialCard common:MaterialCard.HeaderText="Collection">
-				<!-- material design option -->
-				<ListView Height="100" HorizontalAlignment="Center">
+                                <ListView.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <VirtualizingStackPanel Orientation="Horizontal" />
+                                    </ItemsPanelTemplate>
+                                </ListView.ItemsPanel>
 
-					<ListView.ItemsPanel>
-						<ItemsPanelTemplate>
-							<VirtualizingStackPanel Orientation="Horizontal" />
-						</ItemsPanelTemplate>
-					</ListView.ItemsPanel>
+                                <Button Style="{StaticResource PlainButtonStyle}">
+                                    <Interactivity:Interaction.Behaviors>
+                                        <Core:EventTriggerBehavior EventName="Click">
+                                            <Core:NavigateToPageAction TargetPage="Audiotica.View.CollectionPage"/>
+                                        </Core:EventTriggerBehavior>
+                                    </Interactivity:Interaction.Behaviors>
+                                    <StackPanel Width="75" VerticalAlignment="Center">
+                                        <FontIcon Glyph="&#xE142;" FontSize="30" Foreground="#FF333333" />
+                                        <TextBlock Text="Music" TextAlignment="Center" />
+                                    </StackPanel>
+                                </Button>
 
-					<Button Style="{StaticResource PlainButtonStyle}">
-						<Interactivity:Interaction.Behaviors>
-							<Core:EventTriggerBehavior EventName="Click">
-								<Core:NavigateToPageAction TargetPage="Audiotica.View.CollectionPage"/>
-							</Core:EventTriggerBehavior>
-						</Interactivity:Interaction.Behaviors>
-						<StackPanel Width="75" VerticalAlignment="Center">
-							<FontIcon Glyph="&#xE142;" FontSize="30" Foreground="#FF333333" />
-							<TextBlock Text="Music" TextAlignment="Center" />
-						</StackPanel>
-					</Button>
+                                <Rectangle Width="1" Fill="#1E000000" />
 
-					<Rectangle Width="1" Fill="#1E000000" />
-                    
-					<Button IsEnabled="False" Style="{StaticResource PlainButtonStyle}">
-						<StackPanel Width="75" VerticalAlignment="Center">
-							<FontIcon Glyph="&#xE118;" FontSize="30" Foreground="#FF333333" />
-							<TextBlock Text="Downloading" TextAlignment="Center" />
-						</StackPanel>
-					</Button>
+                                <Button Style="{StaticResource PlainButtonStyle}">
+                                    <Interactivity:Interaction.Behaviors>
+                                        <Core:EventTriggerBehavior EventName="Click">
+                                            <Core:NavigateToPageAction TargetPage="Audiotica.View.SearchPage"/>
+                                        </Core:EventTriggerBehavior>
+                                    </Interactivity:Interaction.Behaviors>
+                                    <StackPanel Width="75" VerticalAlignment="Center">
+                                        <FontIcon Glyph="&#xE11A;" FontSize="30" Foreground="#FF333333" />
+                                        <TextBlock Text="Search" TextAlignment="Center" />
+                                    </StackPanel>
+                                </Button>
 
-					<Rectangle Width="1" Fill="#1E000000" />
-                    
-					<Button Style="{StaticResource PlainButtonStyle}">
-						<Interactivity:Interaction.Behaviors>
-							<Core:EventTriggerBehavior EventName="Click">
-								<Core:NavigateToPageAction TargetPage="Audiotica.View.SearchPage"/>
-							</Core:EventTriggerBehavior>
-						</Interactivity:Interaction.Behaviors>
-						<StackPanel Width="75" VerticalAlignment="Center">
-							<FontIcon Glyph="&#xE11A;" FontSize="30" Foreground="#FF333333" />
-							<TextBlock Text="Search" TextAlignment="Center" />
-						</StackPanel>
-					</Button>
+                            </ListView>
+                        </common:MaterialCard>
 
-				</ListView>
-			</common:MaterialCard>
-
-			<common:MaterialCard common:MaterialCard.IsLoading="{Binding IsFeaturedLoading}" common:MaterialCard.HeaderText="Featured Albums">
-				<ListView ItemsSource="{Binding FeatureAlbums}"
+                        <common:MaterialCard common:MaterialCard.IsLoading="{Binding IsFeaturedLoading}" common:MaterialCard.HeaderText="Featured Albums">
+                            <ListView ItemsSource="{Binding FeatureAlbums}"
 					ScrollViewer.HorizontalScrollBarVisibility="Auto"
 					ScrollViewer.VerticalScrollBarVisibility="Disabled"
 					ScrollViewer.HorizontalScrollMode="Enabled"
@@ -89,16 +82,16 @@
 					ScrollViewer.ZoomMode="Disabled"
 					SelectionMode="None" IsItemClickEnabled="True" ItemClick="ListView_ItemClick"
 					ItemTemplate="{StaticResource XboxAlbumDataTemplate}">
-					<ListView.ItemsPanel>
-						<ItemsPanelTemplate>
-							<VirtualizingStackPanel Orientation="Horizontal" />
-						</ItemsPanelTemplate>
-					</ListView.ItemsPanel>
-				</ListView>
-			</common:MaterialCard>
+                                <ListView.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <VirtualizingStackPanel Orientation="Horizontal" />
+                                    </ItemsPanelTemplate>
+                                </ListView.ItemsPanel>
+                            </ListView>
+                        </common:MaterialCard>
 
-			<common:MaterialCard common:MaterialCard.IsLoading="{Binding IsNewLoading}" common:MaterialCard.HeaderText="New Releases">
-				<ListView ItemsSource="{Binding NewAlbums}"
+                        <common:MaterialCard common:MaterialCard.IsLoading="{Binding IsNewLoading}" common:MaterialCard.HeaderText="New Releases">
+                            <ListView ItemsSource="{Binding NewAlbums}"
 					ScrollViewer.HorizontalScrollBarVisibility="Auto"
 					ScrollViewer.VerticalScrollBarVisibility="Disabled"
 					ScrollViewer.HorizontalScrollMode="Enabled"
@@ -107,13 +100,21 @@
 					SelectionMode="None"
 					IsItemClickEnabled="True" ItemClick="ListView_ItemClick"
 					ItemTemplate="{StaticResource XboxAlbumDataTemplate}">
-					<ListView.ItemsPanel>
-						<ItemsPanelTemplate>
-							<VirtualizingStackPanel Orientation="Horizontal" />
-						</ItemsPanelTemplate>
-					</ListView.ItemsPanel>
-				</ListView>
-			</common:MaterialCard>
-		</ListView>
-	</Grid>
+                                <ListView.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <VirtualizingStackPanel Orientation="Horizontal" />
+                                    </ItemsPanelTemplate>
+                                </ListView.ItemsPanel>
+                            </ListView>
+                        </common:MaterialCard>
+                    </ListView>
+                </Grid>
+            </DataTemplate>
+        </HubSection>
+        <HubSection>
+            <DataTemplate>
+                <partialView:NowPlaying />
+            </DataTemplate>
+        </HubSection>
+    </Hub>
 </audiotica:PageBase>
