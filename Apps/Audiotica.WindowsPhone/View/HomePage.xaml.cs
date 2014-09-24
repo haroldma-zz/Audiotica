@@ -29,17 +29,17 @@ namespace Audiotica.View
 
             if (!firstRun)
                 justUpdated = (string) ApplicationData.Current.LocalSettings.Values["CurrentBuild"]
-                              != "1409-beta2-patch0";
+                              != "1409-beta3-patch0";
             else
             {
-                ApplicationData.Current.LocalSettings.Values.Add("CurrentBuild", "1409-beta2-patch0");
+                ApplicationData.Current.LocalSettings.Values.Add("CurrentBuild", "1409-beta3-patch0");
                 new MessageDialog(
-                    "This beta is meant for testing the player and saving songs.  Downloading is not available until patch #2 but you can stream.",
-                    "v1409 (BETA2)").ShowAsync();
+                    "Test out saving, deleting and playing songs",
+                    "v1409 (BETA3)").ShowAsync();
             }
 
             if (!justUpdated || firstRun) return;
-            new MessageDialog("-bg player \n-streaming \n-artist link in album page \n-fix loading data issues", "Beta2")
+            new MessageDialog("-delete songs \n-view albums in collection\n-view artist in collection\n-new notifications", "Beta3")
                 .ShowAsync();
             ApplicationData.Current.LocalSettings.Values["CurrentBuild"] = "1409-beta2-patch0";
         }
