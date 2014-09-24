@@ -40,6 +40,7 @@
     <TargetPlatform Include="Windows, Version=8.1" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Common\CurtainPrompt.cs" />
     <Compile Include="Common\NullToVisibilityConverter.cs" />
     <Compile Include="Common\StringToVisibilityConverter.cs" />
     <Compile Include="PlayerConstants.cs" />

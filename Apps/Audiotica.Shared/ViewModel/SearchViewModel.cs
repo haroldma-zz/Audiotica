@@ -53,7 +53,7 @@ namespace Audiotica.ViewModel
 
             if (url == null)
             {
-                new MessageDialog("no match found :/").ShowAsync();
+                CurtainPrompt.ShowError("No match found");
             }
 
             else
@@ -61,8 +61,7 @@ namespace Audiotica.ViewModel
                 var song = xboxTrack.ToSong();
                 song.AudioUrl = url;
                 await App.Locator.CollectionService.AddSongAsync(song, xboxTrack.ImageUrl);
-
-                //TODO [Harry,20140917] notification here
+                CurtainPrompt.Show("Song saved");
             }
         }
 
@@ -105,10 +104,14 @@ namespace Audiotica.ViewModel
             catch (XboxException exception)
             {
                 if (!exception.Description.Contains("not exist"))
-                    new MessageDialog("damn it! network issue...").ShowAsync();
+                    CurtainPrompt.ShowError("damn it! network issue...");
 
                 //TODO [Harry,20140908] improve error notifier
-                new MessageDialog("No search results").ShowAsync();
+                CurtainPrompt.ShowError("No search results");
+            }
+            catch
+            {
+                CurtainPrompt.ShowError("There was a network issue");
             }
         }
 
