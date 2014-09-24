@@ -1,6 +1,8 @@
 ﻿#region
 
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Controls.Primitives;
 using Audiotica.Data.Collection;
 using Audiotica.Data.Collection.Model;
 using GalaSoft.MvvmLight;

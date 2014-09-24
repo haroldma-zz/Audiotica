@@ -46,6 +46,6 @@ namespace Audiotica.Data.Collection
 
         Task AddSongAsync(Song song);
         Task MoveFromToAsync(int oldIndex, int newIndex);
-        Task DeleteAsync(QueueSong queueSongToRemove);
+        Task DeleteAsync(Song songToRemove);
     }
 }

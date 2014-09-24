@@ -19,6 +19,19 @@
 					<ListView.ItemTemplate>
 						<DataTemplate>
 							<common:MaterialCard Margin="0,-2">
+                                <Interactivity:Interaction.Behaviors>
+                                    <Core:EventTriggerBehavior EventName="Holding">
+                                        <audiotica:ShowFlyoutAction/>
+                                    </Core:EventTriggerBehavior>
+                                </Interactivity:Interaction.Behaviors>
+                                <FlyoutBase.AttachedFlyout>
+                                    <MenuFlyout>
+                                        <MenuFlyoutItem Text="Add to (Disabled)" IsEnabled="False" />
+                                        <MenuFlyoutItem Text="Share (Disabled)" IsEnabled="False" />
+                                        <MenuFlyoutSeparator />
+                                        <MenuFlyoutItem Text="Delete" Foreground="Red" Click="DeleteSongMenuFlyoutItem_Click" />
+                                    </MenuFlyout>
+                                </FlyoutBase.AttachedFlyout>
 								<StackPanel>
 									<TextBlock Margin="0,5" Text="{Binding Name}" FontSize="26" FontFamily="Global User Interface"
 										TextTrimming="CharacterEllipsis" />

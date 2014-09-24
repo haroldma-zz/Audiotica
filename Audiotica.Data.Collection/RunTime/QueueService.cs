@@ -72,15 +72,14 @@ namespace Audiotica.Data.Collection.RunTime
             throw new NotImplementedException();
         }
 
-        public async Task DeleteAsync(QueueSong queueSongToRemove)
+        public async Task DeleteAsync(Song songToRemove)
         {
-            //            if (songToRemove.Entry.Id == CurrentPlaybackQueueEntryId)
-            //            {
-            //                Stop();
-            //                CurrentPlaybackQueueEntryId = 0;
-            //            }
-
             QueueSong previousModel = null;
+
+            var queueSongToRemove = PlaybackQueue.FirstOrDefault(p => p.SongId == songToRemove.Id);
+
+            if (queueSongToRemove == null)
+                return;
 
             if (_lookupMap.TryGetValue(queueSongToRemove.PrevId, out previousModel))
             {
