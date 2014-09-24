@@ -54,7 +54,7 @@
                 </ListView>
             </PivotItem>
 			<PivotItem Header="albums">
-                <ListView IsItemClickEnabled="True" ItemsSource="{Binding Service.Albums}" Padding="0,0,0,25" Margin="0,0,-0.333,0">
+                <ListView IsItemClickEnabled="True" ItemsSource="{Binding Service.Albums}" Padding="0,0,0,25" Margin="0,0,-0.333,0" ItemClick="AlbumListView_ItemClick">
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <common:MaterialCard Margin="0,-2">
@@ -73,11 +73,6 @@
                             </common:MaterialCard>
                         </DataTemplate>
                     </ListView.ItemTemplate>
-<!--                    <Interactivity:Interaction.Behaviors>-->
-<!--                        <Core:EventTriggerBehavior EventName="ItemClick">-->
-<!--                            <Core:InvokeCommandAction Command="{Binding SongClickCommand}"/>-->
-<!--                        </Core:EventTriggerBehavior>-->
-<!--                    </Interactivity:Interaction.Behaviors>-->
                 </ListView>
             </PivotItem>
 		</Pivot>

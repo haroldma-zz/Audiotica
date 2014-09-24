@@ -1,7 +1,9 @@
 ﻿#region
 
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
 using Windows.UI.Xaml.Media.Imaging;
 using Audiotica.Collection;
@@ -57,10 +59,13 @@ namespace Audiotica.Data.Collection.DesignTime
             {
                  new Album
                         {
+                            Id= 0,
                             Name = "V",
                             Artwork =
                                     new Uri("http://static.musictoday.com/store/bands/93/product_medium/IXDDM501.JPG"),
-                            PrimaryArtist = new Artist { Name = "Maroon 5"}
+                            PrimaryArtist = new Artist { Name = "Maroon 5"},
+                            Genre = "Pop",
+                            Songs = Songs.ToList()
                         }
             };
         }

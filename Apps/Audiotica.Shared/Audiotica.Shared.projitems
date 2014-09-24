@@ -20,6 +20,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)SuspensionManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModel\AlbumViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModel\ArtistViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModel\CollectionAlbumViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModel\CollectionViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModel\MainViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModel\SearchViewModel.cs" />
