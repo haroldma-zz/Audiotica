@@ -13,7 +13,7 @@
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
     DataContext="{Binding Main, Source={StaticResource Locator}}">
-    <Hub Margin="0">
+    <Hub>
         <HubSection>
             <DataTemplate>
                 <Grid>
@@ -111,7 +111,7 @@
                 </Grid>
             </DataTemplate>
         </HubSection>
-        <HubSection>
+        <HubSection Visibility="{Binding AudioPlayer.CurrentSong, Converter={StaticResource NullToVisibiltyConverter}}">
             <DataTemplate>
                 <partialView:NowPlaying />
             </DataTemplate>
