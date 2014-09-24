@@ -34,19 +34,7 @@
         </common:MaterialCard>
 
         <common:MaterialCard HeaderText="Tracks">
-            <ListView IsItemClickEnabled="True" ItemsSource="{Binding Album.Songs}" Margin="0,5,0,0">
-                <ListView.ItemTemplate>
-                    <DataTemplate>
-                        <StackPanel>
-                            <Rectangle Height="1" Fill="#1E000000" Margin="0,10,0,0" />
-                            <TextBlock Margin="0,5" Text="{Binding Name}" FontSize="22"
-                                       FontFamily="Global User Interface" TextTrimming="CharacterEllipsis" />
-                            <TextBlock Text="{Binding Artist.Name}" FontSize="18" FontWeight="Thin"
-                                       FontFamily="Global User Interface" Foreground="#89000000"
-                                       TextTrimming="CharacterEllipsis" />
-                        </StackPanel>
-                    </DataTemplate>
-                </ListView.ItemTemplate>
+            <ListView IsItemClickEnabled="True" ItemsSource="{Binding Album.Songs}" Margin="0,5,0,0" ItemTemplate="{StaticResource SongDataTemplate}" >
                 <interactivity:Interaction.Behaviors>
                     <core:EventTriggerBehavior EventName="ItemClick">
                         <core:InvokeCommandAction Command="{Binding SongClickRelayCommand}" />
