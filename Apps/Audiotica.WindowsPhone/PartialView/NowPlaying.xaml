@@ -15,8 +15,8 @@
                 <RowDefinition Height="*" />
                 <RowDefinition Height="0.5*" />
             </Grid.RowDefinitions>
-            
-            <Grid Background="Purple">
+
+            <Grid Background="#4B216D">
                 <Grid Margin="10" VerticalAlignment="Bottom">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
@@ -37,7 +37,7 @@
                 </Grid>
             </Grid>
 
-            <Grid Background="BlueViolet" Grid.Row="1">
+            <Grid Background="#642C90" Grid.Row="1">
                 <StackPanel Margin="10" HorizontalAlignment="Center" VerticalAlignment="Top" Orientation="Horizontal">
                     <AppBarButton Icon="Previous" Foreground="White" />
                     <AppBarButton Icon="Play" Foreground="White" />
