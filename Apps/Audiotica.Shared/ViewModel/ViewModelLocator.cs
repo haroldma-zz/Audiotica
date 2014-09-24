@@ -48,6 +48,7 @@ namespace Audiotica.ViewModel
 
             SimpleIoc.Default.Register<MainViewModel>();
             SimpleIoc.Default.Register<AlbumViewModel>();
+            SimpleIoc.Default.Register<CollectionAlbumViewModel>();
             SimpleIoc.Default.Register<ArtistViewModel>();
             SimpleIoc.Default.Register<SearchViewModel>();
             SimpleIoc.Default.Register<CollectionViewModel>();
@@ -61,6 +62,10 @@ namespace Audiotica.ViewModel
         public AlbumViewModel Album
         {
             get { return ServiceLocator.Current.GetInstance<AlbumViewModel>(); }
+        }
+        public CollectionAlbumViewModel CollectionAlbum
+        {
+            get { return ServiceLocator.Current.GetInstance<CollectionAlbumViewModel>(); }
         }
 
         public ArtistViewModel Artist

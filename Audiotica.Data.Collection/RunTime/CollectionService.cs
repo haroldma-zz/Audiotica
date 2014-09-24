@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
@@ -96,6 +97,8 @@ namespace Audiotica.Data.Collection.RunTime
                 await _service.InsertAsync(song.Artist);
                 song.Album.PrimaryArtistId = song.Artist.Id;
                 Artists.Add(song.Artist);
+                song.Artist.Songs = new List<Song>();
+                song.Artist.Albums = new List<Album>();
             }
 
             else
@@ -116,6 +119,7 @@ namespace Audiotica.Data.Collection.RunTime
             {
                 await _service.InsertAsync(song.Album);
                 Albums.Add(song.Album);
+                song.Album.Songs = new List<Song>();
                 song.Artist.Albums.Add(song.Album);
             }
 
@@ -163,10 +167,8 @@ namespace Audiotica.Data.Collection.RunTime
             //Insert to db
             await _service.InsertAsync(song);
 
-            if (artist == null)
-                song.Artist.Songs.Add(song);
-            if (album == null)
-                song.Album.Songs.Add(song);
+            song.Artist.Songs.Add(song);
+            song.Album.Songs.Add(song);
 
             Songs.Add(song);
         }
