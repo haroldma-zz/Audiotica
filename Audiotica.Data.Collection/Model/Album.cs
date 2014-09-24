@@ -1,7 +1,11 @@
-﻿using System;
+﻿#region
+
+using System;
 using System.Collections.Generic;
 using Windows.UI.Xaml.Media.Imaging;
 using Audiotica.Data.Collection.SqlHelper;
+
+#endregion
 
 namespace Audiotica.Data.Collection.Model
 {
@@ -16,11 +20,13 @@ namespace Audiotica.Data.Collection.Model
 
         public string ProviderId { get; set; }
 
-        [SqlProperty(ReferenceTo = typeof(Artist))]
+        [SqlProperty(ReferenceTo = typeof (Artist))]
         public long PrimaryArtistId { get; set; }
 
 
         public string Name { get; set; }
+
+        public string SortName { get; set; }
 
         public string Genre { get; set; }
 
@@ -33,12 +39,14 @@ namespace Audiotica.Data.Collection.Model
         public Uri ArtworkUri { get; set; }
 
         [SqlIgnore]
-        public BitmapImage Artwork {
+        public BitmapImage Artwork
+        {
             get
             {
                 //don't want to load image every time, so we save the instance
                 return _bitmap ?? (_bitmap = new BitmapImage(ArtworkUri));
-            } }
+            }
+        }
 
         [SqlIgnore]
         public Artist PrimaryArtist { get; set; }

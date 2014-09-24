@@ -11,13 +11,18 @@ namespace Audiotica.Data.Collection.Model
     {
         public string ProviderId { get; set; }
 
-        [SqlProperty(ReferenceTo = typeof(Artist))]
+        [SqlProperty(ReferenceTo = typeof (Artist))]
         public long ArtistId { get; set; }
 
-        [SqlProperty(ReferenceTo = typeof(Album))]
+        [SqlProperty(ReferenceTo = typeof (Album))]
         public long AlbumId { get; set; }
 
         public string Name { get; set; }
+
+        public string SortName { get; set; }
+
+        //Artist prop is for the album (main), this one is specific to each song
+        public string ArtistName { get; set; }
 
         public long TrackNumber { get; set; }
 
@@ -29,7 +34,7 @@ namespace Audiotica.Data.Collection.Model
 
         public HeartState HeartState { get; set; }
 
-        
+
         [SqlIgnore]
         public bool IsStreaming
         {

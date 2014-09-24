@@ -15,6 +15,8 @@ namespace Audiotica.Data.Collection.Model
 
         public string Name { get; set; }
 
+        public string SortName { get; set; }
+
         [SqlIgnore]
         public List<Song> Songs { get; set; }
         [SqlIgnore]

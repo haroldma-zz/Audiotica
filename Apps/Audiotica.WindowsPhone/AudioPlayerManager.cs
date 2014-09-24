@@ -35,6 +35,7 @@ namespace Audiotica
             _nextRelayCommand = new RelayCommand(NextSong);
             _prevRelayCommand = new RelayCommand(PrevSong);
             _playPauseRelayCommand = new RelayCommand(PlayPauseToggle);
+            StartBackgroundAudioTask(false);
         }
 
         #region Private Fields and Properties
@@ -144,32 +145,25 @@ namespace Audiotica
         /// <summary>
         ///     Initialize Background Media Player Handlers and starts playback
         /// </summary>
-        private void StartBackgroundAudioTask()
+        private void StartBackgroundAudioTask(bool play = true)
         {
             AddMediaPlayerEventHandlers();
-            var backgroundtaskinitializationresult = DispatcherHelper.RunAsync(
-                () =>
-                {
-                    IsLoading = true;
-                    _sererInitialized.WaitOne(2000);
-                    //assuming that the task starts always
-                    var message = new ValueSet {{PlayerConstants.StartPlayback, null}};
-                    BackgroundMediaPlayer.SendMessageToBackground(message);
-                }
-                );
-            backgroundtaskinitializationresult.Completed = BackgroundTaskInitializationCompleted;
-        }
 
-        private void BackgroundTaskInitializationCompleted(IAsyncAction action, AsyncStatus status)
-        {
-            if (status == AsyncStatus.Completed)
-            {
-                Debug.WriteLine("Background Audio Task initialized");
-            }
-            else if (status == AsyncStatus.Error)
-            {
-                Debug.WriteLine("Background Audio Task could not initialized due to an error ::" + action.ErrorCode);
-            }
+            if (!play)return;
+            Task.Delay(2000);
+            var message = new ValueSet { { PlayerConstants.StartPlayback, null } };
+            BackgroundMediaPlayer.SendMessageToBackground(message);
+//            var backgroundtaskinitializationresult = DispatcherHelper.RunAsync(
+//                () =>
+//                {
+//                    IsLoading = true;
+//                    _sererInitialized.WaitOne(2000);
+//                    //assuming that the task starts always
+//                    var message = new ValueSet {{PlayerConstants.StartPlayback, null}};
+//                    BackgroundMediaPlayer.SendMessageToBackground(message);
+//                }
+//                );
+//            backgroundtaskinitializationresult.Completed = BackgroundTaskInitializationCompleted;
         }
 
         #endregion
@@ -212,7 +206,8 @@ namespace Audiotica
                 var message = new ValueSet {{PlayerConstants.StartPlayback, null}};
                 BackgroundMediaPlayer.SendMessageToBackground(message);
             }
-            else StartBackgroundAudioTask();
+            else
+                StartBackgroundAudioTask();
         }
 
         private void PrevSong()
