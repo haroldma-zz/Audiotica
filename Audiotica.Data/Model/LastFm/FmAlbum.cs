@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace Audiotica.Data.Model.LastFm
 {
-    internal class FmAlbum
+    public class FmAlbum
     {
         public string name { get; set; }
         public string artist { get; set; }
