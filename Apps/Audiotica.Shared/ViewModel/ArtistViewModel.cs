@@ -107,8 +107,15 @@ namespace Audiotica.ViewModel
             {
                 var song = xboxTrack.ToSong();
                 song.AudioUrl = url;
-                await App.Locator.CollectionService.AddSongAsync(song, xboxTrack.ImageUrl);
-                CurtainPrompt.Show("Song saved");
+                try
+                {
+                    await App.Locator.CollectionService.AddSongAsync(song, xboxTrack.ImageUrl);
+                    CurtainPrompt.Show("Song saved");
+                }
+                catch (Exception e)
+                {
+                    CurtainPrompt.ShowError(e.Message);
+                }
             }
         }
     }
