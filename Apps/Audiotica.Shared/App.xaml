@@ -4,6 +4,8 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:Audiotica"
     xmlns:common="using:Audiotica.Core.Common"
+    xmlns:library="using:SlideView.Library"
+    xmlns:partialView="using:Audiotica.PartialView"
     RequestedTheme="Light">
     <Application.Resources>
         <Color x:Key="AppAccentColor">#5677fc</Color>
@@ -12,10 +14,11 @@
         <vm:ViewModelLocator xmlns:vm="using:Audiotica.ViewModel"
                              x:Key="Locator" />
         <common:VisibilityConverter x:Key="VisibilityConverter" />
-        <common:NullToVisibiltyConverter x:Key="NullToVisibiltyConverter" />
+        <common:NullToBooleanConverter x:Key="NullToBooleanConverter" />
+        <common:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
 
         <SolidColorBrush x:Key="ApplicationPageBackgroundThemeBrush" Color="#E4E4E4" />
-
+        
         <Style TargetType="AppBarButton">
             <Setter Property="Foreground" Value="{ThemeResource AppBarItemForegroundThemeBrush}"/>
             <Setter Property="VerticalAlignment" Value="Top"/>
@@ -494,22 +497,6 @@
             </Setter>
         </Style>
 
-        <Style TargetType="HubSection">
-            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-            <Setter Property="VerticalContentAlignment" Value="Stretch"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="HubSection">
-                        <Grid Background="{TemplateBinding Background}" Margin="{StaticResource HubSectionMarginThickness}">
-                            <Grid.RenderTransform>
-                                <CompositeTransform x:Name="WrappingTransform"/>
-                            </Grid.RenderTransform>
-                            <ContentPresenter x:Name="ContentPresenter" ContentTemplate="{TemplateBinding ContentTemplate}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" Grid.Row="2" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
-                        </Grid>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
         <Style x:Key="WhiteIndeterminateProgressStyle" TargetType="ProgressBar">
             <Setter Property="Foreground" Value="{ThemeResource ProgressBarForegroundThemeBrush}"/>
             <Setter Property="Background" Value="{ThemeResource ProgressBarBackgroundThemeBrush}"/>
@@ -794,6 +781,33 @@
                 </Setter.Value>
             </Setter>
         </Style>
+
+        <library:SlideApplicationFrame x:Key="SlideApplicationFrame" 
+                                       Header="{Binding Main, Source={StaticResource Locator}}" 
+                                       DataContext="{Binding Main, Source={StaticResource Locator}}" 
+                                       IsSlideEnabled="{Binding AudioPlayer.CurrentSong, Converter={StaticResource NullToBooleanConverter}}">
+            <library:SlideApplicationFrame.RightContent>
+                <partialView:NowPlaying />
+            </library:SlideApplicationFrame.RightContent>
+            <library:SlideApplicationFrame.HeaderTemplate>
+                <DataTemplate>
+                    <Grid Height="75" Background="#4B216D">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Margin="6,10" Grid.Column="1"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Bottom"
+                                   FontSize="26"
+                                   Foreground="White"
+                                   Text="Audiotica" />
+                        <TextBlock Visibility="{Binding AudioPlayer.CurrentSong, Converter={StaticResource NullToVisibilityConverter}}" Margin="10" Grid.Column="2" Text="&#xe102;" FontFamily="Segoe UI Symbol" FontSize="30" VerticalAlignment="Bottom" HorizontalAlignment="Right" Foreground="White"/>
+                    </Grid>
+                </DataTemplate>
+            </library:SlideApplicationFrame.HeaderTemplate>
+        </library:SlideApplicationFrame>
 
     </Application.Resources>
 </Application>
