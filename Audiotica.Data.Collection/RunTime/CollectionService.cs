@@ -87,6 +87,9 @@ namespace Audiotica.Data.Collection.RunTime
             if (song.Artist == null)
                 throw new Exception("Song must have artist, use CreateUnknowArtistEntry for unknown");
 
+            if (Songs.Count(p => p.ProviderId == song.ProviderId) > 0)
+                throw new Exception("Already saved");
+
             #region create artist
 
             var artist = Artists.FirstOrDefault(entry => entry.ProviderId == song.Artist.ProviderId);
