@@ -29,9 +29,6 @@ using ColorHelper = Audiotica.Core.Utilities.ColorHelper;
 
 namespace Audiotica
 {
-    /// <summary>
-    ///     Provides application-specific behavior to supplement the default Application class.
-    /// </summary>
     public sealed partial class App : Application
     {
 #if WINDOWS_PHONE_APP
@@ -43,31 +40,13 @@ namespace Audiotica
             get { return Current.Resources["Locator"] as ViewModelLocator; }
         }
 
-        /// <summary>
-        ///     Initializes the singleton application object.  This is the first line of authored code
-        ///     executed, and as such is the logical equivalent of main() or WinMain().
-        /// </summary>
         public App()
         {
             InitializeComponent();
             Suspending += OnSuspending;
         }
-
-        /// <summary>
-        ///     Invoked when the application is launched normally by the end user.  Other entry points
-        ///     will be used when the application is launched to open a specific file, to display
-        ///     search FmResults, and so forth.
-        /// </summary>
-        /// <param name="e">Details about the launch request and process.</param>
         protected override async void OnLaunched(LaunchActivatedEventArgs e)
         {
-#if DEBUG
-//            if (Debugger.IsAttached)
-//            {
-//                DebugSettings.EnableFrameRateCounter = true;
-//            }
-#endif
-
             var rootFrame = Window.Current.Content as Frame;
 
             // Do not repeat app initialization when the Window already has content,
@@ -131,11 +110,6 @@ namespace Audiotica
         }
 
 #if WINDOWS_PHONE_APP
-        /// <summary>
-        ///     Restores the content transitions after the app has launched.
-        /// </summary>
-        /// <param name="sender">The object where the handler is attached.</param>
-        /// <param name="e">Details about the navigation event.</param>
         private async void RootFrame_FirstNavigated(object sender, NavigationEventArgs e)
         {
             var rootFrame = sender as Frame;
@@ -146,14 +120,6 @@ namespace Audiotica
             StatusBar.GetForCurrentView().ForegroundColor = Colors.White;
         }
 #endif
-
-        /// <summary>
-        ///     Invoked when application execution is being suspended.  Application state is saved
-        ///     without knowing whether the application will be terminated or resumed with the contents
-        ///     of memory still intact.
-        /// </summary>
-        /// <param name="sender">The source of the suspend request.</param>
-        /// <param name="e">Details about the suspend request.</param>
         private void OnSuspending(object sender, SuspendingEventArgs e)
         {
             var deferral = e.SuspendingOperation.GetDeferral();
