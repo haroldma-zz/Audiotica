@@ -19,8 +19,6 @@ namespace Audiotica.Data.Collection.Model
 
         public string Name { get; set; }
 
-        public string SortName { get; set; }
-
         //Artist prop is for the album (main), this one is specific to each song
         public string ArtistName { get; set; }
 

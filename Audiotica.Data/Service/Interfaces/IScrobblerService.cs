@@ -11,7 +11,7 @@ namespace Audiotica.Data.Service.Interfaces
     public interface IScrobblerService
     {
         Task<MbRelease> GetMbAlbum(string id);
-        Task<MbRelease> GetMbArtist(string id);
+        Task<MbArtist> GetMbArtist(string id);
 
         Task<FmDetailAlbum> GetDetailAlbum(string name, string artist);
         Task<FmDetailTrack> GetDetailTrack(string name, string artist);

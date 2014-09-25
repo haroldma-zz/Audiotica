@@ -38,14 +38,18 @@ namespace Audiotica.Data.Service.RunTime
             }
         }
 
-        public Task<MbRelease> GetMbAlbum(string id)
+        public async Task<MbRelease> GetMbAlbum(string id)
         {
-            throw new NotImplementedException();
+            var url = string.Format(MbApiPath, "release", id);
+            var resp = await GetAsync<MbRelease>(url);
+            return resp;
         }
 
-        public Task<MbRelease> GetMbArtist(string id)
+        public async Task<MbArtist> GetMbArtist(string id)
         {
-            throw new NotImplementedException();
+            var url = string.Format(MbApiPath, "artist", id);
+            var resp = await GetAsync<MbArtist>(url);
+            return resp;
         }
 
         public async Task<FmDetailAlbum> GetDetailAlbum(string name, string artist)
