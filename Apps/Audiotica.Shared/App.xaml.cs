@@ -11,6 +11,7 @@ using Windows.UI.Popups;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Navigation;
 using Audiotica.Collection;
@@ -21,6 +22,7 @@ using GalaSoft.MvvmLight.Ioc;
 using GalaSoft.MvvmLight.Threading;
 using GoogleAnalytics;
 using Microsoft.Practices.ServiceLocation;
+using SlideView.Library;
 using ColorHelper = Audiotica.Core.Utilities.ColorHelper;
 
 #endregion
@@ -73,7 +75,7 @@ namespace Audiotica
             if (rootFrame == null)
             {
                 // Create a Frame to act as the navigation context and navigate to the first page
-                rootFrame = new Frame {CacheSize = 1};
+                rootFrame = Resources["SlideApplicationFrame"] as SlideApplicationFrame;
 
                 if (e.PreviousExecutionState == ApplicationExecutionState.Terminated)
                 {
@@ -142,9 +144,6 @@ namespace Audiotica
 
             //Make sure the statusbar foreground is always black
             StatusBar.GetForCurrentView().ForegroundColor = Colors.White;
-            StatusBar.GetForCurrentView().BackgroundColor = ColorHelper.GetColorFromHexa("#4B216D");
-            StatusBar.GetForCurrentView().BackgroundOpacity = 1;
-            ApplicationView.GetForCurrentView().SetDesiredBoundsMode(ApplicationViewBoundsMode.UseCoreWindow);
         }
 #endif
 

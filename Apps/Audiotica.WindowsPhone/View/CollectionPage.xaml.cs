@@ -1,9 +1,14 @@
-﻿using System.Threading.Tasks;
+﻿#region
+
+using System.Threading.Tasks;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Audiotica.Core;
+using Audiotica.Core.Common;
 using Audiotica.Core.Utilities;
 using Audiotica.Data.Collection.Model;
+
+#endregion
 
 namespace Audiotica.View
 {
@@ -14,7 +19,7 @@ namespace Audiotica.View
             InitializeComponent();
         }
 
-        private void AlbumListView_ItemClick(object sender,ItemClickEventArgs e)
+        private void AlbumListView_ItemClick(object sender, ItemClickEventArgs e)
         {
             var album = e.ClickedItem as Album;
             Frame.Navigate(typeof (CollectionAlbumPage), album.Id);
@@ -23,7 +28,7 @@ namespace Audiotica.View
         private void ArtistListView_ItemClick(object sender, ItemClickEventArgs e)
         {
             var artist = e.ClickedItem as Artist;
-            Frame.Navigate(typeof(CollectionArtistPage), artist.Id);
+            Frame.Navigate(typeof (CollectionArtistPage), artist.Id);
         }
 
         private async void DeleteSongMenuFlyoutItem_Click(object sender, RoutedEventArgs e)

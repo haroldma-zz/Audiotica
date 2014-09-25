@@ -8,11 +8,11 @@ using Windows.UI.Xaml.Data;
 
 namespace Audiotica.Core.Common
 {
-    public class NullToVisibilityConverter : IValueConverter
+    public class NullToBooleanConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string culture)
         {
-            return value == null ? Visibility.Collapsed : Visibility.Visible;
+            return value != null;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, string culture)
