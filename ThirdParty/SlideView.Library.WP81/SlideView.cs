@@ -161,8 +161,8 @@ namespace SlideView.Library
 #if NETFX_CORE
         private void SlideView_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs manipulationStartedEventArgs)
         {
-//            if (_itemsList.CacheMode == null)
-//                _itemsList.CacheMode = new BitmapCache();
+            if (_itemsList.CacheMode == null)
+                _itemsList.CacheMode = new BitmapCache();
         }
 #endif
 
