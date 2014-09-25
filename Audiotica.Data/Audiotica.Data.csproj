@@ -43,8 +43,17 @@
     <Compile Include="ApiKeys.cs" />
     <Compile Include="Model\LastFm\FmAlbum.cs" />
     <Compile Include="Model\LastFm\FmArtist.cs" />
+    <Compile Include="Model\LastFm\FmChartsTopRoot.cs" />
+    <Compile Include="Model\LastFm\FmDetailAlbum.cs" />
+    <Compile Include="Model\LastFm\FmDetailArtist.cs" />
+    <Compile Include="Model\LastFm\FmDetailRoot.cs" />
+    <Compile Include="Model\LastFm\FmDetailTrack.cs" />
     <Compile Include="Model\LastFm\FmImage.cs" />
+    <Compile Include="Model\LastFm\FmResults.cs" />
+    <Compile Include="Model\LastFm\FmSearchRoot.cs" />
+    <Compile Include="Model\LastFm\FmSimilarRoot.cs" />
     <Compile Include="Model\LastFm\FmTrack.cs" />
+    <Compile Include="Model\Musicbrainz\MbRelease.cs" />
     <Compile Include="Mp3Providers\MeileProvider.cs" />
     <Compile Include="Mp3Providers\NeteaseProvider.cs" />
     <Compile Include="Mp3Providers\SoundCloudProvider.cs" />
@@ -59,7 +68,9 @@
     <Compile Include="Model\XboxMaster.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Service\DesignTime\DesignXboxMusicService.cs" />
+    <Compile Include="Service\Interfaces\IScrobblerService.cs" />
     <Compile Include="Service\Interfaces\IXboxMusicService.cs" />
+    <Compile Include="Service\RunTime\ScrobblerService.cs" />
     <Compile Include="Service\RunTime\XboxMusicService.cs" />
     <Compile Include="Mp3MatchEngine.cs" />
     <Compile Include="Mp3Providers\IMp3Provider.cs" />
