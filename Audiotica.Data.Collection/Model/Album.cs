@@ -26,8 +26,6 @@ namespace Audiotica.Data.Collection.Model
 
         public string Name { get; set; }
 
-        public string SortName { get; set; }
-
         public string Genre { get; set; }
 
         public DateTime ReleaseDate { get; set; }

@@ -20,7 +20,7 @@ namespace Audiotica.Data.Collection.RunTime
 
         public SqlService()
         {
-            db = new SQLiteConnection("autc_collection.sqldb");
+            db = new SQLiteConnection("collection.sqldb");
         }
 
         public void Initialize()
