@@ -1,6 +1,6 @@
 Audiotica
 =========
-[![License MIT](https://img.shields.io/badge/license-MIT-642C90.svg?style=flat-square)](https://raw.githubusercontent.com/uzysjung/UzysAnimatedGifPullToRefresh/master/LICENSE)
+[![License MIT](https://img.shields.io/badge/license-MIT-642C90.svg?style=flat-square)](https://raw.githubusercontent.com/zumicts/audiotica/master/LICENSE)
 [![Contact](https://img.shields.io/badge/contact-@Zumicts-642C90.svg?style=flat-square)](http://twitter.com/zumicts)
 
 Music player powered that uses Vk, YouTube, Soundcloud and other sites to download music.  While also using Xbox Music and Last.fm for song, artist and album information.
