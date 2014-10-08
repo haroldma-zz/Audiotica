@@ -30,18 +30,18 @@ namespace Audiotica.View
                               != "1409-beta3-patch1";
             else
             {
-                ApplicationData.Current.LocalSettings.Values.Add("CurrentBuild", "1409-beta3-patch1");
+                ApplicationData.Current.LocalSettings.Values.Add("CurrentBuild", "1410-beta4-patch0");
                 new MessageDialog(
-                    "Test out saving, deleting and playing songs",
-                    "v1409 (BETA3)").ShowAsync();
+                    "Test out saving downloading using the new metadate provider (last.fm)",
+                    "v1410 (BETA4)").ShowAsync();
             }
 
             if (!justUpdated || firstRun) return;
             new MessageDialog(
                 "-switch from xbox music to last.fm\n-now playing page is everywhere!\n-subtle changes in ui",
-                "Beta3 - Patch #1")
+                "Beta4 - Patch #0")
                 .ShowAsync();
-            ApplicationData.Current.LocalSettings.Values["CurrentBuild"] = "1409-beta3-patch1";
+            ApplicationData.Current.LocalSettings.Values["CurrentBuild"] = "1410-beta4-patch0";
         }
 
         //TODO [Harry,20140908] move this to view model with RelayCommand
