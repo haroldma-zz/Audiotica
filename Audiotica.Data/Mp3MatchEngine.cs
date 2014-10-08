@@ -29,7 +29,7 @@
 
 using System.Threading.Tasks;
 using Audiotica.Data.Mp3Providers;
-using Microsoft.Xbox.Music.Platform.Contract.DataModel;
+using IF.Lastfm.Core.Objects;
 
 #endregion
 
@@ -46,12 +46,12 @@ namespace Audiotica.Data
             new SoundCloudProvider()
         };
 
-        public static async Task<string> FindMp3For(XboxTrack track)
+        public static async Task<string> FindMp3For(LastTrack track)
         {
             //match engines get better results using ft instead of feat
             //so rename if it contains that
             var title = track.Name.Replace("feat.", "ft.");
-            var artist = track.Artists[0].Artist.Name;
+            var artist = track.ArtistName;
 
 
             var currentProvider = 0;

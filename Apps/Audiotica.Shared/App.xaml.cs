@@ -71,6 +71,7 @@ namespace Audiotica
                     await Locator.SqlService.InitializeAsync();
                     await Locator.CollectionService.LoadLibraryAsync();
                     await Locator.QueueService.LoadQueueAsync();
+                    Locator.AudioPlayer.Initialize();
                 }
                 catch (Exception ex)
                 {

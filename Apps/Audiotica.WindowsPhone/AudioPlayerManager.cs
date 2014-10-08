@@ -29,12 +29,16 @@ namespace Audiotica
 
         public AudioPlayerManager(ICollectionService service)
         {
-            _service = service;
+            _service = service; 
             _sererInitialized = new AutoResetEvent(false);
             AppSettingsHelper.Write(PlayerConstants.AppState, PlayerConstants.ForegroundAppActive);
             _nextRelayCommand = new RelayCommand(NextSong);
             _prevRelayCommand = new RelayCommand(PrevSong);
             _playPauseRelayCommand = new RelayCommand(PlayPauseToggle);
+        }
+
+        public void Initialize()
+        {
             StartBackgroundAudioTask(false);
         }
 

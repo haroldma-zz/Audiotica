@@ -81,24 +81,24 @@ namespace Audiotica.Data.Collection.RunTime
 
         public async Task AddSongAsync(Song song, string artworkUrl)
         {
-            //Validating song
-            if (song.Album == null)
-                throw new Exception("Song must have album, use CreateSingleAlbumEntry unknown from ");
-            if (song.Artist == null)
-                throw new Exception("Song must have artist, use CreateUnknowArtistEntry for unknown");
-
             if (Songs.Count(p => p.ProviderId == song.ProviderId) > 0)
                 throw new Exception("Already saved");
 
             #region create artist
+
+            if (song.Artist.ProviderId == "lastid.")
+                song.Artist.ProviderId = "autc.single." + song.ProviderId;
 
             var artist = Artists.FirstOrDefault(entry => entry.ProviderId == song.Artist.ProviderId);
 
             if (artist == null)
             {
                 await _service.InsertAsync(song.Artist);
-                song.Album.PrimaryArtistId = song.Artist.Id;
+
+                if (song.Album != null)
+                    song.Album.PrimaryArtistId = song.Artist.Id;
                 Artists.Add(song.Artist);
+
                 song.Artist.Songs = new List<Song>();
                 song.Artist.Albums = new List<Album>();
             }
@@ -106,65 +106,86 @@ namespace Audiotica.Data.Collection.RunTime
             else
             {
                 song.Artist = artist;
-                song.Album.PrimaryArtistId = artist.Id;
+
+                if (song.Album != null)
+                    song.Album.PrimaryArtistId = artist.Id;
             }
+            song.ArtistId = song.Artist.Id;
 
             #endregion
 
             #region create album
 
-            var album = Albums.FirstOrDefault(p => p.ProviderId == song.Album.ProviderId);
-
-            if (album != null)
-                song.Album = album;
-            else
+            if (song.Album == null)
             {
+                song.Album = new Album()
+                {
+                    PrimaryArtistId = song.ArtistId,
+                    Name = song.Name + " (Single)",
+                    PrimaryArtist = song.Artist,
+                    ProviderId = "autc.single." + song.ProviderId
+                };
                 await _service.InsertAsync(song.Album);
                 Albums.Add(song.Album);
                 song.Album.Songs = new List<Song>();
                 song.Artist.Albums.Add(song.Album);
             }
+            else
+            {
+                var album = Albums.FirstOrDefault(p => p.ProviderId == song.Album.ProviderId);
+
+                if (album != null)
+                    song.Album = album;
+                else
+                {
+                    await _service.InsertAsync(song.Album);
+                    Albums.Add(song.Album);
+                    song.Album.Songs = new List<Song>();
+                    song.Artist.Albums.Add(song.Album);
+                }
+            }
+
+            song.AlbumId = song.Album.Id;
 
             #endregion
 
             #region Download artwork
 
-            //Use the album if one is available
-            var filePath = string.Format(CollectionConstant.ArtworkPath, song.Album.Id);
-
-            //Check if the album artwork has already been downloaded
-            var artworkExists = await StorageHelper.FileExistsAsync(filePath);
-
-            if (!artworkExists)
+            if (artworkUrl != null)
             {
-                try
+//Use the album if one is available
+                var filePath = string.Format(CollectionConstant.ArtworkPath, song.Album.Id);
+
+                //Check if the album artwork has already been downloaded
+                var artworkExists = await StorageHelper.FileExistsAsync(filePath);
+
+                if (!artworkExists)
                 {
-                    using (var client = new HttpClient())
+                    try
                     {
-                        var stream = await client.GetStreamAsync(artworkUrl);
-                        using (
-                            var fileStream =
-                                await
-                                    (await StorageHelper.CreateFileAsync(filePath)).OpenStreamForWriteAsync()
-                            )
+                        using (var client = new HttpClient())
                         {
-                            await stream.CopyToAsync(fileStream);
-                            //now set it
-                            song.Album.ArtworkUri = new Uri(CollectionConstant.LocalStorageAppPath + filePath);
+                            var stream = await client.GetStreamAsync(artworkUrl);
+                            using (
+                                var fileStream =
+                                    await
+                                        (await StorageHelper.CreateFileAsync(filePath)).OpenStreamForWriteAsync()
+                                )
+                            {
+                                await stream.CopyToAsync(fileStream);
+                                //now set it
+                                song.Album.ArtworkUri = new Uri(CollectionConstant.LocalStorageAppPath + filePath);
+                            }
                         }
                     }
-                }
-                catch (Exception e)
-                {
-                    Debug.WriteLine("Some shit happened saving the artwork, here: " + e);
+                    catch (Exception e)
+                    {
+                        Debug.WriteLine("Some shit happened saving the artwork, here: " + e);
+                    }
                 }
             }
 
             #endregion
-
-            //Update ids
-            song.AlbumId = song.Album.Id;
-            song.ArtistId = song.Artist.Id;
 
             //Insert to db
             await _service.InsertAsync(song);

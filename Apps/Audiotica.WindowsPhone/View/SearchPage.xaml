@@ -12,7 +12,7 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
     DataContext="{Binding Search, Source={StaticResource Locator}}">
 
-	<Grid Margin="0,45,0,0">
+	<Grid Margin="0,20,0,0">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
@@ -28,8 +28,8 @@
 		</common:MaterialCard>
 
         <ListView Margin="20,0" IsItemClickEnabled="True"
-            Grid.Row="1" ItemsSource="{Binding ResultsResponse.Tracks.Items}"
-                ItemTemplate="{StaticResource XboxTrackDataTemplate}" >
+            Grid.Row="1" ItemsSource="{Binding ResultsResponse.Content}"
+                ItemTemplate="{StaticResource LastTrackDataTemplate}" >
         	<interactivity:Interaction.Behaviors>
         		<Core:EventTriggerBehavior EventName="ItemClick">
         			<Core:InvokeCommandAction Command="{Binding SongClickRelayCommand}"/>

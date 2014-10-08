@@ -107,21 +107,21 @@
         </DataTemplate>
 
 
-        <DataTemplate x:Key="XboxAlbumDataTemplate">
+        <DataTemplate x:Key="LastAlbumDataTemplate">
             <StackPanel Margin="0,5,5,0" Width="150">
                 <Image
-                    Source="{Binding ImageUrl}" Height="150" Width="150" Margin="0,0,0,5" />
+                    Source="{Binding Images.Largest}" Height="150" Width="150" Margin="0,0,0,5" />
                 <TextBlock Text="{Binding Name}" FontSize="15" TextTrimming="CharacterEllipsis" />
-                <TextBlock Text="{Binding Artists[0].Artist.Name}" FontSize="12" TextTrimming="CharacterEllipsis" Foreground="#89000000" />
+                <TextBlock Text="{Binding ArtistName}" FontSize="12" TextTrimming="CharacterEllipsis" Foreground="#89000000" FontFamily="Global User Interface" />
             </StackPanel>
         </DataTemplate>
 
-        <DataTemplate x:Key="XboxTrackDataTemplate">
+        <DataTemplate x:Key="LastTrackDataTemplate">
             <StackPanel>
                 <Rectangle Height="1" Fill="#1E000000" Margin="0,10,0,0" />
                 <TextBlock Margin="0,5" Text="{Binding Name}" FontSize="26" FontFamily="Global User Interface"
                            TextTrimming="CharacterEllipsis" />
-                <TextBlock Text="{Binding Artists[0].Artist.Name}" FontSize="22" FontWeight="Thin"
+                <TextBlock Text="{Binding ArtistName}" FontSize="22" FontWeight="Thin"
                            FontFamily="Global User Interface" Foreground="#89000000" TextTrimming="CharacterEllipsis" />
             </StackPanel>
         </DataTemplate>

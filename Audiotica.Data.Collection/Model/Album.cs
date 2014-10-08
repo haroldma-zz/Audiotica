@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using Windows.UI.Xaml.Media.Imaging;
+using Audiotica.Core.Utilities;
 using Audiotica.Data.Collection.SqlHelper;
 
 #endregion
@@ -42,7 +43,7 @@ namespace Audiotica.Data.Collection.Model
             get
             {
                 //don't want to load image every time, so we save the instance
-                return _bitmap ?? (_bitmap = new BitmapImage(ArtworkUri));
+                return _bitmap ?? (_bitmap = new BitmapImage(ArtworkUri ?? new Uri(CollectionConstant.MissingArtworkAppPath)));
             }
         }
 

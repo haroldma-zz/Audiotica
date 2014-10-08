@@ -117,7 +117,9 @@ namespace Audiotica.Data.Collection.RunTime
                     using (var custstmt = db.Prepare(EasySql.CreateInsert(entry.GetType())))
                     {
                         EasySql.FillInsert(custstmt, entry);
-                        custstmt.Step();
+                        var res = custstmt.Step();
+                        if (res != SQLiteResult.DONE)
+                            throw new Exception();
                     }
                 }
                     );

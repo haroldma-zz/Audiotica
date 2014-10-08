@@ -1,10 +1,12 @@
-﻿using System;
+﻿#region
+
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Audiotica.Data.Model.LastFm;
 using Audiotica.Data.Model.Musicbrainz;
+using IF.Lastfm.Core.Api.Helpers;
+using IF.Lastfm.Core.Objects;
+
+#endregion
 
 namespace Audiotica.Data.Service.Interfaces
 {
@@ -13,18 +15,24 @@ namespace Audiotica.Data.Service.Interfaces
         Task<MbRelease> GetMbAlbum(string id);
         Task<MbArtist> GetMbArtist(string id);
 
-        Task<FmDetailAlbum> GetDetailAlbum(string name, string artist);
-        Task<FmDetailTrack> GetDetailTrack(string name, string artist);
-        Task<FmDetailArtist> GetDetailArtist(string name);
+        Task<LastAlbum> GetDetailAlbum(string name, string artist);
+        Task<LastAlbum> GetDetailAlbumByMbid(string mbid);
+        Task<LastTrack> GetDetailTrack(string name, string artist);
+        Task<LastTrack> GetDetailTrackByMbid(string mbid);
+        Task<LastArtist> GetDetailArtist(string name);
+        Task<LastArtist> GetDetailArtistByMbid(string mbid);
 
-        Task<FmResults> SearchTracksAsync(string query, int page = 1, int limit = 30);
-        Task<FmResults> SearchArtistAsync(string query, int page = 1, int limit = 30);
-        Task<FmResults> SearchAlbumsAsync(string query, int page = 1, int limit = 30);
+        Task<PageResponse<LastTrack>> GetArtistTopTracks(string name);
+        Task<PageResponse<LastAlbum>> GetArtistTopAlbums(string name);
 
-        Task<FmTrackResults> GetTopTracksAsync(int page = 1, int limit = 30);
-        Task<FmArtistResults> GetTopArtistsAsync(int page = 1, int limit = 30);
+        Task<PageResponse<LastTrack>> SearchTracksAsync(string query, int page = 1, int limit = 30);
+        Task<PageResponse<LastArtist>> SearchArtistAsync(string query, int page = 1, int limit = 30);
+        Task<PageResponse<LastAlbum>> SearchAlbumsAsync(string query, int page = 1, int limit = 30);
 
-        Task<FmArtistResults> GetSimilarArtistsAsync(int page = 1, int limit = 30);
-        Task<FmTrackResults> GetSimilarTracksAsync(int page = 1, int limit = 30);
+        Task<PageResponse<LastTrack>> GetTopTracksAsync(int page = 1, int limit = 30);
+        Task<PageResponse<LastArtist>> GetTopArtistsAsync(int page = 1, int limit = 30);
+
+        Task<List<LastArtist>> GetSimilarArtistsAsync(string name, int limit = 30);
+        Task<List<LastTrack>> GetSimilarTracksAsync(string name, string artistName, int limit = 30);
     }
 }

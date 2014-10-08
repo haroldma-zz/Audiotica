@@ -5,6 +5,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 using Audiotica.ViewModel;
 using GalaSoft.MvvmLight.Messaging;
+using IF.Lastfm.Core.Objects;
 
 #endregion
 
@@ -20,19 +21,20 @@ namespace Audiotica.View
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
-            var id = e.Parameter as string;
+            var album = e.Parameter as LastAlbum;
 
-            if (id == null) return;
+            if (album == null) return;
 
-            var msg = new GenericMessage<string>(id);
-            Messenger.Default.Send(msg, "album-detail-id");
+            var msg = new GenericMessage<LastAlbum>(album);
+            Messenger.Default.Send(msg, "album-detail");
         }
 
         private void HyperlinkButton_Click(object sender, RoutedEventArgs e)
         {
             var vm = (sender as HyperlinkButton).DataContext as AlbumViewModel;
 
-            Frame.Navigate(typeof (ArtistPage), vm.Album.PrimaryArtist.Id);
+            Frame.Navigate(typeof (ArtistPage), vm.Album.ArtistName
+                );
         }
     }
 }
