@@ -3,7 +3,6 @@
 using Audiotica.Data.Collection;
 using Audiotica.Data.Collection.DesignTime;
 using Audiotica.Data.Collection.RunTime;
-using Audiotica.Data.Service.DesignTime;
 using Audiotica.Data.Service.Interfaces;
 using Audiotica.Data.Service.RunTime;
 using GalaSoft.MvvmLight;
@@ -33,14 +32,13 @@ namespace Audiotica.ViewModel
 
             if (ViewModelBase.IsInDesignModeStatic)
             {
-                SimpleIoc.Default.Register<IXboxMusicService, DesignXboxMusicService>();
                 SimpleIoc.Default.Register<ICollectionService, DesignCollectionService>();
                 SimpleIoc.Default.Register<IQueueService, QueueService>();
                 SimpleIoc.Default.Register<ISqlService, DesignSqlService>();
             }
             else
             {
-                SimpleIoc.Default.Register<IXboxMusicService, XboxMusicService>();
+                SimpleIoc.Default.Register<IScrobblerService, ScrobblerService>();
                 SimpleIoc.Default.Register<ICollectionService, CollectionService>();
                 SimpleIoc.Default.Register<IQueueService, QueueService>();
                 SimpleIoc.Default.Register<ISqlService, SqlService>();

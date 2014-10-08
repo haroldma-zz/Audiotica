@@ -1,23 +1,134 @@
-﻿using System;
+﻿#region
+
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using Audiotica.Core.Exceptions;
 using Audiotica.Core.Utilities;
-using Audiotica.Data.Model.LastFm;
 using Audiotica.Data.Model.Musicbrainz;
 using Audiotica.Data.Service.Interfaces;
+using IF.Lastfm.Core.Api;
+using IF.Lastfm.Core.Api.Helpers;
+using IF.Lastfm.Core.Objects;
+
+#endregion
 
 namespace Audiotica.Data.Service.RunTime
 {
     public class ScrobblerService : IScrobblerService
     {
-        private const string BaseApiPath = 
-            "http://ws.audioscrobbler.com/2.0/?method={0}&api_key={1}&format=json";
         private const string MbApiPath =
             "http://musicbrainz.org/ws/2/{0}/{1}?fmt=json";
+
+        private static readonly Auth FmAuth = new Auth(ApiKeys.LastFmId, "");
+        private readonly AlbumApi _albumApi = new AlbumApi(FmAuth);
+        private readonly ArtistApi _artistApi = new ArtistApi(FmAuth);
+        private readonly TrackApi _trackApi = new TrackApi(FmAuth);
+        private readonly ChartApi _chartApi = new ChartApi(FmAuth);
+
+        public async Task<MbRelease> GetMbAlbum(string id)
+        {
+            var url = string.Format(MbApiPath, "release", id);
+            var resp = await GetAsync<MbRelease>(url);
+            return resp;
+        }
+
+        public async Task<MbArtist> GetMbArtist(string id)
+        {
+            var url = string.Format(MbApiPath, "artist", id);
+            var resp = await GetAsync<MbArtist>(url);
+            return resp;
+        }
+
+        public async Task<LastAlbum> GetDetailAlbum(string name, string artist)
+        {
+            var resp = await _albumApi.GetAlbumInfoAsync(artist, name);
+            return resp.Content;
+        }
+
+        public async Task<LastAlbum> GetDetailAlbumByMbid(string mbid)
+        {
+            var resp = await _albumApi.GetAlbumInfoByMbidAsync(mbid);
+            return resp.Content;
+        }
+
+        public async Task<LastTrack> GetDetailTrack(string name, string artist)
+        {
+            var resp = await _trackApi.GetInfoAsync(name, artist);
+            return resp.Content;
+        }
+
+        public async Task<LastTrack> GetDetailTrackByMbid(string mbid)
+        {
+            var resp = await _trackApi.GetInfoByMbidAsync(mbid);
+            return resp.Content;
+        }
+
+        public async Task<LastArtist> GetDetailArtist(string name)
+        {
+            var resp = await _artistApi.GetArtistInfoAsync(name);
+            return resp.Content;
+        }
+        
+        public async Task<LastArtist> GetDetailArtistByMbid(string mbid)
+        {
+            var resp = await _artistApi.GetArtistInfoByMbidAsync(mbid);
+            return resp.Content;
+        }
+
+        public async Task<PageResponse<LastTrack>> GetArtistTopTracks(string name)
+        {
+            var resp = await _artistApi.GetTopTracksForArtistAsync(name);
+            return resp;
+        }
+
+        public async Task<PageResponse<LastAlbum>> GetArtistTopAlbums(string name)
+        {
+            var resp = await _artistApi.GetTopAlbumsForArtistAsync(name);
+            return resp;
+        }
+
+        public async Task<PageResponse<LastTrack>> SearchTracksAsync(string query, int page = 1, int limit = 30)
+        {
+            var resp = await _trackApi.SearchForTrackAsync(query, page, limit);
+            return resp;
+        }
+
+        public async Task<PageResponse<LastArtist>> SearchArtistAsync(string query, int page = 1, int limit = 30)
+        {
+            var resp = await _artistApi.SearchForArtistAsync(query, page, limit);
+            return resp;
+        }
+
+        public async Task<PageResponse<LastAlbum>> SearchAlbumsAsync(string query, int page = 1, int limit = 30)
+        {
+            var resp = await _albumApi.SearchForAlbumAsync(query, page, limit);
+            return resp;
+        }
+
+        public async Task<PageResponse<LastTrack>> GetTopTracksAsync(int page = 1, int limit = 30)
+        {
+            var resp = await _chartApi.GetTopTracksAsync(page, limit);
+            return resp;
+        }
+
+        public async Task<PageResponse<LastArtist>> GetTopArtistsAsync(int page = 1, int limit = 30)
+        {
+            var resp = await _chartApi.GetTopArtistsAsync(page, limit);
+            return resp;
+        }
+
+        public async Task<List<LastArtist>> GetSimilarArtistsAsync(string name, int limit = 30)
+        {
+            var resp = await _artistApi.GetSimilarArtistsAsync(name, true, limit);
+            return resp.Content;
+        }
+
+        public Task<List<LastTrack>> GetSimilarTracksAsync(string name, string artistName, int limit = 30)
+        {
+            throw new System.NotImplementedException();
+        }
 
         private void ThrowIfError(HttpResponseMessage resp)
         {
@@ -36,111 +147,6 @@ namespace Audiotica.Data.Service.RunTime
 
                 return parseResp;
             }
-        }
-
-        public async Task<MbRelease> GetMbAlbum(string id)
-        {
-            var url = string.Format(MbApiPath, "release", id);
-            var resp = await GetAsync<MbRelease>(url);
-            return resp;
-        }
-
-        public async Task<MbArtist> GetMbArtist(string id)
-        {
-            var url = string.Format(MbApiPath, "artist", id);
-            var resp = await GetAsync<MbArtist>(url);
-            return resp;
-        }
-
-        public async Task<FmDetailAlbum> GetDetailAlbum(string name, string artist)
-        {
-            var url = string.Format(BaseApiPath, "album.getInfo", ApiKeys.LastFmId);
-            url += string.Format("&album={0}&artist={1}&autocorrect=1", name, artist);
-
-            var resp = await GetAsync<FmDetailRoot>(url);
-            return resp.album;
-        }
-
-        public async Task<FmDetailTrack> GetDetailTrack(string name, string artist)
-        {
-            var url = string.Format(BaseApiPath, "track.getInfo", ApiKeys.LastFmId);
-            url += string.Format("&track={0}&artist={1}&autocorrect=1", name, artist);
-
-            var resp = await GetAsync<FmDetailRoot>(url);
-            return resp.track;
-        }
-
-        public async Task<FmDetailArtist> GetDetailArtist(string name)
-        {
-            var url = string.Format(BaseApiPath, "artist.getInfo", ApiKeys.LastFmId);
-            url += string.Format("&artist={0}&autocorrect=1", name);
-
-            var resp = await GetAsync<FmDetailRoot>(url);
-            return resp.artist;
-        }
-
-        public async Task<FmResults> SearchTracksAsync(string query, int page = 1, int limit = 30)
-        {
-            var url = string.Format(BaseApiPath, "track.search", ApiKeys.LastFmId);
-            url += string.Format("&track={0}&page={1}&limit={2}", query, page, limit);
-
-            var resp = await GetAsync<FmSearchRoot>(url);
-
-            return resp.results;
-        }
-
-        public async Task<FmResults> SearchArtistAsync(string query, int page = 1, int limit = 30)
-        {
-            var url = string.Format(BaseApiPath, "artist.search", ApiKeys.LastFmId);
-            url += string.Format("&artist={0}&page={1}&limit={2}", query, page, limit);
-
-            var resp = await GetAsync<FmSearchRoot>(url);
-            return resp.results;
-        }
-
-        public async Task<FmResults> SearchAlbumsAsync(string query, int page = 1, int limit = 30)
-        {
-            var url = string.Format(BaseApiPath, "album.search", ApiKeys.LastFmId);
-            url += string.Format("&album={0}&page={1}&limit={2}", query, page, limit);
-
-            var resp = await GetAsync<FmSearchRoot>(url);
-            return resp.results;
-        }
-
-        public async Task<FmTrackResults> GetTopTracksAsync(int page = 1, int limit = 30)
-        {
-            var url = string.Format(BaseApiPath, "chart.getTopTracks", ApiKeys.LastFmId);
-            url += string.Format("&page={0}&limit={1}", page, limit);
-
-            var resp = await GetAsync<FmChartsTopRoot>(url);
-            return resp.tracks;
-        }
-
-        public async Task<FmArtistResults> GetTopArtistsAsync(int page = 1, int limit = 30)
-        {
-            var url = string.Format(BaseApiPath, "chart.getTopArtists", ApiKeys.LastFmId);
-            url += string.Format("&page={0}&limit={1}", page, limit);
-
-            var resp = await GetAsync<FmChartsTopRoot>(url);
-            return resp.artists;
-        }
-
-        public async Task<FmArtistResults> GetSimilarArtistsAsync(int page = 1, int limit = 30)
-        {
-            var url = string.Format(BaseApiPath, "artist.getSimilar", ApiKeys.LastFmId);
-            url += string.Format("&page={0}&limit={1}", page, limit);
-
-            var resp = await GetAsync<FmChartsTopRoot>(url);
-            return resp.artists;
-        }
-
-        public async Task<FmTrackResults> GetSimilarTracksAsync(int page = 1, int limit = 30)
-        {
-            var url = string.Format(BaseApiPath, "track.getSimilar", ApiKeys.LastFmId);
-            url += string.Format("&page={0}&limit={1}", page, limit);
-
-            var resp = await GetAsync<FmChartsTopRoot>(url);
-            return resp.tracks;
         }
     }
 }

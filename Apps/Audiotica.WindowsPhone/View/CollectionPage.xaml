@@ -15,7 +15,7 @@
 	<Grid>
 		<Pivot>
 			<PivotItem Header="songs">
-				<ListView IsItemClickEnabled="True" ItemsSource="{Binding Service.Songs}" Padding="0,0,0,25" Margin="0,0,-0.333,0">
+				<ListView IsItemClickEnabled="True" ItemsSource="{Binding Service.Songs}" Padding="0,0,0,25">
 					<ListView.ItemTemplate>
 						<DataTemplate>
 							<common:MaterialCard Margin="0,-2">
@@ -48,7 +48,7 @@
 				</ListView>
 			</PivotItem>
 			<PivotItem Header="artists">
-                <ListView IsItemClickEnabled="True" ItemsSource="{Binding Service.Artists}" Padding="0,0,0,25" Margin="0,0,-0.333,0" ItemClick="ArtistListView_ItemClick">
+                <ListView IsItemClickEnabled="True" ItemsSource="{Binding Service.Artists}" Padding="0,0,0,25" Margin="0" ItemClick="ArtistListView_ItemClick">
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <common:MaterialCard Margin="0,-2">
@@ -67,7 +67,7 @@
                 </ListView>
             </PivotItem>
 			<PivotItem Header="albums">
-                <ListView IsItemClickEnabled="True" ItemsSource="{Binding Service.Albums}" Padding="0,0,0,25" Margin="0,0,-0.333,0" ItemClick="AlbumListView_ItemClick">
+                <ListView IsItemClickEnabled="True" ItemsSource="{Binding Service.Albums}" Padding="0,0,0,25" Margin="0" ItemClick="AlbumListView_ItemClick">
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <common:MaterialCard Margin="0,-2">

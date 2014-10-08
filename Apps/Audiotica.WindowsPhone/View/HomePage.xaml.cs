@@ -5,9 +5,7 @@ using Windows.UI.Popups;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Navigation;
-using Audiotica.Data.Collection;
-using Audiotica.Data.Collection.SqlHelper;
-using Microsoft.Xbox.Music.Platform.Contract.DataModel;
+using IF.Lastfm.Core.Objects;
 
 #endregion
 
@@ -39,7 +37,9 @@ namespace Audiotica.View
             }
 
             if (!justUpdated || firstRun) return;
-            new MessageDialog("-switch from xbox music to last.fm\n-now playing page is everywhere!\n-subtle changes in ui", "Beta3 - Patch #1")
+            new MessageDialog(
+                "-switch from xbox music to last.fm\n-now playing page is everywhere!\n-subtle changes in ui",
+                "Beta3 - Patch #1")
                 .ShowAsync();
             ApplicationData.Current.LocalSettings.Values["CurrentBuild"] = "1409-beta3-patch1";
         }
@@ -47,14 +47,14 @@ namespace Audiotica.View
         //TODO [Harry,20140908] move this to view model with RelayCommand
         private void ListView_ItemClick(object sender, ItemClickEventArgs e)
         {
-            var album = e.ClickedItem as XboxAlbum;
-            if (album != null) Frame.Navigate(typeof (AlbumPage), album.Id);
+            var album = e.ClickedItem as LastAlbum;
+            if (album != null) Frame.Navigate(typeof (AlbumPage), album);
         }
 
         private void Grid_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            var artist = ((Grid) sender).DataContext as XboxArtist;
-            if (artist != null) Frame.Navigate(typeof (ArtistPage), artist.Id);
+            var artist = ((Grid) sender).DataContext as LastArtist;
+            if (artist != null) Frame.Navigate(typeof (ArtistPage), artist.Name);
         }
     }
 }

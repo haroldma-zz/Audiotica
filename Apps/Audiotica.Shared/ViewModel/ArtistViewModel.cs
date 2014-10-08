@@ -3,8 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Windows.System;
-using Windows.UI.Popups;
 using Windows.UI.Xaml.Controls;
 using Audiotica.Core.Common;
 using Audiotica.Data;
@@ -12,7 +10,7 @@ using Audiotica.Data.Service.Interfaces;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Messaging;
-using Microsoft.Xbox.Music.Platform.Contract.DataModel;
+using IF.Lastfm.Core.Objects;
 
 #endregion
 
@@ -20,19 +18,19 @@ namespace Audiotica.ViewModel
 {
     public class ArtistViewModel : ViewModelBase
     {
-        private readonly IXboxMusicService _service;
-        private XboxArtist _artist;
+        private readonly IScrobblerService _service;
+        private LastArtist _artist;
         private bool _isLoading;
-        private List<XboxAlbum> _topAlbums;
-        private List<XboxTrack> _topTracks;
         private RelayCommand<ItemClickEventArgs> _songClickRelayCommand;
+        private List<LastAlbum> _topAlbums;
+        private List<LastTrack> _topTracks;
 
-        public ArtistViewModel(IXboxMusicService service)
+        public ArtistViewModel(IScrobblerService service)
         {
             SongClickRelayCommand = new RelayCommand<ItemClickEventArgs>(SongClickExecute);
             _service = service;
 
-            MessengerInstance.Register<GenericMessage<string>>(this, "artist-detail-id", ReceivedId);
+            MessengerInstance.Register<GenericMessage<string>>(this, "artist-detail-name", ReceivedName);
 
             if (IsInDesignMode)
                 LoadData("music.test");
@@ -44,19 +42,19 @@ namespace Audiotica.ViewModel
             set { Set(ref _songClickRelayCommand, value); }
         }
 
-        public XboxArtist Artist
+        public LastArtist Artist
         {
             get { return _artist; }
             set { Set(ref _artist, value); }
         }
 
-        public List<XboxTrack> TopTracks
+        public List<LastTrack> TopTracks
         {
             get { return _topTracks; }
             set { Set(ref _topTracks, value); }
         }
 
-        public List<XboxAlbum> TopAlbums
+        public List<LastAlbum> TopAlbums
         {
             get { return _topAlbums; }
             set { Set(ref _topAlbums, value); }
@@ -68,9 +66,9 @@ namespace Audiotica.ViewModel
             set { Set(ref _isLoading, value); }
         }
 
-        private void ReceivedId(GenericMessage<string> msg)
+        private void ReceivedName(GenericMessage<string> msg)
         {
-            if (Artist != null && msg.Content == Artist.Id) return;
+            if (Artist != null && msg.Content == Artist.Name) return;
 
             Artist = null;
             TopAlbums = null;
@@ -78,23 +76,24 @@ namespace Audiotica.ViewModel
             LoadData(msg.Content);
         }
 
-        public async void LoadData(string id)
+        public async void LoadData(string name)
         {
             IsLoading = true;
-            Artist = await _service.GetArtistDetails(id);
-            TopTracks = Artist.TopTracks.Items.Take(5).ToList();
-            TopAlbums = Artist.Albums.Items.Take(5).ToList();
+            Artist = await _service.GetDetailArtist(name);
+            TopTracks = (await _service.GetArtistTopTracks(name)).Content.ToList();
+            TopAlbums = (await _service.GetArtistTopAlbums(name)).Content.ToList();
             IsLoading = false;
         }
 
         private async void SongClickExecute(ItemClickEventArgs item)
         {
-            var xboxTrack = item.ClickedItem as XboxTrack;
+            var lastTrack = item.ClickedItem as LastTrack;
 
             //TODO [Harry,20140909] use a ui blocker with progress indicator
             IsLoading = true;
 
-            var url = await Mp3MatchEngine.FindMp3For(xboxTrack);
+            //TODO [Harry,20140908] actual downloading instead of previewing
+            var url = await Mp3MatchEngine.FindMp3For(lastTrack);
 
             IsLoading = false;
 
@@ -105,11 +104,29 @@ namespace Audiotica.ViewModel
 
             else
             {
-                var song = xboxTrack.ToSong();
+                lastTrack = await _service.GetDetailTrack(lastTrack.Name, lastTrack.ArtistName);
+                var song = lastTrack.ToSong();
+                LastArtist lastArtist;
+
+                if (!string.IsNullOrEmpty(lastTrack.AlbumName))
+                {
+                    var lastAlbum = await _service.GetDetailAlbum(lastTrack.AlbumName, lastTrack.ArtistName);
+                    lastArtist = await _service.GetDetailArtistByMbid(lastTrack.ArtistMbid);
+                    song.Album = lastAlbum.ToAlbum();
+                    song.Album.PrimaryArtist = lastArtist.ToArtist();
+                    lastTrack.Images = lastAlbum.Images;
+                }
+
+                else
+                    lastArtist = await _service.GetDetailArtist(lastTrack.ArtistName);
+
+                song.Artist = lastArtist.ToArtist();
+                song.ArtistName = lastArtist.Name;
+
                 song.AudioUrl = url;
                 try
                 {
-                    await App.Locator.CollectionService.AddSongAsync(song, xboxTrack.ImageUrl);
+                    await App.Locator.CollectionService.AddSongAsync(song, lastTrack.Images != null ? lastTrack.Images.Largest.AbsoluteUri : null);
                     CurtainPrompt.Show("Song saved");
                 }
                 catch (Exception e)

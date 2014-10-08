@@ -2,13 +2,14 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Audiotica.Core.Common;
 using Audiotica.Core.Exceptions;
 using Audiotica.Data.Service.Interfaces;
 using GalaSoft.MvvmLight;
 using GoogleAnalytics;
-using Microsoft.Xbox.Music.Platform.Contract.DataModel;
+using IF.Lastfm.Core.Objects;
 
 #endregion
 
@@ -17,36 +18,22 @@ namespace Audiotica.ViewModel
     public class MainViewModel : ViewModelBase
     {
         private readonly AudioPlayerManager _audioPlayer;
-        private readonly IXboxMusicService _service;
-        private List<XboxAlbum> _featuredReleases;
+        private readonly IScrobblerService _service;
         private bool _isFeaturedLoading;
         private bool _isNewLoading;
         private bool _isSliderLoading;
-        private List<XboxAlbum> _newAlbums;
-        private List<XboxArtist> _spotlightItems;
+        private List<LastArtist> _spotlightItems;
 
         /// <summary>
         ///     Initializes a new instance of the MainViewModel class.
         /// </summary>
-        public MainViewModel(IXboxMusicService service, AudioPlayerManager audioPlayer)
+        public MainViewModel(IScrobblerService service, AudioPlayerManager audioPlayer)
         {
             _service = service;
             _audioPlayer = audioPlayer;
 
             //Load data automatically
             LoadChartDataAsync();
-        }
-
-        public List<XboxAlbum> NewAlbums
-        {
-            get { return _newAlbums; }
-            set { Set(ref _newAlbums, value); }
-        }
-
-        public List<XboxAlbum> FeatureAlbums
-        {
-            get { return _featuredReleases; }
-            set { Set(ref _featuredReleases, value); }
         }
 
         public bool IsFeaturedLoading
@@ -67,7 +54,7 @@ namespace Audiotica.ViewModel
             set { Set(ref _isNewLoading, value); }
         }
 
-        public List<XboxArtist> SpotlightItems
+        public List<LastArtist> SpotlightItems
         {
             get { return _spotlightItems; }
             set { Set(ref _spotlightItems, value); }
@@ -86,7 +73,7 @@ namespace Audiotica.ViewModel
 
             try
             {
-                SpotlightItems = (await _service.GetFeaturedArtist(5)).Items;
+                SpotlightItems = (await _service.GetTopArtistsAsync(5)).Content.ToList();
             }
             catch (Exception e)
             {
@@ -99,7 +86,7 @@ namespace Audiotica.ViewModel
 
             try
             {
-                FeatureAlbums = (await _service.GetFeaturedAlbums()).Items;
+                //FeatureAlbums = (await _service.GetFeaturedAlbums()).Items;
             }
             catch (Exception e)
             {
@@ -111,7 +98,7 @@ namespace Audiotica.ViewModel
             }
             try
             {
-                NewAlbums = (await _service.GetNewAlbums()).Items;
+                // NewAlbums = (await _service.GetNewAlbums()).Items;
             }
             catch (Exception e)
             {

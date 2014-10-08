@@ -13,6 +13,6 @@ namespace Audiotica.Core.Utilities
 
         public const string SongPath = "songs/{0}.mp3";
         public const string ArtworkPath = "artworks/{0}.jpg";
-        public const string MissingArtworkAppPath = "Assets/MissingArtwork.png";
+        public const string MissingArtworkAppPath = PackageAppPath + "Assets/MissingArtwork.png";
     }
 }
