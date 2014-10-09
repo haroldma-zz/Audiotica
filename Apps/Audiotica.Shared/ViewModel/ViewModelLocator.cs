@@ -92,6 +92,11 @@ namespace Audiotica.ViewModel
             get { return SimpleIoc.Default.GetInstance<ICollectionService>(); }
         }
 
+        public IScrobblerService ScrobblerService
+        {
+            get { return SimpleIoc.Default.GetInstance<IScrobblerService>(); }
+        }
+
         public IQueueService QueueService
         {
             get { return SimpleIoc.Default.GetInstance<IQueueService>(); }

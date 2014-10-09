@@ -33,7 +33,7 @@ namespace Audiotica.View
 
         private async void DeleteSongMenuFlyoutItem_Click(object sender, RoutedEventArgs e)
         {
-            var song = ((FrameworkElement) sender).DataContext as Song;
+            var song = (Song)((FrameworkElement)sender).DataContext;
 
             try
             {
@@ -42,10 +42,7 @@ namespace Audiotica.View
 
                 //stop playback
                 if (song.Id == AppSettingsHelper.Read<long>(PlayerConstants.CurrentTrack))
-                    App.Locator.AudioPlayer.ShutdownPlayer();
-
-                //wait a bit, there's a chance the player will try to read th db
-                await Task.Delay(1000);
+                   await  App.Locator.AudioPlayer.ShutdownPlayerAsync();
 
                 await App.Locator.CollectionService.DeleteSongAsync(song);
                 CurtainPrompt.Show("Song deleted");

@@ -115,8 +115,8 @@ namespace Audiotica.ViewModel
             CurtainPrompt.ShowError("There was a network issue");
 
             var ex = e.Message + "\n" + e.StackTrace;
-            if (e is XboxException)
-                ex = (e as XboxException).Description + "\n" + ex;
+            if (e is LastException)
+                ex = (e as LastException).Description + "\n" + ex;
             EasyTracker.GetTracker().SendException(ex, false);
         }
     }

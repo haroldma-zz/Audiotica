@@ -2,9 +2,9 @@
 
 namespace Audiotica.Core.Exceptions
 {
-    public class XboxException : Exception
+    public class LastException : Exception
     {
-        public XboxException(string message, string description) : base(message)
+        public LastException(string message, string description) : base(message)
         {
             Description = description;
         }
