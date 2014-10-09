@@ -70,8 +70,16 @@ namespace Audiotica.ViewModel
         private async void LoadData(LastAlbum album)
         {
             IsLoading = true;
-            Album = await _service.GetDetailAlbum(album.Name, album.ArtistName);
-            Tracks = new ObservableCollection<LastTrack>(Album.Tracks);
+
+            try
+            {
+                Album = await _service.GetDetailAlbum(album.Name, album.ArtistName);
+                Tracks = new ObservableCollection<LastTrack>(Album.Tracks);
+            }
+            catch (Exception e)
+            {
+                CurtainPrompt.ShowError(e.Message);
+            }
             IsLoading = false;
         }
 
