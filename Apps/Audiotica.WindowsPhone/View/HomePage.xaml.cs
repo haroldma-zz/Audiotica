@@ -5,6 +5,7 @@ using Windows.UI.Popups;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Navigation;
+using Audiotica.Core.Utilities;
 using IF.Lastfm.Core.Objects;
 
 #endregion
@@ -16,32 +17,6 @@ namespace Audiotica.View
         public HomePage()
         {
             InitializeComponent();
-        }
-
-        protected override void OnNavigatedTo(NavigationEventArgs e)
-        {
-            base.OnNavigatedTo(e);
-
-            var justUpdated = true;
-            var firstRun = !ApplicationData.Current.LocalSettings.Values.ContainsKey("CurrentBuild");
-
-            if (!firstRun)
-                justUpdated = (string) ApplicationData.Current.LocalSettings.Values["CurrentBuild"]
-                              != "1409-beta3-patch1";
-            else
-            {
-                ApplicationData.Current.LocalSettings.Values.Add("CurrentBuild", "1410-beta4-patch0");
-                new MessageDialog(
-                    "Test out saving downloading using the new metadate provider (last.fm)",
-                    "v1410 (BETA4)").ShowAsync();
-            }
-
-            if (!justUpdated || firstRun) return;
-            new MessageDialog(
-                "-switch from xbox music to last.fm\n-now playing page is everywhere!\n-subtle changes in ui",
-                "Beta4 - Patch #0")
-                .ShowAsync();
-            ApplicationData.Current.LocalSettings.Values["CurrentBuild"] = "1410-beta4-patch0";
         }
 
         //TODO [Harry,20140908] move this to view model with RelayCommand

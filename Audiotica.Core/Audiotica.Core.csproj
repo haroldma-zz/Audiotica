@@ -40,6 +40,7 @@
     <TargetPlatform Include="Windows, Version=8.1" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Common\AppVersion.cs" />
     <Compile Include="Common\CurtainPrompt.cs" />
     <Compile Include="Common\NullToVisibilityConverter.cs" />
     <Compile Include="Common\NullToBooleanConverter.cs" />
@@ -59,6 +60,8 @@
     </Compile>
     <Compile Include="Utilities\CollectionConstant.cs" />
     <Compile Include="Utilities\ColorHelper.cs" />
+    <Compile Include="Utilities\BetaChangelogHelper.cs" />
+    <Compile Include="Utilities\MessageBox.cs" />
     <Compile Include="Utilities\StorageHelper.cs" />
     <Compile Include="Utilities\StringExtensions.cs" />
   </ItemGroup>
