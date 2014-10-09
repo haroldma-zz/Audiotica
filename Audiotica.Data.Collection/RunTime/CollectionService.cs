@@ -57,9 +57,27 @@ namespace Audiotica.Data.Collection.RunTime
                 artist.Albums = albums.Where(p => p.PrimaryArtistId == artist.Id).ToList();
             }
 
+            
+
             Songs = songs;
             Artists = artists;
             Albums = albums;
+            CleanupFiles();
+        }
+
+        /// <summary>
+        /// Deleting unused files.
+        /// Artworks, since deleting them when an album is delete can cause problems.
+        /// </summary>
+        private async void CleanupFiles()
+        {
+            var artworkFolder = await StorageHelper.GetFolderAsync("artworks");
+            var artworks = await artworkFolder.GetFilesAsync();
+
+            foreach (var file in from file in artworks let id = int.Parse(file.Name.Replace(".jpg", "")) where Albums.Count(p => p.Id == id) == 0 select file)
+            {
+                await file.DeleteAsync();
+            }
         }
 
         private Uri GetArtwork(long id)
@@ -165,16 +183,18 @@ namespace Audiotica.Data.Collection.RunTime
                     {
                         using (var client = new HttpClient())
                         {
-                            var stream = await client.GetStreamAsync(artworkUrl);
-                            using (
-                                var fileStream =
-                                    await
-                                        (await StorageHelper.CreateFileAsync(filePath)).OpenStreamForWriteAsync()
-                                )
+                            using (var stream = await client.GetStreamAsync(artworkUrl))
                             {
-                                await stream.CopyToAsync(fileStream);
-                                //now set it
-                                song.Album.ArtworkUri = new Uri(CollectionConstant.LocalStorageAppPath + filePath);
+                                using (
+                                    var fileStream =
+                                        await
+                                            (await StorageHelper.CreateFileAsync(filePath)).OpenStreamForWriteAsync()
+                                    )
+                                {
+                                    await stream.CopyToAsync(fileStream);
+                                    //now set it
+                                    song.Album.ArtworkUri = new Uri(CollectionConstant.LocalStorageAppPath + filePath);
+                                }
                             }
                         }
                     }
@@ -200,8 +220,9 @@ namespace Audiotica.Data.Collection.RunTime
         {
             // remove it from artist and albums songs
             var artist = Artists.FirstOrDefault(p => p.Songs.Contains(song));
-
             var album = Albums.FirstOrDefault(p => p.Songs.Contains(song));
+
+            var deleteArtwork = false;
             if (album != null)
             {
                 album.Songs.Remove(song);
@@ -209,10 +230,7 @@ namespace Audiotica.Data.Collection.RunTime
                 {
                     await _service.DeleteItemAsync(album);
                     Albums.Remove(album);
-
-                    //can't forget to clean up
-                    var path = string.Format(CollectionConstant.ArtworkPath, song.AlbumId);
-                    await StorageHelper.DeleteFileAsync(path);
+                    deleteArtwork = true;
                 }
             }
 

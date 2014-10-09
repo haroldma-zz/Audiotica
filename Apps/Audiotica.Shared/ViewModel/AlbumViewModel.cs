@@ -77,53 +77,14 @@ namespace Audiotica.ViewModel
 
         private async void SongClickExecute(ItemClickEventArgs item)
         {
-            var lastTrack = item.ClickedItem as LastTrack;
+            var track = (LastTrack)item.ClickedItem;
 
             //TODO [Harry,20140909] use a ui blocker with progress indicator
             IsLoading = true;
 
-            //TODO [Harry,20140908] actual downloading instead of previewing
-            var url = await Mp3MatchEngine.FindMp3For(lastTrack);
+            await ScrobblerHelper.SaveTrackAsync(track);
 
             IsLoading = false;
-
-            if (url == null)
-            {
-                CurtainPrompt.ShowError("No match found");
-            }
-
-            else
-            {
-                lastTrack = await _service.GetDetailTrack(lastTrack.Name, lastTrack.ArtistName);
-                var song = lastTrack.ToSong();
-                LastArtist lastArtist;
-
-                if (!string.IsNullOrEmpty(lastTrack.AlbumName))
-                {
-                    var lastAlbum = await _service.GetDetailAlbum(lastTrack.AlbumName, lastTrack.ArtistName);
-                    lastArtist = await _service.GetDetailArtistByMbid(lastTrack.ArtistMbid);
-                    song.Album = lastAlbum.ToAlbum();
-                    song.Album.PrimaryArtist = lastArtist.ToArtist();
-                    lastTrack.Images = lastAlbum.Images;
-                }
-
-                else
-                    lastArtist = await _service.GetDetailArtist(lastTrack.ArtistName);
-
-                song.Artist = lastArtist.ToArtist();
-                song.ArtistName = lastArtist.Name;
-
-                song.AudioUrl = url;
-                try
-                {
-                    await App.Locator.CollectionService.AddSongAsync(song, lastTrack.Images != null ? lastTrack.Images.Largest.AbsoluteUri : null);
-                    CurtainPrompt.Show("Song saved");
-                }
-                catch (Exception e)
-                {
-                    CurtainPrompt.ShowError(e.Message);
-                }
-            }
         }
     }
 }

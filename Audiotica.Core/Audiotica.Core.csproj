@@ -50,7 +50,7 @@
     <Compile Include="Common\MaterialCard.cs" />
     <Compile Include="Common\VisibilityConverter.cs" />
     <Compile Include="Exceptions\NetworkException.cs" />
-    <Compile Include="Exceptions\XboxException.cs" />
+    <Compile Include="Exceptions\LastException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UserControls\RatingsControl.xaml.cs">
       <DependentUpon>RatingsControl.xaml</DependentUpon>

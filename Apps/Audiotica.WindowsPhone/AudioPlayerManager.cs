@@ -121,10 +121,18 @@ namespace Audiotica
 
         #region Media Playback Helper methods
 
-        public void ShutdownPlayer()
+        public async Task ShutdownPlayerAsync()
         {
             BackgroundMediaPlayer.Shutdown();
             RemoveMediaPlayerEventHandlers();
+
+            _isPlayerRunning = false;
+            AppSettingsHelper.Write(PlayerConstants.CurrentTrack,null);
+
+            await Task.Delay(1000);
+
+// ReSharper disable once ExplicitCallerInfoArgument
+            RaisePropertyChanged("CurrentSong");
         }
 
         /// <summary>
