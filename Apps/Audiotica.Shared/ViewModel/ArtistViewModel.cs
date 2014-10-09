@@ -79,9 +79,33 @@ namespace Audiotica.ViewModel
         public async void LoadData(string name)
         {
             IsLoading = true;
-            Artist = await _service.GetDetailArtist(name);
-            TopTracks = (await _service.GetArtistTopTracks(name)).Content.ToList();
-            TopAlbums = (await _service.GetArtistTopAlbums(name)).Content.ToList();
+
+            try
+            {
+                Artist = await _service.GetDetailArtist(name);
+            }
+            catch (Exception e)
+            {
+                CurtainPrompt.ShowError(e.Message);
+            }
+            try
+            {
+                TopTracks = (await _service.GetArtistTopTracks(name)).Content.ToList();
+            }
+            catch (Exception e)
+            {
+                CurtainPrompt.ShowError(e.Message);
+            }
+
+            try
+            {
+                TopAlbums = (await _service.GetArtistTopAlbums(name)).Content.ToList();
+            }
+            catch (Exception e)
+            {
+                CurtainPrompt.ShowError(e.Message);
+            }
+
             IsLoading = false;
         }
 
