@@ -48,9 +48,10 @@ namespace Audiotica.Core.Utilities
             {
                 case StorageStrategy.Roaming:
                     return ApplicationData.Current.RoamingFolder;
-
                 case StorageStrategy.Temporary:
                     return ApplicationData.Current.TemporaryFolder;
+                case StorageStrategy.Installation:
+                    return Windows.ApplicationModel.Package.Current.InstalledLocation;
 
                 default:
                     return ApplicationData.Current.LocalFolder;
@@ -241,7 +242,10 @@ namespace Audiotica.Core.Utilities
             Roaming,
 
             /// <summary>Local, temporary folder (not for settings)</summary>
-            Temporary
+            Temporary,
+
+            /// <summary>Local, app install folder (read-only)</summary>
+            Installation
         }
 
         #endregion

@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Changelog>
+  <FirstRunMessage>
+    This beta is meant to test out the new metadata engine powered by Last.FM.
+  </FirstRunMessage>
+  <JustUpdatedMessage>
+    no need for this in this patch...
+  </JustUpdatedMessage>
+</Changelog>
