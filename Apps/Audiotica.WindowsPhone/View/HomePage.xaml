@@ -71,24 +71,22 @@
 
                 </ListView>
             </common:MaterialCard>
-            <TextBlock TextWrapping="Wrap" Margin="10" FontSize="15" Text="yeah, the cards that use to go here are missing.  they'll be back for next patch.  check out /r/audioticabeta for more info." />
-<!--            <common:MaterialCard common:MaterialCard.IsLoading="{Binding IsFeaturedLoading}" common:MaterialCard.HeaderText="Featured Albums">-->
-<!--                <ListView ItemsSource="{Binding FeatureAlbums}"-->
-<!--					ScrollViewer.HorizontalScrollBarVisibility="Auto"-->
-<!--					ScrollViewer.VerticalScrollBarVisibility="Disabled"-->
-<!--					ScrollViewer.HorizontalScrollMode="Enabled"-->
-<!--					ScrollViewer.VerticalScrollMode="Disabled"-->
-<!--					ScrollViewer.ZoomMode="Disabled"-->
-<!--					SelectionMode="None" IsItemClickEnabled="True" ItemClick="ListView_ItemClick"-->
-<!--					ItemTemplate="{StaticResource LastAlbumDataTemplate}">-->
-<!--                    <ListView.ItemsPanel>-->
-<!--                        <ItemsPanelTemplate>-->
-<!--                            <VirtualizingStackPanel Orientation="Horizontal" />-->
-<!--                        </ItemsPanelTemplate>-->
-<!--                    </ListView.ItemsPanel>-->
-<!--                </ListView>-->
-<!--            </common:MaterialCard>-->
-<!---->
+            <common:MaterialCard common:MaterialCard.IsLoading="{Binding IsFeaturedLoading}" common:MaterialCard.HeaderText="Top tracks">
+                <ListView ItemsSource="{Binding TopTracks}"
+					ScrollViewer.HorizontalScrollBarVisibility="Auto"
+					ScrollViewer.VerticalScrollBarVisibility="Disabled"
+					ScrollViewer.HorizontalScrollMode="Enabled"
+					ScrollViewer.VerticalScrollMode="Disabled"
+					ScrollViewer.ZoomMode="Disabled"
+					SelectionMode="None" IsItemClickEnabled="True" ItemClick="ListView_ItemClick"
+					ItemTemplate="{StaticResource LastAlbumDataTemplate}">
+                    <ListView.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <VirtualizingStackPanel Orientation="Horizontal" />
+                        </ItemsPanelTemplate>
+                    </ListView.ItemsPanel>
+                </ListView>
+            </common:MaterialCard>
 <!--            <common:MaterialCard common:MaterialCard.IsLoading="{Binding IsNewLoading}" common:MaterialCard.HeaderText="New Releases">-->
 <!--                <ListView ItemsSource="{Binding NewAlbums}"-->
 <!--					ScrollViewer.HorizontalScrollBarVisibility="Auto"-->

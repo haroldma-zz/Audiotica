@@ -73,12 +73,8 @@ namespace Audiotica.ViewModel
         {
             var track = (LastTrack)item.ClickedItem;
 
-            //TODO [Harry,20140909] use a ui blocker with progress indicator
-            IsLoading = true;
-
+            CurtainPrompt.Show("Matching song...");
             await ScrobblerHelper.SaveTrackAsync(track);
-
-            IsLoading = false;
         }
 
         public async Task SearchAsync(string term)
