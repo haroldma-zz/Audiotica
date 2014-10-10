@@ -4,6 +4,6 @@
     This beta is meant to test out the new metadata engine powered by Last.FM.
   </FirstRunMessage>
   <JustUpdatedMessage>
-    no need for this in this patch...
+    Fixed issue with crashing at startup for new installs.
   </JustUpdatedMessage>
 </Changelog>

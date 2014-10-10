@@ -72,6 +72,9 @@ namespace Audiotica.Data.Collection.RunTime
         private async void CleanupFiles()
         {
             var artworkFolder = await StorageHelper.GetFolderAsync("artworks");
+            
+            if (artworkFolder == null) return;;
+
             var artworks = await artworkFolder.GetFilesAsync();
 
             foreach (var file in from file in artworks let id = int.Parse(file.Name.Replace(".jpg", "")) where Albums.Count(p => p.Id == id) == 0 select file)
