@@ -2,6 +2,7 @@
 
 // The Blank Application template is documented at http://go.microsoft.com/fwlink/?LinkId=234227
 using System;
+using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.UI;
@@ -12,10 +13,13 @@ using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Navigation;
 using Audiotica.Core.Common;
 using Audiotica.Core.Utilities;
+using Audiotica.Data.Collection;
+using Audiotica.Data.Collection.RunTime;
 using Audiotica.View;
 using Audiotica.ViewModel;
 using GalaSoft.MvvmLight.Threading;
 using GoogleAnalytics;
+using Microsoft.Practices.ServiceLocation;
 using SlideView.Library;
 
 #endregion
@@ -50,24 +54,28 @@ namespace Audiotica
                 // Create a Frame to act as the navigation context and navigate to the first page
                 rootFrame = Resources["SlideApplicationFrame"] as SlideApplicationFrame;
 
-                Window.Current.Content = rootFrame;
+                Window.Current.Content = rootFrame; 
+                DispatcherHelper.Initialize();
 
-                try
+                Task.Factory.StartNew(async () =>
                 {
-                    DispatcherHelper.Initialize();
-                    await Locator.SqlService.InitializeAsync();
-                    await Locator.CollectionService.LoadLibraryAsync();
-                    await Locator.QueueService.LoadQueueAsync();
-                    Locator.AudioPlayer.Initialize();
+                    try
+                    {
+                        await ServiceLocator.Current.GetInstance<ISqlService>().InitializeAsync();
+                        await ServiceLocator.Current.GetInstance<ICollectionService>().LoadLibraryAsync();
+                        await ServiceLocator.Current.GetInstance<IQueueService>().LoadQueueAsync();
+                        ServiceLocator.Current.GetInstance<AudioPlayerManager>().Initialize();
+                    }
+                    catch (Exception ex)
+                    {
+                        EasyTracker.GetTracker().SendException(ex.Message + " " + ex.StackTrace, true);
+                        DispatcherHelper.RunAsync(() => CurtainPrompt.ShowError("Problem booting app services."));
+                    }
+                });
+                
 #if BETA
-                    await BetaChangelogHelper.OnLaunchedAsync();
+                await BetaChangelogHelper.OnLaunchedAsync();
 #endif
-                }
-                catch (Exception ex)
-                {
-                    EasyTracker.GetTracker().SendException(ex.Message + " " + ex.StackTrace, true);
-                    CurtainPrompt.ShowError("Problem booting app services.");
-                }
             }
 
             if (rootFrame != null && rootFrame.Content == null)
@@ -99,12 +107,13 @@ namespace Audiotica
 #if WINDOWS_PHONE_APP
         private void RootFrame_FirstNavigated(object sender, NavigationEventArgs e)
         {
-            var rootFrame = sender as Frame;
+            var rootFrame = (Frame)sender;
             rootFrame.ContentTransitions = _transitions ?? new TransitionCollection {new NavigationThemeTransition()};
             rootFrame.Navigated -= RootFrame_FirstNavigated;
 
-            //Make sure the statusbar foreground is always black
+            StatusBar.GetForCurrentView().BackgroundOpacity = 1;
             StatusBar.GetForCurrentView().ForegroundColor = Colors.White;
+            StatusBar.GetForCurrentView().BackgroundColor = Core.Utilities.ColorHelper.GetColorFromHexa("#4B216D");
         }
 #endif
 

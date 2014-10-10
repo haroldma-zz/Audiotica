@@ -40,6 +40,8 @@ namespace Audiotica
         public void Initialize()
         {
             StartBackgroundAudioTask(false);
+// ReSharper disable once ExplicitCallerInfoArgument
+            DispatcherHelper.RunAsync(() => RaisePropertyChanged("CurrentSong"));
         }
 
         #region Private Fields and Properties
@@ -241,6 +243,7 @@ namespace Audiotica
             get
             {
                 if (!IsPlayerRunning) return null;
+                if (BackgroundMediaPlayer.Current.CurrentState == MediaPlayerState.Closed) return null;
 
                 var id = AppSettingsHelper.Read<long>(PlayerConstants.CurrentTrack);
                 return _service.Songs.FirstOrDefault(p => p.Id == id);
