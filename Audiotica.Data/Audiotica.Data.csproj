@@ -93,7 +93,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="ApiKeys.cs.template" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
