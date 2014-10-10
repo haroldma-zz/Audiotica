@@ -30,10 +30,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{D90BF4
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Audiotica.Data.Collection", "Audiotica.Data.Collection\Audiotica.Data.Collection.csproj", "{264B7B96-92A4-4FB4-A938-EB30FD288B70}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ThirdParty", "ThirdParty", "{FBD9E023-4A33-4D4D-937B-38102950DFCB}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SlideView.Library.WP81", "ThirdParty\SlideView.Library.WP81\SlideView.Library.WP81.csproj", "{22A3F860-AA49-4B05-A0BC-E271E305ACEB}"
-EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		Apps\Audiotica.Shared\Audiotica.Shared.projitems*{8c444d16-d608-4119-a5a9-e254b8a5d0e9}*SharedItemsImports = 4
@@ -201,24 +197,6 @@ Global
 		{264B7B96-92A4-4FB4-A938-EB30FD288B70}.Release|x64.ActiveCfg = Release|Any CPU
 		{264B7B96-92A4-4FB4-A938-EB30FD288B70}.Release|x86.ActiveCfg = Release|Any CPU
 		{264B7B96-92A4-4FB4-A938-EB30FD288B70}.Release|x86.Build.0 = Release|Any CPU
-		{22A3F860-AA49-4B05-A0BC-E271E305ACEB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{22A3F860-AA49-4B05-A0BC-E271E305ACEB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{22A3F860-AA49-4B05-A0BC-E271E305ACEB}.Debug|ARM.ActiveCfg = Debug|ARM
-		{22A3F860-AA49-4B05-A0BC-E271E305ACEB}.Debug|ARM.Build.0 = Debug|ARM
-		{22A3F860-AA49-4B05-A0BC-E271E305ACEB}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
-		{22A3F860-AA49-4B05-A0BC-E271E305ACEB}.Debug|Mixed Platforms.Build.0 = Debug|x86
-		{22A3F860-AA49-4B05-A0BC-E271E305ACEB}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{22A3F860-AA49-4B05-A0BC-E271E305ACEB}.Debug|x86.ActiveCfg = Debug|x86
-		{22A3F860-AA49-4B05-A0BC-E271E305ACEB}.Debug|x86.Build.0 = Debug|x86
-		{22A3F860-AA49-4B05-A0BC-E271E305ACEB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{22A3F860-AA49-4B05-A0BC-E271E305ACEB}.Release|Any CPU.Build.0 = Release|Any CPU
-		{22A3F860-AA49-4B05-A0BC-E271E305ACEB}.Release|ARM.ActiveCfg = Release|ARM
-		{22A3F860-AA49-4B05-A0BC-E271E305ACEB}.Release|ARM.Build.0 = Release|ARM
-		{22A3F860-AA49-4B05-A0BC-E271E305ACEB}.Release|Mixed Platforms.ActiveCfg = Release|x86
-		{22A3F860-AA49-4B05-A0BC-E271E305ACEB}.Release|Mixed Platforms.Build.0 = Release|x86
-		{22A3F860-AA49-4B05-A0BC-E271E305ACEB}.Release|x64.ActiveCfg = Release|Any CPU
-		{22A3F860-AA49-4B05-A0BC-E271E305ACEB}.Release|x86.ActiveCfg = Release|x86
-		{22A3F860-AA49-4B05-A0BC-E271E305ACEB}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -229,6 +207,5 @@ Global
 		{8C444D16-D608-4119-A5A9-E254B8A5D0E9} = {6A43F5C3-64EF-434A-B894-4965F8EE5777}
 		{7956272C-3FBE-4689-9730-C7E2A138245E} = {F8434CDD-D5AE-4675-A708-11710C99B33D}
 		{7AB5B153-0855-4AF1-AD6E-043AC4B5B366} = {F8434CDD-D5AE-4675-A708-11710C99B33D}
-		{22A3F860-AA49-4B05-A0BC-E271E305ACEB} = {FBD9E023-4A33-4D4D-937B-38102950DFCB}
 	EndGlobalSection
 EndGlobal
