@@ -791,7 +791,7 @@
             </library:SlideApplicationFrame.RightContent>
             <library:SlideApplicationFrame.HeaderTemplate>
                 <DataTemplate>
-                    <Grid Height="75" Background="#4B216D">
+                    <Grid Height="80" Background="#642C90">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="Auto" />
