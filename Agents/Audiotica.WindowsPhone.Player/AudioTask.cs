@@ -160,8 +160,12 @@ namespace Audiotica.WindowsPhone.Player
             {
                 Debug.WriteLine(ex.ToString());
             }
-            _deferral.Complete(); // signals task completion. 
-            Debug.WriteLine("AudioPlayer Cancel complete...");
+
+            if (_deferral != null)
+            {
+                _deferral.Complete(); // signals task completion. 
+                Debug.WriteLine("AudioPlayer Cancel complete...");
+            }
         }
 
         #endregion
