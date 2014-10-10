@@ -5,6 +5,7 @@ using Windows.UI.Popups;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Navigation;
+using Audiotica.Core.Common;
 using Audiotica.Core.Utilities;
 using IF.Lastfm.Core.Objects;
 
@@ -20,10 +21,13 @@ namespace Audiotica.View
         }
 
         //TODO [Harry,20140908] move this to view model with RelayCommand
-        private void ListView_ItemClick(object sender, ItemClickEventArgs e)
+        private async void ListView_ItemClick(object sender, ItemClickEventArgs e)
         {
-            var album = e.ClickedItem as LastAlbum;
-            if (album != null) Frame.Navigate(typeof (AlbumPage), album);
+            var track = e.ClickedItem as LastTrack;
+            if (track == null) return;
+
+            CurtainPrompt.Show("Matching song...");
+            await ScrobblerHelper.SaveTrackAsync(track);
         }
 
         private void Grid_Tapped(object sender, TappedRoutedEventArgs e)

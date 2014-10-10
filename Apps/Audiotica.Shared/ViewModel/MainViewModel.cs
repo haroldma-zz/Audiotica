@@ -23,6 +23,7 @@ namespace Audiotica.ViewModel
         private bool _isNewLoading;
         private bool _isSliderLoading;
         private List<LastArtist> _spotlightItems;
+        private List<LastTrack> _topTracks;
 
         /// <summary>
         ///     Initializes a new instance of the MainViewModel class.
@@ -65,6 +66,12 @@ namespace Audiotica.ViewModel
             get { return _audioPlayer; }
         }
 
+        public List<LastTrack> TopTracks
+        {
+            get { return _topTracks; }
+            set { Set(ref _topTracks, value); }
+        }
+
         public async Task LoadChartDataAsync()
         {
             IsSliderLoading = true;
@@ -86,7 +93,7 @@ namespace Audiotica.ViewModel
 
             try
             {
-                //FeatureAlbums = (await _service.GetFeaturedAlbums()).Items;
+                TopTracks = (await _service.GetTopTracksAsync()).Content.ToList();
             }
             catch (Exception e)
             {
