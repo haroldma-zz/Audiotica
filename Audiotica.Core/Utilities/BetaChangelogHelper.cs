@@ -42,7 +42,7 @@ namespace Audiotica.Core.Utilities
                 JustUpdated = previousVersion.CompareTo(CurrentVersion) == -1;
 
                 if (JustUpdated)
-                    await MessageBox.ShowAsync(changelog.JustUpdatedMessage, "Just Updated");
+                    await MessageBox.ShowAsync(changelog.JustUpdatedMessage, "Just Updated\nBeta" + CurrentVersion.BetaNumber + " - Patch #" + CurrentVersion.PatchNumber);
             }
 
             if (IsFirstRun || JustUpdated)
@@ -58,8 +58,9 @@ namespace Audiotica.Core.Utilities
 
             var changelogNode = xDoc.Element("Changelog");
 
-            expando.FirstRunMessage = changelogNode.Element("FirstRunMessage").Value.Trim();
-            expando.JustUpdatedMessage = changelogNode.Element("JustUpdatedMessage").Value.Trim();
+            const string tab = "\n    ";
+            expando.FirstRunMessage = changelogNode.Element("FirstRunMessage").Value.Trim().Replace(tab, "\n");
+            expando.JustUpdatedMessage = changelogNode.Element("JustUpdatedMessage").Value.Trim().Replace(tab, "\n");
 
             return expando;
         }

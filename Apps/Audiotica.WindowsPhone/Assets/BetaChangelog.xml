@@ -4,6 +4,10 @@
     This beta is meant to test out the new metadata engine powered by Last.FM.
   </FirstRunMessage>
   <JustUpdatedMessage>
-    Fixed issue with crashing at startup for new installs.
+    1. Improve boot time
+    2. Now playing bug fix
+    3. Better saving indicator for songs
+    4. Top tracks card
+    5. Slight ui changes
   </JustUpdatedMessage>
 </Changelog>
