@@ -16,56 +16,57 @@ namespace Audiotica.Data.Collection.RunTime
 {
     public class SqlService : ISqlService
     {
-        private readonly SQLiteConnection db;
-
-        public SqlService()
+        public SQLiteConnection CreateConnection()
         {
-            db = new SQLiteConnection("collection.sqldb");
+            return new SQLiteConnection("collection.sqldb");
         }
 
         public void Initialize()
         {
-            var sql = EasySql.CreateTable(typeof (Artist));
-            using (var statement = db.Prepare(sql))
+            using (var db = CreateConnection())
             {
-                statement.Step();
-            }
+                var sql = EasySql.CreateTable(typeof (Artist));
+                using (var statement = db.Prepare(sql))
+                {
+                    statement.Step();
+                }
 
-            sql = EasySql.CreateTable(typeof (Album));
-            using (var statement = db.Prepare(sql))
-            {
-                statement.Step();
-            }
+                sql = EasySql.CreateTable(typeof (Album));
+                using (var statement = db.Prepare(sql))
+                {
+                    statement.Step();
+                }
 
-            sql = EasySql.CreateTable(typeof (Song));
-            using (var statement = db.Prepare(sql))
-            {
-                statement.Step();
-            }
+                sql = EasySql.CreateTable(typeof (Song));
+                using (var statement = db.Prepare(sql))
+                {
+                    statement.Step();
+                }
 
-            sql = EasySql.CreateTable(typeof (QueueSong));
-            using (var statement = db.Prepare(sql))
-            {
-                statement.Step();
-            }
+                sql = EasySql.CreateTable(typeof (QueueSong));
+                using (var statement = db.Prepare(sql))
+                {
+                    statement.Step();
+                }
 
-            sql = EasySql.CreateTable(typeof (Playlist));
-            using (var statement = db.Prepare(sql))
-            {
-                statement.Step();
-            }
+                sql = EasySql.CreateTable(typeof (Playlist));
+                using (var statement = db.Prepare(sql))
+                {
+                    statement.Step();
+                }
 
-            sql = EasySql.CreateTable(typeof (PlaylistSong));
-            using (var statement = db.Prepare(sql))
-            {
-                statement.Step();
-            }
+                sql = EasySql.CreateTable(typeof (PlaylistSong));
+                using (var statement = db.Prepare(sql))
+                {
+                    statement.Step();
+                }
 
-            // Turn on Foreign Key constraints
-            sql = @"PRAGMA foreign_keys = ON";
-            using (var statement = db.Prepare(sql))
-            {
-                statement.Step();
+                // Turn on Foreign Key constraints
+                sql = @"PRAGMA foreign_keys = ON";
+                using (var statement = db.Prepare(sql))
+                {
+                    statement.Step();
+                }
             }
         }
 
@@ -76,65 +77,71 @@ namespace Audiotica.Data.Collection.RunTime
 
         public void ResetData()
         {
-            var sql = @"DELETE FROM Song";
-            using (var statement = db.Prepare(sql))
+            using (var db = CreateConnection())
             {
-                statement.Step();
-            }
+                var sql = @"DELETE FROM Song";
+                using (var statement = db.Prepare(sql))
+                {
+                    statement.Step();
+                }
 
-            sql = @"DELETE FROM Album";
-            using (var statement = db.Prepare(sql))
-            {
-                statement.Step();
-            }
+                sql = @"DELETE FROM Album";
+                using (var statement = db.Prepare(sql))
+                {
+                    statement.Step();
+                }
 
-            sql = @"DELETE FROM Artist";
-            using (var statement = db.Prepare(sql))
-            {
-                statement.Step();
-            }
+                sql = @"DELETE FROM Artist";
+                using (var statement = db.Prepare(sql))
+                {
+                    statement.Step();
+                }
 
-            sql = @"DELETE FROM QueueSong";
-            using (var statement = db.Prepare(sql))
-            {
-                statement.Step();
-            }
+                sql = @"DELETE FROM QueueSong";
+                using (var statement = db.Prepare(sql))
+                {
+                    statement.Step();
+                }
 
-            sql = @"DELETE FROM PlaylistSong";
-            using (var statement = db.Prepare(sql))
-            {
-                statement.Step();
+                sql = @"DELETE FROM PlaylistSong";
+                using (var statement = db.Prepare(sql))
+                {
+                    statement.Step();
+                }
             }
         }
 
 
         public async Task InsertAsync(BaseEntry entry)
         {
-            try
+            using (var db = CreateConnection())
             {
-                await Task.Run(() =>
+                try
                 {
-                    using (var custstmt = db.Prepare(EasySql.CreateInsert(entry.GetType())))
+                    await Task.Run(() =>
                     {
-                        EasySql.FillInsert(custstmt, entry);
-                        var res = custstmt.Step();
-                        if (res != SQLiteResult.DONE)
-                            throw new Exception();
+                        using (var custstmt = db.Prepare(EasySql.CreateInsert(entry.GetType())))
+                        {
+                            EasySql.FillInsert(custstmt, entry);
+                            var res = custstmt.Step();
+                            if (res != SQLiteResult.DONE)
+                                throw new Exception();
+                        }
                     }
+                        );
                 }
-                    );
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(ex.Message);
-                return;
-            }
-
-            using (var idstmt = db.Prepare("SELECT last_insert_rowid()"))
-            {
-                idstmt.Step();
+                catch (Exception ex)
                 {
-                    entry.Id = (long) idstmt[0];
+                    Debug.WriteLine(ex.Message);
+                    return;
+                }
+
+                using (var idstmt = db.Prepare("SELECT last_insert_rowid()"))
+                {
+                    idstmt.Step();
+                    {
+                        entry.Id = (long) idstmt[0];
+                    }
                 }
             }
         }
@@ -143,72 +150,80 @@ namespace Audiotica.Data.Collection.RunTime
         {
             return Task.Run(() =>
             {
-                using (
-                    var projstmt =
-                        db.Prepare(string.Format("DELETE FROM {0} WHERE Id = ?", item.GetType().Name)))
+                using (var db = CreateConnection())
                 {
-                    // Reset the prepared statement so we can reuse it.
-                    projstmt.ClearBindings();
-                    projstmt.Reset();
+                    using (
+                        var projstmt =
+                            db.Prepare(string.Format("DELETE FROM {0} WHERE Id = ?", item.GetType().Name)))
+                    {
+                        // Reset the prepared statement so we can reuse it.
+                        projstmt.ClearBindings();
+                        projstmt.Reset();
 
-                    projstmt.Bind(1, item.Id);
+                        projstmt.Bind(1, item.Id);
 
-                    projstmt.Step();
+                        projstmt.Step();
+                    }
                 }
-            }
-                );
+            });
         }
 
         public Task UpdateItemAsync(BaseEntry item)
         {
             return Task.Run(() =>
             {
-                using (
-                    var projstmt =
-                        db.Prepare(EasySql.CreateUpdate(item.GetType())))
+                using (var db = CreateConnection())
                 {
-                    // Reset the prepared statement so we can reuse it.
-                    projstmt.ClearBindings();
-                    projstmt.Reset();
+                    using (
+                        var projstmt =
+                            db.Prepare(EasySql.CreateUpdate(item.GetType())))
+                    {
+                        // Reset the prepared statement so we can reuse it.
+                        projstmt.ClearBindings();
+                        projstmt.Reset();
 
-                    EasySql.FillUpdate(projstmt, item);
+                        EasySql.FillUpdate(projstmt, item);
 
-                    projstmt.Step();
+                        projstmt.Step();
+                    }
                 }
             });
         }
 
         public List<T> SelectAll<T>() where T : new()
         {
-            var type = typeof (T);
-            var items = new List<T>();
-
-            using (var statement = db.Prepare("SELECT * FROM " + type.Name))
+            using (var db = CreateConnection())
             {
-                while (statement.Step() == SQLiteResult.ROW)
+                var type = typeof (T);
+                var items = new List<T>();
+
+                using (var statement = db.Prepare("SELECT * FROM " + type.Name))
                 {
-                    var item = new T();
-                    var props = type.GetRuntimeProperties().Where(p => p.GetCustomAttribute<SqlIgnore>() == null);
-
-                    foreach (var propertyInfo in props)
+                    while (statement.Step() == SQLiteResult.ROW)
                     {
-                        object value = statement[propertyInfo.Name];
+                        var item = new T();
+                        var props = type.GetRuntimeProperties().Where(p => p.GetCustomAttribute<SqlIgnore>() == null);
 
-                        //cast enums from long
-                        if (propertyInfo.GetMethod.ReturnType.GetTypeInfo().IsEnum)
-                            value = Enum.ToObject(propertyInfo.PropertyType, value);
+                        foreach (var propertyInfo in props)
+                        {
+                            object value = statement[propertyInfo.Name];
+
+                            //cast enums from long
+                            if (propertyInfo.GetMethod.ReturnType.GetTypeInfo().IsEnum)
+                                value = Enum.ToObject(propertyInfo.PropertyType, value);
                         
-                        //cast dates from string
-                        else if (propertyInfo.PropertyType == typeof (DateTime))
-                            value = DateTime.Parse(value.ToString());
+                                //cast dates from string
+                            else if (propertyInfo.PropertyType == typeof (DateTime))
+                                value = DateTime.Parse(value.ToString());
 
-                        propertyInfo.SetValue(item, value);
+                            propertyInfo.SetValue(item, value);
+                        }
+                        items.Add(item);
                     }
-                    items.Add(item);
                 }
-            }
 
-            return items;
+                return items;
+            }
         }
 
         public Task<List<T>> SelectAllAsync<T>() where T : new()
@@ -220,18 +235,21 @@ namespace Audiotica.Data.Collection.RunTime
         {
             return Task.Run(() =>
             {
-                using (
-                    var projstmt =
-                        db.Prepare("DELETE FROM " + typeof (T).Name))
+                using (var db = CreateConnection())
                 {
-                    projstmt.Step();
-                }
+                    using (
+                        var projstmt =
+                            db.Prepare("DELETE FROM " + typeof (T).Name))
+                    {
+                        projstmt.Step();
+                    }
 
-                using ( //reset id seed
-                    var projstmt =
-                        db.Prepare("DELETE FROM sqlite_sequence  WHERE name = '" + typeof (T).Name + "'"))
-                {
-                    projstmt.Step();
+                    using ( //reset id seed
+                        var projstmt =
+                            db.Prepare("DELETE FROM sqlite_sequence  WHERE name = '" + typeof (T).Name + "'"))
+                    {
+                        projstmt.Step();
+                    }
                 }
             });
         }
