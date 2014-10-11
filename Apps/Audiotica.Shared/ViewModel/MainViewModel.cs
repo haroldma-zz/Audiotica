@@ -17,7 +17,7 @@ namespace Audiotica.ViewModel
 {
     public class MainViewModel : ViewModelBase
     {
-        private readonly AudioPlayerManager _audioPlayer;
+        private readonly AudioPlayerHelper _audioPlayer;
         private readonly IScrobblerService _service;
         private bool _isFeaturedLoading;
         private bool _isNewLoading;
@@ -28,7 +28,7 @@ namespace Audiotica.ViewModel
         /// <summary>
         ///     Initializes a new instance of the MainViewModel class.
         /// </summary>
-        public MainViewModel(IScrobblerService service, AudioPlayerManager audioPlayer)
+        public MainViewModel(IScrobblerService service, AudioPlayerHelper audioPlayer)
         {
             _service = service;
             _audioPlayer = audioPlayer;
@@ -59,11 +59,6 @@ namespace Audiotica.ViewModel
         {
             get { return _spotlightItems; }
             set { Set(ref _spotlightItems, value); }
-        }
-
-        public AudioPlayerManager AudioPlayer
-        {
-            get { return _audioPlayer; }
         }
 
         public List<LastTrack> TopTracks

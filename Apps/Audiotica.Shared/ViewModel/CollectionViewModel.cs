@@ -17,13 +17,13 @@ namespace Audiotica.ViewModel
         private readonly ICollectionService _service;
         private readonly IQueueService _queueService;
 #if WINDOWS_PHONE_APP
-        private readonly AudioPlayerManager _audioPlayer;
+        private readonly AudioPlayerHelper _audioPlayer;
 #endif
         private readonly RelayCommand<ItemClickEventArgs> _songClickCommand;
 
         public CollectionViewModel(ICollectionService service, IQueueService queueService
 #if WINDOWS_PHONE_APP
-            , AudioPlayerManager audioPlayer
+, AudioPlayerHelper audioPlayer
 #endif
             )
         {

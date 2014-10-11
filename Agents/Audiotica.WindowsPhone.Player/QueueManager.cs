@@ -7,6 +7,7 @@ using System.Linq;
 using Windows.Foundation;
 using Windows.Media.Playback;
 using Audiotica.Data.Collection.Model;
+using Audiotica.Data.Collection.RunTime;
 
 #endregion
 
@@ -19,9 +20,8 @@ namespace Audiotica.WindowsPhone.Player
         private readonly MediaPlayer _mediaPlayer;
         private int _currentTrackIndex = -1;
 
-        public QueueManager(List<QueueSong> songs)
+        public QueueManager()
         {
-            tracks = songs;
             _mediaPlayer = BackgroundMediaPlayer.Current;
             _mediaPlayer.MediaOpened += MediaPlayer_MediaOpened;
             _mediaPlayer.MediaEnded += MediaPlayer_MediaEnded;
@@ -166,5 +166,18 @@ namespace Audiotica.WindowsPhone.Player
         }
 
         #endregion
+
+        public void RefreshTracks()
+        {
+            var sql = new SqlService();
+
+            var collectionService = new CollectionService(sql);
+            collectionService.LoadLibrary();
+
+            var queueService = new QueueService(sql, collectionService);
+            queueService.LoadQueue();
+
+            tracks = queueService.PlaybackQueue.ToList();
+        }
     }
 }
