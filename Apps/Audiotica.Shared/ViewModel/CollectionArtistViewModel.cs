@@ -16,11 +16,11 @@ namespace Audiotica.ViewModel
     {
         private readonly ICollectionService _service;
         private readonly IQueueService _queueService;
-        private readonly AudioPlayerManager _audioPlayer;
+        private readonly AudioPlayerHelper _audioPlayer;
         private Artist _artist;
         private readonly RelayCommand<ItemClickEventArgs> _songClickCommand;
 
-        public CollectionArtistViewModel(ICollectionService service, IQueueService queueService, AudioPlayerManager audioPlayer)
+        public CollectionArtistViewModel(ICollectionService service, IQueueService queueService, AudioPlayerHelper audioPlayer)
         {
             _service = service;
             _queueService = queueService;

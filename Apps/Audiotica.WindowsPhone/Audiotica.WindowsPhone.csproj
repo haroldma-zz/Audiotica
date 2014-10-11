@@ -104,7 +104,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AudioPlayerManager.cs" />
+    <Compile Include="AudioPlayerHelper.cs" />
+    <Compile Include="PlayerViewModel.cs" />
     <Compile Include="PartialView\NowPlaying.xaml.cs">
       <DependentUpon>NowPlaying.xaml</DependentUpon>
     </Compile>

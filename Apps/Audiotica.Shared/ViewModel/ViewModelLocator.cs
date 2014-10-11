@@ -27,7 +27,7 @@ namespace Audiotica.ViewModel
             ServiceLocator.SetLocatorProvider(() => SimpleIoc.Default);
 
 #if WINDOWS_PHONE_APP
-            SimpleIoc.Default.Register<AudioPlayerManager>();
+            SimpleIoc.Default.Register<AudioPlayerHelper>();
 #endif
 
             if (ViewModelBase.IsInDesignModeStatic)
@@ -51,6 +51,7 @@ namespace Audiotica.ViewModel
             SimpleIoc.Default.Register<ArtistViewModel>();
             SimpleIoc.Default.Register<SearchViewModel>();
             SimpleIoc.Default.Register<CollectionViewModel>();
+            SimpleIoc.Default.Register<PlayerViewModel>();
         }
 
         public MainViewModel Main
@@ -70,6 +71,16 @@ namespace Audiotica.ViewModel
         public ArtistViewModel Artist
         {
             get { return ServiceLocator.Current.GetInstance<ArtistViewModel>(); }
+        }
+
+        public PlayerViewModel Player
+        {
+            get { return ServiceLocator.Current.GetInstance<PlayerViewModel>(); }
+        }
+
+        public AudioPlayerHelper AudioPlayerHelper
+        {
+            get { return ServiceLocator.Current.GetInstance<AudioPlayerHelper>(); }
         }
 
         public CollectionArtistViewModel CollectionArtist
@@ -105,11 +116,6 @@ namespace Audiotica.ViewModel
         public ISqlService SqlService
         {
             get { return SimpleIoc.Default.GetInstance<ISqlService>(); }
-        }
-
-        public AudioPlayerManager AudioPlayer
-        {
-            get { return ServiceLocator.Current.GetInstance<AudioPlayerManager>(); }
         }
 
         public static void Cleanup()

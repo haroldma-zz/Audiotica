@@ -783,9 +783,9 @@
         </Style>
 
         <library:SlideApplicationFrame x:Key="SlideApplicationFrame" 
-                                       Header="{Binding Main, Source={StaticResource Locator}}" 
-                                       DataContext="{Binding Main, Source={StaticResource Locator}}" 
-                                       IsSlideEnabled="{Binding AudioPlayer.CurrentSong, Converter={StaticResource NullToBooleanConverter}}">
+                                       Header="{Binding Player, Source={StaticResource Locator}}" 
+                                       DataContext="{Binding Player, Source={StaticResource Locator}}" 
+                                       IsSlideEnabled="{Binding CurrentSong, Converter={StaticResource NullToBooleanConverter}}">
             <library:SlideApplicationFrame.RightContent>
                 <partialView:NowPlaying />
             </library:SlideApplicationFrame.RightContent>
@@ -803,7 +803,7 @@
                                    FontSize="26"
                                    Foreground="White"
                                    Text="Audiotica" />
-                        <TextBlock Visibility="{Binding AudioPlayer.CurrentSong, Converter={StaticResource NullToVisibilityConverter}}" Margin="10" Grid.Column="2" Text="&#xe102;" FontFamily="Segoe UI Symbol" FontSize="30" VerticalAlignment="Bottom" HorizontalAlignment="Right" Foreground="White"/>
+                        <TextBlock Visibility="{Binding CurrentSong, Converter={StaticResource NullToVisibilityConverter}}" Margin="10" Grid.Column="2" Text="&#xe102;" FontFamily="Segoe UI Symbol" FontSize="30" VerticalAlignment="Bottom" HorizontalAlignment="Right" Foreground="White"/>
                     </Grid>
                 </DataTemplate>
             </library:SlideApplicationFrame.HeaderTemplate>

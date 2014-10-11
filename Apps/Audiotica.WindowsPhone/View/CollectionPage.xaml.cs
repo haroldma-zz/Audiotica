@@ -42,7 +42,7 @@ namespace Audiotica.View
 
                 //stop playback
                 if (song.Id == AppSettingsHelper.Read<long>(PlayerConstants.CurrentTrack))
-                   await  App.Locator.AudioPlayer.ShutdownPlayerAsync();
+                   await  App.Locator.AudioPlayerHelper.ShutdownPlayerAsync();
 
                 await App.Locator.CollectionService.DeleteSongAsync(song);
                 CurtainPrompt.Show("Song deleted");

@@ -47,15 +47,9 @@ namespace Audiotica.WindowsPhone.Player
             {
                 if (_queueManager != null) return _queueManager;
 
-                var sql = new SqlService();
-
-                var collectionService = new CollectionService(sql);
-                collectionService.LoadLibrary();
-
-                var queueService = new QueueService(sql, collectionService);
-                queueService.LoadQueue();
-                _queueManager = new QueueManager(queueService.PlaybackQueue.ToList());
-
+                
+                _queueManager = new QueueManager();
+                _queueManager.RefreshTracks();
                 return _queueManager;
             }
         }
@@ -217,14 +211,11 @@ namespace Audiotica.WindowsPhone.Player
                     //When this happens, the task gets re-initialized and that is asynchronous and hence the wait
                     if (!_backgroundtaskrunning)
                     {
+                        queueManager.RefreshTracks();
                         var result = _backgroundTaskStarted.WaitOne(2000);
                         if (!result)
                             throw new Exception("Background Task didnt initialize in time");
                     }
-
-                    //TODO [Harry,20140917] make a reload method
-                    _queueManager = null;
-                    queueManager.TrackChanged += playList_TrackChanged;
                     StartPlayback();
                     break;
                 case SystemMediaTransportControlsButton.Pause:
