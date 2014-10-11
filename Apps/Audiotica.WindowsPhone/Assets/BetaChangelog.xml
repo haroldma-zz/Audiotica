@@ -4,10 +4,7 @@
     This beta is meant to test out the new metadata engine powered by Last.FM.
   </FirstRunMessage>
   <JustUpdatedMessage>
-    1. Improve boot time
-    2. Now playing bug fix
-    3. Better saving indicator for songs
-    4. Top tracks card
-    5. Slight ui changes
+    1. Fix unexpected lags that forced the user to close the app.
+    2. Improve both audio player and database services.
   </JustUpdatedMessage>
 </Changelog>
