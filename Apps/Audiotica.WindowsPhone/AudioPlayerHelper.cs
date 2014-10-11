@@ -62,8 +62,6 @@ namespace Audiotica
                     case PlayerConstants.Trackchanged:
                         RaiseEvent(TrackChanged);
                         break;
-                    case PlayerConstants.BackgroundTaskStarted:
-                        break;
                 }
             }
         }

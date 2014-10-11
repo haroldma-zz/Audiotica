@@ -4,6 +4,7 @@ using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using Windows.ApplicationModel.Background;
 using Windows.Foundation.Collections;
 using Windows.Media;
@@ -345,8 +346,7 @@ namespace Audiotica.WindowsPhone.Player
                     case PlayerConstants.StartPlayback:
                         //Foreground App process has signalled that it is ready for playback
                         Debug.WriteLine("Starting Playback");
-                        //TODO [Harry,20140917] make a reload method
-                        _queueManager = null;
+                        _queueManager.RefreshTracks();
                         queueManager.TrackChanged += playList_TrackChanged;
                         StartPlayback();
                         break;
