@@ -18,6 +18,7 @@ namespace Audiotica
         protected PageBase()
         {
             _navigationHelper = new NavigationHelper(this);
+            NavigationCacheMode = NavigationCacheMode.Required;
             _navigationHelper.LoadState += NavigationHelperLoadState;
             _navigationHelper.SaveState += NavigationHelperSaveState;
         }
