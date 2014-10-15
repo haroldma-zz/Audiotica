@@ -133,7 +133,6 @@ namespace Audiotica.WindowsPhone.Player
             try
             {
                 //save state
-                AppSettingsHelper.Write(PlayerConstants.CurrentTrack, queueManager.CurrentTrack.SongId);
                 AppSettingsHelper.Write(PlayerConstants.Position,
                     BackgroundMediaPlayer.Current.Position.ToString());
                 AppSettingsHelper.Write(PlayerConstants.BackgroundTaskState,
@@ -145,10 +144,13 @@ namespace Audiotica.WindowsPhone.Player
                 //unsubscribe event handlers
                 _systemmediatransportcontrol.ButtonPressed -= systemmediatransportcontrol_ButtonPressed;
                 _systemmediatransportcontrol.PropertyChanged -= systemmediatransportcontrol_PropertyChanged;
-                queueManager.TrackChanged -= playList_TrackChanged;
 
-                //clear objects task cancellation can happen uninterrupted
-                _queueManager = null;
+                if (_queueManager != null)
+                {
+                    AppSettingsHelper.Write(PlayerConstants.CurrentTrack, queueManager.CurrentTrack.SongId);
+                    queueManager.TrackChanged -= playList_TrackChanged;
+                    _queueManager = null;
+                }
                 BackgroundMediaPlayer.Shutdown(); // shutdown media pipeline
             }
             catch (Exception ex)
@@ -347,7 +349,6 @@ namespace Audiotica.WindowsPhone.Player
                         //Foreground App process has signalled that it is ready for playback
                         Debug.WriteLine("Starting Playback");
                         _queueManager.RefreshTracks();
-                        queueManager.TrackChanged += playList_TrackChanged;
                         StartPlayback();
                         break;
                     case PlayerConstants.SkipNext: // User has chosen to skip track from app context.
