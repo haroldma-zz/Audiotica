@@ -28,6 +28,8 @@ namespace Audiotica.Data.Mp3Providers
                 var json = await resp.Content.ReadAsStringAsync();
                 var parseResp = await json.DeserializeAsync<SoundCloudRoot>();
 
+                if (parseResp == null || parseResp.collection == null) return null;
+
                 //Remove those that can't be stream
                 parseResp.collection.RemoveAll(p => p.stream_url == null);
 
@@ -45,7 +47,17 @@ namespace Audiotica.Data.Mp3Providers
                     song.artwork_url = song.artwork_url.Replace("large", "t500x500");
                 }
 
-                return parseResp.collection.FirstOrDefault().stream_url;
+                // is this song supposed to be a remix?
+                var isSupposedToBeMix = title.Contains("mix");
+
+                // get the first match that is a mix (if is supposed to) or not
+                var match = parseResp.collection.FirstOrDefault(p =>
+                {
+                    var isMix = p.title.Contains("mix");
+                    return isSupposedToBeMix || !isMix;
+                });
+
+                return match.stream_url;
             }
         }
     }
