@@ -45,11 +45,24 @@ namespace Audiotica.Data.Mp3Providers
 
                     if (parseResp.result == null || parseResp.result.songs == null) return null;
 
-                    var match =
-                        parseResp.result.songs.FirstOrDefault(
-                            s => String.Equals(s.name, title, StringComparison.CurrentCultureIgnoreCase) ||
+                    // get all possible matches
+                    var matches =
+                        parseResp.result.songs.Where(
+                            s => s.name.Contains(title) &&
                                  s.artists.Count(
-                                     p => String.Equals(p.name, artist, StringComparison.CurrentCultureIgnoreCase)) != 0);
+                                     p => p.name.Contains(artist)) != 0);
+
+                    // is this song supposed to be a remix?
+                    var isSupposedToBeMix = title.Contains("mix");
+
+                    if (matches == null) return null;
+
+                    // get the first match that is a mix (if is supposed to) or not
+                    var match = matches.FirstOrDefault(p =>
+                    {
+                        var isMix = p.name.Contains("mix");
+                        return isSupposedToBeMix || !isMix;
+                    });
 
                     if (match == null) return null;
 
