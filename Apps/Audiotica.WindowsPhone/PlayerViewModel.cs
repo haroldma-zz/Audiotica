@@ -30,10 +30,10 @@ namespace Audiotica
         public PlayerViewModel(AudioPlayerHelper helper, ICollectionService service)
         {
             _helper = helper;
-            _service = service;
             helper.TrackChanged += HelperOnTrackChanged;
             helper.PlaybackStateChanged += HelperOnPlaybackStateChanged;
             helper.Shutdown += HelperOnShutdown;
+            _service = service;
 
             _nextRelayCommand = new RelayCommand(NextSong);
             _prevRelayCommand = new RelayCommand(PrevSong);

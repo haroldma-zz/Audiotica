@@ -4,6 +4,7 @@ using Windows.UI.Xaml;
 using Audiotica.Data.Collection;
 using Audiotica.Data.Collection.DesignTime;
 using Audiotica.Data.Collection.RunTime;
+using Audiotica.Data.Service.DesignTime;
 using Audiotica.Data.Service.Interfaces;
 using Audiotica.Data.Service.RunTime;
 using GalaSoft.MvvmLight;
@@ -26,14 +27,13 @@ namespace Audiotica.ViewModel
         public ViewModelLocator()
         {
             ServiceLocator.SetLocatorProvider(() => SimpleIoc.Default);
-
 #if WINDOWS_PHONE_APP
             SimpleIoc.Default.Register<AudioPlayerHelper>();
 #endif
-            SimpleIoc.Default.Register(() => Window.Current.Dispatcher);
 
             if (ViewModelBase.IsInDesignModeStatic)
             {
+                SimpleIoc.Default.Register<IScrobblerService, DesignScrobblerService>();
                 SimpleIoc.Default.Register<ICollectionService, DesignCollectionService>();
                 SimpleIoc.Default.Register<IQueueService, QueueService>();
                 SimpleIoc.Default.Register<ISqlService, DesignSqlService>();
@@ -44,6 +44,7 @@ namespace Audiotica.ViewModel
                 SimpleIoc.Default.Register<ICollectionService, CollectionService>();
                 SimpleIoc.Default.Register<IQueueService, QueueService>();
                 SimpleIoc.Default.Register<ISqlService, SqlService>();
+                SimpleIoc.Default.Register(() => Window.Current.Dispatcher);
             }
 
             SimpleIoc.Default.Register<MainViewModel>();
