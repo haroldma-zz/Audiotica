@@ -46,7 +46,7 @@ namespace Audiotica.Core.Common
     {
         private const int Height = 85 + 2;
         private const int PaddingPopup = 150;
-        private const int MillisecondsToHide = 3000;
+        private const int MillisecondsToHide = 1500;
         private static CurtainToast _current;
         private Popup _popup;
         private DispatcherTimer _timer;

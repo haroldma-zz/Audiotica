@@ -13,7 +13,7 @@
     DataContext="{Binding Source={StaticResource Locator}, Path=CollectionArtist}">
 
     <Grid>
-        <ListView ItemContainerStyle="{StaticResource NoFeedbackListViewItem}" Padding="0,45,0,0">
+        <ListView ItemContainerStyle="{StaticResource NoFeedbackListViewItem}">
             <common:MaterialCard x:Uid="ArtistDetailCard" HeaderText="Details">
                 <Grid>
                     <Grid.ColumnDefinitions>
