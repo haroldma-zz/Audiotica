@@ -69,7 +69,7 @@ namespace Audiotica
                     catch (Exception ex)
                     {
                         EasyTracker.GetTracker().SendException(ex.Message + " " + ex.StackTrace, true);
-                        DispatcherHelper.RunAsync(() => CurtainPrompt.ShowError("ErrorBootingToast".FromLanguageResource()));
+                        DispatcherHelper.RunAsync(() => CurtainToast.ShowError("ErrorBootingToast".FromLanguageResource()));
                     }
                 });
 
@@ -97,7 +97,7 @@ namespace Audiotica
 
                 if (!RootFrame.Navigate(typeof (HomePage), e.Arguments))
                 {
-                    CurtainPrompt.ShowError("Failed to create initial page");
+                    CurtainToast.ShowError("Failed to create initial page");
                 }
             }
 

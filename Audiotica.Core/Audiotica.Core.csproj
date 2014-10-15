@@ -41,7 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common\AppVersion.cs" />
-    <Compile Include="Common\CurtainPrompt.cs" />
+    <Compile Include="Common\CurtainToast.cs" />
     <Compile Include="Common\NullToVisibilityConverter.cs" />
     <Compile Include="Common\NullToBooleanConverter.cs" />
     <Compile Include="Common\StringToVisibilityConverter.cs" />
