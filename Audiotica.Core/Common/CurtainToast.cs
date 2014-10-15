@@ -1,6 +1,6 @@
 ﻿#region License
 
-// Copyright (c) 2013 Harry
+// Copyright (c) 2013 Harold Martinez-Molina <hanthonym@outlook.com>
 //
 // Permission is hereby granted, free of charge, to any person
 // obtaining a copy of this software and associated documentation
@@ -42,16 +42,16 @@ using ColorHelper = Audiotica.Core.Utilities.ColorHelper;
 
 namespace Audiotica.Core.Common
 {
-    public class CurtainPrompt
+    public class CurtainToast
     {
         private const int Height = 85 + 2;
         private const int PaddingPopup = 150;
         private const int MillisecondsToHide = 3000;
-        private static CurtainPrompt _current;
+        private static CurtainToast _current;
         private Popup _popup;
         private DispatcherTimer _timer;
 
-        public CurtainPrompt(string msg, bool isError = false)
+        public CurtainToast(string msg, bool isError = false)
         {
             _popup = CreatePopup(msg, isError);
             ShowPopup();
@@ -82,22 +82,22 @@ namespace Audiotica.Core.Common
             }
         }
 
-        public static CurtainPrompt Show(string msg)
+        public static CurtainToast Show(string msg)
         {
             if (_current != null)
                 _current.Dismiss();
 
-            var curtain = new CurtainPrompt(msg);
+            var curtain = new CurtainToast(msg);
             _current = curtain;
             return curtain;
         }
 
-        public static CurtainPrompt ShowError(string msg)
+        public static CurtainToast ShowError(string msg)
         {
             if (_current != null)
                 _current.Dismiss();
 
-            var curtain = new CurtainPrompt(msg, true);
+            var curtain = new CurtainToast(msg, true);
             _current = curtain;
             return curtain;
         }

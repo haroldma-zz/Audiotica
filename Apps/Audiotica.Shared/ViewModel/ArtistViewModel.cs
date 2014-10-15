@@ -87,7 +87,7 @@ namespace Audiotica.ViewModel
             }
             catch (Exception e)
             {
-                CurtainPrompt.ShowError(e.Message);
+                CurtainToast.ShowError(e.Message);
             }
             try
             {
@@ -95,7 +95,7 @@ namespace Audiotica.ViewModel
             }
             catch (Exception e)
             {
-                CurtainPrompt.ShowError(e.Message);
+                CurtainToast.ShowError(e.Message);
             }
 
             try
@@ -104,7 +104,7 @@ namespace Audiotica.ViewModel
             }
             catch (Exception e)
             {
-                CurtainPrompt.ShowError(e.Message);
+                CurtainToast.ShowError(e.Message);
             }
 
             IsLoading = false;
@@ -114,7 +114,7 @@ namespace Audiotica.ViewModel
         {
             var track = (LastTrack)item.ClickedItem;
 
-            CurtainPrompt.Show("MatchingSongToast".FromLanguageResource());
+            CurtainToast.Show("MatchingSongToast".FromLanguageResource());
             await ScrobblerHelper.SaveTrackAsync(track);
         }
     }

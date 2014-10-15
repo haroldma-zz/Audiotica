@@ -45,11 +45,11 @@ namespace Audiotica.View
                    await  App.Locator.AudioPlayerHelper.ShutdownPlayerAsync();
 
                 await App.Locator.CollectionService.DeleteSongAsync(song);
-                CurtainPrompt.Show("SongDeletedToast".FromLanguageResource());
+                CurtainToast.Show("SongDeletedToast".FromLanguageResource());
             }
             catch
             {
-                CurtainPrompt.ShowError("ErrorDeletingToast".FromLanguageResource());
+                CurtainToast.ShowError("ErrorDeletingToast".FromLanguageResource());
             }
         }
     }

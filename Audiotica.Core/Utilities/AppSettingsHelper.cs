@@ -1,6 +1,6 @@
 ﻿#region License
 
-// Copyright (c) 2014 Harry Martinez <harry@zumicts.com>
+// Copyright (c) 2014 Harold Martinez-Molina <hanthonym@outlook.com>
 //
 // Permission is hereby granted, free of charge, to any person
 // obtaining a copy of this software and associated documentation

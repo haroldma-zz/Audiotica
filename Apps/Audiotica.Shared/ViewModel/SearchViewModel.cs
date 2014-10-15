@@ -74,7 +74,7 @@ namespace Audiotica.ViewModel
         {
             var track = (LastTrack)item.ClickedItem;
 
-            CurtainPrompt.Show("MatchingSongToast".FromLanguageResource());
+            CurtainToast.Show("MatchingSongToast".FromLanguageResource());
             await ScrobblerHelper.SaveTrackAsync(track);
         }
 
@@ -84,15 +84,15 @@ namespace Audiotica.ViewModel
             {
                 ResultsResponse = await _service.SearchTracksAsync(term);
                 if (ResultsResponse.TotalItems == 0)
-                    CurtainPrompt.ShowError("NoSearchResultsToast".FromLanguageResource());
+                    CurtainToast.ShowError("NoSearchResultsToast".FromLanguageResource());
             }
             catch (LastException ex)
             {
-                CurtainPrompt.ShowError(ex.Message);
+                CurtainToast.ShowError(ex.Message);
             }
             catch
             {
-                CurtainPrompt.ShowError("NetworkIssueToast".FromLanguageResource());
+                CurtainToast.ShowError("NetworkIssueToast".FromLanguageResource());
             }
         }
 

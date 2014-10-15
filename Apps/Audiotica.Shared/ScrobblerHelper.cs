@@ -52,7 +52,7 @@ namespace Audiotica
             var url = await Mp3MatchEngine.FindMp3For(track);
 
             if (string.IsNullOrEmpty(url))
-                CurtainPrompt.ShowError("NoMatchFoundToast".FromLanguageResource());
+                CurtainToast.ShowError("NoMatchFoundToast".FromLanguageResource());
 
             else
             {
@@ -61,11 +61,11 @@ namespace Audiotica
                 try
                 {
                     await App.Locator.CollectionService.AddSongAsync(song, track.Images != null ? track.Images.Largest.AbsoluteUri : null);
-                    CurtainPrompt.Show("SongSavedToast".FromLanguageResource());
+                    CurtainToast.Show("SongSavedToast".FromLanguageResource());
                 }
                 catch (Exception e)
                 {
-                    CurtainPrompt.ShowError(e.Message);
+                    CurtainToast.ShowError(e.Message);
                 }
             }
         }

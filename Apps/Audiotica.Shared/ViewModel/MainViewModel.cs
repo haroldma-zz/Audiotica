@@ -115,7 +115,7 @@ namespace Audiotica.ViewModel
 
         private void ShowNetworkError(Exception e)
         {
-            CurtainPrompt.ShowError("NetworkIssueToast".FromLanguageResource());
+            CurtainToast.ShowError("NetworkIssueToast".FromLanguageResource());
 
             var ex = e.Message + "\n" + e.StackTrace;
             if (e is LastException)
