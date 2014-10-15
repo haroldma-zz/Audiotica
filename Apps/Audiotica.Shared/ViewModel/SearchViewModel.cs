@@ -8,6 +8,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Audiotica.Core.Common;
 using Audiotica.Core.Exceptions;
+using Audiotica.Core.Utilities;
 using Audiotica.Data;
 using Audiotica.Data.Service.Interfaces;
 using GalaSoft.MvvmLight;
@@ -73,7 +74,7 @@ namespace Audiotica.ViewModel
         {
             var track = (LastTrack)item.ClickedItem;
 
-            CurtainPrompt.Show("Matching song...");
+            CurtainPrompt.Show("MatchingSongToast".FromLanguageResource());
             await ScrobblerHelper.SaveTrackAsync(track);
         }
 
@@ -83,7 +84,7 @@ namespace Audiotica.ViewModel
             {
                 ResultsResponse = await _service.SearchTracksAsync(term);
                 if (ResultsResponse.TotalItems == 0)
-                    CurtainPrompt.ShowError("No search results");
+                    CurtainPrompt.ShowError("NoSearchResultsToast".FromLanguageResource());
             }
             catch (LastException ex)
             {
@@ -91,7 +92,7 @@ namespace Audiotica.ViewModel
             }
             catch
             {
-                CurtainPrompt.ShowError("There was a network issue");
+                CurtainPrompt.ShowError("NetworkIssueToast".FromLanguageResource());
             }
         }
 

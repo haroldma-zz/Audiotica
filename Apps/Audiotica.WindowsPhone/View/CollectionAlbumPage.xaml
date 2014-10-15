@@ -14,7 +14,7 @@
     DataContext="{Binding Source={StaticResource Locator}, Path=CollectionAlbum}">
 
     <ListView Margin="10,0" Padding="0,45,0,0" ItemContainerStyle="{StaticResource NoFeedbackListViewItem}">
-        <common:MaterialCard HeaderText="Details">
+        <common:MaterialCard x:Uid="AlbumDetailCard" HeaderText="Details">
             <Grid Margin="0,0,0,10">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
@@ -33,7 +33,7 @@
             </Grid>
         </common:MaterialCard>
 
-        <common:MaterialCard HeaderText="Tracks">
+        <common:MaterialCard x:Uid="TracksCard" HeaderText="Tracks">
             <ListView IsItemClickEnabled="True" ItemsSource="{Binding Album.Songs}" Margin="0,5,0,0" ItemTemplate="{StaticResource SongDataTemplate}" >
                 <interactivity:Interaction.Behaviors>
                     <core:EventTriggerBehavior EventName="ItemClick">

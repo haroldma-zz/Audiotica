@@ -35,4 +35,8 @@
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)analytics.xsd" />
   </ItemGroup>
+  <ItemGroup>
+    <PRIResource Include="$(MSBuildThisFileDirectory)Strings\es-ES\Resources.resw" />
+    <PRIResource Include="$(MSBuildThisFileDirectory)Strings\en-US\Resources.resw" />
+  </ItemGroup>
 </Project>

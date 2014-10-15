@@ -4,6 +4,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Audiotica.Core.Common;
+using Audiotica.Core.Utilities;
 using Audiotica.Data;
 using Audiotica.Data.Collection.Model;
 using IF.Lastfm.Core.Objects;
@@ -51,7 +52,7 @@ namespace Audiotica
             var url = await Mp3MatchEngine.FindMp3For(track);
 
             if (string.IsNullOrEmpty(url))
-                CurtainPrompt.ShowError("No match found");
+                CurtainPrompt.ShowError("NoMatchFoundToast".FromLanguageResource());
 
             else
             {
@@ -60,7 +61,7 @@ namespace Audiotica
                 try
                 {
                     await App.Locator.CollectionService.AddSongAsync(song, track.Images != null ? track.Images.Largest.AbsoluteUri : null);
-                    CurtainPrompt.Show("Song saved");
+                    CurtainPrompt.Show("SongSavedToast".FromLanguageResource());
                 }
                 catch (Exception e)
                 {

@@ -14,7 +14,7 @@
 
     <Grid>
         <ListView ItemContainerStyle="{StaticResource NoFeedbackListViewItem}" Padding="0,45,0,0">
-            <common:MaterialCard HeaderText="Details">
+            <common:MaterialCard x:Uid="ArtistDetailCard" HeaderText="Details">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
@@ -37,7 +37,7 @@
             <!--            </ListView>-->
             <!--        </common:MaterialCard>-->
 
-            <common:MaterialCard HeaderText="Albums">
+            <common:MaterialCard x:Uid="AlbumsCard" HeaderText="Albums">
                 <ListView ItemsSource="{Binding Artist.Albums}"
                           ItemTemplate="{StaticResource AlbumDataTemplate}"
                           ScrollViewer.HorizontalScrollBarVisibility="Auto"
@@ -55,7 +55,7 @@
                 </ListView>
             </common:MaterialCard>
 
-            <common:MaterialCard HeaderText="Songs">
+            <common:MaterialCard x:Uid="TracksCard" HeaderText="Tracks">
                 <ListView IsItemClickEnabled="True" ItemsSource="{Binding Artist.Songs}"
                           ItemTemplate="{StaticResource SongDataTemplate}">
                     <interactivity:Interaction.Behaviors>

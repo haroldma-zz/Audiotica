@@ -16,7 +16,7 @@
 
     <Grid>
         <ListView ItemContainerStyle="{StaticResource NoFeedbackListViewItem}" SelectionMode="None" Padding="0,20,0,0">
-            <common:MaterialCard common:MaterialCard.IsLoading="{Binding IsSliderLoading}" common:MaterialCard.HeaderText="Spotlight">
+            <common:MaterialCard x:Uid="SpotlightCard" HeaderText="Spotlight" IsLoading="{Binding IsSliderLoading}">
                 <FlipView MaxHeight="150" ItemsSource="{Binding SpotlightItems}">
                     <FlipView.ItemTemplate>
                         <DataTemplate>
@@ -33,7 +33,7 @@
                 </FlipView>
             </common:MaterialCard>
 
-            <common:MaterialCard common:MaterialCard.HeaderText="Collection">
+            <common:MaterialCard x:Uid="CollectionCard" HeaderText="Collection">
                 <!-- material design option -->
                 <ListView Height="100" HorizontalAlignment="Center">
 
@@ -51,7 +51,7 @@
                         </Interactivity:Interaction.Behaviors>
                         <StackPanel Width="75" VerticalAlignment="Center">
                             <FontIcon Glyph="&#xE142;" FontSize="30" Foreground="#FF333333" />
-                            <TextBlock Text="Music" TextAlignment="Center" />
+                            <TextBlock x:Uid="MusicTextBlock" Text="Music" TextAlignment="Center" />
                         </StackPanel>
                     </Button>
 
@@ -65,13 +65,15 @@
                         </Interactivity:Interaction.Behaviors>
                         <StackPanel Width="75" VerticalAlignment="Center">
                             <FontIcon Glyph="&#xE11A;" FontSize="30" Foreground="#FF333333" />
-                            <TextBlock Text="Search" TextAlignment="Center" />
+                            <TextBlock x:Uid="SearchTextBlock" Text="Search" TextAlignment="Center" />
                         </StackPanel>
                     </Button>
 
                 </ListView>
             </common:MaterialCard>
-            <common:MaterialCard common:MaterialCard.IsLoading="{Binding IsFeaturedLoading}" common:MaterialCard.HeaderText="Top tracks">
+            <common:MaterialCard IsLoading="{Binding IsFeaturedLoading}" 
+                                 x:Uid="TopTracksCard"
+                                 HeaderText="Top Tracks">
                 <ListView ItemsSource="{Binding TopTracks}"
 					ScrollViewer.HorizontalScrollBarVisibility="Auto"
 					ScrollViewer.VerticalScrollBarVisibility="Disabled"
@@ -87,23 +89,6 @@
                     </ListView.ItemsPanel>
                 </ListView>
             </common:MaterialCard>
-<!--            <common:MaterialCard common:MaterialCard.IsLoading="{Binding IsNewLoading}" common:MaterialCard.HeaderText="New Releases">-->
-<!--                <ListView ItemsSource="{Binding NewAlbums}"-->
-<!--					ScrollViewer.HorizontalScrollBarVisibility="Auto"-->
-<!--					ScrollViewer.VerticalScrollBarVisibility="Disabled"-->
-<!--					ScrollViewer.HorizontalScrollMode="Enabled"-->
-<!--					ScrollViewer.VerticalScrollMode="Disabled"-->
-<!--					ScrollViewer.ZoomMode="Disabled"-->
-<!--					SelectionMode="None"-->
-<!--					IsItemClickEnabled="True" ItemClick="ListView_ItemClick"-->
-<!--					ItemTemplate="{StaticResource LastAlbumDataTemplate}">-->
-<!--                    <ListView.ItemsPanel>-->
-<!--                        <ItemsPanelTemplate>-->
-<!--                            <VirtualizingStackPanel Orientation="Horizontal" />-->
-<!--                        </ItemsPanelTemplate>-->
-<!--                    </ListView.ItemsPanel>-->
-<!--                </ListView>-->
-<!--            </common:MaterialCard>-->
         </ListView>
     </Grid>
 </audiotica:PageBase>

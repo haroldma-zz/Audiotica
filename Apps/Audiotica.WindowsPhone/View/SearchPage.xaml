@@ -17,7 +17,9 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-		<common:MaterialCard IsLoading="{Binding IsLoading}" HeaderText="Search">
+		<common:MaterialCard IsLoading="{Binding IsLoading}" 
+                             x:Uid="SearchCard"
+                             HeaderText="Search">
 			<TextBox Text="{Binding SearchTerm, Mode=TwoWay}">
 				<interactivity:Interaction.Behaviors>
                     <Core:EventTriggerBehavior EventName="KeyDown">

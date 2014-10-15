@@ -23,5 +23,11 @@ namespace Audiotica.Core.Utilities
                 }
             });
         }
+
+        public static string FromLanguageResource(this string str)
+        {
+            var loader = new Windows.ApplicationModel.Resources.ResourceLoader();
+            return loader.GetString(str);
+        }
     }
 }
