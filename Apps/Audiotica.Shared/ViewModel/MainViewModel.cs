@@ -74,9 +74,12 @@ namespace Audiotica.ViewModel
             IsFeaturedLoading = true;
             IsNewLoading = true;
 
+            var rnd = new Random(DateTime.Now.Millisecond);
+
             try
             {
-                SpotlightItems = (await _service.GetTopArtistsAsync(5)).Content.ToList();
+                var page = rnd.Next(1, 100);
+                SpotlightItems = (await _service.GetTopArtistsAsync(page, 10)).Content.ToList();
             }
             catch (Exception e)
             {
@@ -89,7 +92,8 @@ namespace Audiotica.ViewModel
 
             try
             {
-                TopTracks = (await _service.GetTopTracksAsync()).Content.ToList();
+                var page = rnd.Next(1, 100);
+                TopTracks = (await _service.GetTopTracksAsync(page, 10)).Content.ToList();
             }
             catch (Exception e)
             {
