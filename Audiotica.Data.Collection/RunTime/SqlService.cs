@@ -202,7 +202,7 @@ namespace Audiotica.Data.Collection.RunTime
                     while (statement.Step() == SQLiteResult.ROW)
                     {
                         var item = new T();
-                        var props = type.GetRuntimeProperties().Where(p => p.GetCustomAttribute<SqlIgnore>() == null);
+                        var props = type.GetRuntimeProperties().Where(p => p.GetCustomAttribute<SqlIgnore>() == null && EasySql.NetToSqlKepMap.ContainsKey(p.PropertyType));
 
                         foreach (var propertyInfo in props)
                         {

@@ -4,7 +4,6 @@ namespace Audiotica.Data.Collection.Model
 {
     public class QueueSong : BaseEntry
     {
-        [SqlIgnore]
         public Song Song { get; set; }
 
         [SqlProperty(ReferenceTo = typeof(Song))]

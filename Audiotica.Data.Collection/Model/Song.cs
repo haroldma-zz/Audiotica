@@ -39,10 +39,8 @@ namespace Audiotica.Data.Collection.Model
             get { return new Uri(AudioUrl).IsAbsoluteUri; }
         }
 
-        [SqlIgnore]
         public Artist Artist { get; set; }
 
-        [SqlIgnore]
         public Album Album { get; set; }
     }
 

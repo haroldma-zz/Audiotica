@@ -12,6 +12,8 @@ namespace Audiotica.Data.Collection.Model
 {
     public class Album : BaseEntry
     {
+        private BitmapImage _artwork;
+
         public Album()
         {
             Songs = new List<Song>();
@@ -29,13 +31,10 @@ namespace Audiotica.Data.Collection.Model
 
         public DateTime ReleaseDate { get; set; }
 
-        [SqlIgnore]
         public List<Song> Songs { get; set; }
 
-        [SqlIgnore]
-        public BitmapImage Artwork { get; set; }
+        public BitmapImage Artwork { get { return _artwork; } set { Set(ref _artwork, value); } }
 
-        [SqlIgnore]
         public Artist PrimaryArtist { get; set; }
     }
 }

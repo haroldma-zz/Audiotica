@@ -1,28 +1,31 @@
-﻿using System;
+﻿#region
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Windows.UI.Xaml.Controls;
 using SQLitePCL;
+
+#endregion
 
 namespace Audiotica.Data.Collection.SqlHelper
 {
     public static class EasySql
     {
-        private static readonly Dictionary<Type, string> NetToSqlKepMap = new Dictionary<Type, string>
+        public static readonly Dictionary<Type, string> NetToSqlKepMap = new Dictionary<Type, string>
         {
-            { typeof(long), "INTEGER" },
-            { typeof(int), "INTEGER" },
-            { typeof(string), "TEXT" },
-            { typeof(float), "REAL" },
-            { typeof(DateTime), "DATETIME DEFAULT CURRENT_TIMESTAMP" },
-            { typeof(double), "REAL" }
+            {typeof (long), "INTEGER"},
+            {typeof (int), "INTEGER"},
+            {typeof (string), "TEXT"},
+            {typeof (float), "REAL"},
+            {typeof (DateTime), "DATETIME DEFAULT CURRENT_TIMESTAMP"},
+            {typeof (double), "REAL"}
         };
 
         public static string CreateTable(Type type)
         {
             var props = type.GetRuntimeProperties()
-                   .Where(p => p.GetCustomAttribute<SqlIgnore>() == null);
+                .Where(p => p.GetCustomAttribute<SqlIgnore>() == null && NetToSqlKepMap.ContainsKey(p.PropertyType));
 
             const string sql = "CREATE TABLE IF NOT EXISTS {0} ({1});";
             var name = type.Name;
@@ -53,8 +56,8 @@ namespace Audiotica.Data.Collection.SqlHelper
                 if (sqlProp.ReferenceTo != null)
                 {
                     //need to add create a foreign key
-                    foreignKeys += string.Format(", FOREIGN KEY({0}) REFERENCES {1}(Id) ON DELETE CASCADE", 
-                        propertyInfo.Name, sqlProp.ReferenceTo.Name); 
+                    foreignKeys += string.Format(", FOREIGN KEY({0}) REFERENCES {1}(Id) ON DELETE CASCADE",
+                        propertyInfo.Name, sqlProp.ReferenceTo.Name);
                 }
             }
 
@@ -64,7 +67,7 @@ namespace Audiotica.Data.Collection.SqlHelper
         public static string CreateInsert(Type type)
         {
             var props = type.GetRuntimeProperties()
-                   .Where(p => p.CustomAttributes.Count(n => n.AttributeType == typeof(SqlIgnore)) == 0);
+                .Where(p => p.CustomAttributes.Count(n => n.AttributeType == typeof(SqlIgnore)) == 0 && NetToSqlKepMap.ContainsKey(p.PropertyType));
 
             const string sql = "INSERT INTO {0} ({1}) VALUES ({2});";
             var name = type.Name;
@@ -79,7 +82,7 @@ namespace Audiotica.Data.Collection.SqlHelper
 
                 var first = propNames == "";
                 var prefix = (first ? "" : ", ");
-                
+
                 propNames += prefix + propertyInfo.Name;
                 valueHolder += prefix + "?";
             }
@@ -90,7 +93,7 @@ namespace Audiotica.Data.Collection.SqlHelper
         public static string CreateUpdate(Type type)
         {
             var props = type.GetRuntimeProperties()
-                   .Where(p => p.CustomAttributes.Count(n => n.AttributeType == typeof(SqlIgnore)) == 0);
+                .Where(p => p.CustomAttributes.Count(n => n.AttributeType == typeof(SqlIgnore)) == 0 && NetToSqlKepMap.ContainsKey(p.PropertyType));
 
             const string sql = "UPDATE {0} SET {1} WHERE Id = ?;";
             var name = type.Name;
@@ -124,7 +127,7 @@ namespace Audiotica.Data.Collection.SqlHelper
             var type = obj.GetType();
 
             var props = type.GetRuntimeProperties()
-                   .Where(p => p.CustomAttributes.Count(n => n.AttributeType == typeof(SqlIgnore)) == 0).ToList();
+                .Where(p => p.CustomAttributes.Count(n => n.AttributeType == typeof(SqlIgnore)) == 0 && NetToSqlKepMap.ContainsKey(p.PropertyType)).ToList();
 
             for (var i = 0; i < props.Count; i++)
             {
@@ -139,7 +142,7 @@ namespace Audiotica.Data.Collection.SqlHelper
 
                 if (proptype.GetTypeInfo().IsEnum)
                     propvalue = Convert.ToInt64(props[i].GetValue(obj));
-                else if (proptype == typeof(DateTime))
+                else if (proptype == typeof (DateTime))
                     propvalue = props[i].GetValue(obj).ToString();
                 else
                     propvalue = props[i].GetValue(obj);
