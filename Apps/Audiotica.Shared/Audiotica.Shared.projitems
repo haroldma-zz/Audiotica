@@ -31,6 +31,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="$(MSBuildThisFileDirectory)analytics.xml" />
+    <Content Include="$(MSBuildThisFileDirectory)Assets\MissingArtwork.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)analytics.xsd" />

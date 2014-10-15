@@ -169,7 +169,7 @@ namespace Audiotica.WindowsPhone.Player
         {
             var sql = new SqlService();
 
-            var collectionService = new CollectionService(sql);
+            var collectionService = new CollectionService(sql, null);
             collectionService.LoadLibrary();
 
             var queueService = new QueueService(sql, collectionService);

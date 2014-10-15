@@ -1,5 +1,6 @@
 #region
 
+using Windows.UI.Xaml;
 using Audiotica.Data.Collection;
 using Audiotica.Data.Collection.DesignTime;
 using Audiotica.Data.Collection.RunTime;
@@ -29,6 +30,7 @@ namespace Audiotica.ViewModel
 #if WINDOWS_PHONE_APP
             SimpleIoc.Default.Register<AudioPlayerHelper>();
 #endif
+            SimpleIoc.Default.Register(() => Window.Current.Dispatcher);
 
             if (ViewModelBase.IsInDesignModeStatic)
             {

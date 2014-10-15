@@ -62,9 +62,9 @@ namespace Audiotica
                 var artworkUrl = (track.Images != null && track.Images.Largest != null) 
                     ? track.Images.Largest.AbsoluteUri : null;
 
-                artworkUrl = (song.Album != null && song.Album.ArtworkUri != null)
-                    ? song.Album.ArtworkUri.AbsoluteUri 
-                    : artworkUrl;
+//                artworkUrl = (song.Album != null && song.Album.ArtworkUri != null)
+//                    ? song.Album.ArtworkUri.AbsoluteUri 
+//                    : artworkUrl;
 
                 try
                 {
@@ -91,8 +91,8 @@ namespace Audiotica
                 song.Album = lastAlbum.ToAlbum();
                 song.Album.PrimaryArtist = artist.ToArtist();
 
-                if (lastAlbum.Images != null && lastAlbum.Images.Largest != null)
-                    song.Album.ArtworkUri = lastAlbum.Images.Largest;
+//                if (lastAlbum.Images != null && lastAlbum.Images.Largest != null)
+//                    song.Album.ArtworkUri = lastAlbum.Images.Largest;
             }
 
             else
