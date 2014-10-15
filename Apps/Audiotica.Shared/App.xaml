@@ -785,7 +785,8 @@
         <library:SlideApplicationFrame x:Key="SlideApplicationFrame" 
                                        Header="{Binding Player, Source={StaticResource Locator}}" 
                                        DataContext="{Binding Player, Source={StaticResource Locator}}" 
-                                       IsSlideEnabled="{Binding CurrentSong, Converter={StaticResource NullToBooleanConverter}}">
+                                       IsSlideEnabled="{Binding CurrentSong, Converter={StaticResource NullToBooleanConverter}}"
+                                       UseBitmapCache="False">
             <library:SlideApplicationFrame.RightContent>
                 <partialView:NowPlaying />
             </library:SlideApplicationFrame.RightContent>
