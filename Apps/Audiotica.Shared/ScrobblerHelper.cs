@@ -62,7 +62,7 @@ namespace Audiotica
                 var artworkUrl = (track.Images != null && track.Images.Largest != null) 
                     ? track.Images.Largest.AbsoluteUri : null;
 
-                artworkUrl = song.Album.ArtworkUri != null 
+                artworkUrl = (song.Album != null && song.Album.ArtworkUri != null)
                     ? song.Album.ArtworkUri.AbsoluteUri 
                     : artworkUrl;
 
