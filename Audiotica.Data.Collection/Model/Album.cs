@@ -12,8 +12,6 @@ namespace Audiotica.Data.Collection.Model
 {
     public class Album : BaseEntry
     {
-        private BitmapImage _bitmap;
-
         public Album()
         {
             Songs = new List<Song>();
@@ -35,17 +33,7 @@ namespace Audiotica.Data.Collection.Model
         public List<Song> Songs { get; set; }
 
         [SqlIgnore]
-        public Uri ArtworkUri { get; set; }
-
-        [SqlIgnore]
-        public BitmapImage Artwork
-        {
-            get
-            {
-                //don't want to load image every time, so we save the instance
-                return _bitmap ?? (_bitmap = new BitmapImage(ArtworkUri ?? new Uri(CollectionConstant.MissingArtworkAppPath)));
-            }
-        }
+        public BitmapImage Artwork { get; set; }
 
         [SqlIgnore]
         public Artist PrimaryArtist { get; set; }

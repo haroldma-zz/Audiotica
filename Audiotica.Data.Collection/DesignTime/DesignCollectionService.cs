@@ -31,8 +31,8 @@ namespace Audiotica.Data.Collection.DesignTime
                         new Album
                         {
                             Name = "V",
-                            ArtworkUri =
-                                    new Uri("http://static.musictoday.com/store/bands/93/product_medium/IXDDM501.JPG")
+                            Artwork = 
+                                    new BitmapImage(new Uri("http://static.musictoday.com/store/bands/93/product_medium/IXDDM501.JPG"))
                         }
                 },
                 new Song
@@ -43,8 +43,8 @@ namespace Audiotica.Data.Collection.DesignTime
                         new Album
                         {
                             Name = "V",
-                            ArtworkUri =
-                                    new Uri("http://static.musictoday.com/store/bands/93/product_medium/IXDDM501.JPG")
+                            Artwork =
+                                   new BitmapImage(new Uri("http://static.musictoday.com/store/bands/93/product_medium/IXDDM501.JPG"))
                         }
                 }
             };
@@ -61,8 +61,8 @@ namespace Audiotica.Data.Collection.DesignTime
                         {
                             Id= 0,
                             Name = "V",
-                            ArtworkUri =
-                                    new Uri("http://static.musictoday.com/store/bands/93/product_medium/IXDDM501.JPG"),
+                            Artwork =
+                                    new BitmapImage(new Uri("http://static.musictoday.com/store/bands/93/product_medium/IXDDM501.JPG")),
                             PrimaryArtist = new Artist { Name = "Maroon 5"},
                             Genre = "Pop",
                             Songs = Songs.ToList()

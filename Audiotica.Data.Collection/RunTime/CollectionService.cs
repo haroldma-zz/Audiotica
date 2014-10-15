@@ -10,6 +10,7 @@ using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Media.Imaging;
 using Audiotica.Collection;
+using Audiotica.Core.Common;
 using Audiotica.Core.Utilities;
 using Audiotica.Data.Collection.Model;
 using SQLitePCL;
@@ -19,9 +20,12 @@ namespace Audiotica.Data.Collection.RunTime
     public class CollectionService : ICollectionService
     {
         private readonly ISqlService _service;
-        public CollectionService(ISqlService service)
+        private readonly CoreDispatcher _dispatcher;
+
+        public CollectionService(ISqlService service, CoreDispatcher dispatcher)
         {
             _service = service;
+            _dispatcher = dispatcher;
             Songs = new ObservableCollection<Song>();
             Artists = new ObservableCollection<Artist>();
             Albums = new ObservableCollection<Album>();
@@ -48,7 +52,11 @@ namespace Audiotica.Data.Collection.RunTime
             {
                 album.Songs = songs.Where(p => p.AlbumId == album.Id).OrderBy(p => p.TrackNumber).ToList();
                 album.PrimaryArtist = artists.FirstOrDefault(p => p.Id == album.PrimaryArtistId);
-                album.ArtworkUri = GetArtwork(album.Id);
+
+                if (_dispatcher != null)
+// ReSharper disable AccessToForEachVariableInClosure
+                    _dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () => album.Artwork = await GetArtworkAsync(album.Id)).AsTask().Wait();
+// ReSharper restore AccessToForEachVariableInClosure
             }
 
             foreach (var artist in artists)
@@ -83,15 +91,15 @@ namespace Audiotica.Data.Collection.RunTime
             }
         }
 
-        private Uri GetArtwork(long id)
+        private async Task<BitmapImage> GetArtworkAsync(long id)
         {
             var artworkPath = string.Format(CollectionConstant.ArtworkPath, id);
 
-            var exists = StorageHelper.FileExistsAsync(artworkPath).Result;
+            var exists = await StorageHelper.FileExistsAsync(artworkPath);
 
             return exists 
-                ? new Uri(CollectionConstant.LocalStorageAppPath + artworkPath) 
-                : new Uri(CollectionConstant.MissingArtworkAppPath);
+                ? new BitmapImage(new Uri(CollectionConstant.LocalStorageAppPath + artworkPath)) 
+                : CollectionConstant.MissingArtworkImage;
         }
 
         public Task LoadLibraryAsync()
@@ -196,7 +204,7 @@ namespace Audiotica.Data.Collection.RunTime
                                 {
                                     await stream.CopyToAsync(fileStream);
                                     //now set it
-                                    song.Album.ArtworkUri = new Uri(CollectionConstant.LocalStorageAppPath + filePath);
+                                    song.Album.Artwork = new BitmapImage(new Uri(CollectionConstant.LocalStorageAppPath + filePath));
                                 }
                             }
                         }
@@ -207,6 +215,9 @@ namespace Audiotica.Data.Collection.RunTime
                     }
                 }
             }
+
+            if (song.Album.Artwork == null)
+                song.Album.Artwork = CollectionConstant.MissingArtworkImage;
 
             #endregion
 
