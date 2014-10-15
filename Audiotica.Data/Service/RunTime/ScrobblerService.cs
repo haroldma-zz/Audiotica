@@ -22,7 +22,7 @@ namespace Audiotica.Data.Service.RunTime
         private const string MbApiPath =
             "http://musicbrainz.org/ws/2/{0}/{1}?fmt=json";
 
-        private static readonly Auth FmAuth = new Auth(ApiKeys.LastFmId, "");
+        private static readonly LastAuth FmAuth = new LastAuth(ApiKeys.LastFmId, "");
         private readonly AlbumApi _albumApi = new AlbumApi(FmAuth);
         private readonly ArtistApi _artistApi = new ArtistApi(FmAuth);
         private readonly ChartApi _chartApi = new ChartApi(FmAuth);

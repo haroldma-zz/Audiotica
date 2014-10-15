@@ -58,9 +58,17 @@ namespace Audiotica
             {
                 var song = await PrepareTrackForDownloadAsync(track);
                 song.AudioUrl = url;
+
+                var artworkUrl = (track.Images != null && track.Images.Largest != null) 
+                    ? track.Images.Largest.AbsoluteUri : null;
+
+                artworkUrl = song.Album.ArtworkUri != null 
+                    ? song.Album.ArtworkUri.AbsoluteUri 
+                    : artworkUrl;
+
                 try
                 {
-                    await App.Locator.CollectionService.AddSongAsync(song, track.Images != null ? track.Images.Largest.AbsoluteUri : null);
+                    await App.Locator.CollectionService.AddSongAsync(song, artworkUrl);
                     CurtainToast.Show("SongSavedToast".FromLanguageResource());
                 }
                 catch (Exception e)
@@ -82,7 +90,9 @@ namespace Audiotica
                 artist = await App.Locator.ScrobblerService.GetDetailArtistByMbid(track.ArtistMbid ?? track.ArtistName);
                 song.Album = lastAlbum.ToAlbum();
                 song.Album.PrimaryArtist = artist.ToArtist();
-                track.Images = lastAlbum.Images;
+
+                if (lastAlbum.Images != null && lastAlbum.Images.Largest != null)
+                    song.Album.ArtworkUri = lastAlbum.Images.Largest;
             }
 
             else

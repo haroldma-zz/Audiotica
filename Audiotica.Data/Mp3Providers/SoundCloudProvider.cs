@@ -39,8 +39,10 @@ namespace Audiotica.Data.Mp3Providers
                     if (string.IsNullOrEmpty(song.artwork_url))
                         song.artwork_url = song.user.avatar_url;
 
-                    song.artwork_url = song.artwork_url.Remove(song.artwork_url.LastIndexOf('?'))
-                        .Replace("large", "t500x500");
+                    if (song.artwork_url.IndexOf('?') > -1)
+                        song.artwork_url = song.artwork_url.Remove(song.artwork_url.LastIndexOf('?'));
+
+                    song.artwork_url = song.artwork_url.Replace("large", "t500x500");
                 }
 
                 return parseResp.collection.FirstOrDefault().stream_url;
