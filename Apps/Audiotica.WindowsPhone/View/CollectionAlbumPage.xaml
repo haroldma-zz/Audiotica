@@ -13,7 +13,7 @@
     xmlns:core="using:Microsoft.Xaml.Interactions.Core"
     DataContext="{Binding Source={StaticResource Locator}, Path=CollectionAlbum}">
 
-    <ListView Margin="10,0" ItemContainerStyle="{StaticResource NoFeedbackListViewItem}">
+    <ListView Padding="0,20,0,0" Margin="10,0" ItemContainerStyle="{StaticResource NoFeedbackListViewItem}">
         <common:MaterialCard x:Uid="AlbumDetailCard" HeaderText="Details">
             <Grid Margin="0,0,0,10">
                 <Grid.ColumnDefinitions>
