@@ -44,6 +44,8 @@ namespace Audiotica
             Suspending += OnSuspending;
         }
 
+        private bool _init = false;
+
         protected override async void OnLaunched(LaunchActivatedEventArgs e)
         {
             RootFrame = Window.Current.Content as SlideApplicationFrame;
@@ -57,26 +59,13 @@ namespace Audiotica
 
                 Window.Current.Content = RootFrame;
                 DispatcherHelper.Initialize();
-
-                Task.Factory.StartNew(async () =>
-                {
-                    try
-                    {
-                        await ServiceLocator.Current.GetInstance<ISqlService>().InitializeAsync();
-                        await ServiceLocator.Current.GetInstance<ICollectionService>().LoadLibraryAsync();
-                        await ServiceLocator.Current.GetInstance<IQueueService>().LoadQueueAsync();
-                    }
-                    catch (Exception ex)
-                    {
-                        EasyTracker.GetTracker().SendException(ex.Message + " " + ex.StackTrace, true);
-                        DispatcherHelper.RunAsync(() => CurtainToast.ShowError("ErrorBootingToast".FromLanguageResource()));
-                    }
-                });
-
 #if BETA
                 await BetaChangelogHelper.OnLaunchedAsync();
 #endif
             }
+
+            // ReSharper disable once CSharpWarnings::CS4014
+            BootAppServicesAsync();
 
             if (RootFrame != null && RootFrame.Content == null)
             {
@@ -101,12 +90,34 @@ namespace Audiotica
                 }
             }
 
-            Locator.AudioPlayerHelper.OnAppActive();
             Window.Current.Activate();
         }
 
+        private async Task BootAppServicesAsync()
+        {
+            if (!_init)
+            {
+                try
+                {
+                    await ServiceLocator.Current.GetInstance<ISqlService>().InitializeAsync();
+                    await ServiceLocator.Current.GetInstance<ICollectionService>().LoadLibraryAsync();
+                    await ServiceLocator.Current.GetInstance<IQueueService>().LoadQueueAsync();
+                }
+                catch (Exception ex)
+                {
+                    EasyTracker.GetTracker().SendException(ex.Message + " " + ex.StackTrace, true);
+                    CurtainToast.ShowError("ErrorBootingToast".FromLanguageResource());
+                }
+            }
+
+            Locator.AudioPlayerHelper.OnAppActive();
+
+            _init = true;
+        }
+
 #if WINDOWS_PHONE_APP
-        private void RootFrame_FirstNavigated(object sender, NavigationEventArgs e)
+            private
+            void RootFrame_FirstNavigated(object sender, NavigationEventArgs e)
         {
             RootFrame.ContentTransitions = _transitions ?? new TransitionCollection {new NavigationThemeTransition()};
             RootFrame.Navigated -= RootFrame_FirstNavigated;
