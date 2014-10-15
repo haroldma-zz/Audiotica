@@ -44,9 +44,7 @@ namespace Audiotica.WindowsPhone.Player
             {
                 if (_currentTrackIndex == -1)
                     return null;
-                if (_currentTrackIndex < tracks.Count)
-                    return tracks[_currentTrackIndex];
-                throw new Exception("Damn, high track number!!!");
+                return _currentTrackIndex < tracks.Count ? tracks[_currentTrackIndex] : null;
             }
         }
 
