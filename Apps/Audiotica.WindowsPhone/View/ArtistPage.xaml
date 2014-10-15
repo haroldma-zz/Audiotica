@@ -14,13 +14,13 @@
 
     <Grid>
         <ListView ItemContainerStyle="{StaticResource NoFeedbackListViewItem}" Padding="0,20,0,0">
-            <common:MaterialCard HeaderText="Details">
+            <common:MaterialCard x:Uid="ArtistDetailCard" HeaderText="Details">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="150" />
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
-                    <Image Source="{Binding Artist.MainImage.Largest}" />
+                    <Image Source="{Binding Artist.MainImage.Medium}" />
                     <StackPanel Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="5,0,0,0">
                         <TextBlock Text="{Binding Artist.Name}" FontSize="22" TextAlignment="Right"
                                    TextTrimming="CharacterEllipsis" />
@@ -39,7 +39,7 @@
             <!--            </ListView>-->
             <!--        </common:MaterialCard>-->
 
-            <common:MaterialCard HeaderText="Latest Albums" IsActionButtonEnabled="False"
+            <common:MaterialCard x:Uid="ArtistTopAlbumsCard" HeaderText="Top Albums" IsActionButtonEnabled="False"
                                  ActionButtonVisibility="Visible">
                 <ListView ItemsSource="{Binding TopAlbums}"
                           ItemTemplate="{StaticResource LastAlbumDataTemplate}"
@@ -58,7 +58,7 @@
                 </ListView>
             </common:MaterialCard>
 
-            <common:MaterialCard HeaderText="Top Songs"
+            <common:MaterialCard x:Uid="ArtistTopTracksCard" HeaderText="Top Songs"
                                  IsActionButtonEnabled="False"
                                  ActionButtonVisibility="Visible">
                 <ListView IsItemClickEnabled="True" ItemsSource="{Binding TopTracks}"
@@ -71,7 +71,7 @@
                 </ListView>
             </common:MaterialCard>
 
-            <common:MaterialCard HeaderText="Bio">
+            <common:MaterialCard x:Uid="ArtistBioCard" HeaderText="Bio">
                 <TextBlock FontSize="20" Text="This is a place holder" Margin="0,10,0,0" />
             </common:MaterialCard>
         </ListView>

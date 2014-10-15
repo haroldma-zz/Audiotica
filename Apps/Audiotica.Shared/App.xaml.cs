@@ -69,7 +69,7 @@ namespace Audiotica
                     catch (Exception ex)
                     {
                         EasyTracker.GetTracker().SendException(ex.Message + " " + ex.StackTrace, true);
-                        DispatcherHelper.RunAsync(() => CurtainPrompt.ShowError("Problem booting app services."));
+                        DispatcherHelper.RunAsync(() => CurtainPrompt.ShowError("ErrorBootingToast".FromLanguageResource()));
                     }
                 });
 

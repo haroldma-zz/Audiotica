@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Audiotica.Core.Common;
 using Audiotica.Core.Exceptions;
+using Audiotica.Core.Utilities;
 using Audiotica.Data.Service.Interfaces;
 using GalaSoft.MvvmLight;
 using GoogleAnalytics;
@@ -114,7 +115,7 @@ namespace Audiotica.ViewModel
 
         private void ShowNetworkError(Exception e)
         {
-            CurtainPrompt.ShowError("There was a network issue");
+            CurtainPrompt.ShowError("NetworkIssueToast".FromLanguageResource());
 
             var ex = e.Message + "\n" + e.StackTrace;
             if (e is LastException)

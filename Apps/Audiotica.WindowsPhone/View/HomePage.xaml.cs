@@ -26,7 +26,7 @@ namespace Audiotica.View
             var track = e.ClickedItem as LastTrack;
             if (track == null) return;
 
-            CurtainPrompt.Show("Matching song...");
+            CurtainPrompt.Show("MatchingSongToast".FromLanguageResource());
             await ScrobblerHelper.SaveTrackAsync(track);
         }
 

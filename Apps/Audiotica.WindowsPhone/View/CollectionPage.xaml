@@ -14,7 +14,7 @@
 
 	<Grid>
 		<Pivot>
-			<PivotItem Header="songs">
+            <PivotItem x:Uid="CollectionSongsPivot" Header="songs">
 				<ListView IsItemClickEnabled="True" ItemsSource="{Binding Service.Songs}" Padding="0,0,0,25">
 					<ListView.ItemTemplate>
 						<DataTemplate>
@@ -26,10 +26,9 @@
                                 </Interactivity:Interaction.Behaviors>
                                 <FlyoutBase.AttachedFlyout>
                                     <MenuFlyout>
-                                        <MenuFlyoutItem Text="Add to (Disabled)" IsEnabled="False" />
-                                        <MenuFlyoutItem Text="Share (Disabled)" IsEnabled="False" />
-                                        <MenuFlyoutSeparator />
-                                        <MenuFlyoutItem Text="Delete" Foreground="Red" Click="DeleteSongMenuFlyoutItem_Click" />
+                                        <MenuFlyoutItem x:Uid="AddToMenuItem" Text="Add to (Disabled)" IsEnabled="False" />
+                                        <MenuFlyoutItem x:Uid="ShareMenuItem" Text="Share (Disabled)" IsEnabled="False" />
+                                        <MenuFlyoutItem x:Uid="DeleteMenuItem" Text="Delete" Foreground="Red" Click="DeleteSongMenuFlyoutItem_Click" />
                                     </MenuFlyout>
                                 </FlyoutBase.AttachedFlyout>
 								<StackPanel>
@@ -47,7 +46,7 @@
 					</Interactivity:Interaction.Behaviors>
 				</ListView>
 			</PivotItem>
-			<PivotItem Header="artists">
+            <PivotItem x:Uid="CollectionArtistsPivot" Header="artists">
                 <ListView IsItemClickEnabled="True" ItemsSource="{Binding Service.Artists}" Padding="0,0,0,25" Margin="0" ItemClick="ArtistListView_ItemClick">
                     <ListView.ItemTemplate>
                         <DataTemplate>
@@ -66,7 +65,7 @@
 <!--                    </Interactivity:Interaction.Behaviors>-->
                 </ListView>
             </PivotItem>
-			<PivotItem Header="albums">
+            <PivotItem x:Uid="CollectionAlbumsPivot" Header="albums">
                 <ListView IsItemClickEnabled="True" ItemsSource="{Binding Service.Albums}" Padding="0,0,0,25" Margin="0" ItemClick="AlbumListView_ItemClick">
                     <ListView.ItemTemplate>
                         <DataTemplate>

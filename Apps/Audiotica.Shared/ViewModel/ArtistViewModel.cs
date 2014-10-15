@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Windows.UI.Xaml.Controls;
 using Audiotica.Core.Common;
+using Audiotica.Core.Utilities;
 using Audiotica.Data;
 using Audiotica.Data.Service.Interfaces;
 using GalaSoft.MvvmLight;
@@ -113,7 +114,7 @@ namespace Audiotica.ViewModel
         {
             var track = (LastTrack)item.ClickedItem;
 
-            CurtainPrompt.Show("Matching song...");
+            CurtainPrompt.Show("MatchingSongToast".FromLanguageResource());
             await ScrobblerHelper.SaveTrackAsync(track);
         }
     }

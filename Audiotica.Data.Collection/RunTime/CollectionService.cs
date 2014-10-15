@@ -103,7 +103,7 @@ namespace Audiotica.Data.Collection.RunTime
         public async Task AddSongAsync(Song song, string artworkUrl)
         {
             if (Songs.Count(p => p.ProviderId == song.ProviderId) > 0)
-                throw new Exception("Already saved");
+                throw new Exception("AlreadySavedToast".FromLanguageResource());
 
             #region create artist
 
