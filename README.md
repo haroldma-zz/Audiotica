@@ -1,5 +1,6 @@
 Audiotica
 =========
+[![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/zumicts/Audiotica?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![License](https://img.shields.io/badge/license-APACHE--2.0-642C90.svg?style=flat-square)](https://raw.githubusercontent.com/zumicts/audiotica/master/LICENSE)
 [![Contact](https://img.shields.io/badge/contact-@Zumicts-642C90.svg?style=flat-square)](https://twitter.com/zumicts)
 [![Gratipay](https://img.shields.io/gratipay/zumicts.svg?style=flat-square)](https://gratipay.com/zumicts)
