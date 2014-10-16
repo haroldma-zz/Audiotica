@@ -58,7 +58,9 @@ namespace Audiotica.Data.Mp3Providers
             var json = await resp.Content.ReadAsStringAsync();
             var parseResp = await json.DeserializeAsync<MeileDetailRoot>();
 
-            return parseResp.values.songs.FirstOrDefault().mp3;
+            var match = parseResp.values.songs.FirstOrDefault();
+            
+            return match != null ? match.mp3 : null;
         }
     }
 }
