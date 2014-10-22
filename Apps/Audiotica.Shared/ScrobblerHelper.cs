@@ -20,7 +20,8 @@ namespace Audiotica
             return new Artist
             {
                 Name = lastArtist.Name,
-                ProviderId = !string.IsNullOrEmpty(lastArtist.Mbid) ? ("mbid." + lastArtist.Mbid) : ("lastid." + lastArtist.Id),
+                ProviderId =
+                    !string.IsNullOrEmpty(lastArtist.Mbid) ? ("mbid." + lastArtist.Mbid) : ("lastid." + lastArtist.Id),
             };
         }
 
@@ -28,7 +29,8 @@ namespace Audiotica
         {
             var album = new Album
             {
-                ProviderId = !string.IsNullOrEmpty(lastAlbum.Mbid) ? ("mbid." + lastAlbum.Mbid) : ("lastid." + lastAlbum.Id),
+                ProviderId =
+                    !string.IsNullOrEmpty(lastAlbum.Mbid) ? ("mbid." + lastAlbum.Mbid) : ("lastid." + lastAlbum.Id),
                 Name = lastAlbum.Name,
                 ReleaseDate = lastAlbum.ReleaseDateUtc,
                 Genre = lastAlbum.TopTags != null ? lastAlbum.TopTags.First().Name : ""
@@ -56,19 +58,12 @@ namespace Audiotica
 
             else
             {
-                var song = await PrepareTrackForDownloadAsync(track);
-                song.AudioUrl = url;
-
-                var artworkUrl = (track.Images != null && track.Images.Largest != null) 
-                    ? track.Images.Largest.AbsoluteUri : null;
-
-//                artworkUrl = (song.Album != null && song.Album.ArtworkUri != null)
-//                    ? song.Album.ArtworkUri.AbsoluteUri 
-//                    : artworkUrl;
+                var preparedSong = await PrepareTrackForDownloadAsync(track);
+                preparedSong.Song.AudioUrl = url;
 
                 try
                 {
-                    await App.Locator.CollectionService.AddSongAsync(song, artworkUrl);
+                    await App.Locator.CollectionService.AddSongAsync(preparedSong.Song, preparedSong.ArtworkUrl);
                     CurtainToast.Show("SongSavedToast".FromLanguageResource());
                 }
                 catch (Exception e)
@@ -78,10 +73,10 @@ namespace Audiotica
             }
         }
 
-        public static async Task<Song> PrepareTrackForDownloadAsync(LastTrack track)
+        internal static async Task<PreparedSong> PrepareTrackForDownloadAsync(LastTrack track)
         {
             track = await App.Locator.ScrobblerService.GetDetailTrack(track.Name, track.ArtistName);
-            var song = track.ToSong();
+            var preparedSong = new PreparedSong {Song = track.ToSong()};
             LastArtist artist;
 
             if (!string.IsNullOrEmpty(track.AlbumName))
@@ -93,20 +88,31 @@ namespace Audiotica
                 else
                     artist = await App.Locator.ScrobblerService.GetDetailArtistByMbid(track.ArtistMbid);
 
-                song.Album = lastAlbum.ToAlbum();
-                song.Album.PrimaryArtist = artist.ToArtist();
+                preparedSong.Song.Album = lastAlbum.ToAlbum();
+                preparedSong.Song.Album.PrimaryArtist = artist.ToArtist();
 
-//                if (lastAlbum.Images != null && lastAlbum.Images.Largest != null)
-//                    song.Album.ArtworkUri = lastAlbum.Images.Largest;
+                if (lastAlbum.Images != null && lastAlbum.Images.Largest != null)
+                    preparedSong.ArtworkUrl = lastAlbum.Images.Largest.AbsoluteUri;
             }
 
             else
                 artist = await App.Locator.ScrobblerService.GetDetailArtist(track.ArtistName);
 
-            song.Artist = artist.ToArtist();
-            song.ArtistName = artist.Name;
+            if (string.IsNullOrEmpty(preparedSong.ArtworkUrl))
+                preparedSong.ArtworkUrl = (track.Images != null && track.Images.Largest != null)
+                    ? track.Images.Largest.AbsoluteUri
+                    : null;
 
-            return song;
+            preparedSong.Song.Artist = artist.ToArtist();
+            preparedSong.Song.ArtistName = artist.Name;
+
+            return preparedSong;
+        }
+
+        internal class PreparedSong
+        {
+            public Song Song { get; set; }
+            public string ArtworkUrl { get; set; }
         }
     }
 }
