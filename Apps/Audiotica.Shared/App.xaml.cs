@@ -101,7 +101,6 @@ namespace Audiotica
                 {
                     await ServiceLocator.Current.GetInstance<ISqlService>().InitializeAsync();
                     await ServiceLocator.Current.GetInstance<ICollectionService>().LoadLibraryAsync();
-                    await ServiceLocator.Current.GetInstance<IQueueService>().LoadQueueAsync();
                 }
                 catch (Exception ex)
                 {

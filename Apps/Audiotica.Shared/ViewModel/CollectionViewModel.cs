@@ -15,20 +15,18 @@ namespace Audiotica.ViewModel
     public class CollectionViewModel : ViewModelBase
     {
         private readonly ICollectionService _service;
-        private readonly IQueueService _queueService;
 #if WINDOWS_PHONE_APP
         private readonly AudioPlayerHelper _audioPlayer;
 #endif
         private readonly RelayCommand<ItemClickEventArgs> _songClickCommand;
 
-        public CollectionViewModel(ICollectionService service, IQueueService queueService
+        public CollectionViewModel(ICollectionService service
 #if WINDOWS_PHONE_APP
 , AudioPlayerHelper audioPlayer
 #endif
             )
         {
             _service = service;
-            _queueService = queueService;
 #if WINDOWS_PHONE_APP
             _audioPlayer = audioPlayer;
 #endif
@@ -43,11 +41,11 @@ namespace Audiotica.ViewModel
         {
             var song = e.ClickedItem as Song;
 
-            await _queueService.ClearQueueAsync();
+            await _service.ClearQueueAsync();
 
             foreach (var queueSong in _service.Songs)
             {
-                await _queueService.AddSongAsync(queueSong);
+                await _service.AddToQueueAsync(queueSong);
             }
 
 #if WINDOWS_PHONE_APP

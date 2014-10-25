@@ -15,15 +15,13 @@ namespace Audiotica.ViewModel
     public class CollectionAlbumViewModel : ViewModelBase
     {
         private readonly ICollectionService _service;
-        private readonly IQueueService _queueService;
         private readonly AudioPlayerHelper _audioPlayer;
         private Album _album;
         private readonly RelayCommand<ItemClickEventArgs> _songClickCommand;
 
-        public CollectionAlbumViewModel(ICollectionService service, IQueueService queueService, AudioPlayerHelper audioPlayer)
+        public CollectionAlbumViewModel(ICollectionService service, AudioPlayerHelper audioPlayer)
         {
             _service = service;
-            _queueService = queueService;
             _audioPlayer = audioPlayer;
             _songClickCommand = new RelayCommand<ItemClickEventArgs>(SongClickExecute);
             MessengerInstance.Register<GenericMessage<long>>(this, "album-coll-detail-id", ReceivedId);
@@ -41,11 +39,11 @@ namespace Audiotica.ViewModel
         {
             var song = e.ClickedItem as Song;
 
-            await _queueService.ClearQueueAsync();
+            await _service.ClearQueueAsync();
 
             foreach (var queueSong in _album.Songs)
             {
-                await _queueService.AddSongAsync(queueSong);
+                await _service.AddToQueueAsync(queueSong);
             }
 
 #if WINDOWS_PHONE_APP

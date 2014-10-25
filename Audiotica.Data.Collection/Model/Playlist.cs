@@ -1,6 +1,6 @@
 ﻿#region
 
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using Audiotica.Data.Collection.SqlHelper;
 
 #endregion
@@ -11,6 +11,6 @@ namespace Audiotica.Data.Collection.Model
     {
         public string Name { get; set; }
 
-        public List<PlaylistSong> Songs { get; set; }
+        public ObservableCollection<PlaylistSong> Songs { get; set; }
     }
 }

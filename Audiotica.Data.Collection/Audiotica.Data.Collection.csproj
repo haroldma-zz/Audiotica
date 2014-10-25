@@ -41,14 +41,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DesignTime\DesignCollectionService.cs" />
-    <Compile Include="DesignTime\DesignQueueService.cs" />
     <Compile Include="DesignTime\DesignSqlService.cs" />
     <Compile Include="SqlHelper\BaseEntry.cs" />
     <Compile Include="SqlHelper\EasySql.cs" />
     <Compile Include="SqlHelper\SqlIgnore.cs" />
     <Compile Include="ICollectionService.cs" />
-    <Compile Include="IPlaylistService.cs" />
-    <Compile Include="IQueueService.cs" />
     <Compile Include="ISqlService.cs" />
     <Compile Include="Model\Album.cs" />
     <Compile Include="Model\Artist.cs" />
@@ -58,7 +55,6 @@
     <Compile Include="Model\Song.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RunTime\CollectionService.cs" />
-    <Compile Include="RunTime\QueueService.cs" />
     <Compile Include="RunTime\SqlService.cs" />
     <Compile Include="SqlHelper\SqlProperty.cs" />
   </ItemGroup>

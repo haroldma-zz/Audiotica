@@ -38,7 +38,7 @@ namespace Audiotica.View
             try
             {
                 //delete from the queue
-                await App.Locator.QueueService.DeleteAsync(song);
+                await App.Locator.CollectionService.DeleteFromQueueAsync(song);
 
                 //stop playback
                 if (song.Id == AppSettingsHelper.Read<long>(PlayerConstants.CurrentTrack))

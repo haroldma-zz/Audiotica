@@ -6,7 +6,6 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.UI.Xaml.Media.Imaging;
-using Audiotica.Collection;
 using Audiotica.Data.Collection.Model;
 
 #endregion
@@ -18,6 +17,9 @@ namespace Audiotica.Data.Collection.DesignTime
         public ObservableCollection<Song> Songs { get; set; }
         public ObservableCollection<Album> Albums { get; set; }
         public ObservableCollection<Artist> Artists { get; set; }
+        public ObservableCollection<Playlist> Playlists { get; set; }
+
+        public ObservableCollection<QueueSong> PlaybackQueue { get; private set; }
 
         public void LoadLibrary()
         {
@@ -81,6 +83,26 @@ namespace Audiotica.Data.Collection.DesignTime
         }
 
         public Task DeleteSongAsync(Song song)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task ClearQueueAsync()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task AddToQueueAsync(Song song)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task MoveQueueFromToAsync(int oldIndex, int newIndex)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task DeleteFromQueueAsync(Song songToRemove)
         {
             throw new NotImplementedException();
         }

@@ -1,0 +1,244 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="AddToMenuItem.Text" xml:space="preserve">
+    <value>Hozzáadás... (Letiltva)</value>
+    <comment>Text use for the add to item in a song's context menu.</comment>
+  </data>
+  <data name="AlbumDetailCard.ActionButtonText" xml:space="preserve">
+    <value>Összes letöltése (Letiltva)</value>
+    <comment>Download all button for album detail card.</comment>
+  </data>
+  <data name="AlbumDetailCard.HeaderText" xml:space="preserve">
+    <value>Részletek</value>
+    <comment>Header for the album detail card.</comment>
+  </data>
+  <data name="AlbumsCard.HeaderText" xml:space="preserve">
+    <value>Albumok</value>
+    <comment>Header for the albums card. (use in various places)</comment>
+  </data>
+  <data name="AlreadySavedToast" xml:space="preserve">
+    <value>Már elmentve</value>
+    <comment>Toast shows when trying to save a song that is already in the collection.</comment>
+  </data>
+  <data name="ArtistBioCard.HeaderText" xml:space="preserve">
+    <value>Életrajz</value>
+    <comment>Header for the artist biography card.</comment>
+  </data>
+  <data name="ArtistDetailCard.HeaderText" xml:space="preserve">
+    <value>Részletek</value>
+    <comment>Header for the artist detail card.</comment>
+  </data>
+  <data name="ArtistTopAlbumsCard.ActionButtonText" xml:space="preserve">
+    <value>Több megtekintése</value>
+    <comment>View more button for artist top albums card.</comment>
+  </data>
+  <data name="ArtistTopAlbumsCard.HeaderText" xml:space="preserve">
+    <value>Top Albumok</value>
+    <comment>Header for the artist top albums card.</comment>
+  </data>
+  <data name="ArtistTopTracksCard.ActionButtonText" xml:space="preserve">
+    <value>Több megtekintése</value>
+    <comment>View more button for artist top tracks card.</comment>
+  </data>
+  <data name="ArtistTopTracksCard.HeaderText" xml:space="preserve">
+    <value>Top Zeneszámok</value>
+    <comment>Header for the artist top tracks card.</comment>
+  </data>
+  <data name="CollectionAlbumsPivot.Header" xml:space="preserve">
+    <value>albumok</value>
+    <comment>Header for the albums pivot (collection page, lowercase)</comment>
+  </data>
+  <data name="CollectionArtistsPivot.Header" xml:space="preserve">
+    <value>előadók</value>
+    <comment>Header for the artists pivot (collection page, lowercase)</comment>
+  </data>
+  <data name="CollectionCard.HeaderText" xml:space="preserve">
+    <value>Gyűjtemény</value>
+    <comment>Header for the collection card.</comment>
+  </data>
+  <data name="CollectionSongsPivot.Header" xml:space="preserve">
+    <value>zeneszámok</value>
+    <comment>Header for the songs pivot (collection page, lowercase)</comment>
+  </data>
+  <data name="DeleteMenuItem.Text" xml:space="preserve">
+    <value>Törlés</value>
+    <comment>Text use for the delete item in a song's context menu.</comment>
+  </data>
+  <data name="ErrorBootingToast" xml:space="preserve">
+    <value>A szolgáltatások elindítása közben problémába ütköztünk</value>
+    <comment>Toast shows when the app fails to boot up app services.</comment>
+  </data>
+  <data name="ErrorDeletingToast" xml:space="preserve">
+    <value>A zeneszám törlése közben problémába ütköztünk</value>
+    <comment>Toast shows when the app can't delete a song.</comment>
+  </data>
+  <data name="MatchingSongToast" xml:space="preserve">
+    <value>Zeneszám keresése...</value>
+    <comment>Toast shows when the app is matching a track.</comment>
+  </data>
+  <data name="MusicTextBlock.Text" xml:space="preserve">
+    <value>Zene</value>
+    <comment>Text for search button text block in collection card.</comment>
+  </data>
+  <data name="NetworkIssueToast" xml:space="preserve">
+    <value>Hálózati problémába ütköztünk</value>
+    <comment>Toast shows when the app has a problem connecting to the internet.</comment>
+  </data>
+  <data name="NoMatchFoundToast" xml:space="preserve">
+    <value>Nem található zeneszám</value>
+    <comment>Toast shows when no match is found for a track.</comment>
+  </data>
+  <data name="NoSearchResultsToast" xml:space="preserve">
+    <value>Nincs eredmény</value>
+    <comment>Toast shows when the aren't any search results.</comment>
+  </data>
+  <data name="SearchCard.HeaderText" xml:space="preserve">
+    <value>Keresés</value>
+    <comment>Header for the search page card.</comment>
+  </data>
+  <data name="SearchTextBlock.Text" xml:space="preserve">
+    <value>Keresés</value>
+    <comment>Text for music button text block in collection card.</comment>
+  </data>
+  <data name="ShareMenuItem.Text" xml:space="preserve">
+    <value>Megosztás (Letiltva)</value>
+    <comment>Text use for the share item in a song's context menu.</comment>
+  </data>
+  <data name="SongDeletedToast" xml:space="preserve">
+    <value>Zeneszám törölve</value>
+    <comment>Toast shows when the user deletes a song.</comment>
+  </data>
+  <data name="SongSavedToast" xml:space="preserve">
+    <value>Zeneszám elmentve</value>
+    <comment>Toast shows when a song is saved.</comment>
+  </data>
+  <data name="SpotlightCard.HeaderText" xml:space="preserve">
+    <value>Reflektorfény</value>
+    <comment>Header for the spotlight card.</comment>
+  </data>
+  <data name="TopTracksCard.HeaderText" xml:space="preserve">
+    <value>Top Zeneszámok</value>
+    <comment>Header use for top tracks card.</comment>
+  </data>
+  <data name="TracksCard.HeaderText" xml:space="preserve">
+    <value>Zeneszámok</value>
+    <comment>Header for the tracks card. (use in various places)</comment>
+  </data>
+</root>

@@ -35,14 +35,12 @@ namespace Audiotica.ViewModel
             {
                 SimpleIoc.Default.Register<IScrobblerService, DesignScrobblerService>();
                 SimpleIoc.Default.Register<ICollectionService, DesignCollectionService>();
-                SimpleIoc.Default.Register<IQueueService, QueueService>();
                 SimpleIoc.Default.Register<ISqlService, DesignSqlService>();
             }
             else
             {
                 SimpleIoc.Default.Register<IScrobblerService, ScrobblerService>();
                 SimpleIoc.Default.Register<ICollectionService, CollectionService>();
-                SimpleIoc.Default.Register<IQueueService, QueueService>();
                 SimpleIoc.Default.Register<ISqlService, SqlService>();
                 SimpleIoc.Default.Register(() => Window.Current.Dispatcher);
             }
@@ -109,11 +107,6 @@ namespace Audiotica.ViewModel
         public IScrobblerService ScrobblerService
         {
             get { return SimpleIoc.Default.GetInstance<IScrobblerService>(); }
-        }
-
-        public IQueueService QueueService
-        {
-            get { return SimpleIoc.Default.GetInstance<IQueueService>(); }
         }
 
         public ISqlService SqlService

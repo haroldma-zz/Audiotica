@@ -1,4 +1,6 @@
-﻿using System;
+﻿#region
+
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -7,24 +9,23 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Windows.UI.Core;
-using Windows.UI.Xaml;
 using Windows.UI.Xaml.Media.Imaging;
-using Audiotica.Collection;
-using Audiotica.Core.Common;
 using Audiotica.Core.Utilities;
 using Audiotica.Data.Collection.Model;
-using SQLitePCL;
+
+#endregion
 
 namespace Audiotica.Data.Collection.RunTime
 {
     public class CollectionService : ICollectionService
     {
-        private readonly ISqlService _service;
         private readonly CoreDispatcher _dispatcher;
+        private readonly ISqlService _sqlService;
+        private readonly Dictionary<long, QueueSong> _lookupMap = new Dictionary<long, QueueSong>();
 
-        public CollectionService(ISqlService service, CoreDispatcher dispatcher)
+        public CollectionService(ISqlService sqlService, CoreDispatcher dispatcher)
         {
-            _service = service;
+            _sqlService = sqlService;
             _dispatcher = dispatcher;
             Songs = new ObservableCollection<Song>();
             Artists = new ObservableCollection<Artist>();
@@ -35,12 +36,15 @@ namespace Audiotica.Data.Collection.RunTime
         public ObservableCollection<Song> Songs { get; set; }
         public ObservableCollection<Album> Albums { get; set; }
         public ObservableCollection<Artist> Artists { get; set; }
+        public ObservableCollection<Playlist> Playlists { get; set; }
+
+        public ObservableCollection<QueueSong> PlaybackQueue { get; private set; }
 
         public void LoadLibrary()
         {
-            var songs = new ObservableCollection<Song>(_service.SelectAll<Song>());
-            var albums = new ObservableCollection<Album>(_service.SelectAll<Album>());
-            var artists = new ObservableCollection<Artist>(_service.SelectAll<Artist>());
+            var songs = new ObservableCollection<Song>(_sqlService.SelectAll<Song>());
+            var albums = new ObservableCollection<Album>(_sqlService.SelectAll<Album>());
+            var artists = new ObservableCollection<Artist>(_sqlService.SelectAll<Artist>());
 
             foreach (var song in songs)
             {
@@ -54,9 +58,8 @@ namespace Audiotica.Data.Collection.RunTime
                 album.PrimaryArtist = artists.FirstOrDefault(p => p.Id == album.PrimaryArtistId);
 
                 if (_dispatcher != null)
-// ReSharper disable AccessToForEachVariableInClosure
-                    _dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () => album.Artwork = await GetArtworkAsync(album.Id)).AsTask().Wait();
-// ReSharper restore AccessToForEachVariableInClosure
+                    _dispatcher.RunAsync(CoreDispatcherPriority.Normal,
+                        async () => album.Artwork = await GetArtworkAsync(album.Id)).AsTask().Wait();
             }
 
             foreach (var artist in artists)
@@ -65,41 +68,13 @@ namespace Audiotica.Data.Collection.RunTime
                 artist.Albums = albums.Where(p => p.PrimaryArtistId == artist.Id).ToList();
             }
 
-            
 
             Songs = songs;
             Artists = artists;
             Albums = albums;
+
+            LoadQueue();
             CleanupFiles();
-        }
-
-        /// <summary>
-        /// Deleting unused files.
-        /// Artworks, since deleting them when an album is delete can cause problems.
-        /// </summary>
-        private async void CleanupFiles()
-        {
-            var artworkFolder = await StorageHelper.GetFolderAsync("artworks");
-            
-            if (artworkFolder == null) return;;
-
-            var artworks = await artworkFolder.GetFilesAsync();
-
-            foreach (var file in from file in artworks let id = int.Parse(file.Name.Replace(".jpg", "")) where Albums.Count(p => p.Id == id) == 0 select file)
-            {
-                await file.DeleteAsync();
-            }
-        }
-
-        private async Task<BitmapImage> GetArtworkAsync(long id)
-        {
-            var artworkPath = string.Format(CollectionConstant.ArtworkPath, id);
-
-            var exists = await StorageHelper.FileExistsAsync(artworkPath);
-
-            return exists 
-                ? new BitmapImage(new Uri(CollectionConstant.LocalStorageAppPath + artworkPath)) 
-                : CollectionConstant.MissingArtworkImage;
         }
 
         public Task LoadLibraryAsync()
@@ -122,7 +97,7 @@ namespace Audiotica.Data.Collection.RunTime
 
             if (artist == null)
             {
-                await _service.InsertAsync(song.Artist);
+                await _sqlService.InsertAsync(song.Artist);
 
                 if (song.Album != null)
                     song.Album.PrimaryArtistId = song.Artist.Id;
@@ -147,14 +122,14 @@ namespace Audiotica.Data.Collection.RunTime
 
             if (song.Album == null)
             {
-                song.Album = new Album()
+                song.Album = new Album
                 {
                     PrimaryArtistId = song.ArtistId,
                     Name = song.Name + " (Single)",
                     PrimaryArtist = song.Artist,
                     ProviderId = "autc.single." + song.ProviderId
                 };
-                await _service.InsertAsync(song.Album);
+                await _sqlService.InsertAsync(song.Album);
                 Albums.Add(song.Album);
                 song.Album.Songs = new List<Song>();
                 song.Artist.Albums.Add(song.Album);
@@ -167,7 +142,7 @@ namespace Audiotica.Data.Collection.RunTime
                     song.Album = album;
                 else
                 {
-                    await _service.InsertAsync(song.Album);
+                    await _sqlService.InsertAsync(song.Album);
                     Albums.Add(song.Album);
                     song.Album.Songs = new List<Song>();
                     song.Artist.Albums.Add(song.Album);
@@ -204,7 +179,8 @@ namespace Audiotica.Data.Collection.RunTime
                                 {
                                     await stream.CopyToAsync(fileStream);
                                     //now set it
-                                    song.Album.Artwork = new BitmapImage(new Uri(CollectionConstant.LocalStorageAppPath + filePath));
+                                    song.Album.Artwork =
+                                        new BitmapImage(new Uri(CollectionConstant.LocalStorageAppPath + filePath));
                                 }
                             }
                         }
@@ -222,7 +198,7 @@ namespace Audiotica.Data.Collection.RunTime
             #endregion
 
             //Insert to db
-            await _service.InsertAsync(song);
+            await _sqlService.InsertAsync(song);
 
             song.Artist.Songs.Add(song);
             song.Album.Songs.Add(song);
@@ -236,15 +212,13 @@ namespace Audiotica.Data.Collection.RunTime
             var artist = Artists.FirstOrDefault(p => p.Songs.Contains(song));
             var album = Albums.FirstOrDefault(p => p.Songs.Contains(song));
 
-            var deleteArtwork = false;
             if (album != null)
             {
                 album.Songs.Remove(song);
                 if (album.Songs.Count == 0)
                 {
-                    await _service.DeleteItemAsync(album);
+                    await _sqlService.DeleteItemAsync(album);
                     Albums.Remove(album);
-                    deleteArtwork = true;
                 }
             }
 
@@ -253,15 +227,150 @@ namespace Audiotica.Data.Collection.RunTime
                 artist.Songs.Remove(song);
                 if (artist.Songs.Count == 0)
                 {
-                    await _service.DeleteItemAsync(artist);
+                    await _sqlService.DeleteItemAsync(artist);
                     Artists.Remove(artist);
                 }
             }
 
             //good, now lets delete it from the db
-            await _service.DeleteItemAsync(song);
+            await _sqlService.DeleteItemAsync(song);
 
             Songs.Remove(song);
         }
+
+        /// <summary>
+        ///     Deleting unused files.
+        ///     Artworks, since deleting them when an album is delete can cause problems.
+        /// </summary>
+        private async void CleanupFiles()
+        {
+            var artworkFolder = await StorageHelper.GetFolderAsync("artworks");
+
+            if (artworkFolder == null) return;
+
+            var artworks = await artworkFolder.GetFilesAsync();
+
+            foreach (var file in from file in artworks
+                let id = int.Parse(file.Name.Replace(".jpg", ""))
+                where Albums.Count(p => p.Id == id) == 0
+                select file)
+            {
+                await file.DeleteAsync();
+            }
+        }
+
+        private async Task<BitmapImage> GetArtworkAsync(long id)
+        {
+            var artworkPath = string.Format(CollectionConstant.ArtworkPath, id);
+
+            var exists = await StorageHelper.FileExistsAsync(artworkPath);
+
+            return exists
+                ? new BitmapImage(new Uri(CollectionConstant.LocalStorageAppPath + artworkPath))
+                : CollectionConstant.MissingArtworkImage;
+        }
+
+        #region Playback Queue
+
+        public void LoadQueue()
+        {
+            PlaybackQueue = new ObservableCollection<QueueSong>();
+            var queue = _sqlService.SelectAll<QueueSong>();
+            QueueSong head = null;
+
+            foreach (var queueSong in queue)
+            {
+                queueSong.Song = Songs.FirstOrDefault(p => p.Id == queueSong.SongId);
+
+                _lookupMap.Add(queueSong.Id, queueSong);
+                if (queueSong.PrevId == 0)
+                    head = queueSong;
+            }
+
+            if (head == null)
+                return;
+
+            for (var i = 0; i < queue.Count; i++)
+            {
+                PlaybackQueue.Add(head);
+
+                if (head.NextId != 0)
+                    head = _lookupMap[head.NextId];
+            }
+        }
+
+        public async Task ClearQueueAsync()
+        {
+            if (PlaybackQueue.Count == 0) return;
+
+            await _sqlService.DeleteTableAsync<QueueSong>();
+            _lookupMap.Clear();
+            PlaybackQueue.Clear();
+        }
+
+        public async Task AddToQueueAsync(Song song)
+        {
+            var tail = PlaybackQueue.LastOrDefault();
+
+            //Create the new queue entry
+            var newQueue = new QueueSong
+            {
+                SongId = song.Id,
+                NextId = 0,
+                PrevId = tail == null ? 0 : tail.Id,
+                Song = song
+            };
+
+            //Add it to the database
+            await _sqlService.InsertAsync(newQueue);
+
+            if (tail != null)
+            {
+                //Update the next id of the previous tail
+                tail.NextId = newQueue.Id;
+                await _sqlService.UpdateItemAsync(tail);
+            }
+
+            //Add the new queue entry to the collection and map
+            PlaybackQueue.Add(newQueue);
+            _lookupMap.Add(newQueue.Id, newQueue);
+        }
+
+        public Task MoveQueueFromToAsync(int oldIndex, int newIndex)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task DeleteFromQueueAsync(Song songToRemove)
+        {
+            QueueSong previousModel;
+
+            var queueSongToRemove = PlaybackQueue.FirstOrDefault(p => p.SongId == songToRemove.Id);
+
+            if (queueSongToRemove == null)
+                return;
+
+            if (_lookupMap.TryGetValue(queueSongToRemove.PrevId, out previousModel))
+            {
+                previousModel.NextId = queueSongToRemove.NextId;
+                await _sqlService.UpdateItemAsync(previousModel);
+            }
+
+            QueueSong nextModel;
+
+            if (_lookupMap.TryGetValue(queueSongToRemove.NextId, out nextModel))
+            {
+                nextModel.PrevId = queueSongToRemove.PrevId;
+                await _sqlService.UpdateItemAsync(nextModel);
+            }
+
+            PlaybackQueue.Remove(queueSongToRemove);
+            _lookupMap.Remove(queueSongToRemove.Id);
+
+            //Delete from database
+            await _sqlService.DeleteItemAsync(queueSongToRemove);
+        }
+
+        #endregion
     }
 }

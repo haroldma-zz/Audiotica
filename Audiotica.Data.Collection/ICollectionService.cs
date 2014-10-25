@@ -13,6 +13,8 @@ namespace Audiotica.Data.Collection
         ObservableCollection<Song> Songs { get; set; }
         ObservableCollection<Album> Albums { get; set; }
         ObservableCollection<Artist> Artists { get; set; }
+        ObservableCollection<Playlist> Playlists { get; set; }
+        ObservableCollection<QueueSong> PlaybackQueue { get; }
 
         /// <summary>
         ///     Loads all songs, albums, artist and playlists/queue.
@@ -31,6 +33,33 @@ namespace Audiotica.Data.Collection
         /// </summary>
         Task DeleteSongAsync(Song song);
 
-        //TODO [Harry,20140915] everything related to the queue and playlists
+
+        #region Playback Queue
+
+        /// <summary>
+        /// Erases all songs in the playback queue (database and  PlaybackQueue prop)
+        /// </summary>
+        /// <returns></returns>
+        Task ClearQueueAsync();
+
+        /// <summary>
+        /// Adds the current song to the end of the queue.
+        /// </summary>
+        Task AddToQueueAsync(Song song);
+
+        /// <summary>
+        /// Moves the queue items at the old index to the new index
+        /// </summary>
+        Task MoveQueueFromToAsync(int oldIndex, int newIndex);
+
+        /// <summary>
+        /// Deletes the specify song from the queue (database and PlaybackQueue prop)
+        /// </summary>
+        /// <param name="songToRemove"></param>
+        /// <returns></returns>
+        Task DeleteFromQueueAsync(Song songToRemove);
+
+        #endregion
+
     }
 }
