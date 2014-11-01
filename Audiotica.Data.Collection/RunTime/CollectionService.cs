@@ -30,6 +30,8 @@ namespace Audiotica.Data.Collection.RunTime
             Songs = new ObservableCollection<Song>();
             Artists = new ObservableCollection<Artist>();
             Albums = new ObservableCollection<Album>();
+            Playlists = new ObservableCollection<Playlist>();
+            PlaybackQueue = new ObservableCollection<QueueSong>();
         }
 
 
@@ -42,9 +44,9 @@ namespace Audiotica.Data.Collection.RunTime
 
         public void LoadLibrary()
         {
-            var songs = new ObservableCollection<Song>(_sqlService.SelectAll<Song>());
-            var albums = new ObservableCollection<Album>(_sqlService.SelectAll<Album>());
-            var artists = new ObservableCollection<Artist>(_sqlService.SelectAll<Artist>());
+            var songs = _sqlService.SelectAll<Song>().OrderByDescending(p => p.Id);
+            var albums = _sqlService.SelectAll<Album>().OrderByDescending(p => p.Id);
+            var artists = _sqlService.SelectAll<Artist>().OrderByDescending(p => p.Id);
 
             foreach (var song in songs)
             {
@@ -69,11 +71,12 @@ namespace Audiotica.Data.Collection.RunTime
             }
 
 
-            Songs = songs;
-            Artists = artists;
-            Albums = albums;
+            Songs = new ObservableCollection<Song>(songs);
+            Artists = new ObservableCollection<Artist>(artists);
+            Albums = new ObservableCollection<Album>(albums);
 
             LoadQueue();
+            LoadPlaylists();
             CleanupFiles();
         }
 
@@ -101,7 +104,7 @@ namespace Audiotica.Data.Collection.RunTime
 
                 if (song.Album != null)
                     song.Album.PrimaryArtistId = song.Artist.Id;
-                Artists.Add(song.Artist);
+                Artists.Insert(0, song.Artist);
 
                 song.Artist.Songs = new List<Song>();
                 song.Artist.Albums = new List<Album>();
@@ -130,9 +133,9 @@ namespace Audiotica.Data.Collection.RunTime
                     ProviderId = "autc.single." + song.ProviderId
                 };
                 await _sqlService.InsertAsync(song.Album);
-                Albums.Add(song.Album);
+                Albums.Insert(0, song.Album);
                 song.Album.Songs = new List<Song>();
-                song.Artist.Albums.Add(song.Album);
+                song.Artist.Albums.Insert(0, song.Album);
             }
             else
             {
@@ -200,10 +203,10 @@ namespace Audiotica.Data.Collection.RunTime
             //Insert to db
             await _sqlService.InsertAsync(song);
 
-            song.Artist.Songs.Add(song);
-            song.Album.Songs.Add(song);
+            song.Artist.Songs.Insert(0, song);
+            song.Album.Songs.Insert(0, song);
 
-            Songs.Add(song);
+            Songs.Insert(0, song);
         }
 
         public async Task DeleteSongAsync(Song song)
@@ -272,9 +275,8 @@ namespace Audiotica.Data.Collection.RunTime
 
         #region Playback Queue
 
-        public void LoadQueue()
+        private void LoadQueue()
         {
-            PlaybackQueue = new ObservableCollection<QueueSong>();
             var queue = _sqlService.SelectAll<QueueSong>();
             QueueSong head = null;
 
@@ -369,6 +371,53 @@ namespace Audiotica.Data.Collection.RunTime
 
             //Delete from database
             await _sqlService.DeleteItemAsync(queueSongToRemove);
+        }
+
+        #endregion
+
+        #region Playlist
+
+        private void LoadPlaylists()
+        {
+            var playlists = _sqlService.SelectAll<Playlist>();
+            var playlistSongs = _sqlService.SelectAll<PlaylistSong>();
+            
+            foreach (var playlist in playlists)
+            {
+                var songs = playlistSongs.Where(p => p.PlaylistId == playlist.Id).ToList();
+
+                foreach (var playlistSong in songs)
+                {
+                    playlistSong.Song = Songs.FirstOrDefault(p => p.Id == playlistSong.SongId);
+                }
+
+                playlist.Load(songs);
+            }
+        }
+
+        public Task<Playlist> CreatePlaylistAsync(string name)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task DeletePlaylistAsync()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task AddToPlaylistAsync(Playlist playlist, Song song)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task MovePlaylistFromToAsync(Playlist playlist, int oldIndex, int newIndex)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task DeleteFromPlaylistAsync(Playlist playlist, Song songToRemove)
+        {
+            throw new NotImplementedException();
         }
 
         #endregion

@@ -106,5 +106,30 @@ namespace Audiotica.Data.Collection.DesignTime
         {
             throw new NotImplementedException();
         }
+
+        public Task<Playlist> CreatePlaylistAsync(string name)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task DeletePlaylistAsync()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task AddToPlaylistAsync(Playlist playlist, Song song)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task MovePlaylistFromToAsync(Playlist playlist, int oldIndex, int newIndex)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task DeleteFromPlaylistAsync(Playlist playlist, Song songToRemove)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

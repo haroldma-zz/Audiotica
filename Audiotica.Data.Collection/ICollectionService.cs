@@ -1,5 +1,6 @@
 ﻿#region
 
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using Audiotica.Data.Collection.Model;
@@ -61,5 +62,18 @@ namespace Audiotica.Data.Collection
 
         #endregion
 
+        #region Playlist
+
+        Task<Playlist> CreatePlaylistAsync(string name);
+
+        Task DeletePlaylistAsync();
+
+        Task AddToPlaylistAsync(Playlist playlist, Song song);
+
+        Task MovePlaylistFromToAsync(Playlist playlist, int oldIndex, int newIndex);
+
+        Task DeleteFromPlaylistAsync(Playlist playlist, Song songToRemove);
+
+        #endregion
     }
 }
