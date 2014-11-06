@@ -31,6 +31,12 @@ namespace Audiotica.View
             Frame.Navigate(typeof (CollectionArtistPage), artist.Id);
         }
 
+        private void PlaylistListView_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            var playlist = e.ClickedItem as Playlist;
+            Frame.Navigate(typeof(CollectionPlaylistPage), playlist.Id);
+        }
+
         private async void DeleteSongMenuFlyoutItem_Click(object sender, RoutedEventArgs e)
         {
             var song = (Song)((FrameworkElement)sender).DataContext;

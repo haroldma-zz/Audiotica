@@ -379,35 +379,89 @@ namespace Audiotica.Data.Collection.RunTime
 
         private void LoadPlaylists()
         {
-            var playlists = _sqlService.SelectAll<Playlist>();
+            var playlists = _sqlService.SelectAll<Playlist>().OrderByDescending(p => p.Id);
             var playlistSongs = _sqlService.SelectAll<PlaylistSong>();
             
             foreach (var playlist in playlists)
             {
                 var songs = playlistSongs.Where(p => p.PlaylistId == playlist.Id).ToList();
 
+
+                PlaylistSong head = null;
+
                 foreach (var playlistSong in songs)
                 {
                     playlistSong.Song = Songs.FirstOrDefault(p => p.Id == playlistSong.SongId);
+
+                    playlist.LookupMap.Add(playlistSong.Id, playlistSong);
+                    if (playlistSong.PrevId == 0)
+                        head = playlistSong;
                 }
 
-                playlist.Load(songs);
+                #region order songs
+
+                if (head != null)
+                {
+                    for (var i = 0; i < songs.Count; i++)
+                    {
+                        playlist.Songs.Add(head);
+
+                        if (head.NextId != 0)
+                            head = playlist.LookupMap[head.NextId];
+                    }
+                }
+
+                #endregion
+
+                Playlists.Add(playlist);
             }
         }
 
-        public Task<Playlist> CreatePlaylistAsync(string name)
+        public async Task<Playlist> CreatePlaylistAsync(string name)
         {
-            throw new NotImplementedException();
+            if (Playlists.Count(p => p.Name == name) > 0) 
+                throw new ArgumentException(name);
+
+            var playlist = new Playlist {Name = name};
+            await _sqlService.InsertAsync(playlist);
+
+            Playlists.Insert(0, playlist);
+
+            return playlist;
         }
 
-        public Task DeletePlaylistAsync()
+        public async Task DeletePlaylistAsync(Playlist playlist)
         {
-            throw new NotImplementedException();
+            await _sqlService.DeleteItemAsync(playlist);
+            await _sqlService.DeleteWhereAsync<PlaylistSong>("PlaylistId", playlist.Id.ToString());
         }
 
-        public Task AddToPlaylistAsync(Playlist playlist, Song song)
+        public async Task AddToPlaylistAsync(Playlist playlist, Song song)
         {
-            throw new NotImplementedException();
+            var tail = playlist.Songs.LastOrDefault();
+
+            //Create the new queue entry
+            var newSong = new PlaylistSong
+            {
+                SongId = song.Id,
+                NextId = 0,
+                PrevId = tail == null ? 0 : tail.Id,
+                Song = song
+            };
+
+            //Add it to the database
+            await _sqlService.InsertAsync(newSong);
+
+            if (tail != null)
+            {
+                //Update the next id of the previous tail
+                tail.NextId = newSong.Id;
+                await _sqlService.UpdateItemAsync(tail);
+            }
+
+            //Add the new queue entry to the collection and map
+            playlist.Songs.Add(newSong);
+            playlist.LookupMap.Add(newSong.Id, newSong);
         }
 
         public Task MovePlaylistFromToAsync(Playlist playlist, int oldIndex, int newIndex)
@@ -415,9 +469,10 @@ namespace Audiotica.Data.Collection.RunTime
             throw new NotImplementedException();
         }
 
-        public Task DeleteFromPlaylistAsync(Playlist playlist, Song songToRemove)
+        public async Task DeleteFromPlaylistAsync(Playlist playlist, PlaylistSong songToRemove)
         {
-            throw new NotImplementedException();
+            await _sqlService.DeleteItemAsync(songToRemove);
+            playlist.Songs.Remove(songToRemove);
         }
 
         #endregion

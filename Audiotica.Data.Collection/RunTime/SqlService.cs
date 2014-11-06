@@ -253,5 +253,27 @@ namespace Audiotica.Data.Collection.RunTime
                 }
             });
         }
+
+        public Task DeleteWhereAsync<T>(string property, string value)
+        {
+            return Task.Run(() =>
+            {
+                using (var db = CreateConnection())
+                {
+                    using (
+                        var projstmt =
+                            db.Prepare(string.Format("DELETE FROM {0} WHERE {1} = ?", typeof (T).Name, property)))
+                    {
+                        // Reset the prepared statement so we can reuse it.
+                        projstmt.ClearBindings();
+                        projstmt.Reset();
+
+                        projstmt.Bind(1, value);
+
+                        projstmt.Step();
+                    }
+                }
+            });
+        }
     }
 }

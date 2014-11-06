@@ -59,5 +59,10 @@ namespace Audiotica.Data.Collection.DesignTime
         {
             throw new NotImplementedException();
         }
+
+        public Task DeleteWhereAsync<T>(string property, string value)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

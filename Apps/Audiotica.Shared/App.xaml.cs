@@ -2,6 +2,7 @@
 
 // The Blank Application template is documented at http://go.microsoft.com/fwlink/?LinkId=234227
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;

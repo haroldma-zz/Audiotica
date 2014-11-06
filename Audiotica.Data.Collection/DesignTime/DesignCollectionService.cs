@@ -70,6 +70,32 @@ namespace Audiotica.Data.Collection.DesignTime
                             Songs = Songs.ToList()
                         }
             };
+
+            Playlists = new ObservableCollection<Playlist>
+            {
+                new Playlist
+                {
+                    Name = "Fav 5"
+                },
+                new Playlist
+                {
+                    Name = "workout fun!"
+                }
+            };
+
+            var pSongs = new ObservableCollection<PlaylistSong>();
+            foreach (var song in Songs)
+            {
+                pSongs.Add(new PlaylistSong
+                {
+                    Song = song
+                });
+            }
+
+            foreach (var playlist in Playlists)
+            {
+                playlist.Songs = pSongs;
+            }
         }
 
         public Task LoadLibraryAsync()
@@ -112,7 +138,7 @@ namespace Audiotica.Data.Collection.DesignTime
             throw new NotImplementedException();
         }
 
-        public Task DeletePlaylistAsync()
+        public Task DeletePlaylistAsync(Playlist playlist)
         {
             throw new NotImplementedException();
         }
@@ -127,7 +153,7 @@ namespace Audiotica.Data.Collection.DesignTime
             throw new NotImplementedException();
         }
 
-        public Task DeleteFromPlaylistAsync(Playlist playlist, Song songToRemove)
+        public Task DeleteFromPlaylistAsync(Playlist playlist, PlaylistSong songToRemove)
         {
             throw new NotImplementedException();
         }

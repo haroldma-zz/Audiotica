@@ -66,13 +66,13 @@ namespace Audiotica.Data.Collection
 
         Task<Playlist> CreatePlaylistAsync(string name);
 
-        Task DeletePlaylistAsync();
+        Task DeletePlaylistAsync(Playlist playlist);
 
         Task AddToPlaylistAsync(Playlist playlist, Song song);
 
         Task MovePlaylistFromToAsync(Playlist playlist, int oldIndex, int newIndex);
 
-        Task DeleteFromPlaylistAsync(Playlist playlist, Song songToRemove);
+        Task DeleteFromPlaylistAsync(Playlist playlist, PlaylistSong songToRemove);
 
         #endregion
     }

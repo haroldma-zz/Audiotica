@@ -1,7 +1,10 @@
-﻿namespace Audiotica.Data.Collection.Model
+﻿using Audiotica.Data.Collection.SqlHelper;
+
+namespace Audiotica.Data.Collection.Model
 {
     public class PlaylistSong : QueueSong
     {
-        public int PlaylistId { get; set; }
+        [SqlProperty(ReferenceTo = typeof(Playlist))]
+        public long PlaylistId { get; set; }
     }
 }
