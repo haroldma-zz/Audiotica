@@ -29,6 +29,10 @@ namespace Audiotica.ViewModel
         private RelayCommand<ItemClickEventArgs> _songClickRelayCommand;
         private IncrementalObservableCollection<LastTrack> _tracksCollection;
         private PageResponse<LastTrack> _tracksResponse;
+        private PageResponse<LastAlbum> _albumsResponse;
+        private PageResponse<LastArtist> _artistsResponse;
+        private IncrementalObservableCollection<LastArtist> _artistsCollection;
+        private IncrementalObservableCollection<LastAlbum> _albumsCollection;
 
         public SearchViewModel(IScrobblerService service)
         {
@@ -64,6 +68,18 @@ namespace Audiotica.ViewModel
             set { Set(ref _tracksCollection, value); }
         }
 
+        public IncrementalObservableCollection<LastArtist> Artists
+        {
+            get { return _artistsCollection; }
+            set { Set(ref _artistsCollection, value); }
+        }
+
+        public IncrementalObservableCollection<LastAlbum> Albums
+        {
+            get { return _albumsCollection; }
+            set { Set(ref _albumsCollection, value); }
+        }
+
         public RelayCommand<ItemClickEventArgs> SongClickRelayCommand
         {
             get { return _songClickRelayCommand; }
@@ -83,17 +99,34 @@ namespace Audiotica.ViewModel
             try
             {
                 _tracksResponse = await _service.SearchTracksAsync(term);
-                if (_tracksResponse.TotalItems == 0)
-                    CurtainToast.ShowError("NoSearchResultsToast".FromLanguageResource());
-                else
-                {
-                    Tracks = CreateIncrementalCollection(
-                        () => _tracksResponse,
-                        tracks => _tracksResponse = tracks,
-                        async i => await _service.SearchTracksAsync(term, i));
-                    foreach (var lastTrack in _tracksResponse)
-                        Tracks.Add(lastTrack);
-                }
+
+                Tracks = CreateIncrementalCollection(
+                    () => _tracksResponse,
+                    tracks => _tracksResponse = tracks,
+                    async i => await _service.SearchTracksAsync(term, i));
+                foreach (var lastTrack in _tracksResponse)
+                    Tracks.Add(lastTrack);
+
+                _albumsResponse = await _service.SearchAlbumsAsync(term);
+
+                Albums = CreateIncrementalCollection(
+                    () => _albumsResponse,
+                    albums => _albumsResponse = albums,
+                    async i => await _service.SearchAlbumsAsync(term, i));
+                foreach (var lastAlbum in _albumsResponse)
+                    Albums.Add(lastAlbum);
+
+                _artistsResponse = await _service.SearchArtistAsync(term);
+
+                Artists = CreateIncrementalCollection(
+                    () => _artistsResponse,
+                    artists => _artistsResponse = artists,
+                    async i => await _service.SearchArtistAsync(term, i));
+                foreach (var lastArtist in _artistsResponse)
+                    Artists.Add(lastArtist);
+
+                //if (_tracksResponse.TotalItems == 0)
+                //CurtainToast.ShowError("NoSearchResultsToast".FromLanguageResource());
             }
             catch (LastException ex)
             {

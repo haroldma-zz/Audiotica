@@ -30,10 +30,31 @@
                 </ListView>
             </PivotItem>
             <PivotItem Header="albums">
-                
+                <ListView IsItemClickEnabled="True"
+                          ItemsSource="{Binding Albums}"
+                          ItemTemplate="{StaticResource LastAlbumDataTemplate}">
+                    <interactivity:Interaction.Behaviors>
+                        <Core:EventTriggerBehavior EventName="ItemClick">
+                            <Core:InvokeCommandAction Command="{Binding SongClickRelayCommand}" />
+                        </Core:EventTriggerBehavior>
+                    </interactivity:Interaction.Behaviors>
+                </ListView>
             </PivotItem>
             <PivotItem Header="artists">
-
+                <ListView IsItemClickEnabled="True"
+                          ItemsSource="{Binding Artists}">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Margin="0,0,0,15" Text="{Binding Name}" FontSize="30" FontFamily="Global User Interface"
+                                               TextTrimming="CharacterEllipsis" FontWeight="Bold" />
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                    <interactivity:Interaction.Behaviors>
+                        <Core:EventTriggerBehavior EventName="ItemClick">
+                            <Core:InvokeCommandAction Command="{Binding SongClickRelayCommand}" />
+                        </Core:EventTriggerBehavior>
+                    </interactivity:Interaction.Behaviors>
+                </ListView>
             </PivotItem>
         </Pivot>
         <TextBox Grid.Row="1" PlaceholderText="search" Text="{Binding SearchTerm, Mode=TwoWay}" Height="60" FontSize="35">
