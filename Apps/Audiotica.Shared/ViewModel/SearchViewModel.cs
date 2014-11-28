@@ -5,11 +5,11 @@ using System.Threading.Tasks;
 using Windows.System;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Audiotica.Core.Common;
 using Audiotica.Core.Exceptions;
 using Audiotica.Core.Utilities;
-using Audiotica.Data;
 using Audiotica.Data.Service.Interfaces;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
@@ -20,15 +20,15 @@ using IF.Lastfm.Core.Objects;
 
 namespace Audiotica.ViewModel
 {
-    //TODO [Harry,20140908] load more items by using the load more interface in Winrt
     public class SearchViewModel : ViewModelBase
     {
         private readonly IScrobblerService _service;
         private bool _isLoading;
         private RelayCommand<KeyRoutedEventArgs> _keyDownRelayCommand;
-        private PageResponse<LastTrack> _resultsResponse;
         private string _searchTerm;
         private RelayCommand<ItemClickEventArgs> _songClickRelayCommand;
+        private IncrementalObservableCollection<LastTrack> _tracksCollection;
+        private PageResponse<LastTrack> _tracksResponse;
 
         public SearchViewModel(IScrobblerService service)
         {
@@ -58,10 +58,10 @@ namespace Audiotica.ViewModel
             set { Set(ref _searchTerm, value); }
         }
 
-        public PageResponse<LastTrack> ResultsResponse
+        public IncrementalObservableCollection<LastTrack> Tracks
         {
-            get { return _resultsResponse; }
-            set { Set(ref _resultsResponse, value); }
+            get { return _tracksCollection; }
+            set { Set(ref _tracksCollection, value); }
         }
 
         public RelayCommand<ItemClickEventArgs> SongClickRelayCommand
@@ -72,7 +72,7 @@ namespace Audiotica.ViewModel
 
         private async void SongClickExecute(ItemClickEventArgs item)
         {
-            var track = (LastTrack)item.ClickedItem;
+            var track = (LastTrack) item.ClickedItem;
 
             CurtainToast.Show("MatchingSongToast".FromLanguageResource());
             await ScrobblerHelper.SaveTrackAsync(track);
@@ -82,9 +82,18 @@ namespace Audiotica.ViewModel
         {
             try
             {
-                ResultsResponse = await _service.SearchTracksAsync(term);
-                if (ResultsResponse.TotalItems == 0)
+                _tracksResponse = await _service.SearchTracksAsync(term);
+                if (_tracksResponse.TotalItems == 0)
                     CurtainToast.ShowError("NoSearchResultsToast".FromLanguageResource());
+                else
+                {
+                    Tracks = CreateIncrementalCollection(
+                        () => _tracksResponse,
+                        tracks => _tracksResponse = tracks,
+                        async i => await _service.SearchTracksAsync(term, i));
+                    foreach (var lastTrack in _tracksResponse)
+                        Tracks.Add(lastTrack);
+                }
             }
             catch (LastException ex)
             {
@@ -101,18 +110,65 @@ namespace Audiotica.ViewModel
             if (e.Key != VirtualKey.Enter) return;
 
             IsLoading = true;
-            ResultsResponse = null;
+            _tracksResponse = null;
             ((TextBox) e.OriginalSource).IsEnabled = false;
 
             //Close the keyboard
-            //TODO [Harry,20140908] use some linq2visual for nicer and foolproof
-            ((Page) ((Panel) ((MaterialCard) ((TextBox) e.OriginalSource).Parent).Parent).Parent).Focus(
+            ((Page) ((Grid) ((TextBox) e.OriginalSource).Parent).Parent).Focus(
                 FocusState.Keyboard);
 
             await SearchAsync(((TextBox) e.OriginalSource).Text);
 
             ((TextBox) e.OriginalSource).IsEnabled = true;
             IsLoading = false;
+        }
+
+        private IncrementalObservableCollection<T> CreateIncrementalCollection<T>(
+            Func<PageResponse<T>> getPageResponse, Action<PageResponse<T>> setPageResponse,
+            Func<int, Task<PageResponse<T>>> searchFunc) where T : new()
+        {
+            var collection = new IncrementalObservableCollection<T>
+            {
+                HasMoreItemsFunc = () => getPageResponse().Page < getPageResponse().TotalPages
+            };
+
+            collection.LoadMoreItemsFunc = count =>
+            {
+                Func<Task<LoadMoreItemsResult>> taskFunc = async () =>
+                {
+                    try
+                    {
+                        IsLoading = true;
+
+                        var resp = await searchFunc(getPageResponse().Page + 1);
+
+                        foreach (var item in resp.Content)
+                            collection.Add(item);
+
+                        IsLoading = false;
+
+                        setPageResponse(resp);
+
+                        return new LoadMoreItemsResult
+                        {
+                            Count = (uint) resp.Content.Count
+                        };
+                    }
+                    catch
+                    {
+                        IsLoading = false;
+                        setPageResponse(null);
+                        CurtainToast.ShowError("Problem loading more items.");
+                        return new LoadMoreItemsResult
+                        {
+                            Count = 0
+                        };
+                    }
+                };
+                var loadMorePostsTask = taskFunc();
+                return loadMorePostsTask.AsAsyncOperation();
+            };
+            return collection;
         }
     }
 }

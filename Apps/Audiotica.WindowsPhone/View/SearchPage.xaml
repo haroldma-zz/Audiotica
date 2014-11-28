@@ -20,7 +20,7 @@
         <Pivot Title="SEARCH" HeaderTemplate="{StaticResource PivotHeaderTemplate}">
             <PivotItem Header="tracks">
                 <ListView IsItemClickEnabled="True"
-                          ItemsSource="{Binding ResultsResponse.Content}"
+                          ItemsSource="{Binding Tracks}"
                           ItemTemplate="{StaticResource LastTrackDataTemplate}">
                     <interactivity:Interaction.Behaviors>
                         <Core:EventTriggerBehavior EventName="ItemClick">

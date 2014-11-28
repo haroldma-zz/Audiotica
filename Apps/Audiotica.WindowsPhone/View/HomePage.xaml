@@ -89,8 +89,13 @@
                         <Button Style="{StaticResource PlainButtonStyle}">
                             <TextBlock Text="albums" FontSize="40" />
                         </Button>
-                        <Button Style="{StaticResource PlainButtonStyle}">
-                            <TextBlock Text="search" FontSize="40" />
+                        <Button Style="{StaticResource PlainButtonStyle}" FontFamily="Global User Interface">
+                            <TextBlock Text="search" FontSize="40"/>
+                            <Interactivity:Interaction.Behaviors>
+                                <Core:EventTriggerBehavior EventName="Click">
+                                    <Core:NavigateToPageAction TargetPage="Audiotica.View.SearchPage" />
+                                </Core:EventTriggerBehavior>
+                            </Interactivity:Interaction.Behaviors>
                         </Button>
                     </StackPanel>
                 </DataTemplate>
