@@ -73,11 +73,6 @@ namespace Audiotica
             get { return _playPauseRelayCommand; }
         }
 
-        private bool IsViewVisible()
-        {
-            return App.RootFrame.SelectedPanelIndex == 1;
-        }
-
         private void HelperOnShutdown(object sender, EventArgs eventArgs)
         {
             CurrentSong = null;

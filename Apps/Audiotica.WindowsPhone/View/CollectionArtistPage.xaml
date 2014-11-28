@@ -13,49 +13,8 @@
     DataContext="{Binding Source={StaticResource Locator}, Path=CollectionArtist}">
 
     <Grid>
-        <ListView Padding="0,20,0,0" ItemContainerStyle="{StaticResource NoFeedbackListViewItem}">
-            <common:MaterialCard x:Uid="ArtistDetailCard" HeaderText="Details">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
-                    <StackPanel Grid.Column="0" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="5,0,0,0">
-                        <TextBlock Text="{Binding Artist.Name}" FontSize="22" TextAlignment="Right"
-                                   TextTrimming="CharacterEllipsis" />
-                    </StackPanel>
-                </Grid>
-            </common:MaterialCard>
-            <!--        Soooo... xbox related artist isn't working :/-->
-            <!--        asking xbox support why, in the meantime I'll just comment this out-->
-            <!--        <common:MaterialCard HeaderText="Related Artists">-->
-            <!--            <ListView>-->
-            <!--                <ListView.ItemsPanel>-->
-            <!--                    <ItemsPanelTemplate>-->
-            <!--                        <VirtualizingStackPanel Orientation="Horizontal"/>-->
-            <!--                    </ItemsPanelTemplate>-->
-            <!--                </ListView.ItemsPanel>-->
-            <!--            </ListView>-->
-            <!--        </common:MaterialCard>-->
-
-            <common:MaterialCard x:Uid="AlbumsCard" HeaderText="Albums">
-                <ListView ItemsSource="{Binding Artist.Albums}"
-                          ItemTemplate="{StaticResource AlbumDataTemplate}"
-                          ScrollViewer.HorizontalScrollBarVisibility="Auto"
-                          ScrollViewer.VerticalScrollBarVisibility="Disabled"
-                          ScrollViewer.HorizontalScrollMode="Enabled"
-                          ScrollViewer.VerticalScrollMode="Disabled"
-                          ScrollViewer.ZoomMode="Disabled"
-                          SelectionMode="None"
-                          IsItemClickEnabled="True" ItemClick="AlbumListView_ItemClick">
-                    <ListView.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <VirtualizingStackPanel Orientation="Horizontal" />
-                        </ItemsPanelTemplate>
-                    </ListView.ItemsPanel>
-                </ListView>
-            </common:MaterialCard>
-
-            <common:MaterialCard x:Uid="TracksCard" HeaderText="Tracks">
+        <Pivot Title="{Binding Artist.Name}" HeaderTemplate="{StaticResource PivotHeaderTemplate}">
+            <PivotItem Header="tracks">
                 <ListView IsItemClickEnabled="True" ItemsSource="{Binding Artist.Songs}"
                           ItemTemplate="{StaticResource SongDataTemplate}">
                     <interactivity:Interaction.Behaviors>
@@ -64,7 +23,13 @@
                         </core:EventTriggerBehavior>
                     </interactivity:Interaction.Behaviors>
                 </ListView>
-            </common:MaterialCard>
-        </ListView>
+            </PivotItem>
+            <PivotItem Header="albums">
+                <ListView ItemsSource="{Binding Artist.Albums}"
+                          ItemTemplate="{StaticResource AlbumDataTemplate}"
+                          SelectionMode="None"
+                          IsItemClickEnabled="True" ItemClick="AlbumListView_ItemClick"/>
+            </PivotItem>
+        </Pivot>
     </Grid>
 </audiotica:PageBase>

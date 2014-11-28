@@ -18,13 +18,12 @@
               ItemsSource="{Binding Playlist.Songs}">
         <ListView.ItemTemplate>
             <DataTemplate>
-                <common:MaterialCard Margin="0,-2">
-                    <StackPanel>
-                        <TextBlock Margin="0,5" Text="{Binding Song.Name}" FontSize="26" FontFamily="Global User Interface"
-										TextTrimming="CharacterEllipsis" />
-                        <TextBlock Text="{Binding Song.Artist.Name}" FontSize="22" FontWeight="Thin" Foreground="#89000000" TextTrimming="CharacterEllipsis" />
-                    </StackPanel>
-                </common:MaterialCard>
+                <StackPanel>
+                    <TextBlock Text="{Binding Song.Name}" FontSize="30" FontFamily="Global User Interface"
+                           TextTrimming="CharacterEllipsis" FontWeight="Bold" />
+                    <TextBlock Text="{Binding Song.Artist.Name}" FontSize="22" FontWeight="Thin" Foreground="#89FFFFFF"
+                           TextTrimming="CharacterEllipsis" Margin="0,-5,0,0" />
+                </StackPanel>
             </DataTemplate>
         </ListView.ItemTemplate>
         <interactivity:Interaction.Behaviors>

@@ -16,7 +16,7 @@ namespace Audiotica.Data.Mp3Providers
     public class NeteaseProvider : IMp3Provider
     {
         //AKA music.163.com
-        private const string NeteaseSearchApi = "http://music.163.com/api/search/get/web";
+        private const string NeteaseSuggestApi = "http://music.163.com/api/search/suggest/web?csrf_token=";
         private const string NeteaseDetailApi = "http://music.163.com/api/song/detail/?ids=%5B{0}%5D";
 
         public async Task<string> GetMatch(string title, string artist)
@@ -30,20 +30,17 @@ namespace Audiotica.Data.Mp3Providers
                 var dict = new Dictionary<string, string>
                 {
                     {"s", title + " " + artist},
-                    {"type", "1"},
-                    {"offset", "0"},
-                    {"limit", "5"},
-                    {"total", "true"}
+                    {"limit", "5"}
                 };
 
                 using (var data = new FormUrlEncodedContent(dict))
                 {
-                    var resp = await client.PostAsync(NeteaseSearchApi, data);
+                    var resp = await client.PostAsync(NeteaseSuggestApi, data);
                     var json = await resp.Content.ReadAsStringAsync();
                     var parseResp = await json.DeserializeAsync<NeteaseRoot>();
                     if (!resp.IsSuccessStatusCode) throw new NetworkException();
 
-                    if (parseResp.result == null || parseResp.result.songs == null) return null;
+                    if (parseResp == null || parseResp.result == null || parseResp.result.songs == null) return null;
 
                     // get all possible matches
                     var matches =

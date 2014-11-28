@@ -11,96 +11,84 @@
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
     DataContext="{Binding Collection, Source={StaticResource Locator}}" FontFamily="Global User Interface">
-
-	<Grid>
-		<Pivot>
+    <Grid>
+        <Pivot Title="COLLECTION" HeaderTemplate="{StaticResource PivotHeaderTemplate}">
             <PivotItem x:Uid="CollectionSongsPivot" Header="songs">
-				<ListView IsItemClickEnabled="True" ItemsSource="{Binding Service.Songs}" Padding="0,0,0,25">
-					<ListView.ItemTemplate>
-						<DataTemplate>
-							<common:MaterialCard Margin="0,-2">
+                <ListView IsItemClickEnabled="True" ItemsSource="{Binding Service.Songs}" Padding="0,0,0,25">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Margin="0,0,0,15">
                                 <Interactivity:Interaction.Behaviors>
                                     <Core:EventTriggerBehavior EventName="Holding">
-                                        <audiotica:ShowFlyoutAction/>
+                                        <audiotica:ShowFlyoutAction />
                                     </Core:EventTriggerBehavior>
                                 </Interactivity:Interaction.Behaviors>
                                 <FlyoutBase.AttachedFlyout>
                                     <MenuFlyout>
-                                        <MenuFlyoutItem x:Uid="AddToMenuItem" Text="Add to (Disabled)" IsEnabled="False" />
+                                        <MenuFlyoutItem x:Uid="AddToMenuItem" Text="Add to (Disabled)"
+                                                        IsEnabled="False" />
                                         <MenuFlyoutItem x:Uid="ShareMenuItem" Text="Share (Disabled)" IsEnabled="False" />
-                                        <MenuFlyoutItem x:Uid="DeleteMenuItem" Text="Delete" Foreground="Red" Click="DeleteSongMenuFlyoutItem_Click" />
+                                        <MenuFlyoutItem x:Uid="DeleteMenuItem" Text="Delete" Foreground="Red"
+                                                        Click="DeleteSongMenuFlyoutItem_Click" />
                                     </MenuFlyout>
                                 </FlyoutBase.AttachedFlyout>
-								<StackPanel>
-									<TextBlock Margin="0,5" Text="{Binding Name}" FontSize="26" FontFamily="Global User Interface"
-										TextTrimming="CharacterEllipsis" />
-									<TextBlock Text="{Binding Artist.Name}" FontSize="22" FontWeight="Thin" Foreground="#89000000" TextTrimming="CharacterEllipsis" />
-								</StackPanel>
-							</common:MaterialCard>
-						</DataTemplate>
-					</ListView.ItemTemplate>
-					<Interactivity:Interaction.Behaviors>
-						<Core:EventTriggerBehavior EventName="ItemClick">
-							<Core:InvokeCommandAction Command="{Binding SongClickCommand}"/>
-						</Core:EventTriggerBehavior>
-					</Interactivity:Interaction.Behaviors>
-				</ListView>
-			</PivotItem>
-            <PivotItem x:Uid="CollectionArtistsPivot" Header="artists">
-                <ListView IsItemClickEnabled="True" ItemsSource="{Binding Service.Artists}" Padding="0,0,0,25" Margin="0" ItemClick="ArtistListView_ItemClick">
-                    <ListView.ItemTemplate>
-                        <DataTemplate>
-                            <common:MaterialCard Margin="0,-2">
                                 <StackPanel>
-                                    <TextBlock Margin="0,5" Text="{Binding Name}" FontSize="26" FontFamily="Global User Interface"
-										TextTrimming="CharacterEllipsis" />
+                                    <TextBlock Text="{Binding Name}" FontSize="30" FontFamily="Global User Interface"
+                                               TextTrimming="CharacterEllipsis" FontWeight="Bold" />
+                                    <TextBlock Text="{Binding Artist.Name}" FontSize="22" FontWeight="Thin"
+                                               Foreground="#89FFFFFF" TextTrimming="CharacterEllipsis"
+                                               Margin="0,-5,0,0" />
                                 </StackPanel>
-                            </common:MaterialCard>
+                            </Grid>
                         </DataTemplate>
                     </ListView.ItemTemplate>
-<!--                    <Interactivity:Interaction.Behaviors>-->
-<!--                        <Core:EventTriggerBehavior EventName="ItemClick">-->
-<!--                            <Core:InvokeCommandAction Command="{Binding SongClickCommand}"/>-->
-<!--                        </Core:EventTriggerBehavior>-->
-<!--                    </Interactivity:Interaction.Behaviors>-->
+                    <Interactivity:Interaction.Behaviors>
+                        <Core:EventTriggerBehavior EventName="ItemClick">
+                            <Core:InvokeCommandAction Command="{Binding SongClickCommand}" />
+                        </Core:EventTriggerBehavior>
+                    </Interactivity:Interaction.Behaviors>
+                </ListView>
+            </PivotItem>
+            <PivotItem x:Uid="CollectionArtistsPivot" Header="artists">
+                <ListView IsItemClickEnabled="True" ItemsSource="{Binding Service.Artists}" Padding="0,0,0,25"
+                          Margin="0" ItemClick="ArtistListView_ItemClick">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Margin="0,0,0,15">
+                                <StackPanel>
+                                    <TextBlock Text="{Binding Name}" FontSize="30" FontFamily="Global User Interface"
+                                               TextTrimming="CharacterEllipsis" FontWeight="Bold" />
+                                </StackPanel>
+                            </Grid>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                    <!--                    <Interactivity:Interaction.Behaviors>-->
+                    <!--                        <Core:EventTriggerBehavior EventName="ItemClick">-->
+                    <!--                            <Core:InvokeCommandAction Command="{Binding SongClickCommand}"/>-->
+                    <!--                        </Core:EventTriggerBehavior>-->
+                    <!--                    </Interactivity:Interaction.Behaviors>-->
                 </ListView>
             </PivotItem>
             <PivotItem x:Uid="CollectionAlbumsPivot" Header="albums">
-                <ListView IsItemClickEnabled="True" ItemsSource="{Binding Service.Albums}" Padding="0,0,0,25" Margin="0" ItemClick="AlbumListView_ItemClick">
-                    <ListView.ItemTemplate>
-                        <DataTemplate>
-                            <common:MaterialCard Margin="0,-2">
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto" />
-                                        <ColumnDefinition Width="*" />
-                                    </Grid.ColumnDefinitions>
-                                    <Image Width="100" Height="100" Source="{Binding Artwork}" />
-                                    <StackPanel Grid.Column="1" Margin="10">
-                                        <TextBlock Margin="0,5" Text="{Binding Name}" FontSize="26" FontFamily="Global User Interface"
-										TextTrimming="CharacterEllipsis" />
-                                        <TextBlock Text="{Binding PrimaryArtist.Name}" FontSize="22" FontWeight="Thin" Foreground="#89000000" TextTrimming="CharacterEllipsis" />
-                                    </StackPanel>
-                                </Grid>
-                            </common:MaterialCard>
-                        </DataTemplate>
-                    </ListView.ItemTemplate>
-                </ListView>
+                <ListView IsItemClickEnabled="True" ItemsSource="{Binding Service.Albums}" Padding="0,0,0,25"
+                          Margin="0" ItemClick="AlbumListView_ItemClick" ItemTemplate="{StaticResource AlbumDataTemplate}"/>
             </PivotItem>
-            <PivotItem Header="playlists">
-                <ListView IsItemClickEnabled="True" ItemsSource="{Binding Service.Playlists}" Padding="0,0,0,25" Margin="0" ItemClick="PlaylistListView_ItemClick">
-                    <ListView.ItemTemplate>
-                        <DataTemplate>
-                            <common:MaterialCard Margin="0,-2">
-                                <StackPanel>
-                                    <TextBlock Margin="0,5" Text="{Binding Name}" FontSize="26" FontFamily="Global User Interface"
-										TextTrimming="CharacterEllipsis" />
-                                </StackPanel>
-                            </common:MaterialCard>
-                        </DataTemplate>
-                    </ListView.ItemTemplate>
-                </ListView>
-            </PivotItem>
-		</Pivot>
-	</Grid>
+<!--            <PivotItem Header="playlists">-->
+<!--                <ListView IsItemClickEnabled="True" ItemsSource="{Binding Service.Playlists}" Padding="0,0,0,25"-->
+<!--                          Margin="0" ItemClick="PlaylistListView_ItemClick">-->
+<!--                    <ListView.ItemTemplate>-->
+<!--                        <DataTemplate>-->
+<!--                            <common:MaterialCard Margin="0,-2">-->
+<!--                                <StackPanel>-->
+<!--                                    <TextBlock Margin="0,5" Text="{Binding Name}" FontSize="26"-->
+<!--                                               FontFamily="Global User Interface"-->
+<!--                                               TextTrimming="CharacterEllipsis" />-->
+<!--                                </StackPanel>-->
+<!--                            </common:MaterialCard>-->
+<!--                        </DataTemplate>-->
+<!--                    </ListView.ItemTemplate>-->
+<!--                </ListView>-->
+<!--            </PivotItem>-->
+        </Pivot>
+    </Grid>
 </audiotica:PageBase>

@@ -26,7 +26,9 @@ namespace Audiotica.Data.Service.DesignTime
 
         public Task<LastAlbum> GetDetailAlbum(string name, string artist)
         {
-            throw new NotImplementedException();
+            var album = CreateAlbum("Problem", "Ariana Grande",
+                "http://musicimage.xboxlive.com/content/music.55004A08-0100-11DB-89CA-0019B92A3933/image?locale=en-US");
+            return Task.FromResult(album);
         }
 
         public Task<LastAlbum> GetDetailAlbumByMbid(string mbid)
@@ -46,7 +48,8 @@ namespace Audiotica.Data.Service.DesignTime
 
         public Task<LastArtist> GetDetailArtist(string name)
         {
-            throw new NotImplementedException();
+            return Task.FromResult(CreateArtist("Iggy Azalea",
+                "http://musicimage.xboxlive.com/content/music.1F154700-0200-11DB-89CA-0019B92A3933/image?locale=en-US"));
         }
 
         public Task<LastArtist> GetDetailArtistByMbid(string mbid)
@@ -62,7 +65,8 @@ namespace Audiotica.Data.Service.DesignTime
 
         public Task<PageResponse<LastAlbum>> GetArtistTopAlbums(string name)
         {
-            throw new NotImplementedException();
+            var pageResp = PageResponse<LastAlbum>.CreateSuccessResponse(CreateDesignAlbums());
+            return Task.FromResult(pageResp);
         }
 
         public Task<PageResponse<LastTrack>> SearchTracksAsync(string query, int page = 1, int limit = 30)
@@ -138,6 +142,25 @@ namespace Audiotica.Data.Service.DesignTime
             };
         }
 
+        private List<LastAlbum> CreateDesignAlbums()
+        {
+            return new List<LastAlbum>
+            {
+                CreateAlbum("Fancy", "Iggy Azalea",
+                    "http://musicimage.xboxlive.com/content/music.DA353208-0100-11DB-89CA-0019B92A3933/image?locale=en-US"),
+                CreateAlbum("Problem", "Ariana Grande",
+                    "http://musicimage.xboxlive.com/content/music.55004A08-0100-11DB-89CA-0019B92A3933/image?locale=en-US"),
+                CreateAlbum("Wiggle", "Jason Derulo",
+                    "http://musicimage.xboxlive.com/content/music.D2EB4008-0100-11DB-89CA-0019B92A3933/image?locale=en-US"),
+                CreateAlbum("Dark Horse", "Katy Perry",
+                    "http://musicimage.xboxlive.com/content/music.0B61F107-0100-11DB-89CA-0019B92A3933/image?locale=en-US"),
+                CreateAlbum("Rude", "Magic!",
+                    "http://musicimage.xboxlive.com/content/music.4388EF07-0100-11DB-89CA-0019B92A3933/image?locale=en-US"),
+                CreateAlbum("Turn Down for What", "DJ Snake",
+                    "http://musicimage.xboxlive.com/content/music.E1810B08-0100-11DB-89CA-0019B92A3933/image?locale=en-US"),
+            };
+        }
+
         private List<LastArtist> CreateDesignArtists()
         {
             return new List<LastArtist>
@@ -163,6 +186,18 @@ namespace Audiotica.Data.Service.DesignTime
             {
                 Name = artist,
                 MainImage = new LastImageSet {ExtraLarge = new Uri(artwork)}
+            };
+        }
+
+        private LastAlbum CreateAlbum(string name, string artist, string artwork)
+        {
+            return new LastAlbum
+            {
+                Name = name,
+                ArtistName = artist,
+                Tracks = CreateDesignTracks(),
+                TopTags = new List<LastTag>{new LastTag{ Name = "pop"}},
+                Images = new LastImageSet { ExtraLarge = new Uri(artwork) }
             };
         }
     }

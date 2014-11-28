@@ -15,9 +15,8 @@
     DataContext="{Binding Source={StaticResource Locator}, Path=Album}">
 
     <Grid>
-        <ListView Margin="10,0" ItemContainerStyle="{StaticResource NoFeedbackListViewItem}" Padding="0,20,0,0">
-            <common:MaterialCard x:Uid="AlbumDetailCard" HeaderText="Details" 
-                                 ActionButtonText="Download All (Disabled)" IsActionButtonEnabled="False"  ActionButtonVisibility="Visible">
+        <ListView Padding="0,40,0,0" Margin="20,0" ItemContainerStyle="{StaticResource NoFeedbackListViewItem}">
+            <Grid>
                 <Grid Margin="0,0,0,10">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
@@ -26,34 +25,24 @@
                     <Image Height="100" Width="100"
                        Source="{Binding Album.Images.Largest}" />
                     <StackPanel Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="5,0,0,0">
-                        <TextBlock Text="{Binding Album.Name}" FontSize="22" TextAlignment="Right" TextTrimming="CharacterEllipsis" />
-                        <HyperlinkButton Content="{Binding Album.ArtistName}" FontSize="16" HorizontalAlignment="Right" Foreground="#89000000" Click="HyperlinkButton_Click" />
-                        <TextBlock Text="{Binding Album.TopTags[0].Name}" FontSize="16" TextAlignment="Right" Foreground="#89000000" TextTrimming="CharacterEllipsis" />
+                        <TextBlock Text="{Binding Album.Name}" FontSize="22" TextAlignment="Right"
+                               TextTrimming="CharacterEllipsis" FontWeight="Bold" />
+                        <HyperlinkButton Content="{Binding Album.ArtistName}" FontSize="16"
+                                     HorizontalAlignment="Right" Foreground="#89FFFFFF" />
+                        <TextBlock Text="{Binding Album.TopTags[0].Name}" FontSize="16" TextAlignment="Right" Foreground="#89FFFFFF"
+                               TextTrimming="CharacterEllipsis" />
                     </StackPanel>
                 </Grid>
-            </common:MaterialCard>
-            
-            <common:MaterialCard x:Uid="TracksCard" HeaderText="Tracks">
-                <ListView IsItemClickEnabled="True" ItemsSource="{Binding Tracks}" Margin="0,5,0,0">
-                    <ListView.ItemTemplate>
-                        <DataTemplate>
-                            <StackPanel>
-                                <Rectangle Height="1" Fill="#1E000000" Margin="0,10,0,0" />
-                                <TextBlock Margin="0,5" Text="{Binding Name}" FontSize="22" FontFamily="Global User Interface" TextTrimming="CharacterEllipsis" />
-                                <TextBlock Text="{Binding ArtistName}" FontSize="18" FontWeight="Thin" FontFamily="Global User Interface" Foreground="#89000000" TextTrimming="CharacterEllipsis" />
-                            </StackPanel>
-                        </DataTemplate>
-                    </ListView.ItemTemplate>
+            </Grid>
+            <Grid Margin="0,20,0,0">
+                <ListView IsItemClickEnabled="True" ItemsSource="{Binding Album.Tracks}" Margin="0,5,0,0" ItemTemplate="{StaticResource LastTrackDataTemplate}" >
                     <interactivity:Interaction.Behaviors>
                         <core:EventTriggerBehavior EventName="ItemClick">
-                            <core:InvokeCommandAction Command="{Binding SongClickRelayCommand}"/>
+                            <core:InvokeCommandAction Command="{Binding SongClickRelayCommand}" />
                         </core:EventTriggerBehavior>
                     </interactivity:Interaction.Behaviors>
                 </ListView>
-            </common:MaterialCard>
+            </Grid>
         </ListView>
-        <Grid Visibility="{Binding IsLoading, Converter={StaticResource VisibilityConverter}}" Background="{StaticResource ApplicationPageBackgroundThemeBrush}">
-            <ProgressBar IsIndeterminate="{Binding IsLoading}" />
-        </Grid>
     </Grid>
 </audiotica:PageBase>

@@ -9,6 +9,7 @@ using Windows.ApplicationModel.Activation;
 using Windows.UI;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Navigation;
 using Audiotica.Core.Common;
@@ -37,7 +38,7 @@ namespace Audiotica
             get { return Current.Resources["Locator"] as ViewModelLocator; }
         }
 
-        public static SlideApplicationFrame RootFrame { get; private set; }
+        public static Frame RootFrame { get; private set; }
 
         public App()
         {
@@ -49,14 +50,14 @@ namespace Audiotica
 
         protected override async void OnLaunched(LaunchActivatedEventArgs e)
         {
-            RootFrame = Window.Current.Content as SlideApplicationFrame;
+            RootFrame = Window.Current.Content as Frame;
 
             // Do not repeat app initialization when the Window already has content,
             // just ensure that the window is active
             if (RootFrame == null)
             {
                 // Create a Frame to act as the navigation context and navigate to the first page
-                RootFrame = Resources["SlideApplicationFrame"] as SlideApplicationFrame;
+                RootFrame = new Frame();
 
                 Window.Current.Content = RootFrame;
                 DispatcherHelper.Initialize();
@@ -100,8 +101,8 @@ namespace Audiotica
             {
                 try
                 {
-                    await ServiceLocator.Current.GetInstance<ISqlService>().InitializeAsync();
-                    await ServiceLocator.Current.GetInstance<ICollectionService>().LoadLibraryAsync();
+                    await Locator.SqlService.InitializeAsync();
+                    await Locator.CollectionService.LoadLibraryAsync();
                 }
                 catch (Exception ex)
                 {
@@ -116,15 +117,11 @@ namespace Audiotica
         }
 
 #if WINDOWS_PHONE_APP
-            private
-            void RootFrame_FirstNavigated(object sender, NavigationEventArgs e)
+            private async void RootFrame_FirstNavigated(object sender, NavigationEventArgs e)
         {
             RootFrame.ContentTransitions = _transitions ?? new TransitionCollection {new NavigationThemeTransition()};
             RootFrame.Navigated -= RootFrame_FirstNavigated;
-
-            StatusBar.GetForCurrentView().BackgroundOpacity = 1;
-            StatusBar.GetForCurrentView().ForegroundColor = Colors.White;
-            StatusBar.GetForCurrentView().BackgroundColor = ColorHelper.GetColorFromHexa("#4B216D");
+            await StatusBar.GetForCurrentView().HideAsync();
         }
 #endif
 

@@ -14,6 +14,11 @@ namespace Audiotica.Data.Collection.DesignTime
 {
     public class DesignCollectionService : ICollectionService
     {
+        public DesignCollectionService()
+        {
+            LoadLibrary();
+        }
+
         public ObservableCollection<Song> Songs { get; set; }
         public ObservableCollection<Album> Albums { get; set; }
         public ObservableCollection<Artist> Artists { get; set; }
@@ -51,12 +56,6 @@ namespace Audiotica.Data.Collection.DesignTime
                 }
             };
 
-            Artists = new ObservableCollection<Artist>
-            {
-                new Artist {Name = "Maroon 5"},
-                new Artist {Name = "Taylor Swift"},
-            };
-
             Albums = new ObservableCollection<Album>
             {
                  new Album
@@ -69,6 +68,12 @@ namespace Audiotica.Data.Collection.DesignTime
                             Genre = "Pop",
                             Songs = Songs.ToList()
                         }
+            };
+
+            Artists = new ObservableCollection<Artist>
+            {
+                new Artist {Name = "Maroon 5", Albums = Albums.ToList(), Songs = Songs.ToList()},
+                new Artist {Name = "Taylor Swift"},
             };
 
             Playlists = new ObservableCollection<Playlist>
