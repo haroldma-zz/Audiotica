@@ -7,11 +7,6 @@
     xmlns:partialView="using:Audiotica.PartialView"
     RequestedTheme="Dark">
     <Application.Resources>
-        
-        
-        <Color x:Key="AppAccentColor">#5677fc</Color>
-        <SolidColorBrush x:Key="AppAccentBrush" Color="{StaticResource AppAccentColor}" />
-
         <vm:ViewModelLocator xmlns:vm="using:Audiotica.ViewModel"
                              x:Key="Locator" />
         <common:VisibilityConverter x:Key="VisibilityConverter" />
@@ -154,7 +149,9 @@
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
-                <Image Width="175" Height="175" Source="{Binding Artwork}" />
+                <Grid Background="{StaticResource PhoneAccentBrush}">
+                    <Image Width="175" Height="175" Source="{Binding Artwork}" />
+                </Grid>
                 <StackPanel Grid.Column="1" Margin="10">
                     <TextBlock Margin="0,5,0,0" Text="{Binding Name}" FontSize="30"
                                FontFamily="Global User Interface"
@@ -172,7 +169,9 @@
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
-                <Image Width="175" Height="175" Source="{Binding Images.Largest}" />
+                <Grid Background="{StaticResource PhoneAccentBrush}">
+                    <Image Width="175" Height="175" Source="{Binding Images.Largest}" />
+                </Grid>
                 <StackPanel Grid.Column="1" Margin="10">
                     <TextBlock Margin="0,5,0,0" Text="{Binding Name}" FontSize="30"
                                FontFamily="Global User Interface"

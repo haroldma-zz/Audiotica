@@ -10,6 +10,7 @@ using Windows.UI;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Navigation;
 using Audiotica.Core.Common;
@@ -58,6 +59,8 @@ namespace Audiotica
             {
                 // Create a Frame to act as the navigation context and navigate to the first page
                 RootFrame = new Frame {Style = (Style) Resources["AppFrame"]};
+
+                CurtainToast.BackgroundBrush = (SolidColorBrush)Resources["PhoneAccentBrush"];
 
                 Window.Current.Content = RootFrame;
                 DispatcherHelper.Initialize();

@@ -116,7 +116,9 @@
                         <GridView.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel Margin="0,5,5,0" Width="150">
-                                    <Image Source="{Binding Images.Largest}" Height="150" Width="150" Margin="0,0,0,5" />
+                                    <Grid Background="{StaticResource PhoneAccentBrush}">
+                                        <Image Source="{Binding Images.Largest}" Height="150" Width="150" />
+                                    </Grid>
                                     <TextBlock Text="{Binding Name}" FontSize="15" TextTrimming="CharacterEllipsis" />
                                     <TextBlock Text="{Binding ArtistName}" FontSize="12" TextTrimming="CharacterEllipsis" Foreground="#89FFFFFF" FontFamily="Global User Interface" />
                                 </StackPanel>
