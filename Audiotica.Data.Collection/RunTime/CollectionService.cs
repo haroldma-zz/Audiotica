@@ -56,7 +56,7 @@ namespace Audiotica.Data.Collection.RunTime
 
             foreach (var album in albums)
             {
-                album.Songs = songs.Where(p => p.AlbumId == album.Id).OrderBy(p => p.TrackNumber).ToList();
+                album.Songs.AddRange(songs.Where(p => p.AlbumId == album.Id).OrderBy(p => p.TrackNumber));
                 album.PrimaryArtist = artists.FirstOrDefault(p => p.Id == album.PrimaryArtistId);
 
                 if (_dispatcher != null)
@@ -66,14 +66,28 @@ namespace Audiotica.Data.Collection.RunTime
 
             foreach (var artist in artists)
             {
-                artist.Songs = songs.Where(p => p.ArtistId == artist.Id).ToList();
-                artist.Albums = albums.Where(p => p.PrimaryArtistId == artist.Id).ToList();
+                artist.Songs.AddRange(songs.Where(p => p.ArtistId == artist.Id));
+                artist.Albums.AddRange(albums.Where(p => p.PrimaryArtistId == artist.Id));
             }
 
+            //Foreground app
+            if (_dispatcher != null)
+            {
+                _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                {
+                    Songs.AddRange(songs);
+                    Artists.AddRange(artists);
+                    Albums.AddRange(albums);
+                });
+            }
 
-            Songs = new ObservableCollection<Song>(songs);
-            Artists = new ObservableCollection<Artist>(artists);
-            Albums = new ObservableCollection<Album>(albums);
+            //background player
+            else
+            {
+                Songs = new ObservableCollection<Song>(songs);
+                Artists = new ObservableCollection<Artist>(artists);
+                Albums = new ObservableCollection<Album>(albums);
+            }
 
             LoadQueue();
             LoadPlaylists();
@@ -105,9 +119,6 @@ namespace Audiotica.Data.Collection.RunTime
                 if (song.Album != null)
                     song.Album.PrimaryArtistId = song.Artist.Id;
                 Artists.Insert(0, song.Artist);
-
-                song.Artist.Songs = new List<Song>();
-                song.Artist.Albums = new List<Album>();
             }
 
             else
@@ -134,7 +145,6 @@ namespace Audiotica.Data.Collection.RunTime
                 };
                 await _sqlService.InsertAsync(song.Album);
                 Albums.Insert(0, song.Album);
-                song.Album.Songs = new List<Song>();
                 song.Artist.Albums.Insert(0, song.Album);
             }
             else
@@ -146,9 +156,8 @@ namespace Audiotica.Data.Collection.RunTime
                 else
                 {
                     await _sqlService.InsertAsync(song.Album);
-                    Albums.Add(song.Album);
-                    song.Album.Songs = new List<Song>();
-                    song.Artist.Albums.Add(song.Album);
+                    Albums.Insert(0, song.Album);
+                    song.Artist.Albums.Insert(0,song.Album);
                 }
             }
 
@@ -205,7 +214,6 @@ namespace Audiotica.Data.Collection.RunTime
 
             song.Artist.Songs.Insert(0, song);
             song.Album.Songs.Insert(0, song);
-
             Songs.Insert(0, song);
         }
 

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using Audiotica.Data.Collection.SqlHelper;
 
 namespace Audiotica.Data.Collection.Model
@@ -7,16 +8,16 @@ namespace Audiotica.Data.Collection.Model
     {
         public Artist()
         {
-            Songs = new List<Song>();
-            Albums = new List<Album>();
+            Songs = new ObservableCollection<Song>();
+            Albums = new ObservableCollection<Album>();
         }
 
         public string ProviderId { get; set; }
 
         public string Name { get; set; }
 
-        public List<Song> Songs { get; set; }
-        
-        public List<Album> Albums { get; set; } 
+        public ObservableCollection<Song> Songs { get; set; }
+
+        public ObservableCollection<Album> Albums { get; set; } 
     }
 }

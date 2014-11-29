@@ -66,13 +66,13 @@ namespace Audiotica.Data.Collection.DesignTime
                                     new BitmapImage(new Uri("http://static.musictoday.com/store/bands/93/product_medium/IXDDM501.JPG")),
                             PrimaryArtist = new Artist { Name = "Maroon 5"},
                             Genre = "Pop",
-                            Songs = Songs.ToList()
+                            Songs = Songs
                         }
             };
 
             Artists = new ObservableCollection<Artist>
             {
-                new Artist {Name = "Maroon 5", Albums = Albums.ToList(), Songs = Songs.ToList()},
+                new Artist {Name = "Maroon 5", Albums = Albums, Songs = Songs},
                 new Artist {Name = "Taylor Swift"},
             };
 

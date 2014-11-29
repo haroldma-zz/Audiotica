@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using Windows.UI.Xaml.Media.Imaging;
 using Audiotica.Core.Utilities;
 using Audiotica.Data.Collection.SqlHelper;
@@ -16,7 +17,7 @@ namespace Audiotica.Data.Collection.Model
 
         public Album()
         {
-            Songs = new List<Song>();
+            Songs = new ObservableCollection<Song>();
         }
 
         public string ProviderId { get; set; }
@@ -31,7 +32,7 @@ namespace Audiotica.Data.Collection.Model
 
         public DateTime ReleaseDate { get; set; }
 
-        public List<Song> Songs { get; set; }
+        public ObservableCollection<Song> Songs { get; set; }
 
         public BitmapImage Artwork { get { return _artwork; } set { Set(ref _artwork, value); } }
 
