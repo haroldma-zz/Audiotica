@@ -60,8 +60,6 @@ namespace Audiotica
                 // Create a Frame to act as the navigation context and navigate to the first page
                 RootFrame = new Frame {Style = (Style) Resources["AppFrame"]};
 
-                CurtainToast.BackgroundBrush = (SolidColorBrush)Resources["PhoneAccentBrush"];
-
                 Window.Current.Content = RootFrame;
                 DispatcherHelper.Initialize();
 #if BETA

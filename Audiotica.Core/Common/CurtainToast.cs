@@ -51,13 +51,8 @@ namespace Audiotica.Core.Common
         private Popup _popup;
         private DispatcherTimer _timer;
 
-        public static SolidColorBrush BackgroundBrush { get; set; }
-
         public CurtainToast(string msg, bool isError = false)
         {
-            if (BackgroundBrush == null)
-                BackgroundBrush = new SolidColorBrush(ColorHelper.GetColorFromHexa("#4B216D"));
-
             _popup = CreatePopup(msg, isError);
             ShowPopup();
         }
@@ -116,7 +111,7 @@ namespace Audiotica.Core.Common
 
             var grid = new Grid
             {
-                Background = BackgroundBrush,
+                Background = new SolidColorBrush(ColorHelper.GetColorFromHexa("#202020")),
                 Height = Height + PaddingPopup,
                 Width = Window.Current.Bounds.Width,
                 IsHoldingEnabled = true,
