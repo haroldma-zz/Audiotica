@@ -64,13 +64,13 @@
         <Hub Header="AUDIOTICA">
             <Hub.HeaderTemplate>
                 <DataTemplate>
-                    <TextBlock Text="{Binding}" FontWeight="Bold" FontSize="26" Margin="2,15,15,-8" />
+                    <TextBlock Text="{Binding}" FontWeight="Bold" FontSize="24" Margin="2,35,15,-8" />
                 </DataTemplate>
             </Hub.HeaderTemplate>
             <HubSection Header="menu">
                 <HubSection.HeaderTemplate>
                     <DataTemplate>
-                        <TextBlock Text="{Binding}" FontSize="25" FontFamily="Global User Interface" Margin="0,5,0,0" />
+                        <TextBlock Text="{Binding}" FontSize="20" FontFamily="Segoe WP" FontWeight="Normal" />
                     </DataTemplate>
                 </HubSection.HeaderTemplate>
                 <DataTemplate>
@@ -117,7 +117,7 @@
             </HubSection>
             <HubSection>
                 <DataTemplate>
-                    <FlipView HorizontalAlignment="Left" ItemsSource="{Binding SpotlightItems}" Margin="-20,-140,0,0"
+                    <FlipView HorizontalAlignment="Left" ItemsSource="{Binding SpotlightItems}" Margin="-20,-80,0,0"
                                       Style="{StaticResource FlipViewStyle1}">
                         <FlipView.ItemTemplate>
                             <DataTemplate>

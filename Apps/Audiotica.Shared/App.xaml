@@ -22,7 +22,7 @@
             <TextBlock Text="{Binding}" FontSize="20" FontFamily="Global User Interface" Margin="0,5,0,0" />
         </DataTemplate>
 
-        <Style TargetType="Frame">
+        <Style x:Key="AppFrame" TargetType="Frame">
             <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
             <Setter Property="IsTabStop" Value="False"/>
             <Setter Property="VerticalContentAlignment" Value="Stretch"/>

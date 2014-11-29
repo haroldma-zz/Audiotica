@@ -57,7 +57,7 @@ namespace Audiotica
             if (RootFrame == null)
             {
                 // Create a Frame to act as the navigation context and navigate to the first page
-                RootFrame = new Frame();
+                RootFrame = new Frame {Style = (Style) Resources["AppFrame"]};
 
                 Window.Current.Content = RootFrame;
                 DispatcherHelper.Initialize();
@@ -121,7 +121,7 @@ namespace Audiotica
         {
             RootFrame.ContentTransitions = _transitions ?? new TransitionCollection {new NavigationThemeTransition()};
             RootFrame.Navigated -= RootFrame_FirstNavigated;
-            await StatusBar.GetForCurrentView().HideAsync();
+            ApplicationView.GetForCurrentView().SetDesiredBoundsMode(ApplicationViewBoundsMode.UseCoreWindow);
         }
 #endif
 
