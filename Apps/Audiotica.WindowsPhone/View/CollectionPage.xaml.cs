@@ -3,6 +3,7 @@
 using System.Threading.Tasks;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Navigation;
 using Audiotica.Core;
 using Audiotica.Core.Common;
 using Audiotica.Core.Utilities;
@@ -17,6 +18,13 @@ namespace Audiotica.View
         public CollectionPage()
         {
             InitializeComponent();
+        }
+
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            base.OnNavigatedTo(e);
+            var pivotIndex = int.Parse(e.Parameter.ToString());
+            CollectionPivot.SelectedIndex = pivotIndex;
         }
 
         private void AlbumListView_ItemClick(object sender, ItemClickEventArgs e)

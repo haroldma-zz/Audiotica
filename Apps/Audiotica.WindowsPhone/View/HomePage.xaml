@@ -79,17 +79,27 @@
                             <TextBlock Text="songs" FontSize="40" />
                             <Interactivity:Interaction.Behaviors>
                                 <Core:EventTriggerBehavior EventName="Click">
-                                    <Core:NavigateToPageAction TargetPage="Audiotica.View.CollectionPage" />
+                                    <Core:NavigateToPageAction TargetPage="Audiotica.View.CollectionPage" Parameter="0" />
                                 </Core:EventTriggerBehavior>
                             </Interactivity:Interaction.Behaviors>
                         </Button>
                         <Button Style="{StaticResource PlainButtonStyle}">
                             <TextBlock Text="artists" FontSize="40" />
+                            <Interactivity:Interaction.Behaviors>
+                                <Core:EventTriggerBehavior EventName="Click">
+                                    <Core:NavigateToPageAction TargetPage="Audiotica.View.CollectionPage" Parameter="1" />
+                                </Core:EventTriggerBehavior>
+                            </Interactivity:Interaction.Behaviors>
                         </Button>
                         <Button Style="{StaticResource PlainButtonStyle}">
                             <TextBlock Text="albums" FontSize="40" />
+                            <Interactivity:Interaction.Behaviors>
+                                <Core:EventTriggerBehavior EventName="Click">
+                                    <Core:NavigateToPageAction TargetPage="Audiotica.View.CollectionPage" Parameter="2" />
+                                </Core:EventTriggerBehavior>
+                            </Interactivity:Interaction.Behaviors>
                         </Button>
-                        <Button Style="{StaticResource PlainButtonStyle}" FontFamily="Global User Interface">
+                        <Button Style="{StaticResource PlainButtonStyle}">
                             <TextBlock Text="search" FontSize="40"/>
                             <Interactivity:Interaction.Behaviors>
                                 <Core:EventTriggerBehavior EventName="Click">
