@@ -14,6 +14,7 @@ namespace Audiotica
 {
     public class AudioPlayerHelper
     {
+        private bool _isShutdown;
         public event EventHandler Shutdown;
         public event EventHandler TrackChanged;
         public event EventHandler<PlaybackStateEventArgs> PlaybackStateChanged;
@@ -82,6 +83,9 @@ namespace Audiotica
 
         public void PlaySong(long id)
         {
+            if (_isShutdown)
+                AddMediaPlayerEventHandlers();
+
             AppSettingsHelper.Write(PlayerConstants.CurrentTrack, id);
 
             var message = new ValueSet {{PlayerConstants.StartPlayback, null}};
@@ -119,6 +123,7 @@ namespace Audiotica
             BackgroundMediaPlayer.Shutdown();
             AppSettingsHelper.Write(PlayerConstants.CurrentTrack, null);
             await Task.Delay(1000);
+            _isShutdown = true;
             RaiseEvent(Shutdown);
         }
     }

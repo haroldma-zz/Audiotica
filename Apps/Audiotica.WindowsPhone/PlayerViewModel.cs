@@ -16,7 +16,7 @@ using GalaSoft.MvvmLight.Threading;
 
 namespace Audiotica
 {
-    public class PlayerViewModel : ObservableObject
+    public class PlayerViewModel : ViewModelBase
     {
         private readonly AudioPlayerHelper _helper;
         private readonly RelayCommand _nextRelayCommand;
@@ -38,6 +38,11 @@ namespace Audiotica
             _nextRelayCommand = new RelayCommand(NextSong);
             _prevRelayCommand = new RelayCommand(PrevSong);
             _playPauseRelayCommand = new RelayCommand(PlayPauseToggle);
+
+            if (!IsInDesignMode) return;
+
+            CurrentSong = service.Songs.FirstOrDefault();
+            PlayPauseIcon = new SymbolIcon(Symbol.Play);
         }
 
         public Song CurrentSong

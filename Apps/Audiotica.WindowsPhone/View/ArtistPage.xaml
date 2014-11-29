@@ -17,7 +17,7 @@
             <ImageBrush Opacity=".25" Stretch="UniformToFill" ImageSource="{Binding Artist.MainImage.Largest}" />
         </Grid.Background>
         <Pivot Title="{Binding Artist.Name}" HeaderTemplate="{StaticResource PivotHeaderTemplate}">
-            <PivotItem Header="top tracks">
+            <PivotItem Header="TOP TRACKS">
                 <ListView IsItemClickEnabled="True" ItemsSource="{Binding TopTracks}"
                           ItemTemplate="{StaticResource LastTrackDataTemplate}">
                     <interactivity:Interaction.Behaviors>
@@ -27,7 +27,7 @@
                     </interactivity:Interaction.Behaviors>
                 </ListView>
             </PivotItem>
-            <PivotItem Header="top albums">
+            <PivotItem Header="TOP ALBUMS">
                 <ListView ItemsSource="{Binding TopAlbums}"
                           ItemTemplate="{StaticResource LastAlbumDataTemplate}"
                           SelectionMode="None"

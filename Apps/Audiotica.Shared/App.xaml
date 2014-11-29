@@ -4,8 +4,11 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:Audiotica"
     xmlns:common="using:Audiotica.Core.Common"
+    xmlns:partialView="using:Audiotica.PartialView"
     RequestedTheme="Dark">
     <Application.Resources>
+        
+        
         <Color x:Key="AppAccentColor">#5677fc</Color>
         <SolidColorBrush x:Key="AppAccentBrush" Color="{StaticResource AppAccentColor}" />
 
@@ -16,8 +19,36 @@
         <common:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
 
         <DataTemplate x:Key="PivotHeaderTemplate">
-            <TextBlock Text="{Binding}" FontSize="25" FontFamily="Global User Interface" Margin="0,5,0,0" />
+            <TextBlock Text="{Binding}" FontSize="20" FontFamily="Global User Interface" Margin="0,5,0,0" />
         </DataTemplate>
+
+        <Style TargetType="Frame">
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            <Setter Property="IsTabStop" Value="False"/>
+            <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+            <Setter Property="Background" Value="{ThemeResource SystemColorWindowBrush}"/>
+            <Setter Property="ContentTransitions">
+                <Setter.Value>
+                    <TransitionCollection>
+                        <NavigationThemeTransition/>
+                    </TransitionCollection>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Frame">
+                        <Grid Background="{TemplateBinding Background}">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <ContentPresenter ContentTemplate="{TemplateBinding ContentTemplate}" ContentTransitions="{TemplateBinding ContentTransitions}" Content="{TemplateBinding Content}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                            <partialView:NowPlayingBar Grid.Row="1" />
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
 
         <Style TargetType="AppBarButton">
             <Setter Property="Foreground" Value="{ThemeResource AppBarItemForegroundThemeBrush}" />
@@ -113,7 +144,7 @@
                 <TextBlock Text="{Binding Name}" FontSize="30" FontFamily="Global User Interface"
                            TextTrimming="CharacterEllipsis" FontWeight="Bold" />
                 <TextBlock Text="{Binding Artist.Name}" FontSize="22" FontWeight="Thin" Foreground="#89FFFFFF"
-                           TextTrimming="CharacterEllipsis" Margin="0,-5,0,0" />
+                           TextTrimming="CharacterEllipsis" />
             </StackPanel>
         </DataTemplate>
 
@@ -157,7 +188,7 @@
                 <TextBlock Text="{Binding Name}" FontSize="30" FontFamily="Global User Interface"
                            TextTrimming="CharacterEllipsis" FontWeight="Bold" />
                 <TextBlock Text="{Binding ArtistName}" FontSize="22" FontWeight="Thin" Foreground="#89FFFFFF"
-                           TextTrimming="CharacterEllipsis" Margin="0,-5,0,0" />
+                           TextTrimming="CharacterEllipsis"/>
             </StackPanel>
         </DataTemplate>
 

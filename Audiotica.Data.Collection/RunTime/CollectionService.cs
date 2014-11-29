@@ -258,7 +258,11 @@ namespace Audiotica.Data.Collection.RunTime
                 where Albums.Count(p => p.Id == id) == 0
                 select file)
             {
-                await file.DeleteAsync();
+                try
+                {
+                    await file.DeleteAsync();
+                }
+                catch { }
             }
         }
 

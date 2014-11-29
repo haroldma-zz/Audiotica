@@ -13,7 +13,7 @@
     DataContext="{Binding Collection, Source={StaticResource Locator}}" FontFamily="Global User Interface">
     <Grid>
         <Pivot Title="COLLECTION" HeaderTemplate="{StaticResource PivotHeaderTemplate}">
-            <PivotItem x:Uid="CollectionSongsPivot" Header="songs">
+            <PivotItem x:Uid="CollectionSongsPivot" Header="SONGS">
                 <ListView IsItemClickEnabled="True" ItemsSource="{Binding Service.Songs}" Padding="0,0,0,25">
                     <ListView.ItemTemplate>
                         <DataTemplate>
@@ -49,7 +49,7 @@
                     </Interactivity:Interaction.Behaviors>
                 </ListView>
             </PivotItem>
-            <PivotItem x:Uid="CollectionArtistsPivot" Header="artists">
+            <PivotItem x:Uid="CollectionArtistsPivot" Header="ARTISTS">
                 <ListView IsItemClickEnabled="True" ItemsSource="{Binding Service.Artists}" Padding="0,0,0,25"
                           Margin="0" ItemClick="ArtistListView_ItemClick">
                     <ListView.ItemTemplate>
@@ -69,7 +69,7 @@
                     <!--                    </Interactivity:Interaction.Behaviors>-->
                 </ListView>
             </PivotItem>
-            <PivotItem x:Uid="CollectionAlbumsPivot" Header="albums">
+            <PivotItem x:Uid="CollectionAlbumsPivot" Header="ALBUMS">
                 <ListView IsItemClickEnabled="True" ItemsSource="{Binding Service.Albums}" Padding="0,0,0,25"
                           Margin="0" ItemClick="AlbumListView_ItemClick" ItemTemplate="{StaticResource AlbumDataTemplate}"/>
             </PivotItem>

@@ -73,15 +73,16 @@ namespace Audiotica
             }
         }
 
-        internal static async Task<PreparedSong> PrepareTrackForDownloadAsync(LastTrack track)
+        internal static async Task<PreparedSong> PrepareTrackForDownloadAsync(LastTrack lastTrack)
         {
-            track = await App.Locator.ScrobblerService.GetDetailTrack(track.Name, track.ArtistName);
+            var track = await App.Locator.ScrobblerService.GetDetailTrack(lastTrack.Name, lastTrack.ArtistName);
             var preparedSong = new PreparedSong {Song = track.ToSong()};
             LastArtist artist;
 
-            if (!string.IsNullOrEmpty(track.AlbumName))
+            if (!string.IsNullOrEmpty(lastTrack.AlbumName + track.AlbumName))
             {
-                var lastAlbum = await App.Locator.ScrobblerService.GetDetailAlbum(track.AlbumName, track.ArtistName);
+                var lastAlbum = await App.Locator.ScrobblerService.GetDetailAlbum(
+                    string.IsNullOrEmpty(lastTrack.AlbumName) ? track.AlbumName : lastTrack.AlbumName, track.ArtistName);
 
                 if (track.ArtistMbid == null)
                     artist = await App.Locator.ScrobblerService.GetDetailArtist(track.ArtistName);
