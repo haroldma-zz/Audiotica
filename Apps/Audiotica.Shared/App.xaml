@@ -26,7 +26,7 @@
             <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
             <Setter Property="IsTabStop" Value="False"/>
             <Setter Property="VerticalContentAlignment" Value="Stretch"/>
-            <Setter Property="Background" Value="{ThemeResource SystemColorWindowBrush}"/>
+            <Setter Property="Background" Value="{ThemeResource ApplicationPageBackgroundThemeBrush}"/>
             <Setter Property="ContentTransitions">
                 <Setter.Value>
                     <TransitionCollection>
