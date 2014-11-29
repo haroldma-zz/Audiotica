@@ -12,6 +12,18 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
     DataContext="{Binding Collection, Source={StaticResource Locator}}" FontFamily="Global User Interface">
     <Grid>
+        <Grid Name="ArtworkSizeWorkaround" Tag="{Binding ArtworkSize}" />
+        <GridView ItemsSource="{Binding RandomizeAlbumList}">
+            <GridView.ItemTemplate>
+                <DataTemplate>
+                    <Image 
+                        Width="{Binding Tag, ElementName=ArtworkSizeWorkaround}" 
+                        Height="{Binding Tag, ElementName=ArtworkSizeWorkaround}" 
+                        Opacity=".25" 
+                        Source="{Binding Artwork}"/>
+                </DataTemplate>
+            </GridView.ItemTemplate>
+        </GridView>
         <Pivot Name="CollectionPivot" Title="COLLECTION" HeaderTemplate="{StaticResource PivotHeaderTemplate}">
             <PivotItem Header="SONGS">
                 <ListView IsItemClickEnabled="True" ItemsSource="{Binding Service.Songs}" Padding="0,0,0,25">
