@@ -1,18 +1,16 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Changelog>
   <FirstRunMessage>
-    This beta is meant to test out the new metadata engine powered by Last.FM.
+    This beta is meant to test out the metro UI.
   </FirstRunMessage>
   <JustUpdatedMessage>
-    1. Faster loading for home feed.
-    2. Random top tracks and spotlight, new content every launch.
-    3. Fix crashing bug when saving some songs.
-    4. Fix lagging in collection page.
-    5. Fix crashing bug that occurs in the audio player.
-    6. Page cache is enabled for faster navigation.
-    7. Multilingual support (English and Spanish).
-    8. Better battery performance for app.
-    9. Minor UI changes, including missing artwork cover.
-    10. Better audio auto-match algorithm.
+    1. New metro UI.
+    2. New now playing bar.
+    3. Search for tracks, albums and artists.
+    4. Search has infinite scrolling.
+    5. Fix collection loading bugs.
+    6. Fix song saving crashing bug.
+    7. Multilingual support, disabled for testing purposes.
+    8. Playlists, disabled for testing purposes.
   </JustUpdatedMessage>
 </Changelog>

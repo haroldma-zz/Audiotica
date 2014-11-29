@@ -35,14 +35,14 @@ namespace Audiotica.Core.Utilities
 
             if (IsFirstRun)
                 await MessageBox.ShowAsync(changelog.FirstRunMessage, 
-                    "Welcome to " + CurrentVersion.ReleaseNumber + " - Beta" + CurrentVersion.BetaNumber);
+                    "Welcome to " + CurrentVersion.ReleaseNumber + " - Beta " + CurrentVersion.BetaNumber);
             else
             {
 // ReSharper disable once PossibleNullReferenceException
                 JustUpdated = previousVersion.CompareTo(CurrentVersion) == -1;
 
                 if (JustUpdated)
-                    await MessageBox.ShowAsync(changelog.JustUpdatedMessage, "Just Updated\nBeta" + CurrentVersion.BetaNumber + " - Patch #" + CurrentVersion.PatchNumber);
+                    await MessageBox.ShowAsync(changelog.JustUpdatedMessage, "Just Updated\nBeta " + CurrentVersion.BetaNumber + " - Patch #" + CurrentVersion.PatchNumber);
             }
 
             if (IsFirstRun || JustUpdated)

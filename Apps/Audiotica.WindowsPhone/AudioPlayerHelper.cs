@@ -38,6 +38,8 @@ namespace Audiotica
 
         private void AddMediaPlayerEventHandlers()
         {
+            //avoid duplicate events
+            RemoveMediaPlayerEventHandlers();
             BackgroundMediaPlayer.Current.CurrentStateChanged += MediaPlayer_CurrentStateChanged;
             BackgroundMediaPlayer.MessageReceivedFromBackground += BackgroundMediaPlayer_MessageReceivedFromBackground;
         }
