@@ -46,6 +46,7 @@
     <Compile Include="Common\NullToVisibilityConverter.cs" />
     <Compile Include="Common\NullToBooleanConverter.cs" />
     <Compile Include="Common\StringToVisibilityConverter.cs" />
+    <Compile Include="Exceptions\EchoException.cs" />
     <Compile Include="PlayerConstants.cs" />
     <Compile Include="Utilities\AppSettingsHelper.cs" />
     <Compile Include="Common\VisibilityConverter.cs" />

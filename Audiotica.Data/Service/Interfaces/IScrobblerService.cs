@@ -2,7 +2,6 @@
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Audiotica.Data.Model.Musicbrainz;
 using IF.Lastfm.Core.Api.Helpers;
 using IF.Lastfm.Core.Objects;
 
@@ -12,9 +11,6 @@ namespace Audiotica.Data.Service.Interfaces
 {
     public interface IScrobblerService
     {
-        Task<MbRelease> GetMbAlbum(string id);
-        Task<MbArtist> GetMbArtist(string id);
-
         Task<LastAlbum> GetDetailAlbum(string name, string artist);
         Task<LastAlbum> GetDetailAlbumByMbid(string mbid);
         Task<LastTrack> GetDetailTrack(string name, string artist);

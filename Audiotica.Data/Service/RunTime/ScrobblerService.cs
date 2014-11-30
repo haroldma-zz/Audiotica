@@ -6,7 +6,6 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Audiotica.Core.Exceptions;
 using Audiotica.Core.Utilities;
-using Audiotica.Data.Model.Musicbrainz;
 using Audiotica.Data.Service.Interfaces;
 using IF.Lastfm.Core.Api;
 using IF.Lastfm.Core.Api.Enums;
@@ -19,28 +18,11 @@ namespace Audiotica.Data.Service.RunTime
 {
     public class ScrobblerService : IScrobblerService
     {
-        private const string MbApiPath =
-            "http://musicbrainz.org/ws/2/{0}/{1}?fmt=json";
-
         private static readonly LastAuth FmAuth = new LastAuth(ApiKeys.LastFmId, "");
         private readonly AlbumApi _albumApi = new AlbumApi(FmAuth);
         private readonly ArtistApi _artistApi = new ArtistApi(FmAuth);
         private readonly ChartApi _chartApi = new ChartApi(FmAuth);
         private readonly TrackApi _trackApi = new TrackApi(FmAuth);
-
-        public async Task<MbRelease> GetMbAlbum(string id)
-        {
-            var url = string.Format(MbApiPath, "release", id);
-            var resp = await GetAsync<MbRelease>(url);
-            return resp;
-        }
-
-        public async Task<MbArtist> GetMbArtist(string id)
-        {
-            var url = string.Format(MbApiPath, "artist", id);
-            var resp = await GetAsync<MbArtist>(url);
-            return resp;
-        }
 
         public async Task<LastAlbum> GetDetailAlbum(string name, string artist)
         {
@@ -151,25 +133,6 @@ namespace Audiotica.Data.Service.RunTime
         {
             if (resp.Error != LastFmApiError.None)
                 throw new LastException(resp.Error.ToString(), "API Error");
-        }
-
-        private void ThrowIfError(HttpResponseMessage resp)
-        {
-            if (!resp.IsSuccessStatusCode)
-                throw new NetworkException();
-        }
-
-        private async Task<T> GetAsync<T>(string url)
-        {
-            using (var client = new HttpClient())
-            {
-                var resp = await client.GetAsync(url);
-                ThrowIfError(resp);
-                var json = await resp.Content.ReadAsStringAsync();
-                var parseResp = await json.DeserializeAsync<T>();
-
-                return parseResp;
-            }
         }
     }
 }

@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Audiotica.Data.Model.Musicbrainz;
 using Audiotica.Data.Service.Interfaces;
 using IF.Lastfm.Core.Api.Helpers;
 using IF.Lastfm.Core.Objects;
@@ -14,16 +13,6 @@ namespace Audiotica.Data.Service.DesignTime
 {
     public class DesignScrobblerService : IScrobblerService
     {
-        public Task<MbRelease> GetMbAlbum(string id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<MbArtist> GetMbArtist(string id)
-        {
-            throw new NotImplementedException();
-        }
-
         public Task<LastAlbum> GetDetailAlbum(string name, string artist)
         {
             var album = CreateAlbum("Problem", "Ariana Grande",
