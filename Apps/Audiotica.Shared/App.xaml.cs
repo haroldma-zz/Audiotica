@@ -2,33 +2,26 @@
 
 // The Blank Application template is documented at http://go.microsoft.com/fwlink/?LinkId=234227
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
-using Windows.UI;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Navigation;
 using Audiotica.Core.Common;
 using Audiotica.Core.Utilities;
-using Audiotica.Data.Collection;
 using Audiotica.View;
 using Audiotica.ViewModel;
 using GalaSoft.MvvmLight.Threading;
 using GoogleAnalytics;
-using Microsoft.Practices.ServiceLocation;
-using SlideView.Library;
-using ColorHelper = Audiotica.Core.Utilities.ColorHelper;
 
 #endregion
 
 namespace Audiotica
 {
-    public sealed partial class App : Application
+    public sealed partial class App
     {
 #if WINDOWS_PHONE_APP
         private TransitionCollection _transitions;
@@ -47,7 +40,7 @@ namespace Audiotica
             Suspending += OnSuspending;
         }
 
-        private bool _init = false;
+        private bool _init;
 
         protected override async void OnLaunched(LaunchActivatedEventArgs e)
         {
@@ -118,11 +111,23 @@ namespace Audiotica
         }
 
 #if WINDOWS_PHONE_APP
-            private async void RootFrame_FirstNavigated(object sender, NavigationEventArgs e)
+        private void RootFrame_FirstNavigated(object sender, NavigationEventArgs e)
         {
             RootFrame.ContentTransitions = _transitions ?? new TransitionCollection {new NavigationThemeTransition()};
             RootFrame.Navigated -= RootFrame_FirstNavigated;
             ApplicationView.GetForCurrentView().SetDesiredBoundsMode(ApplicationViewBoundsMode.UseCoreWindow);
+
+            ApplicationView.GetForCurrentView().VisibleBoundsChanged += OnVisibleBoundsChanged;
+            OnVisibleBoundsChanged(null, null);
+        }
+
+        private void OnVisibleBoundsChanged(ApplicationView sender, object args)
+        {
+            var bounds = ApplicationView.GetForCurrentView().VisibleBounds;
+            var h = Window.Current.Bounds.Height;
+
+            var diff = Math.Ceiling(h - bounds.Bottom);
+            RootFrame.Margin = new Thickness(0, 0, 0, diff);
         }
 #endif
 
