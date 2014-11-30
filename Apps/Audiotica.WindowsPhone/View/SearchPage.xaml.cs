@@ -1,4 +1,6 @@
-﻿using Windows.UI.Xaml.Controls;
+﻿using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Navigation;
 using IF.Lastfm.Core.Objects;
 
 namespace Audiotica.View
@@ -20,6 +22,11 @@ namespace Audiotica.View
         {
             var artist = e.ClickedItem as LastArtist;
             Frame.Navigate(typeof(ArtistPage), artist.Name);
+        }
+
+        private void PageBase_Loaded(object sender, RoutedEventArgs e)
+        {
+            SearchTextBox.Focus(FocusState.Keyboard);
         }
     }
 }
