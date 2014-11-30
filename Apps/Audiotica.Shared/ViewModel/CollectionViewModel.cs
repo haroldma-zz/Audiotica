@@ -63,10 +63,10 @@ namespace Audiotica.ViewModel
         {
             get
             {
-                //extra collumn if running on hd device (720, 768 and 1080)
+                //extra column if running on hd device (720 and 1080)
                 var scaleFactor = DisplayInformation.GetForCurrentView().RawPixelsPerViewPixel;
                 var actualWidth = (int)(Window.Current.Bounds.Width * scaleFactor);
-                return actualWidth >= 720 ? 5 : 4;
+                return actualWidth == 720 || actualWidth == 1080 ? 5 : 4;
             }
         }
 
