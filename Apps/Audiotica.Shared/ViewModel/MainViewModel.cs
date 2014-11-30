@@ -78,7 +78,7 @@ namespace Audiotica.ViewModel
 
             try
             {
-                var page = rnd.Next(1, 100);
+                var page = rnd.Next(1, 25);
                 SpotlightItems = (await _service.GetTopArtistsAsync(page, 10)).Content.ToList();
             }
             catch (Exception e)
@@ -92,7 +92,7 @@ namespace Audiotica.ViewModel
 
             try
             {
-                var page = rnd.Next(1, 100);
+                var page = rnd.Next(1, 25);
                 TopTracks = (await _service.GetTopTracksAsync(page, 10)).Content.ToList();
             }
             catch (Exception e)

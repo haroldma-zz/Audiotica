@@ -14,7 +14,7 @@
 
     <Grid>
         <Pivot Title="{Binding Artist.Name}" HeaderTemplate="{StaticResource PivotHeaderTemplate}">
-            <PivotItem Header="tracks">
+            <PivotItem Header="TRACKS">
                 <ListView IsItemClickEnabled="True" ItemsSource="{Binding Artist.Songs}"
                           ItemTemplate="{StaticResource SongDataTemplate}">
                     <interactivity:Interaction.Behaviors>
@@ -24,7 +24,7 @@
                     </interactivity:Interaction.Behaviors>
                 </ListView>
             </PivotItem>
-            <PivotItem Header="albums">
+            <PivotItem Header="ALBUMS">
                 <ListView ItemsSource="{Binding Artist.Albums}"
                           ItemTemplate="{StaticResource AlbumDataTemplate}"
                           SelectionMode="None"
