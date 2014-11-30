@@ -35,7 +35,18 @@ namespace Audiotica.WindowsPhone.Player
         private readonly AutoResetEvent _backgroundTaskStarted = new AutoResetEvent(false);
         private bool _backgroundtaskrunning;
         private BackgroundTaskDeferral _deferral; // Used to keep task alive
-        private ForegroundAppStatus _foregroundAppState = ForegroundAppStatus.Unknown;
+
+        private ForegroundAppStatus _foregroundAppState
+        {
+            get
+            {
+                var value = AppSettingsHelper.Read(PlayerConstants.AppState);
+                if (value == null)
+                    return ForegroundAppStatus.Unknown;
+                else
+                    return (ForegroundAppStatus)Enum.Parse(typeof(ForegroundAppStatus), value);
+            }
+        }
         private QueueManager _queueManager;
         private SystemMediaTransportControls _systemmediatransportcontrol;
 
@@ -81,12 +92,6 @@ namespace Audiotica.WindowsPhone.Player
             // Associate a cancellation and completed handlers with the background task.
             taskInstance.Canceled += OnCanceled;
             taskInstance.Task.Completed += Taskcompleted;
-
-            var value = AppSettingsHelper.Read(PlayerConstants.AppState);
-            if (value == null)
-                _foregroundAppState = ForegroundAppStatus.Unknown;
-            else
-                _foregroundAppState = (ForegroundAppStatus) Enum.Parse(typeof (ForegroundAppStatus), value);
 
             //Add handlers for MediaPlayer
             BackgroundMediaPlayer.Current.CurrentStateChanged += Current_CurrentStateChanged;
@@ -338,12 +343,10 @@ namespace Audiotica.WindowsPhone.Player
                     case PlayerConstants.AppSuspended:
                         Debug.WriteLine("App suspending");
                         // App is suspended, you can save your task state at this point
-                        _foregroundAppState = ForegroundAppStatus.Suspended;
                         AppSettingsHelper.Write(PlayerConstants.CurrentTrack, queueManager.CurrentTrack.SongId);
                         break;
                     case PlayerConstants.AppResumed:
                         Debug.WriteLine("App resuming"); // App is resumed, now subscribe to message channel
-                        _foregroundAppState = ForegroundAppStatus.Active;
                         break;
                     case PlayerConstants.StartPlayback:
                         //Foreground App process has signalled that it is ready for playback
