@@ -48,7 +48,6 @@
     <Compile Include="Common\StringToVisibilityConverter.cs" />
     <Compile Include="PlayerConstants.cs" />
     <Compile Include="Utilities\AppSettingsHelper.cs" />
-    <Compile Include="Common\MaterialCard.cs" />
     <Compile Include="Common\VisibilityConverter.cs" />
     <Compile Include="Exceptions\NetworkException.cs" />
     <Compile Include="Exceptions\LastException.cs" />
@@ -60,12 +59,6 @@
     <Compile Include="Utilities\MessageBox.cs" />
     <Compile Include="Utilities\StorageHelper.cs" />
     <Compile Include="Utilities\StringExtensions.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Page Include="Themes\Generic.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\Submit-02.png">
