@@ -28,5 +28,10 @@ namespace Audiotica.View
         {
             SearchTextBox.Focus(FocusState.Keyboard);
         }
+
+        private void SearchTextBox_GotFocus(object sender, RoutedEventArgs e)
+        {
+            SearchTextBox.SelectAll();
+        }
     }
 }

@@ -46,7 +46,7 @@
                 </ListView>
             </PivotItem>
         </Pivot>
-        <TextBox Name="SearchTextBox" Grid.Row="1" PlaceholderText="search" Text="{Binding SearchTerm, Mode=TwoWay}" Height="60" FontSize="25">
+        <TextBox Name="SearchTextBox" Grid.Row="1" PlaceholderText="search" Text="{Binding SearchTerm, Mode=TwoWay}" Height="60" FontSize="25" GotFocus="SearchTextBox_GotFocus">
             <TextBox.Resources>
                 <x:Double x:Key="TextControlThemeMinWidth">51</x:Double>
                 <x:Double x:Key="TextControlThemeMinHeight">34</x:Double>
@@ -65,7 +65,7 @@
                     <Setter Property="SelectionHighlightColor" Value="{ThemeResource TextSelectionHighlightColorThemeBrush}"/>
                     <Setter Property="Background" Value="{ThemeResource TextBoxBackgroundThemeBrush}"/>
                     <Setter Property="BorderBrush" Value="{ThemeResource TextBoxBorderThemeBrush}"/>
-                    <Setter Property="BorderThickness" Value="10,2.5"/>
+                    <Setter Property="BorderThickness" Value="{ThemeResource TextControlBorderThemeThickness}"/>
                     <Setter Property="FontFamily" Value="{ThemeResource PhoneFontFamilyNormal}"/>
                     <Setter Property="FontSize" Value="{ThemeResource ContentControlFontSize}"/>
                     <Setter Property="TextWrapping" Value="NoWrap"/>
@@ -74,7 +74,7 @@
                     <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Hidden"/>
                     <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Hidden"/>
                     <Setter Property="ScrollViewer.IsDeferredScrollingEnabled" Value="False"/>
-                    <Setter Property="Padding" Value="{ThemeResource TextControlThemePadding}"/>
+                    <Setter Property="Padding" Value="10,.8,10,0"/>
                     <Setter Property="Margin" Value="{ThemeResource TextControlMarginThemeThickness}"/>
                     <Setter Property="VerticalAlignment" Value="Top"/>
                     <Setter Property="Template">
@@ -124,7 +124,7 @@
                                             </VisualState>
                                         </VisualStateGroup>
                                     </VisualStateManager.VisualStateGroups>
-                                    <Border x:Name="BorderElement" BorderBrush="{TemplateBinding BorderBrush}" Background="{TemplateBinding Background}" Grid.Row="1"/>
+                                    <Border x:Name="BorderElement" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Grid.Row="1"/>
                                     <ContentPresenter x:Name="HeaderContentPresenter" ContentTemplate="{TemplateBinding HeaderTemplate}" Content="{TemplateBinding Header}" Margin="{ThemeResource TextControlHeaderMarginThemeThickness}" Grid.Row="0" Style="{StaticResource HeaderContentPresenterStyle}"/>
                                     <ScrollViewer x:Name="ContentElement" AutomationProperties.AccessibilityView="Raw" HorizontalScrollMode="{TemplateBinding ScrollViewer.HorizontalScrollMode}" HorizontalScrollBarVisibility="{TemplateBinding ScrollViewer.HorizontalScrollBarVisibility}" IsTabStop="False" IsHorizontalRailEnabled="{TemplateBinding ScrollViewer.IsHorizontalRailEnabled}" IsVerticalRailEnabled="{TemplateBinding ScrollViewer.IsVerticalRailEnabled}" IsDeferredScrollingEnabled="{TemplateBinding ScrollViewer.IsDeferredScrollingEnabled}" Margin="{TemplateBinding BorderThickness}" MinHeight="{ThemeResource TextControlThemeMinHeight}" Padding="{TemplateBinding Padding}" Grid.Row="1" VerticalScrollBarVisibility="{TemplateBinding ScrollViewer.VerticalScrollBarVisibility}" VerticalScrollMode="{TemplateBinding ScrollViewer.VerticalScrollMode}" ZoomMode="Disabled" VerticalAlignment="Center"/>
                                     <ContentControl x:Name="PlaceholderTextContentPresenter" Content="{TemplateBinding PlaceholderText}" Foreground="{ThemeResource TextBoxPlaceholderTextThemeBrush}" FontSize="{TemplateBinding FontSize}" IsTabStop="False" Margin="{TemplateBinding BorderThickness}" Padding="{TemplateBinding Padding}" Grid.Row="1" VerticalAlignment="Center"/>
