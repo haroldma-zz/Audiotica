@@ -4,13 +4,12 @@
     This beta is meant to test out the metro UI.
   </FirstRunMessage>
   <JustUpdatedMessage>
-    1. New metro UI.
-    2. New now playing bar.
-    3. Search for tracks, albums and artists.
-    4. Search has infinite scrolling.
-    5. Fix collection loading bugs.
-    6. Fix song saving crashing bug.
-    7. Multilingual support, disabled for testing purposes.
-    8. Playlists, disabled for testing purposes.
+    1. Use of accent color
+    2. Album art poster on collection page
+    3. Fix now playing bar not updating
+    4. Fix crashing when saving certain songs
+    5. Minor UI tweaks on search page
+    6. Adjust app to phones with on-screen navbar.
+    7. Minor tweak to top artists and tracks.
   </JustUpdatedMessage>
 </Changelog>
