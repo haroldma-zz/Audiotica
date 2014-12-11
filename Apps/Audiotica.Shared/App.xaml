@@ -13,6 +13,56 @@
         <common:NullToBooleanConverter x:Key="NullToBooleanConverter" />
         <common:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
 
+        <Style TargetType="Pivot">
+            <Setter Property="Margin" Value="0" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Foreground" Value="{ThemeResource PhoneForegroundBrush}" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="ItemsPanel">
+                <Setter.Value>
+                    <ItemsPanelTemplate>
+                        <Grid />
+                    </ItemsPanelTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Pivot">
+                        <Grid x:Name="RootElement" Background="{TemplateBinding Background}"
+                              HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
+                              VerticalAlignment="{TemplateBinding VerticalAlignment}">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            <ContentControl x:Name="TitleContentControl" Margin="15,38,15,0"
+                                            Content="{TemplateBinding Title}" FontSize="26" FontWeight="Bold" />
+                            <ScrollViewer x:Name="ScrollViewer" HorizontalSnapPointsAlignment="Center"
+                                          HorizontalSnapPointsType="MandatorySingle"
+                                          HorizontalScrollBarVisibility="Hidden" Margin="{TemplateBinding Padding}"
+                                          Grid.Row="1" Template="{StaticResource ScrollViewerScrollBarlessTemplate}"
+                                          VerticalSnapPointsType="None" VerticalScrollBarVisibility="Disabled"
+                                          VerticalScrollMode="Disabled" VerticalContentAlignment="Stretch"
+                                          ZoomMode="Disabled">
+                                <PivotPanel x:Name="Panel" VerticalAlignment="Stretch">
+                                    <PivotHeaderPanel x:Name="Header">
+                                        <PivotHeaderPanel.RenderTransform>
+                                            <CompositeTransform x:Name="HeaderTranslateTransform" TranslateX="0" />
+                                        </PivotHeaderPanel.RenderTransform>
+                                    </PivotHeaderPanel>
+                                    <ItemsPresenter x:Name="PivotItemPresenter">
+                                        <ItemsPresenter.RenderTransform>
+                                            <TranslateTransform x:Name="ItemsPresenterTranslateTransform" X="0" />
+                                        </ItemsPresenter.RenderTransform>
+                                    </ItemsPresenter>
+                                </PivotPanel>
+                            </ScrollViewer>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
         <DataTemplate x:Key="PivotHeaderTemplate">
             <TextBlock Text="{Binding}" FontSize="20" FontFamily="Global User Interface" Margin="0,5,0,0" />
         </DataTemplate>
