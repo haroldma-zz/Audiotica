@@ -105,6 +105,14 @@
                                 </Core:EventTriggerBehavior>
                             </Interactivity:Interaction.Behaviors>
                         </Button>
+                        <Button Style="{StaticResource PlainButtonStyle}">
+                            <TextBlock Text="settings" FontSize="40"/>
+                            <Interactivity:Interaction.Behaviors>
+                                <Core:EventTriggerBehavior EventName="Click">
+                                    <Core:NavigateToPageAction TargetPage="Audiotica.View.SettingsPage" />
+                                </Core:EventTriggerBehavior>
+                            </Interactivity:Interaction.Behaviors>
+                        </Button>
                     </StackPanel>
                 </DataTemplate>
             </HubSection>

@@ -44,7 +44,7 @@ namespace Audiotica.ViewModel
                 SimpleIoc.Default.Register<ISqlService, SqlService>();
                 SimpleIoc.Default.Register(() => Window.Current.Dispatcher);
             }
-
+            
             SimpleIoc.Default.Register<MainViewModel>();
             SimpleIoc.Default.Register<AlbumViewModel>();
             SimpleIoc.Default.Register<CollectionAlbumViewModel>();
@@ -54,7 +54,7 @@ namespace Audiotica.ViewModel
             SimpleIoc.Default.Register<SearchViewModel>();
             SimpleIoc.Default.Register<CollectionViewModel>();
             SimpleIoc.Default.Register<PlayerViewModel>();
-        }
+            }
 
         public MainViewModel Main
         {
