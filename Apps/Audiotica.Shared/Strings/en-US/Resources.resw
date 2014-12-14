@@ -158,7 +158,7 @@
     <comment>View more button for artist top tracks card.</comment>
   </data>
   <data name="ArtistTopTracksCard.HeaderText" xml:space="preserve">
-    <value>Top Tracks</value>
+    <value>Top Songs</value>
     <comment>Header for the artist top tracks card.</comment>
   </data>
   <data name="CollectionAlbumsPivot.Header" xml:space="preserve">
@@ -234,7 +234,7 @@
     <comment>Header for the spotlight card.</comment>
   </data>
   <data name="TopTracksCard.HeaderText" xml:space="preserve">
-    <value>Top Tracks</value>
+    <value>Top Songs</value>
     <comment>Header use for top tracks card.</comment>
   </data>
   <data name="TracksCard.HeaderText" xml:space="preserve">

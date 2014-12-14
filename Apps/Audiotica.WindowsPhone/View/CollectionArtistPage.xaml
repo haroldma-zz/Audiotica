@@ -13,8 +13,11 @@
     DataContext="{Binding Source={StaticResource Locator}, Path=CollectionArtist}">
 
     <Grid>
+        <Grid.Background>
+            <ImageBrush Opacity=".25" Stretch="UniformToFill" ImageSource="{Binding LastArtist.MainImage.Largest}" />
+        </Grid.Background>
         <Pivot Title="{Binding Artist.Name}" HeaderTemplate="{StaticResource PivotHeaderTemplate}">
-            <PivotItem Header="TRACKS">
+            <PivotItem Header="SONGS">
                 <ListView IsItemClickEnabled="True" ItemsSource="{Binding Artist.Songs}"
                           ItemTemplate="{StaticResource SongDataTemplate}">
                     <interactivity:Interaction.Behaviors>

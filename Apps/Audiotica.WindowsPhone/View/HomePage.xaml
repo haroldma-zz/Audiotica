@@ -108,7 +108,7 @@
                     </StackPanel>
                 </DataTemplate>
             </HubSection>
-            <HubSection Header="TOP TRACKS" HeaderTemplate="{StaticResource HubHeaderTemplate}">
+            <HubSection Header="TOP SONGS" HeaderTemplate="{StaticResource HubHeaderTemplate}">
                 <DataTemplate>
                     <GridView ItemsSource="{Binding TopTracks}" SelectionMode="None" IsItemClickEnabled="True" ItemClick="ListView_ItemClick">
                         <GridView.ItemTemplate>

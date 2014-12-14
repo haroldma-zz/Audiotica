@@ -18,7 +18,7 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <Pivot Title="SEARCH" HeaderTemplate="{StaticResource PivotHeaderTemplate}">
-            <PivotItem Header="TRACKS">
+            <PivotItem Header="SONGS">
                 <ListView IsItemClickEnabled="True"
                           ItemsSource="{Binding Tracks}"
                           ItemTemplate="{StaticResource LastTrackDataTemplate}">
