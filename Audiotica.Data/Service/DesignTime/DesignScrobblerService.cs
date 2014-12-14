@@ -174,7 +174,12 @@ namespace Audiotica.Data.Service.DesignTime
             var a = new LastArtist
             {
                 Name = artist,
-                MainImage = new LastImageSet {ExtraLarge = new Uri(artwork)}
+                MainImage = new LastImageSet {ExtraLarge = new Uri(artwork)},
+                Bio = new LastBio
+                {
+                    YearFormed = 2011,
+                    Content = "In the begining it was called musicDownload... then it was reborn as something else..."
+                }
             };
 
             if (withSimilar)

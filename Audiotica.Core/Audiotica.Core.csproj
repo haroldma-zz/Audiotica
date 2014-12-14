@@ -57,6 +57,7 @@
     <Compile Include="Utilities\CollectionExtensions.cs" />
     <Compile Include="Utilities\ColorHelper.cs" />
     <Compile Include="Utilities\BetaChangelogHelper.cs" />
+    <Compile Include="Utilities\HtmlRemoval.cs" />
     <Compile Include="Utilities\MessageBox.cs" />
     <Compile Include="Utilities\StorageHelper.cs" />
     <Compile Include="Utilities\StringExtensions.cs" />

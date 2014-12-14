@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Audiotica.Core.Exceptions;
@@ -56,6 +57,26 @@ namespace Audiotica.Data.Service.RunTime
         {
             var resp = await _artistApi.GetArtistInfoAsync(name);
             ThrowIfError(resp);
+
+            if (resp.Content != null && resp.Content.Bio != null)
+            {
+                //strip html tags
+                var content = HtmlRemoval.StripTagsRegex(resp.Content.Bio.Content);
+
+                try
+                {
+                    var startIndex = content.IndexOf("\n\n", StringComparison.Ordinal);
+                    var endIndex = content.IndexOf("\n    \nUser-contributed", StringComparison.Ordinal);
+                    var count = endIndex - startIndex;
+
+                    //removing the read more on last.fm
+                    content = content.Remove(startIndex, count);
+                }
+                catch { }
+
+                //html decode
+                resp.Content.Bio.Content = WebUtility.HtmlDecode(content);
+            }
             return resp.Content;
         }
 

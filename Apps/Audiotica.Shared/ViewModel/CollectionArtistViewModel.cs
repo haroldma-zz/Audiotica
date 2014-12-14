@@ -29,7 +29,7 @@ namespace Audiotica.ViewModel
             _lastService = lastService;
             _audioPlayer = audioPlayer;
             _songClickCommand = new RelayCommand<ItemClickEventArgs>(SongClickExecute);
-            MessengerInstance.Register<GenericMessage<long>>(this, "artist-coll-detail-id", ReceivedId);
+            MessengerInstance.Register<long>(this, "artist-coll-detail-id", ReceivedId);
 
             if (IsInDesignMode)
                 SetArtist(0);
@@ -52,10 +52,14 @@ namespace Audiotica.ViewModel
             get { return _songClickCommand; }
         }
 
-        private void ReceivedId(GenericMessage<long> obj)
+        private void ReceivedId(long id)
         {
-            LastArtist = null;
-            SetArtist(obj.Content);
+            if (Artist != null && Artist.Id == id) return;
+
+            Messenger.Default.Send(false, "artist-coll-sim");
+            Messenger.Default.Send(false, "artist-coll-bio");
+            
+            SetArtist(id);
         }
 
         private async void SongClickExecute(ItemClickEventArgs e)
@@ -76,10 +80,22 @@ namespace Audiotica.ViewModel
 
         private async void SetArtist(long id)
         {
+            LastArtist = null;
             Artist = _service.Artists.FirstOrDefault(p => p.Id == id);
             try
             {
                 LastArtist = await _lastService.GetDetailArtist(Artist.Name);
+                if (LastArtist == null) return;
+
+                if (LastArtist.Similar.Count > 0)
+                {
+                    Messenger.Default.Send(true, "artist-coll-sim");
+                }
+
+                if (LastArtist.Bio != null && LastArtist.Bio.Content != null)
+                {
+                    Messenger.Default.Send(true, "artist-coll-bio");
+                }
             }
             catch { }
         }
