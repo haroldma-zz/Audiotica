@@ -2,6 +2,7 @@
 using Windows.UI.Xaml.Navigation;
 using Audiotica.Data.Collection.Model;
 using GalaSoft.MvvmLight.Messaging;
+using IF.Lastfm.Core.Objects;
 
 namespace Audiotica.View
 {
@@ -27,6 +28,12 @@ namespace Audiotica.View
         {
             var album = e.ClickedItem as Album;
             Frame.Navigate(typeof(CollectionAlbumPage), album.Id);
+        }
+
+        private void ListView_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            var artist = e.ClickedItem as LastArtist;
+            Frame.Navigate(typeof(ArtistPage), artist.Name);
         }
     }
 }

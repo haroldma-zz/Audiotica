@@ -32,7 +32,7 @@ namespace Audiotica
                 ProviderId =
                     !string.IsNullOrEmpty(lastAlbum.Mbid) ? ("mbid." + lastAlbum.Mbid) : ("lastid." + lastAlbum.Id),
                 Name = lastAlbum.Name,
-                ReleaseDate = lastAlbum.ReleaseDateUtc,
+                ReleaseDate = lastAlbum.ReleaseDateUtc.DateTime,
                 Genre = lastAlbum.TopTags != null ? lastAlbum.TopTags.First().Name : ""
             };
 

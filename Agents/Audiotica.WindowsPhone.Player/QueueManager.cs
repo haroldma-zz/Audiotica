@@ -165,7 +165,7 @@ namespace Audiotica.WindowsPhone.Player
         {
             if (_currentTrackIndex == 0)
             {
-                StartTrackAt(_currentTrackIndex);
+                StartTrackAt(tracks.Count - 1);
             }
             else
             {
