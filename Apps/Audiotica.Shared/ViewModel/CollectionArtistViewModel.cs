@@ -53,7 +53,7 @@ namespace Audiotica.ViewModel
             }
 
 #if WINDOWS_PHONE_APP
-            _audioPlayer.PlaySong(song);
+            _audioPlayer.PlaySong(_service.PlaybackQueue[_artist.Songs.IndexOf(song)]);
 #endif
         }
 

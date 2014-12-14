@@ -90,7 +90,7 @@ namespace Audiotica.WindowsPhone.Player
             {
                 CurrentTrack.Song.PlayCount++;
                 CurrentTrack.Song.LastPlayed = DateTime.Now;
-                _sql.UpdateItemAsync(CurrentTrack.Song).RunSynchronously();
+                _sql.UpdateItemAsync(CurrentTrack.Song).Wait();
             }
             catch { }
         }
@@ -136,10 +136,10 @@ namespace Audiotica.WindowsPhone.Player
 
         public void StartTrack(long id)
         {
-            var source = tracks.FirstOrDefault(p => p.SongId == id).Song.AudioUrl;
-            _currentTrackIndex = tracks.FindIndex(p => p.SongId == id);
+            var track = tracks.FirstOrDefault(p => p.Id == id);
+            _currentTrackIndex = tracks.IndexOf(track);
             _mediaPlayer.AutoPlay = false;
-            _mediaPlayer.SetUriSource(new Uri(source));
+            _mediaPlayer.SetUriSource(new Uri(track.Song.AudioUrl));
         }
 
         /// <summary>

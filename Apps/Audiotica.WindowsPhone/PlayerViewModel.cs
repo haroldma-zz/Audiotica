@@ -23,7 +23,7 @@ namespace Audiotica
         private readonly RelayCommand _playPauseRelayCommand;
         private readonly RelayCommand _prevRelayCommand;
         private readonly ICollectionService _service;
-        private Song _currentSong;
+        private QueueSong _currentQueue;
         private bool _isLoading;
         private IconElement _playPauseIcon;
 
@@ -41,14 +41,14 @@ namespace Audiotica
 
             if (!IsInDesignMode) return;
 
-            CurrentSong = service.Songs.FirstOrDefault();
+            CurrentQueue = service.PlaybackQueue.FirstOrDefault();
             PlayPauseIcon = new SymbolIcon(Symbol.Play);
         }
 
-        public Song CurrentSong
+        public QueueSong CurrentQueue
         {
-            get { return _currentSong; }
-            set { Set(ref _currentSong, value); }
+            get { return _currentQueue; }
+            set { Set(ref _currentQueue, value); }
         }
 
         public IconElement PlayPauseIcon
@@ -80,7 +80,7 @@ namespace Audiotica
 
         private void HelperOnShutdown(object sender, EventArgs eventArgs)
         {
-            CurrentSong = null;
+            CurrentQueue = null;
         }
 
         private void HelperOnPlaybackStateChanged(object sender, PlaybackStateEventArgs playbackStateEventArgs)
@@ -107,11 +107,11 @@ namespace Audiotica
                 BackgroundMediaPlayer.Current.CurrentState != MediaPlayerState.Stopped)
             {
                 var id = AppSettingsHelper.Read<long>(PlayerConstants.CurrentTrack);
-                CurrentSong = _service.Songs.FirstOrDefault(p => p.Id == id);
+                CurrentQueue = _service.PlaybackQueue.FirstOrDefault(p => p.Id == id);
             }
             else
             {
-                CurrentSong = null;
+                CurrentQueue = null;
             }
         }
 

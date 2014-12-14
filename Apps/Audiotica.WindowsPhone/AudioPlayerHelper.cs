@@ -84,7 +84,7 @@ namespace Audiotica
             RemoveMediaPlayerEventHandlers();
         }
 
-        public void PlaySong(Song song)
+        public void PlaySong(QueueSong song)
         {
             if (_isShutdown)
                 AddMediaPlayerEventHandlers();
@@ -94,8 +94,8 @@ namespace Audiotica
             var message = new ValueSet {{PlayerConstants.StartPlayback, null}};
             BackgroundMediaPlayer.SendMessageToBackground(message);
 
-            song.PlayCount++;
-            song.LastPlayed = DateTime.Now;
+            song.Song.PlayCount++;
+            song.Song.LastPlayed = DateTime.Now;
         }
 
         public void PlayPauseToggle()

@@ -152,7 +152,7 @@ namespace Audiotica.WindowsPhone.Player
 
                 if (_queueManager != null)
                 {
-                    AppSettingsHelper.Write(PlayerConstants.CurrentTrack, QueueManager.CurrentTrack.SongId);
+                    AppSettingsHelper.Write(PlayerConstants.CurrentTrack, QueueManager.CurrentTrack.Id);
                     QueueManager.TrackChanged -= playList_TrackChanged;
 
                     _queueManager = null;
@@ -261,15 +261,7 @@ namespace Audiotica.WindowsPhone.Player
             try
             {
                 var currenttrack = AppSettingsHelper.Read<long>(PlayerConstants.CurrentTrack);
-
-                if (QueueManager.CurrentTrack == null || QueueManager.CurrentTrack.SongId != currenttrack)
-                {
-                    QueueManager.StartTrack(currenttrack);
-                }
-                else
-                {
-                    BackgroundMediaPlayer.Current.Play();
-                }
+                QueueManager.StartTrack(currenttrack);
             }
             catch (Exception ex)
             {
@@ -285,12 +277,12 @@ namespace Audiotica.WindowsPhone.Player
         private void playList_TrackChanged(QueueManager sender, object args)
         {
             UpdateUvcOnNewTrack();
-            AppSettingsHelper.Write(PlayerConstants.CurrentTrack, sender.CurrentTrack.SongId);
+            AppSettingsHelper.Write(PlayerConstants.CurrentTrack, sender.CurrentTrack.Id);
 
             if (_foregroundAppState != ForegroundAppStatus.Active) return;
 
             //Message channel that can be used to send messages to foreground
-            var message = new ValueSet {{PlayerConstants.Trackchanged, sender.CurrentTrack.SongId}};
+            var message = new ValueSet {{PlayerConstants.Trackchanged, sender.CurrentTrack.Id}};
             BackgroundMediaPlayer.SendMessageToForeground(message);
         }
 
@@ -344,7 +336,7 @@ namespace Audiotica.WindowsPhone.Player
                     case PlayerConstants.AppSuspended:
                         Debug.WriteLine("App suspending");
                         // App is suspended, you can save your task state at this point
-                        AppSettingsHelper.Write(PlayerConstants.CurrentTrack, QueueManager.CurrentTrack.SongId);
+                        AppSettingsHelper.Write(PlayerConstants.CurrentTrack, QueueManager.CurrentTrack.Id);
                         break;
                     case PlayerConstants.AppResumed:
                         Debug.WriteLine("App resuming"); // App is resumed, now subscribe to message channel

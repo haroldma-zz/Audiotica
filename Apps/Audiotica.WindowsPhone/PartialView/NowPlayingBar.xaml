@@ -81,11 +81,11 @@
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
-            <Image Source="{Binding CurrentSong.Album.Artwork}" Width="50" Height="50" Margin="10" />
+            <Image Source="{Binding CurrentQueue.Song.Album.Artwork}" Width="50" Height="50" Margin="10" />
             <StackPanel VerticalAlignment="Center" Grid.Column="1">
-                <TextBlock Text="{Binding CurrentSong.Name}" FontSize="20"
+                <TextBlock Text="{Binding CurrentQueue.Song.Name}" FontSize="20"
                            TextTrimming="CharacterEllipsis" FontWeight="Bold" />
-                <TextBlock Text="{Binding CurrentSong.Artist.Name}" FontSize="15" FontWeight="Thin"
+                <TextBlock Text="{Binding CurrentQueue.Song.Artist.Name}" FontSize="15" FontWeight="Thin"
                            Foreground="#89FFFFFF"
                            TextTrimming="CharacterEllipsis" />
             </StackPanel>
