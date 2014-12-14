@@ -58,6 +58,9 @@
                 </Setter.Value>
             </Setter>
         </Style>
+        <DataTemplate x:Key="HubHeaderTemplate">
+            <TextBlock Text="{Binding}" FontSize="20" FontFamily="Segoe WP" FontWeight="Normal" Margin="-1,0,0,0" />
+        </DataTemplate>
     </audiotica:PageBase.Resources>
 
     <Grid>
@@ -67,12 +70,7 @@
                     <TextBlock Text="{Binding}" FontWeight="Bold" FontSize="24" Margin="2,35,15,-8" />
                 </DataTemplate>
             </Hub.HeaderTemplate>
-            <HubSection Header="menu">
-                <HubSection.HeaderTemplate>
-                    <DataTemplate>
-                        <TextBlock Text="{Binding}" FontSize="20" FontFamily="Segoe WP" FontWeight="Normal" />
-                    </DataTemplate>
-                </HubSection.HeaderTemplate>
+            <HubSection Header="MENU" HeaderTemplate="{StaticResource HubHeaderTemplate}">
                 <DataTemplate>
                     <StackPanel>
                         <Button Style="{StaticResource PlainButtonStyle}" Margin="0,-20,0,0">
@@ -118,7 +116,7 @@
                     </StackPanel>
                 </DataTemplate>
             </HubSection>
-            <HubSection Header="top tracks">
+            <HubSection Header="TOP TRACKS" HeaderTemplate="{StaticResource HubHeaderTemplate}">
                 <DataTemplate>
                     <GridView ItemsSource="{Binding TopTracks}" SelectionMode="None" IsItemClickEnabled="True" ItemClick="ListView_ItemClick">
                         <GridView.ItemTemplate>
