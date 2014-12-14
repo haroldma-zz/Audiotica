@@ -85,22 +85,21 @@
                 <ListView IsItemClickEnabled="True" ItemsSource="{Binding Service.Albums}" Padding="0,0,0,25"
                           Margin="0" ItemClick="AlbumListView_ItemClick" ItemTemplate="{StaticResource AlbumDataTemplate}"/>
             </PivotItem>
-<!--            <PivotItem Header="playlists">-->
-<!--                <ListView IsItemClickEnabled="True" ItemsSource="{Binding Service.Playlists}" Padding="0,0,0,25"-->
-<!--                          Margin="0" ItemClick="PlaylistListView_ItemClick">-->
-<!--                    <ListView.ItemTemplate>-->
-<!--                        <DataTemplate>-->
-<!--                            <common:MaterialCard Margin="0,-2">-->
-<!--                                <StackPanel>-->
-<!--                                    <TextBlock Margin="0,5" Text="{Binding Name}" FontSize="26"-->
-<!--                                               FontFamily="Global User Interface"-->
-<!--                                               TextTrimming="CharacterEllipsis" />-->
-<!--                                </StackPanel>-->
-<!--                            </common:MaterialCard>-->
-<!--                        </DataTemplate>-->
-<!--                    </ListView.ItemTemplate>-->
-<!--                </ListView>-->
-<!--            </PivotItem>-->
+            <PivotItem Header="PLAYLIST">
+                <ListView IsItemClickEnabled="True" ItemsSource="{Binding Service.Playlists}" Padding="0,0,0,25"
+                          Margin="0" ItemClick="PlaylistListView_ItemClick">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Margin="0,0,0,15">
+                                <StackPanel>
+                                    <TextBlock Text="{Binding Name}" FontSize="30" FontFamily="Global User Interface"
+                                               TextTrimming="CharacterEllipsis" FontWeight="Bold" />
+                                </StackPanel>
+                            </Grid>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </PivotItem>
         </Pivot>
     </Grid>
 </audiotica:PageBase>

@@ -18,7 +18,7 @@ namespace Audiotica.Data.Collection.SqlHelper
             {typeof (int), "INTEGER"},
             {typeof (string), "TEXT"},
             {typeof (float), "REAL"},
-            {typeof (DateTime), "DATETIME DEFAULT CURRENT_TIMESTAMP"},
+            {typeof (DateTime), "DATETIME DEFAULT (datetime('now','localtime'))"},
             {typeof (double), "REAL"}
         };
 
@@ -38,27 +38,37 @@ namespace Audiotica.Data.Collection.SqlHelper
                 var prefix = (first ? "" : ", ");
 
                 //add naame
-                collumns += prefix + propertyInfo.Name;
+                var currentCollumn = prefix + propertyInfo.Name;
 
                 //type
                 if (propertyInfo.PropertyType.GetTypeInfo().IsEnum)
-                    collumns += " INTEGER";
+                    currentCollumn += " INTEGER";
                 else
-                    collumns += " " + NetToSqlKepMap[propertyInfo.PropertyType];
+                    currentCollumn += " " + NetToSqlKepMap[propertyInfo.PropertyType];
 
                 //any other prop
                 var sqlProp = propertyInfo.GetCustomAttribute<SqlProperty>();
-                if (sqlProp == null) continue;
 
-                if (sqlProp.IsPrimaryKey)
-                    collumns += " PRIMARY KEY AUTOINCREMENT NOT NULL";
-
-                if (sqlProp.ReferenceTo != null)
+                if (sqlProp != null)
                 {
-                    //need to add create a foreign key
-                    foreignKeys += string.Format(", FOREIGN KEY({0}) REFERENCES {1}(Id) ON DELETE CASCADE",
-                        propertyInfo.Name, sqlProp.ReferenceTo.Name);
+                    if (sqlProp.IsNull)
+                    {
+                        currentCollumn = currentCollumn.Replace(" DEFAULT (datetime('now','localtime'))", "");
+                    }
+
+                    if (sqlProp.IsPrimaryKey)
+                    {
+                        currentCollumn += " PRIMARY KEY AUTOINCREMENT NOT NULL";
+                    }
+
+                    if (sqlProp.ReferenceTo != null)
+                    {
+                        //need to add create a foreign key
+                        foreignKeys += string.Format(", FOREIGN KEY({0}) REFERENCES {1}(Id) ON DELETE CASCADE",
+                            propertyInfo.Name, sqlProp.ReferenceTo.Name);
+                    }
                 }
+                collumns += currentCollumn;
             }
 
             return string.Format(sql, name, collumns + foreignKeys);

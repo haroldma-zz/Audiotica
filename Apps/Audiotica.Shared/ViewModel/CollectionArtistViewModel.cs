@@ -53,8 +53,7 @@ namespace Audiotica.ViewModel
             }
 
 #if WINDOWS_PHONE_APP
-            //play the song here
-            _audioPlayer.PlaySong(song.Id);
+            _audioPlayer.PlaySong(song);
 #endif
         }
 

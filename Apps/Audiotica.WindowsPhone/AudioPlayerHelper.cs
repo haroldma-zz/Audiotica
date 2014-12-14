@@ -6,6 +6,7 @@ using Windows.Foundation.Collections;
 using Windows.Media.Playback;
 using Audiotica.Core;
 using Audiotica.Core.Utilities;
+using Audiotica.Data.Collection.Model;
 using GalaSoft.MvvmLight.Threading;
 
 #endregion
@@ -83,15 +84,18 @@ namespace Audiotica
             RemoveMediaPlayerEventHandlers();
         }
 
-        public void PlaySong(long id)
+        public void PlaySong(Song song)
         {
             if (_isShutdown)
                 AddMediaPlayerEventHandlers();
 
-            AppSettingsHelper.Write(PlayerConstants.CurrentTrack, id);
+            AppSettingsHelper.Write(PlayerConstants.CurrentTrack, song.Id);
 
             var message = new ValueSet {{PlayerConstants.StartPlayback, null}};
             BackgroundMediaPlayer.SendMessageToBackground(message);
+
+            song.PlayCount++;
+            song.LastPlayed = DateTime.Now;
         }
 
         public void PlayPauseToggle()

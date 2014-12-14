@@ -13,15 +13,17 @@ using Audiotica.Data.Collection.RunTime;
 
 namespace Audiotica.WindowsPhone.Player
 {
-    internal class QueueManager
+    internal class QueueManager: IDisposable
     {
         #region Private members
 
         private readonly MediaPlayer _mediaPlayer;
         private int _currentTrackIndex = -1;
+        private SqlService _sql;
 
         public QueueManager()
         {
+            _sql = new SqlService();
             _mediaPlayer = BackgroundMediaPlayer.Current;
             _mediaPlayer.MediaOpened += MediaPlayer_MediaOpened;
             _mediaPlayer.MediaEnded += MediaPlayer_MediaEnded;
@@ -83,6 +85,14 @@ namespace Audiotica.WindowsPhone.Player
 
             if (TrackChanged != null)
                 TrackChanged.Invoke(this, CurrentTrack.SongId);
+
+            try
+            {
+                CurrentTrack.Song.PlayCount++;
+                CurrentTrack.Song.LastPlayed = DateTime.Now;
+                _sql.UpdateItemAsync(CurrentTrack.Song).RunSynchronously();
+            }
+            catch { }
         }
 
         /// <summary>
@@ -167,12 +177,14 @@ namespace Audiotica.WindowsPhone.Player
 
         public void RefreshTracks()
         {
-            var sql = new SqlService();
-
-            var collectionService = new CollectionService(sql, null);
+            var collectionService = new CollectionService(_sql, null);
             collectionService.LoadLibrary();
-
             tracks = collectionService.PlaybackQueue.ToList();
+        }
+
+        public void Dispose()
+        {
+            _sql.Dispose();
         }
     }
 }
