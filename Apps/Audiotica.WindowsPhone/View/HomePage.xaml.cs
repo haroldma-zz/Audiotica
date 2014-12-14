@@ -34,6 +34,6 @@ namespace Audiotica.View
         {
             var artist = ((Grid) sender).DataContext as LastArtist;
             if (artist != null) Frame.Navigate(typeof (ArtistPage), artist.Name);
-        }
+        }             
     }
 }
