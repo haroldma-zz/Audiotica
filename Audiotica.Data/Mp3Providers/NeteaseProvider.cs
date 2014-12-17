@@ -50,15 +50,15 @@ namespace Audiotica.Data.Mp3Providers
                                      p => p.name.Contains(artist)) != 0);
 
                     // is this song supposed to be a remix?
-                    var isSupposedToBeMix = title.Contains("mix");
+                    var isSupposedToBeMix = title.ToLower().Contains("mix");
 
                     if (matches == null) return null;
 
                     // get the first match that is a mix (if is supposed to) or not
                     var match = matches.FirstOrDefault(p =>
                     {
-                        var isMix = p.name.Contains("mix");
-                        return isSupposedToBeMix || !isMix;
+                        var isMix = p.name.ToLower().Contains("mix");
+                        return isSupposedToBeMix && isMix || !isSupposedToBeMix && !isMix;
                     });
 
                     if (match == null) return null;

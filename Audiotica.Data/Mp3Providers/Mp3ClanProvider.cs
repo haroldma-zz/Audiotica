@@ -26,22 +26,22 @@ namespace Audiotica.Data.Mp3Providers
                 var json = await resp.Content.ReadAsStringAsync();
                 var parseResp = await json.DeserializeAsync<Mp3ClanRoot>();
 
-                if (parseResp == null || !resp.IsSuccessStatusCode) return null;
+                if (parseResp == null || parseResp.response == null || !resp.IsSuccessStatusCode) return null;
 
                 var matches = parseResp.response.Where(
                             s => s.title.Contains(title) &&
                                  s.artist.Contains(artist));
 
                 // is this song supposed to be a remix?
-                var isSupposedToBeMix = title.Contains("mix");
+                var isSupposedToBeMix = title.ToLower().Contains("mix");
 
                 if (matches == null) return null;
 
                 // get the first match that is a mix (if is supposed to) or not
                 var match = matches.FirstOrDefault(p =>
                 {
-                    var isMix = p.title.Contains("mix");
-                    return isSupposedToBeMix || !isMix;
+                    var isMix = p.title.ToLower().Contains("mix");
+                    return isSupposedToBeMix && isMix || !isSupposedToBeMix && !isMix;
                 });
 
                 return match != null ? match.url : null;

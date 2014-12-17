@@ -48,13 +48,13 @@ namespace Audiotica.Data.Mp3Providers
                 }
 
                 // is this song supposed to be a remix?
-                var isSupposedToBeMix = title.Contains("mix");
+                var isSupposedToBeMix = title.ToLower().Contains("mix");
 
                 // get the first match that is a mix (if is supposed to) or not
                 var match = parseResp.collection.FirstOrDefault(p =>
                 {
-                    var isMix = p.title.Contains("mix");
-                    return isSupposedToBeMix || !isMix;
+                    var isMix = p.title.ToLower().Contains("mix");
+                    return isSupposedToBeMix && isMix || !isSupposedToBeMix && !isMix;
                 });
 
                 return match.stream_url;
