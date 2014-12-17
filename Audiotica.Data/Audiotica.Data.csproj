@@ -50,6 +50,7 @@
     <Compile Include="Model\Mp3ClanRoot.cs" />
     <Compile Include="Model\WebSong.cs" />
     <Compile Include="Mp3Providers\MeileProvider.cs" />
+    <Compile Include="Mp3Providers\Mp3TruckProvider.cs" />
     <Compile Include="Mp3Providers\Mp3ClanProvider.cs" />
     <Compile Include="Mp3Providers\NeteaseProvider.cs" />
     <Compile Include="Mp3Providers\SoundCloudProvider.cs" />

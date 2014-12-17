@@ -12,7 +12,8 @@ namespace Audiotica.Data
     {
         private static readonly IMp3Provider[] Providers =
         {
-            new Mp3ClanProvider(), 
+            new Mp3ClanProvider(),
+            new Mp3TruckProvider(),  
             new NeteaseProvider(),
             new MeileProvider(),
             new SoundCloudProvider()

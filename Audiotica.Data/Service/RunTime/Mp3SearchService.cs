@@ -24,6 +24,8 @@ namespace Audiotica.Data.Service.RunTime
 
         private const string Mp3ClanSearchUrl = "http://mp3clan.com/app/mp3Search.php?q={0}&count={1}";
 
+        private const string Mp3TruckSearchUrl = "https://mp3truck.net/ajaxRequest.php";
+
         private const string MeileSearchUrl = "http://www.meile.com/search?type=&q={0}";
         private const string MeileDetailUrl = "http://www.meile.com/song/mult?songId={0}";
 
@@ -80,6 +82,74 @@ namespace Audiotica.Data.Service.RunTime
 
                 return FilterByTypeAndMatch(parseResp.response.Select(p => new WebSong(p)).ToList(),
                     title, artist);
+            }
+        }
+
+        public async Task<List<WebSong>> SearchMp3Truck(string title, string artist, string album = null)
+        {
+            using (var client = new HttpClient())
+            {
+                client.DefaultRequestHeaders.Referrer = new Uri("https://mp3truck.net/");
+                var data = new Dictionary<string, string>
+                {
+                    {"sort", "relevance"},
+                    {"p", "1"},
+                    {"q", CreateQuery(title, artist, album)}
+                };
+
+                using (var content = new FormUrlEncodedContent(data))
+                {
+                    var resp = await client.PostAsync(Mp3TruckSearchUrl, content);
+
+                    if (!resp.IsSuccessStatusCode) return null;
+
+                    var html = await resp.Content.ReadAsStringAsync();
+
+                    var doc = new HtmlDocument();
+                    doc.LoadHtml(html);
+
+                    //Get the div node with the class='actl'
+                    var songNodes = doc.DocumentNode.Descendants("div")
+                        .Where(p => p.Attributes.Contains("class") && p.Attributes["class"].Value.Contains("actl"));
+
+                    if (songNodes == null) return null;
+
+                    var songs = new List<WebSong>();
+
+                    foreach (var songNode in songNodes)
+                    {
+                        var song = new WebSong()
+                        {
+                            Id = songNode.Attributes["data-id"].Value,
+                            BitRate = int.Parse(songNode.Attributes["data-bitrate"].Value),
+                            ByteSize = (int)double.Parse(songNode.Attributes["data-filesize"].Value),
+                            Provider = Mp3Provider.Mp3Trunk
+                        };
+
+                        try
+                        {
+                            var duration = songNode.Attributes["data-duration"].Value;
+                            var seconds = int.Parse(duration.Substring(duration.Length - 2, 2));
+                            var minutes = int.Parse(duration.Replace(seconds.ToString(), ""));
+
+                            song.Duration = new TimeSpan(0, 0, minutes, seconds);
+                        }
+                        catch { }
+
+                        var songTitle = songNode.Descendants("div")
+                            .FirstOrDefault(p => p.Attributes.Contains("id")
+                            && p.Attributes["id"].Value == "title").InnerText;
+                        song.Title = WebUtility.HtmlDecode(songTitle.Substring(0, songTitle.Length - 4)).Trim();
+
+                        song.AudioUrl = songNode.Descendants("a").FirstOrDefault(p => p.Attributes.Contains("class")
+                            && p.Attributes["class"].Value.Contains("mp3downloadd")).Attributes["href"]
+                            .Value.Replace("/idl.php?u=", "");
+
+                        songs.Add(song);
+                    }
+
+                    return songs.Any() ? FilterByTypeAndMatch(songs, title, artist) : null;
+                }
             }
         }
 
@@ -204,10 +274,10 @@ namespace Audiotica.Data.Service.RunTime
                                     && IsCorrectType(title, p.Title, "acoustic");
 
                 var isCorrectTitle = p.Title.ToLower().Contains(title.ToLower())
-                    || title.ToLower().Contains(p.Title.ToLower());
+                                     || title.ToLower().Contains(p.Title.ToLower());
                 var isCorrectArtist = p.Artist != null
                     ? p.Artist.ToLower().Contains(artist.ToLower())
-                        || artist.ToLower().Contains(p.Artist.ToLower()) 
+                      || artist.ToLower().Contains(p.Artist.ToLower()) 
                     //soundcloud doesnt have artist prop, check in title
                     : p.Title.ToLower().Contains(artist.ToLower());
 

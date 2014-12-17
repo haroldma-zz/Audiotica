@@ -11,6 +11,8 @@ namespace Audiotica.Data.Model
 {
     public class WebSong
     {
+        public WebSong() { }
+
         public WebSong(Mp3ClanSong mp3ClanSong)
         {
             Id = mp3ClanSong.tid;
@@ -86,6 +88,7 @@ namespace Audiotica.Data.Model
         Mp3Clan,
         SoundCloud,
         Meile,
-        Netease
+        Netease,
+        Mp3Trunk
     }
 }
