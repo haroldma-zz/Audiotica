@@ -48,6 +48,7 @@
     <Compile Include="Model\EchoNest\EchoResponse.cs" />
     <Compile Include="Model\EchoNest\EchoSong.cs" />
     <Compile Include="Model\Mp3ClanRoot.cs" />
+    <Compile Include="Model\WebSong.cs" />
     <Compile Include="Mp3Providers\MeileProvider.cs" />
     <Compile Include="Mp3Providers\Mp3ClanProvider.cs" />
     <Compile Include="Mp3Providers\NeteaseProvider.cs" />
@@ -63,8 +64,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Service\DesignTime\DesignScrobblerService.cs" />
     <Compile Include="Service\Interfaces\IEchoNestService.cs" />
+    <Compile Include="Service\Interfaces\IMp3SearchService.cs" />
     <Compile Include="Service\Interfaces\IScrobblerService.cs" />
     <Compile Include="Service\RunTime\EchoNestService.cs" />
+    <Compile Include="Service\RunTime\Mp3SearchService.cs" />
     <Compile Include="Service\RunTime\ScrobblerService.cs" />
     <Compile Include="Mp3MatchEngine.cs" />
     <Compile Include="Mp3Providers\IMp3Provider.cs" />

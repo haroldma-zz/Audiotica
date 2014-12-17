@@ -21,6 +21,7 @@
         public int playback_count { get; set; }
         public int favoritings_count { get; set; }
         public int likes_count { get; set; }
+        public int original_content_size { get; set; }
 
     }
 }
