@@ -14,6 +14,7 @@ namespace Audiotica.Data
         {
             //new VkProvider(), Need to finish this later, VK uses login and sometimes captcha
             //but it is the best for mp3 matching
+            new Mp3ClanProvider(), 
             new NeteaseProvider(),
             new MeileProvider(),
             new SoundCloudProvider()
