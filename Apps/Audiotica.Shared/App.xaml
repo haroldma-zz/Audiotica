@@ -12,6 +12,7 @@
         <common:VisibilityConverter x:Key="VisibilityConverter" />
         <common:NullToBooleanConverter x:Key="NullToBooleanConverter" />
         <common:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
+        <common:TimespanToDoubleConverter x:Key="TimespanToDoubleConverter" />
 
         <Style TargetType="Pivot">
             <Setter Property="Margin" Value="0" />

@@ -270,6 +270,7 @@ namespace Audiotica.Data.Service.RunTime
                                     && IsCorrectType(title, p.Title, "cover")
                                     && IsCorrectType(title, p.Title, "live")
                                     && IsCorrectType(title, p.Title, "snipped")
+                                    && IsCorrectType(title, p.Title, "preview")
                                     && IsCorrectType(title, p.Title, "acapella")
                                     && IsCorrectType(title, p.Title, "acoustic");
 
