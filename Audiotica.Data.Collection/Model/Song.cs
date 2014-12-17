@@ -35,6 +35,8 @@ namespace Audiotica.Data.Collection.Model
 
         public HeartState HeartState { get; set; }
 
+        public TimeSpan Duration { get; set; }
+
 
         [SqlIgnore]
         public bool IsStreaming

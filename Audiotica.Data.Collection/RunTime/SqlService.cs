@@ -16,7 +16,7 @@ namespace Audiotica.Data.Collection.RunTime
 {
     public class SqlService : ISqlService, IDisposable
     {
-        private const long CurrentDbVersion = 1;
+        private const long CurrentDbVersion = 2;
 
         public SqlService()
         {
@@ -46,7 +46,7 @@ namespace Audiotica.Data.Collection.RunTime
             using (var statement = DbConnection.Prepare(sql))
             {
                 statement.Step();
-                dbOldCreated = (long) statement[0] != 0;
+                dbOldCreated = (long) statement[0] != 0 && sqlVersion == 0;
             }
 
             if (sqlVersion == CurrentDbVersion) return;
@@ -55,6 +55,12 @@ namespace Audiotica.Data.Collection.RunTime
             {
                 //Update db from Beta5 (Patch #1) and down
                 sql = "ALTER TABLE Song ADD COLUMN LastPlayed DATETIME";
+                using (var statement = DbConnection.Prepare(sql))
+                {
+                    statement.Step();
+                }
+
+                sql = "ALTER TABLE Song ADD COLUMN Duration BIGINT";
                 using (var statement = DbConnection.Prepare(sql))
                 {
                     statement.Step();
@@ -205,6 +211,12 @@ namespace Audiotica.Data.Collection.RunTime
                         else if (propertyInfo.PropertyType == typeof (DateTime))
                         {
                             value = value == null ? DateTime.MinValue : DateTime.Parse(value.ToString());
+                        }
+
+                         //cast timespan from ticks (int64)
+                        else if (propertyInfo.PropertyType == typeof(TimeSpan))
+                        {
+                            value = value == null ? TimeSpan.MinValue : TimeSpan.FromTicks((Int64)value);
                         }
 
                         propertyInfo.SetValue(item, value);

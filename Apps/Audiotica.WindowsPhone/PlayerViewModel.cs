@@ -108,6 +108,9 @@ namespace Audiotica
             {
                 var id = AppSettingsHelper.Read<long>(PlayerConstants.CurrentTrack);
                 CurrentQueue = _service.PlaybackQueue.FirstOrDefault(p => p.Id == id);
+
+                if (CurrentQueue.Song.Duration.Ticks != BackgroundMediaPlayer.Current.NaturalDuration.Ticks)
+                    CurrentQueue.Song.Duration = BackgroundMediaPlayer.Current.NaturalDuration;
             }
             else
             {

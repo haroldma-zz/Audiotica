@@ -90,6 +90,10 @@ namespace Audiotica.WindowsPhone.Player
             {
                 CurrentTrack.Song.PlayCount++;
                 CurrentTrack.Song.LastPlayed = DateTime.Now;
+
+                if (CurrentTrack.Song.Duration.Ticks != _mediaPlayer.NaturalDuration.Ticks)
+                    CurrentTrack.Song.Duration = _mediaPlayer.NaturalDuration;
+
                 _sql.UpdateItemAsync(CurrentTrack.Song).Wait();
             }
             catch { }
