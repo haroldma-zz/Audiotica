@@ -1,9 +1,10 @@
-﻿using System;
+﻿#region
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using Audiotica.Core.Exceptions;
 using Audiotica.Core.Utilities;
@@ -12,12 +13,15 @@ using Audiotica.Data.Model.SoundCloud;
 using Audiotica.Data.Service.Interfaces;
 using HtmlAgilityPack;
 
+#endregion
+
 namespace Audiotica.Data.Service.RunTime
 {
     public class Mp3SearchService : IMp3SearchService
     {
-        private const string SoundCloudSearchUrl = "https://api.soundcloud.com/search/sounds?client_id={0}&limit={1}&q={2}";
-        
+        private const string SoundCloudSearchUrl =
+            "https://api.soundcloud.com/search/sounds?client_id={0}&limit={1}&q={2}";
+
         private const string Mp3ClanSearchUrl = "http://mp3clan.com/app/mp3Search.php?q={0}&count={1}";
 
         private const string MeileSearchUrl = "http://www.meile.com/search?type=&q={0}";
@@ -26,64 +30,8 @@ namespace Audiotica.Data.Service.RunTime
         private const string NeteaseSuggestApi = "http://music.163.com/api/search/suggest/web?csrf_token=";
         private const string NeteaseDetailApi = "http://music.163.com/api/song/detail/?ids=%5B{0}%5D";
 
-        private string CreateQuery(string title, string artist, string album, bool urlEncode = true)
-        {
-            var query = ((title + " " + artist).Trim() + album).Trim();
-            return urlEncode ? WebUtility.UrlEncode(query) : query;
-        }
-
-        private List<WebSong> FilterByTypeAndMatch(IEnumerable<WebSong> songs, string title, string artist)
-        {
-            return songs.Where(p =>
-            {
-                var isCorrectType = IsCorrectType(title, p.Title, "mix")
-                    && IsCorrectType(title, p.Title, "cover")
-                    && IsCorrectType(title, p.Title, "live")
-                    && IsCorrectType(title, p.Title, "acoustic");
-
-                var isCorrectTitle = p.Title.ToLower().Contains(title.ToLower());
-                var isCorrectArtist = p.Artist != null 
-                    ? p.Artist.ToLower().Contains(artist.ToLower()) 
-                    //soundcloud doesnt have artist prop, check in title
-                    : p.Title.ToLower().Contains(artist.ToLower()); 
-
-                return isCorrectType 
-                    && isCorrectTitle
-                    && isCorrectArtist;
-            }).ToList();
-        }
-
-        private bool IsCorrectType(string title, string songTitle, string type)
-        {
-            var isSupposedType = title.ToLower().Contains(type);
-            var isType = songTitle.ToLower().Contains(type);
-            return isSupposedType && isType || !isSupposedType && !isType;
-        }
-
-        private async Task<MeileSong> GetDetailsForMeileSong(string songId, HttpClient client)
-        {
-            var url = string.Format(MeileDetailUrl, songId);
-
-            var resp = await client.GetAsync(url);
-            var json = await resp.Content.ReadAsStringAsync();
-            var parseResp = await json.DeserializeAsync<MeileDetailRoot>();
-
-            if (parseResp == null || !resp.IsSuccessStatusCode) return null;
-
-            return parseResp.values.songs.FirstOrDefault();
-        }
-
-        private async Task<NeteaseDetailSong> GetDetailsForNeteaseSong(int songId, HttpClient client)
-        {
-            var detailResp = await client.GetAsync(string.Format(NeteaseDetailApi, songId));
-            var detailJson = await detailResp.Content.ReadAsStringAsync();
-            var detailParseResp = await detailJson.DeserializeAsync<NeteaseDetailRoot>();
-            if (!detailResp.IsSuccessStatusCode) throw new NetworkException();
-
-            return detailParseResp.songs == null ? null : detailParseResp.songs.FirstOrDefault();
-        }
-
-        public async Task<List<WebSong>> SearchSoundCloud(string title, string artist, string album = null, int limit = 5)
+        public async Task<List<WebSong>> SearchSoundCloud(string title, string artist, string album = null,
+            int limit = 5)
         {
             var url = string.Format(SoundCloudSearchUrl, ApiKeys.SoundCloudId, limit, CreateQuery(title, artist, album));
 
@@ -113,7 +61,7 @@ namespace Audiotica.Data.Service.RunTime
                     song.artwork_url = song.artwork_url.Replace("large", "t500x500");
                 }
 
-                return FilterByTypeAndMatch(parseResp.collection.Select(p => new WebSong(p)), 
+                return FilterByTypeAndMatch(parseResp.collection.Select(p => new WebSong(p)).ToList(),
                     title, artist);
             }
         }
@@ -130,7 +78,7 @@ namespace Audiotica.Data.Service.RunTime
 
                 if (parseResp == null || parseResp.response == null || !resp.IsSuccessStatusCode) return null;
 
-                return FilterByTypeAndMatch(parseResp.response.Select(p => new WebSong(p)), 
+                return FilterByTypeAndMatch(parseResp.response.Select(p => new WebSong(p)).ToList(),
                     title, artist);
             }
         }
@@ -216,6 +164,96 @@ namespace Audiotica.Data.Service.RunTime
         public Task<int> GetBitrateFromCc(string ccId)
         {
             throw new NotImplementedException();
+        }
+
+        private string CreateQuery(string title, string artist, string album, bool urlEncode = true)
+        {
+            var query = ((title + " " + artist).Trim() + album).Trim();
+            return urlEncode ? WebUtility.UrlEncode(query) : query;
+        }
+
+        private int GetMostUsedMinute(IEnumerable<WebSong> songs)
+        {
+            var minuteDic = new Dictionary<int, int>();
+            var minuteList = songs.Where(p => p.Duration != null).Select(p => p.Duration.Minutes);
+
+            foreach (var minute in minuteList)
+            {
+                if (minuteDic.ContainsKey(minute))
+                {
+                    minuteDic[minute]++;
+                }
+                else
+                {
+                    minuteDic.Add(minute, 1);
+                }
+            }
+
+            return minuteDic.OrderByDescending(p => p.Value).FirstOrDefault().Key;
+        }
+
+        private List<WebSong> FilterByTypeAndMatch(IEnumerable<WebSong> songs, string title, string artist)
+        {
+            var filterSongs = songs.Where(p =>
+            {
+                var isCorrectType = IsCorrectType(title, p.Title, "mix")
+                                    && IsCorrectType(title, p.Title, "cover")
+                                    && IsCorrectType(title, p.Title, "live")
+                                    && IsCorrectType(title, p.Title, "snipped")
+                                    && IsCorrectType(title, p.Title, "acapella")
+                                    && IsCorrectType(title, p.Title, "acoustic");
+
+                var isCorrectTitle = p.Title.ToLower().Contains(title.ToLower())
+                    || title.ToLower().Contains(p.Title.ToLower());
+                var isCorrectArtist = p.Artist != null
+                    ? p.Artist.ToLower().Contains(artist.ToLower())
+                        || artist.ToLower().Contains(p.Artist.ToLower()) 
+                    //soundcloud doesnt have artist prop, check in title
+                    : p.Title.ToLower().Contains(artist.ToLower());
+
+                return isCorrectType
+                       && isCorrectTitle
+                       && isCorrectArtist;
+            }).ToList();
+
+            /*all the filter songs are candidates for being a match
+             *but to improve it we can get how long do most songs last
+             *those that don't meet it get removed.
+             *Say, three songs last 3 minutes and two last 2 minutes,
+             *it will be best to eliminate the two minute songs
+             */
+            var mostUsedMinute = GetMostUsedMinute(filterSongs);
+            return filterSongs.Where(p => p.Duration.Minutes == mostUsedMinute).ToList();
+        }
+
+        private bool IsCorrectType(string title, string songTitle, string type)
+        {
+            var isSupposedType = title.ToLower().Contains(type);
+            var isType = songTitle.ToLower().Contains(type);
+            return isSupposedType && isType || !isSupposedType && !isType;
+        }
+
+        private async Task<MeileSong> GetDetailsForMeileSong(string songId, HttpClient client)
+        {
+            var url = string.Format(MeileDetailUrl, songId);
+
+            var resp = await client.GetAsync(url);
+            var json = await resp.Content.ReadAsStringAsync();
+            var parseResp = await json.DeserializeAsync<MeileDetailRoot>();
+
+            if (parseResp == null || !resp.IsSuccessStatusCode) return null;
+
+            return parseResp.values.songs.FirstOrDefault();
+        }
+
+        private async Task<NeteaseDetailSong> GetDetailsForNeteaseSong(int songId, HttpClient client)
+        {
+            var detailResp = await client.GetAsync(string.Format(NeteaseDetailApi, songId));
+            var detailJson = await detailResp.Content.ReadAsStringAsync();
+            var detailParseResp = await detailJson.DeserializeAsync<NeteaseDetailRoot>();
+            if (!detailResp.IsSuccessStatusCode) throw new NetworkException();
+
+            return detailParseResp.songs == null ? null : detailParseResp.songs.FirstOrDefault();
         }
     }
 }

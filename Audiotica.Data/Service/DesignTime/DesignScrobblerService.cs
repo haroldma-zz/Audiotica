@@ -175,7 +175,7 @@ namespace Audiotica.Data.Service.DesignTime
             {
                 Name = artist,
                 MainImage = new LastImageSet {ExtraLarge = new Uri(artwork)},
-                Bio = new LastBio
+                Bio = new LastWiki
                 {
                     YearFormed = 2011,
                     Content = "In the begining it was called musicDownload... then it was reborn as something else..."

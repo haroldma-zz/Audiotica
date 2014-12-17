@@ -21,7 +21,12 @@ namespace Audiotica.Data.Model
             if (!string.IsNullOrEmpty(mp3ClanSong.duration))
             {
                 //format is x:xx, to parse correctly making it 00:x:xx
-                Duration = TimeSpan.Parse("0:" + mp3ClanSong.duration);
+                var prefix = "0:";
+
+                if (mp3ClanSong.duration.Length <= 3)
+                    prefix += "0";
+
+                Duration = TimeSpan.Parse(prefix + mp3ClanSong.duration);
             }
         }
 
