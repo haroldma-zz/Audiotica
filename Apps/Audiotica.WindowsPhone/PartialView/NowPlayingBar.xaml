@@ -75,7 +75,7 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <ProgressBar Value="{Binding Position, Converter={StaticResource TimespanToDoubleConverter}, Mode=TwoWay}" Maximum="{Binding Duration, Converter={StaticResource TimespanToDoubleConverter}, Mode=TwoWay}" IsIndeterminate="{Binding IsLoading}" />
-        <Grid Grid.Row="1" Background="#202020">
+        <Grid Grid.Row="1" Background="#1F1F1F">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
