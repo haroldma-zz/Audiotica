@@ -65,8 +65,6 @@ namespace Audiotica.Data.Collection.RunTime
                 {
                     statement.Step();
                 }
-
-                UpdateDbVersion();
             }
 
             CreateTablesIfNotExists();

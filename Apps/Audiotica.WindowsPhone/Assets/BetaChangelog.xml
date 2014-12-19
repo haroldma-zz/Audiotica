@@ -4,12 +4,15 @@
     This beta is meant to test out the metro UI.
   </FirstRunMessage>
   <JustUpdatedMessage>
-    1. Use of accent color
-    2. Album art poster on collection page
-    3. Fix now playing bar not updating
-    4. Fix crashing when saving certain songs
-    5. Minor UI tweaks on search page
-    6. Adjust app to phones with on-screen navbar.
-    7. Minor tweak to top artists and tracks.
+    1. Create playlists
+    2. New buttery animations
+    3. Two new mp3 providers
+    4. Better audio matching algorithm
+    5. Now playing bar has track progress
+    6. Get artwork, bio and similar in artist page
+    7. Optimize match engine for remixes, covers, etc
+    8. Minor UI tweaks
+    9. Improve player and database code
+    10. Update SQLite and other SDKs
   </JustUpdatedMessage>
 </Changelog>
