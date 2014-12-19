@@ -31,7 +31,8 @@
             </Grid>
         </Grid>
         <Grid Margin="0,20,0,0">
-            <ListView IsItemClickEnabled="True" ItemsSource="{Binding Album.Songs}" Margin="0,5,0,0" ItemTemplate="{StaticResource SongDataTemplate}" >
+            <ListView IsItemClickEnabled="True" ItemsSource="{Binding Album.Songs}" Margin="0,5,0,0"
+                      ItemTemplate="{StaticResource SongDataTemplate}">
                 <interactivity:Interaction.Behaviors>
                     <core:EventTriggerBehavior EventName="ItemClick">
                         <core:InvokeCommandAction Command="{Binding SongClickRelayCommand}" />

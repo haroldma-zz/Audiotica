@@ -458,7 +458,8 @@ namespace Audiotica.Data.Collection.RunTime
                 SongId = song.Id,
                 NextId = 0,
                 PrevId = tail == null ? 0 : tail.Id,
-                Song = song
+                Song = song,
+                PlaylistId = playlist.Id
             };
 
             //Add it to the database

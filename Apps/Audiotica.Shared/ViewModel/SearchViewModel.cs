@@ -98,6 +98,19 @@ namespace Audiotica.ViewModel
         {
             try
             {
+                if (Tracks != null)
+                {
+                    Tracks.Clear();
+                }
+                if (Artists != null)
+                {
+                    Artists.Clear();
+                }
+                if (Albums != null)
+                {
+                    Albums.Clear();
+                }
+
                 _tracksResponse = await _service.SearchTracksAsync(term);
 
                 Tracks = CreateIncrementalCollection(
