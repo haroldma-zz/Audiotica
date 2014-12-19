@@ -101,11 +101,11 @@
         </Pivot>
     </Grid>
     <Page.BottomAppBar>
-        <CommandBar Visibility="Collapsed" Background="White" Foreground="Black">
+        <CommandBar Visibility="Collapsed">
             <AppBarButton Icon="Add" Label="New Playlist" FontFamily="Global User Interface">
                 <AppBarButton.Flyout>
                     <PickerFlyout Title="NEW PLAYLIST" ConfirmationButtonsVisible="True" Placement="Full"
-                                  Confirmed="PickerFlyout_Confirmed">
+                                  Confirmed="PickerFlyout_Confirmed" Closed="PickerFlyout_Closed">
                         <PickerFlyout.Content>
                             <ListView ItemsSource="{Binding Service.Songs}"
                                       ItemTemplate="{StaticResource SongDataTemplate}"

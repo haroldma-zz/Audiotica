@@ -80,7 +80,9 @@ namespace Audiotica.View
 
         private void PickerFlyout_Confirmed(PickerFlyout sender, PickerConfirmedEventArgs args)
         {
-            var selection = ((ListView)sender.Content).SelectedItems.Select(o => (Song)o).ToList();
+            var listView = (ListView) sender.Content;
+            var selection = listView.SelectedItems.Select(o => (Song)o).ToList();
+
             if (selection.Count > 0)
             {
                 Frame.Navigate(typeof (NewPlaylistPage), selection);
@@ -89,6 +91,12 @@ namespace Audiotica.View
             {
                 CurtainToast.ShowError("Try selecting some songs");
             }
+        }
+
+        private void PickerFlyout_Closed(object sender, object e)
+        {
+            var listView = (ListView)((PickerFlyout)sender).Content;
+            listView.SelectedIndex = -1;
         }
     }
 }
