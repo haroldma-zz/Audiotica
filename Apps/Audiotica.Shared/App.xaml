@@ -13,6 +13,7 @@
         <common:NullToBooleanConverter x:Key="NullToBooleanConverter" />
         <common:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
         <common:TimespanToDoubleConverter x:Key="TimespanToDoubleConverter" />
+        <common:UpperCaseConverter x:Key="UpperCaseConverter" />
 
         <Style TargetType="Pivot">
             <Setter Property="Margin" Value="0" />

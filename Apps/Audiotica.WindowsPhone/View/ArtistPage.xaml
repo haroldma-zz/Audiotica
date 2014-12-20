@@ -16,7 +16,7 @@
         <Grid.Background>
             <ImageBrush Opacity=".25" Stretch="UniformToFill" ImageSource="{Binding Artist.MainImage.Largest}" />
         </Grid.Background>
-        <Pivot Title="{Binding Artist.Name}" HeaderTemplate="{StaticResource PivotHeaderTemplate}">
+        <Pivot Title="{Binding Artist.Name, Converter={StaticResource UpperCaseConverter}}" HeaderTemplate="{StaticResource PivotHeaderTemplate}">
             <PivotItem Header="SONGS">
                 <ListView IsItemClickEnabled="True" ItemsSource="{Binding TopTracks}"
                           ItemTemplate="{StaticResource LastTrackDataTemplate}">
