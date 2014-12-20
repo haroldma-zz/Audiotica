@@ -500,6 +500,24 @@ namespace Audiotica.Data.Collection.RunTime
 
         public async Task DeleteFromPlaylistAsync(Playlist playlist, PlaylistSong songToRemove)
         {
+            #region update surounding entries
+
+            if (songToRemove.NextId != 0)
+            {
+                var nextSong = playlist.LookupMap[songToRemove.NextId];
+                nextSong.PrevId = songToRemove.PrevId;
+                await _sqlService.UpdateItemAsync(nextSong);
+            }
+
+            if (songToRemove.PrevId != 0)
+            {
+                var prevSong = playlist.LookupMap[songToRemove.PrevId];
+                prevSong.NextId = songToRemove.NextId;
+                await _sqlService.UpdateItemAsync(prevSong);
+            }
+
+            #endregion
+
             await _sqlService.DeleteItemAsync(songToRemove);
             playlist.Songs.Remove(songToRemove);
         }
