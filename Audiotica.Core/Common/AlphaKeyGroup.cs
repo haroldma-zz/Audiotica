@@ -1,16 +1,18 @@
 ﻿#region
 
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using Windows.Globalization.Collation;
+using Audiotica.Core.Utilities;
 using MyToolkit.Collections;
 
 #endregion
 
 namespace Audiotica.Core.Common
 {
-    public class AlphaKeyGroup<T> : ObservableCollectionView<T>
+    public class AlphaKeyGroup<T> : ObservableCollection<T>
     {
         /// <summary>
         ///     The delegate that is used to get the key information.
@@ -32,6 +34,11 @@ namespace Audiotica.Core.Common
         ///     The Key of this group.
         /// </summary>
         public string Key { get; private set; }
+
+        /// <summary>
+        ///     The Order Key of this group.
+        /// </summary>
+        public GetKeyDelegate OrderKey { get; private set; }
 
         /// <summary>
         ///     Create a list of AlphaGroup<T> with keys set by a SortedLocaleGrouping.
@@ -79,7 +86,8 @@ namespace Audiotica.Core.Common
             {
                 foreach (AlphaKeyGroup<T> group in list)
                 {
-                    group.Order = p => getKey(p);
+                    group.OrderKey = getKey;
+                    group.Sort((x, y) => String.Compare(getKey(x), getKey(y), StringComparison.Ordinal));
                 }
             }
 

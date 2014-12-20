@@ -62,8 +62,12 @@ namespace Audiotica.ViewModel
             SetArtist(id);
         }
 
+        private bool _currentlyPreparing;
         private async void SongClickExecute(ItemClickEventArgs e)
         {
+            if (_currentlyPreparing) return;
+            _currentlyPreparing = true;
+
             var song = e.ClickedItem as Song;
 
             await _service.ClearQueueAsync();
@@ -73,9 +77,8 @@ namespace Audiotica.ViewModel
                 await _service.AddToQueueAsync(queueSong);
             }
 
-#if WINDOWS_PHONE_APP
             _audioPlayer.PlaySong(_service.PlaybackQueue[_artist.Songs.IndexOf(song)]);
-#endif
+            _currentlyPreparing = false;
         }
 
         private async void SetArtist(long id)

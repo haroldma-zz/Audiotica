@@ -51,8 +51,12 @@ namespace Audiotica.ViewModel
             Playlist = _service.Playlists.FirstOrDefault(p => p.Id == id);
         }
 
+        private bool _currentlyPreparing;
         private async void SongClickExecute(ItemClickEventArgs e)
         {
+            if (_currentlyPreparing) return;
+            _currentlyPreparing = true;
+
             var song = (PlaylistSong) (e.ClickedItem);
 
             await _service.ClearQueueAsync();
@@ -62,9 +66,8 @@ namespace Audiotica.ViewModel
                 await _service.AddToQueueAsync(playlistSong.Song);
             }
 
-#if WINDOWS_PHONE_APP
             _audioPlayer.PlaySong(_service.PlaybackQueue[_playlist.Songs.IndexOf(song)]);
-#endif
+            _currentlyPreparing = false;
         }
     }
 }
