@@ -2,11 +2,16 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using System.Globalization;
 using System.Linq;
+using Windows.Globalization.Collation;
 using Windows.Graphics.Display;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
+using Audiotica.Core.Common;
 using Audiotica.Core.Utilities;
 using Audiotica.Data.Collection;
 using Audiotica.Data.Collection.Model;
@@ -24,6 +29,7 @@ namespace Audiotica.ViewModel
         private readonly AudioPlayerHelper _audioPlayer;
 #endif
         private readonly RelayCommand<ItemClickEventArgs> _songClickCommand;
+        private ObservableCollection<AlphaKeyGroup<Song>> _sortedSongs;
 
         public CollectionViewModel(ICollectionService service
 #if WINDOWS_PHONE_APP
@@ -40,6 +46,42 @@ namespace Audiotica.ViewModel
 
             if (IsInDesignModeStatic)
                 _service.LoadLibrary();
+
+            SortedSongs = AlphaKeyGroup<Song>.CreateGroups(Service.Songs, 
+                CultureInfo.CurrentCulture, item => item.Name, true);
+            Service.Songs.CollectionChanged += SongsOnCollectionChanged;
+        }
+
+        private void SongsOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs arg)
+        {
+            var zero = false;
+            AlphaKeyGroup<Song> group = null;
+
+            switch (arg.Action)
+            {
+                case NotifyCollectionChangedAction.Add:
+                {
+                    var song = arg.NewItems[0] as Song;
+                    group = SortedSongs.First(a => a.Key == new CharacterGroupings().Lookup(song.Name));
+                    zero = group.Count == 0;
+                    group.Items.Add(song);
+                }
+                    break;
+                case NotifyCollectionChangedAction.Remove:
+                {
+                    var song = arg.OldItems[0] as Song;
+                    group = SortedSongs.First(a => a.Key == new CharacterGroupings().Lookup(song.Name));
+                    group.Items.Remove(song);
+                    zero = group.Count == 0;
+                }
+                    break;
+            }
+
+            if (!zero) return;
+
+            var index = SortedSongs.IndexOf(@group);
+            SortedSongs.Remove(@group);
+            SortedSongs.Insert(index, @group);
         }
 
         private async void SongClickExecute(ItemClickEventArgs e)
@@ -69,6 +111,18 @@ namespace Audiotica.ViewModel
             }
         }
 
+        public ObservableCollection<AlphaKeyGroup<Song>> SortedSongs
+        {
+            get
+            {
+                return _sortedSongs;
+            }
+            set
+            {
+                Set(ref _sortedSongs, value);
+            }
+        }
+
         public List<Album> RandomizeAlbumList
         {
             get
@@ -79,7 +133,7 @@ namespace Audiotica.ViewModel
 
                 if (albumCount == 0) return null;
 
-                var h = Window.Current.Bounds.Height;
+                var h = IsInDesignMode ? 800 : Window.Current.Bounds.Height;
                 var rows = (int)Math.Ceiling(h / ArtworkSize);
 
                 var numImages = rows * rowCount;
@@ -113,7 +167,7 @@ namespace Audiotica.ViewModel
         {
             get
             {
-                var w = Window.Current.Bounds.Width;
+                var w = IsInDesignMode ? 480 : Window.Current.Bounds.Width;
                 return w / rowCount;
             }
         }

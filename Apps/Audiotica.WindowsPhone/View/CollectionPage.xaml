@@ -13,6 +13,34 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
     DataContext="{Binding Collection, Source={StaticResource Locator}}" FontFamily="Global User Interface">
     <Grid>
+        <Grid.Resources>
+            <CollectionViewSource x:Key="SongGroup"
+                                  IsSourceGrouped="True" Source="{Binding SortedSongs}" />
+
+            <JumpListItemBackgroundConverter x:Key="BackgroundConverter"/>
+            <JumpListItemForegroundConverter x:Key="ForegroundConverter"/>
+            <DataTemplate x:Key="JumpTemplate">
+                <Border Padding="5">
+                    <Border Background="{Binding Converter={StaticResource BackgroundConverter}}" 
+                    Width="82" Height="82" HorizontalAlignment="Left">
+                        <TextBlock Text="{Binding Group.Key}" 
+                           Foreground="{Binding Converter={StaticResource ForegroundConverter}}" 
+                           FontSize="48" Padding="6" 
+                           HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                    </Border>
+                </Border>
+            </DataTemplate>
+            
+            <DataTemplate x:Key="GroupHeaderTemplate">
+                <Border Background="Transparent" Padding="5">
+                    <Border Background="{StaticResource PhoneAccentBrush}" BorderBrush="{StaticResource PhoneAccentBrush}" BorderThickness="2" Width="62" 
+                        Height="62" Margin="0,0,18,0" HorizontalAlignment="Left">
+                        <TextBlock Text="{Binding Key}" Foreground="{StaticResource PhoneForegroundBrush}" FontSize="48" Padding="6" 
+                               FontFamily="{StaticResource PhoneFontFamilySemiLight}" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                    </Border>
+                </Border>
+            </DataTemplate>
+        </Grid.Resources>
         <Grid Name="ArtworkSizeWorkaround" Tag="{Binding ArtworkSize}" />
         <GridView ItemsSource="{Binding RandomizeAlbumList}">
             <GridView.ItemTemplate>
@@ -28,40 +56,56 @@
         <Pivot Name="CollectionPivot" Title="COLLECTION" HeaderTemplate="{StaticResource PivotHeaderTemplate}"
                SelectionChanged="CollectionPivot_SelectionChanged">
             <PivotItem Header="SONGS">
-                <ListView IsItemClickEnabled="True" ItemsSource="{Binding Service.Songs}" Padding="0,0,0,25">
-                    <ListView.ItemTemplate>
-                        <DataTemplate>
-                            <Grid Margin="0,0,0,15">
-                                <Interactivity:Interaction.Behaviors>
-                                    <Core:EventTriggerBehavior EventName="Holding">
-                                        <audiotica:ShowFlyoutAction />
-                                    </Core:EventTriggerBehavior>
-                                </Interactivity:Interaction.Behaviors>
-                                <FlyoutBase.AttachedFlyout>
-                                    <MenuFlyout>
-                                        <MenuFlyoutItem x:Uid="AddToMenuItem" Text="Add to (Disabled)"
-                                                        IsEnabled="False" />
-                                        <MenuFlyoutItem x:Uid="ShareMenuItem" Text="Share (Disabled)" IsEnabled="False" />
-                                        <MenuFlyoutItem x:Uid="DeleteMenuItem" Text="Delete" Foreground="Red"
-                                                        Click="DeleteSongMenuFlyoutItem_Click" />
-                                    </MenuFlyout>
-                                </FlyoutBase.AttachedFlyout>
-                                <StackPanel>
-                                    <TextBlock Text="{Binding Name}" FontSize="30" FontFamily="Global User Interface"
-                                               TextTrimming="CharacterEllipsis" FontWeight="Bold" />
-                                    <TextBlock Text="{Binding Artist.Name}" FontSize="22" FontWeight="Thin"
-                                               Foreground="#89FFFFFF" TextTrimming="CharacterEllipsis"
-                                               Margin="0,-5,0,0" />
-                                </StackPanel>
-                            </Grid>
-                        </DataTemplate>
-                    </ListView.ItemTemplate>
-                    <Interactivity:Interaction.Behaviors>
-                        <Core:EventTriggerBehavior EventName="ItemClick">
-                            <Core:InvokeCommandAction Command="{Binding SongClickCommand}" />
-                        </Core:EventTriggerBehavior>
-                    </Interactivity:Interaction.Behaviors>
-                </ListView>
+                <SemanticZoom>
+                    <SemanticZoom.ZoomedInView>
+                        <ListView IsItemClickEnabled="True" ItemsSource="{Binding Source={StaticResource SongGroup}}"
+                                  Padding="0,0,0,25">
+                            <ListView.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid Margin="0,0,0,15">
+                                        <Interactivity:Interaction.Behaviors>
+                                            <Core:EventTriggerBehavior EventName="Holding">
+                                                <audiotica:ShowFlyoutAction />
+                                            </Core:EventTriggerBehavior>
+                                        </Interactivity:Interaction.Behaviors>
+                                        <FlyoutBase.AttachedFlyout>
+                                            <MenuFlyout>
+                                                <MenuFlyoutItem x:Uid="AddToMenuItem" Text="Add to (Disabled)"
+                                                                IsEnabled="False" />
+                                                <MenuFlyoutItem x:Uid="ShareMenuItem" Text="Share (Disabled)"
+                                                                IsEnabled="False" />
+                                                <MenuFlyoutItem x:Uid="DeleteMenuItem" Text="Delete" Foreground="Red"
+                                                                Click="DeleteSongMenuFlyoutItem_Click" />
+                                            </MenuFlyout>
+                                        </FlyoutBase.AttachedFlyout>
+                                        <StackPanel>
+                                            <TextBlock Text="{Binding Name}" FontSize="30"
+                                                       FontFamily="Global User Interface"
+                                                       TextTrimming="CharacterEllipsis" FontWeight="Bold" />
+                                            <TextBlock Text="{Binding Artist.Name}" FontSize="22" FontWeight="Thin"
+                                                       Foreground="#89FFFFFF" TextTrimming="CharacterEllipsis"
+                                                       Margin="0,-5,0,0" />
+                                        </StackPanel>
+                                    </Grid>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                            <ListView.GroupStyle>
+                                <GroupStyle HidesIfEmpty="True" HeaderTemplate="{StaticResource GroupHeaderTemplate}" />
+                            </ListView.GroupStyle>
+                            <Interactivity:Interaction.Behaviors>
+                                <Core:EventTriggerBehavior EventName="ItemClick">
+                                    <Core:InvokeCommandAction Command="{Binding SongClickCommand}" />
+                                </Core:EventTriggerBehavior>
+                            </Interactivity:Interaction.Behaviors>
+                        </ListView>
+                    </SemanticZoom.ZoomedInView>
+                    <SemanticZoom.ZoomedOutView>
+                        <GridView Background="Black"
+                                  ItemsSource="{Binding Source={StaticResource SongGroup}, Path=CollectionGroups}"
+                                  ItemTemplate="{StaticResource JumpTemplate}" />
+                    </SemanticZoom.ZoomedOutView>
+                </SemanticZoom>
+
             </PivotItem>
             <PivotItem Header="ARTISTS">
                 <ListView IsItemClickEnabled="True" ItemsSource="{Binding Service.Artists}" Padding="0,0,0,25"
@@ -112,8 +156,8 @@
                                       SelectionMode="Multiple" Padding="0,0,0,50">
                                 <ListView.ItemContainerTransitions>
                                     <TransitionCollection>
-                                        <AddDeleteThemeTransition/>
-                                        <ReorderThemeTransition/>
+                                        <AddDeleteThemeTransition />
+                                        <ReorderThemeTransition />
                                     </TransitionCollection>
                                 </ListView.ItemContainerTransitions>
                             </ListView>
