@@ -26,13 +26,13 @@
                         <TextBlock Text="{Binding Group.Key}" 
                            Foreground="{Binding Converter={StaticResource ForegroundConverter}}" 
                            FontSize="48" Padding="6" 
-                           HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                           HorizontalAlignment="Left" VerticalAlignment="Center" FontFamily="Global User Interface"/>
                     </Border>
                 </Border>
             </DataTemplate>
             
             <DataTemplate x:Key="GroupHeaderTemplate">
-                <Border Background="Transparent" Padding="5">
+                <Border Background="Transparent" Padding="0,0,0,15">
                     <Border Background="{StaticResource PhoneAccentBrush}" BorderBrush="{StaticResource PhoneAccentBrush}" BorderThickness="2" Width="62" 
                         Height="62" Margin="0,0,18,0" HorizontalAlignment="Left">
                         <TextBlock Text="{Binding Key}" Foreground="{StaticResource PhoneForegroundBrush}" FontSize="48" Padding="6" 
