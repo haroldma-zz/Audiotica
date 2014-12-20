@@ -78,7 +78,7 @@ namespace Audiotica.Data.Collection.RunTime
                     Songs.AddRange(songs);
                     Artists.AddRange(artists);
                     Albums.AddRange(albums);
-                });
+                }).AsTask().Wait();
             }
 
             //background player
