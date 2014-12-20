@@ -175,7 +175,14 @@ namespace Audiotica.ViewModel
         {
             var collection = new IncrementalObservableCollection<T>
             {
-                HasMoreItemsFunc = () => getPageResponse().Page < getPageResponse().TotalPages
+                HasMoreItemsFunc = () =>
+                {
+                    if (getPageResponse() != null)
+                    {
+                        return getPageResponse().Page < getPageResponse().TotalPages;
+                    }
+                    return false;
+                }
             };
 
             collection.LoadMoreItemsFunc = count =>
