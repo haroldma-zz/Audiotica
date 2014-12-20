@@ -118,15 +118,18 @@ namespace Audiotica.Data.Service.RunTime
 
                     foreach (var songNode in songNodes)
                     {
-                        var song = new WebSong()
+                        var song = new WebSong
                         {
-                            Id = songNode.Attributes["data-id"].Value,
-                            BitRate = int.Parse(songNode.Attributes["data-bitrate"].Value),
-                            ByteSize = (int)double.Parse(songNode.Attributes["data-filesize"].Value),
                             Provider = Mp3Provider.Mp3Trunk
                         };
 
-                        try
+                        if (songNode.Attributes.Contains("data-id"))
+                            song.Id = songNode.Attributes["data-id"].Value;
+                        if (songNode.Attributes.Contains("data-bitrate"))
+                            song.BitRate = int.Parse(songNode.Attributes["data-bitrate"].Value);
+                        if (songNode.Attributes.Contains("data-filesize"))
+                            song.ByteSize = (int) double.Parse(songNode.Attributes["data-filesize"].Value);
+                        if (songNode.Attributes.Contains("data-duration"))
                         {
                             var duration = songNode.Attributes["data-duration"].Value;
                             var seconds = int.Parse(duration.Substring(duration.Length - 2, 2));
@@ -134,18 +137,34 @@ namespace Audiotica.Data.Service.RunTime
 
                             song.Duration = new TimeSpan(0, 0, minutes, seconds);
                         }
-                        catch { }
 
                         var songTitle = songNode.Descendants("div")
                             .FirstOrDefault(p => p.Attributes.Contains("id")
-                            && p.Attributes["id"].Value == "title").InnerText;
-                        song.Title = WebUtility.HtmlDecode(songTitle.Substring(0, songTitle.Length - 4)).Trim();
+                                                 && p.Attributes["id"].Value == "title").InnerText;
+                        songTitle = WebUtility.HtmlDecode(songTitle.Substring(0, songTitle.Length - 4)).Trim();
 
-                        song.AudioUrl = songNode.Descendants("a").FirstOrDefault(p => p.Attributes.Contains("class")
-                            && p.Attributes["class"].Value.Contains("mp3downloadd")).Attributes["href"]
-                            .Value.Replace("/idl.php?u=", "");
+                        //artist - title
+                        var dashIndex = songTitle.IndexOf('-');
+                        if (dashIndex != -1)
+                        {
+                            var titlePart = songTitle.Substring(dashIndex, songTitle.Length - dashIndex);
+                            song.Artist = songTitle.Replace(titlePart, "").Trim();
 
-                        songs.Add(song);
+                            songTitle = titlePart.Remove(0, 1).Trim();
+                        }
+                        song.Title = songTitle;
+
+                        var linkNode = songNode.Descendants("a").FirstOrDefault(p => p.Attributes.Contains("class")
+                                                                                     &&
+                                                                                     p.Attributes["class"].Value
+                                                                                         .Contains("mp3download"));
+                        if (linkNode != null)
+                        {
+                            song.AudioUrl = linkNode.Attributes["href"]
+                                .Value.Replace("/idl.php?u=", "");
+
+                            songs.Add(song);
+                        }
                     }
 
                     return songs.Any() ? FilterByTypeAndMatch(songs, title, artist) : null;
