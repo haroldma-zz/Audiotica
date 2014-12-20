@@ -302,7 +302,7 @@ namespace Audiotica.Data.Collection.RunTime
 
         #region Playback Queue
 
-        private void LoadQueue()
+        private async void LoadQueue()
         {
             var queue = _sqlService.SelectAll<QueueSong>();
             QueueSong head = null;
@@ -321,7 +321,10 @@ namespace Audiotica.Data.Collection.RunTime
 
             for (var i = 0; i < queue.Count; i++)
             {
-                PlaybackQueue.Add(head);
+                if (_dispatcher != null)
+                    await _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => PlaybackQueue.Add(head));
+                else
+                    PlaybackQueue.Add(head);
 
                 if (head.NextId != 0)
                     head = _lookupMap[head.NextId];
@@ -404,7 +407,7 @@ namespace Audiotica.Data.Collection.RunTime
 
         #region Playlist
 
-        private void LoadPlaylists()
+        private async void LoadPlaylists()
         {
             var playlists = _sqlService.SelectAll<Playlist>().OrderByDescending(p => p.Id);
             var playlistSongs = _sqlService.SelectAll<PlaylistSong>();
@@ -440,7 +443,10 @@ namespace Audiotica.Data.Collection.RunTime
 
                 #endregion
 
-                Playlists.Add(playlist);
+                if (_dispatcher != null)
+                    await _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => Playlists.Add(playlist));
+                else
+                    Playlists.Add(playlist);
             }
         }
 
