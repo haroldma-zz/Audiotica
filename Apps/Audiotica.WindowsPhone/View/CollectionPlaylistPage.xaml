@@ -21,10 +21,10 @@
 
         <!-- Title Panel -->
         <StackPanel Grid.Row="0" Margin="19,0,0,0">
-            <TextBlock Text="{Binding Playlist.Name}" Style="{ThemeResource TitleTextBlockStyle}" Margin="0,12,0,0" FontSize="20" FontWeight="Normal" />
+            <TextBlock Text="{Binding Playlist.Name, Converter={StaticResource UpperCaseConverter}}" Style="{ThemeResource TitleTextBlockStyle}" Margin="0,12,0,0" FontSize="24" FontWeight="Bold" />
         </StackPanel>
         <Grid Grid.Row="1" x:Name="ContentRoot" Margin="19,9.5,19,0">
-            <ListView Padding="0,20,0,0"
+            <ListView x:Name="SongList" Padding="0,20,0,0"
                       IsItemClickEnabled="True"
                       ItemsSource="{Binding Playlist.Songs}">
                 <ListView.ItemTemplate>
@@ -48,8 +48,10 @@
     </Grid>
     <Page.BottomAppBar>
         <CommandBar>
-            <AppBarButton Icon="List" Label="Select" />
-            <AppBarButton Icon="Sort" Label="Reorder" />
+<!--            <AppBarButton Icon="Add" Label="Add" />-->
+            <AppBarButton Icon="List" Label="Select" Click="SelectAppBarButton_Click" />
+            <AppBarButton Icon="Sort" Label="Reorder" Click="ReorderAppBarButton_Click" />
+<!--            <AppBarButton Icon="Pin" Label="Pin" />-->
         </CommandBar>
     </Page.BottomAppBar>
 </audiotica:PageBase>
