@@ -16,7 +16,7 @@ namespace Audiotica.PartialView
         {
             InitializeComponent();
 
-            var visBinding = new Binding {Source = DataContext, Path = new PropertyPath("CurrentSong")};
+            var visBinding = new Binding {Source = DataContext, Path = new PropertyPath("CurrentQueue")};
             SetBinding(IsVisibleProperty, visBinding);
         }
 

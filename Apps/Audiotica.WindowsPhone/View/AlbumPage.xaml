@@ -8,14 +8,13 @@
     xmlns:common="using:Audiotica.Core.Common"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
-    xmlns:controls="using:Audiotica.Core.UserControls"
     xmlns:audiotica="using:Audiotica"
     xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
     xmlns:core="using:Microsoft.Xaml.Interactions.Core"
     DataContext="{Binding Source={StaticResource Locator}, Path=Album}">
 
     <Grid>
-        <ListView Padding="0,20,0,0" Margin="20,0" ItemContainerStyle="{StaticResource NoFeedbackListViewItem}">
+        <ListView Padding="0,40,0,0" Margin="20,0" ItemContainerStyle="{StaticResource NoFeedbackListViewItem}">
             <Grid>
                 <Grid Margin="0,0,0,10">
                     <Grid.ColumnDefinitions>
@@ -23,19 +22,21 @@
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
                     <Image Height="100" Width="100"
-                       Source="{Binding Album.Images.Largest}" />
+                           Source="{Binding Album.Images.Largest}" />
                     <StackPanel Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="5,0,0,0">
                         <TextBlock Text="{Binding Album.Name}" FontSize="22" TextAlignment="Right"
-                               TextTrimming="CharacterEllipsis" FontWeight="Bold" />
+                                   TextTrimming="CharacterEllipsis" FontWeight="Bold" />
                         <HyperlinkButton Content="{Binding Album.ArtistName}" FontSize="16"
-                                     HorizontalAlignment="Right" Foreground="#89FFFFFF" />
-                        <TextBlock Text="{Binding Album.TopTags[0].Name}" FontSize="16" TextAlignment="Right" Foreground="#89FFFFFF"
-                               TextTrimming="CharacterEllipsis" />
+                                         HorizontalAlignment="Right" Foreground="#89FFFFFF" />
+                        <TextBlock Text="{Binding Album.TopTags[0].Name}" FontSize="16" TextAlignment="Right"
+                                   Foreground="#89FFFFFF"
+                                   TextTrimming="CharacterEllipsis" />
                     </StackPanel>
                 </Grid>
             </Grid>
             <Grid Margin="0,20,0,0">
-                <ListView IsItemClickEnabled="True" ItemsSource="{Binding Album.Tracks}" Margin="0,5,0,0" ItemTemplate="{StaticResource LastTrackDataTemplate}" >
+                <ListView IsItemClickEnabled="True" ItemsSource="{Binding Album.Tracks}" Margin="0,5,0,0"
+                          ItemTemplate="{StaticResource LastTrackDataTemplate}">
                     <interactivity:Interaction.Behaviors>
                         <core:EventTriggerBehavior EventName="ItemClick">
                             <core:InvokeCommandAction Command="{Binding SongClickRelayCommand}" />

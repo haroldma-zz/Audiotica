@@ -18,7 +18,7 @@ namespace Audiotica.Data.Mp3Providers
 
         //TODO [Harry,20140913] make this work, needs login and captcha handling
         //taken from Audiotica 6-alpha1-project1
-        public async Task<string> GetMatch(string title, string artist)
+        public async Task<string> GetMatch(string title, string artist, string album = null)
         {
             var url = string.Format(SearchUrl, title + " " + artist, "TODO:NEED TOKEN", 5);
 

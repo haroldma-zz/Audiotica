@@ -111,7 +111,7 @@ namespace Audiotica.Core.Common
 
             var grid = new Grid
             {
-                Background = new SolidColorBrush(ColorHelper.GetColorFromHexa("#202020")),
+                Background = new SolidColorBrush(ColorHelper.GetColorFromHexa("#1F1F1F")),
                 Height = Height + PaddingPopup,
                 Width = Window.Current.Bounds.Width,
                 IsHoldingEnabled = true,

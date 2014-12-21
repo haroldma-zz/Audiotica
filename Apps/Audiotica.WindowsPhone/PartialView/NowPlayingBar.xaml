@@ -74,18 +74,18 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <ProgressBar Value="0" IsIndeterminate="{Binding IsLoading}" />
-        <Grid Grid.Row="1" Background="#202020">
+        <ProgressBar Value="{Binding Position, Converter={StaticResource TimespanToDoubleConverter}, Mode=TwoWay}" Maximum="{Binding Duration, Converter={StaticResource TimespanToDoubleConverter}, Mode=TwoWay}" IsIndeterminate="{Binding IsLoading}" />
+        <Grid Grid.Row="1" Background="#1F1F1F">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
-            <Image Source="{Binding CurrentSong.Album.Artwork}" Width="50" Height="50" Margin="10" />
+            <Image Source="{Binding CurrentQueue.Song.Album.Artwork}" Width="50" Height="50" Margin="10" />
             <StackPanel VerticalAlignment="Center" Grid.Column="1">
-                <TextBlock Text="{Binding CurrentSong.Name}" FontSize="20"
+                <TextBlock Text="{Binding CurrentQueue.Song.Name}" FontSize="20"
                            TextTrimming="CharacterEllipsis" FontWeight="Bold" />
-                <TextBlock Text="{Binding CurrentSong.Artist.Name}" FontSize="15" FontWeight="Thin"
+                <TextBlock Text="{Binding CurrentQueue.Song.Artist.Name}" FontSize="15" FontWeight="Thin"
                            Foreground="#89FFFFFF"
                            TextTrimming="CharacterEllipsis" />
             </StackPanel>

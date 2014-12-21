@@ -13,13 +13,16 @@
     DataContext="{Binding Source={StaticResource Locator}, Path=CollectionArtist}">
 
     <Grid>
-        <Pivot Title="{Binding Artist.Name}" HeaderTemplate="{StaticResource PivotHeaderTemplate}">
-            <PivotItem Header="TRACKS">
+        <Grid.Background>
+            <ImageBrush Opacity=".25" Stretch="UniformToFill" ImageSource="{Binding LastArtist.MainImage.Largest}" />
+        </Grid.Background>
+        <Pivot x:Name="ArtistPivot" Title="{Binding Artist.Name, Converter={StaticResource UpperCaseConverter}}" HeaderTemplate="{StaticResource PivotHeaderTemplate}">
+            <PivotItem Header="SONGS">
                 <ListView IsItemClickEnabled="True" ItemsSource="{Binding Artist.Songs}"
                           ItemTemplate="{StaticResource SongDataTemplate}">
                     <interactivity:Interaction.Behaviors>
                         <core:EventTriggerBehavior EventName="ItemClick">
-                            <core:InvokeCommandAction Command="{Binding SongClickRelayCommand}"/>
+                            <core:InvokeCommandAction Command="{Binding SongClickRelayCommand}" />
                         </core:EventTriggerBehavior>
                     </interactivity:Interaction.Behaviors>
                 </ListView>
@@ -28,7 +31,34 @@
                 <ListView ItemsSource="{Binding Artist.Albums}"
                           ItemTemplate="{StaticResource AlbumDataTemplate}"
                           SelectionMode="None"
-                          IsItemClickEnabled="True" ItemClick="AlbumListView_ItemClick"/>
+                          IsItemClickEnabled="True" ItemClick="AlbumListView_ItemClick" />
+            </PivotItem>
+            <PivotItem x:Name="SimilarPivot" Header="SIMILAR">
+                <ListView ItemsSource="{Binding LastArtist.Similar}" IsItemClickEnabled="True"
+                          ItemClick="ListView_ItemClick">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Height="150" Margin="0,0,0,10" Background="{StaticResource PhoneAccentBrush}">
+                                <Grid>
+                                    <Grid.Background>
+                                        <ImageBrush Stretch="UniformToFill" ImageSource="{Binding MainImage.Largest}"
+                                                    AlignmentY="Top" />
+                                    </Grid.Background>
+                                </Grid>
+                                <Grid Background="#BF000000" VerticalAlignment="Bottom">
+                                    <TextBlock TextTrimming="CharacterEllipsis" Margin="15,5" FontSize="22"
+                                               Text="{Binding Name}" HorizontalAlignment="Left"
+                                               VerticalAlignment="Bottom" />
+                                </Grid>
+                            </Grid>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </PivotItem>
+            <PivotItem x:Name="BioPivot" Header="BIO">
+                <ScrollViewer>
+                    <TextBlock FontSize="24" TextWrapping="Wrap" Text="{Binding LastArtist.Bio.Content}" />
+                </ScrollViewer>
             </PivotItem>
         </Pivot>
     </Grid>

@@ -3,6 +3,7 @@
 using System;
 using System.Linq;
 using Windows.Media.Playback;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Audiotica.Core;
 using Audiotica.Core.Utilities;
@@ -23,12 +24,18 @@ namespace Audiotica
         private readonly RelayCommand _playPauseRelayCommand;
         private readonly RelayCommand _prevRelayCommand;
         private readonly ICollectionService _service;
-        private Song _currentSong;
+        private QueueSong _currentQueue;
+        private TimeSpan _duration;
         private bool _isLoading;
         private IconElement _playPauseIcon;
+        private readonly DispatcherTimer _timer;
+        private TimeSpan _position;
 
         public PlayerViewModel(AudioPlayerHelper helper, ICollectionService service)
         {
+            _timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
+            _timer.Tick += TimerOnTick;
+
             _helper = helper;
             helper.TrackChanged += HelperOnTrackChanged;
             helper.PlaybackStateChanged += HelperOnPlaybackStateChanged;
@@ -41,14 +48,31 @@ namespace Audiotica
 
             if (!IsInDesignMode) return;
 
-            CurrentSong = service.Songs.FirstOrDefault();
+            CurrentQueue = service.PlaybackQueue.FirstOrDefault();
             PlayPauseIcon = new SymbolIcon(Symbol.Play);
         }
 
-        public Song CurrentSong
+        private void TimerOnTick(object sender, object o)
         {
-            get { return _currentSong; }
-            set { Set(ref _currentSong, value); }
+            Position = BackgroundMediaPlayer.Current.Position;
+        }
+
+        public TimeSpan Duration
+        {
+            get { return _duration; }
+            set { Set(ref _duration, value); }
+        }
+
+        public TimeSpan Position
+        {
+            get { return _position; }
+            set { Set(ref _position, value); }
+        }
+
+        public QueueSong CurrentQueue
+        {
+            get { return _currentQueue; }
+            set { Set(ref _currentQueue, value); }
         }
 
         public IconElement PlayPauseIcon
@@ -80,7 +104,7 @@ namespace Audiotica
 
         private void HelperOnShutdown(object sender, EventArgs eventArgs)
         {
-            CurrentSong = null;
+            CurrentQueue = null;
         }
 
         private void HelperOnPlaybackStateChanged(object sender, PlaybackStateEventArgs playbackStateEventArgs)
@@ -88,10 +112,12 @@ namespace Audiotica
             IsLoading = false;
             switch (playbackStateEventArgs.State)
             {
-                case MediaPlayerState.Paused:
-                    PlayPauseIcon = new SymbolIcon(Symbol.Play);
-                    break;
                 default:
+                    PlayPauseIcon = new SymbolIcon(Symbol.Play);
+                    _timer.Stop();
+                    break;
+                case MediaPlayerState.Playing:
+                    _timer.Start();
                     PlayPauseIcon = new SymbolIcon(Symbol.Pause);
                     break;
                 case MediaPlayerState.Buffering:
@@ -103,15 +129,20 @@ namespace Audiotica
 
         private void HelperOnTrackChanged(object sender, EventArgs eventArgs)
         {
+            Duration = BackgroundMediaPlayer.Current.NaturalDuration;
+
             if (BackgroundMediaPlayer.Current.CurrentState != MediaPlayerState.Closed &&
                 BackgroundMediaPlayer.Current.CurrentState != MediaPlayerState.Stopped)
             {
                 var id = AppSettingsHelper.Read<long>(PlayerConstants.CurrentTrack);
-                CurrentSong = _service.Songs.FirstOrDefault(p => p.Id == id);
+                CurrentQueue = _service.PlaybackQueue.FirstOrDefault(p => p.Id == id);
+
+                if (CurrentQueue.Song.Duration.Ticks != Duration.Ticks)
+                    CurrentQueue.Song.Duration = Duration;
             }
             else
             {
-                CurrentSong = null;
+                CurrentQueue = null;
             }
         }
 

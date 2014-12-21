@@ -13,15 +13,17 @@ using Audiotica.Data.Collection.RunTime;
 
 namespace Audiotica.WindowsPhone.Player
 {
-    internal class QueueManager
+    internal class QueueManager: IDisposable
     {
         #region Private members
 
         private readonly MediaPlayer _mediaPlayer;
         private int _currentTrackIndex = -1;
+        private SqlService _sql;
 
         public QueueManager()
         {
+            _sql = new SqlService();
             _mediaPlayer = BackgroundMediaPlayer.Current;
             _mediaPlayer.MediaOpened += MediaPlayer_MediaOpened;
             _mediaPlayer.MediaEnded += MediaPlayer_MediaEnded;
@@ -83,6 +85,18 @@ namespace Audiotica.WindowsPhone.Player
 
             if (TrackChanged != null)
                 TrackChanged.Invoke(this, CurrentTrack.SongId);
+
+            try
+            {
+                CurrentTrack.Song.PlayCount++;
+                CurrentTrack.Song.LastPlayed = DateTime.Now;
+
+                if (CurrentTrack.Song.Duration.Ticks != _mediaPlayer.NaturalDuration.Ticks)
+                    CurrentTrack.Song.Duration = _mediaPlayer.NaturalDuration;
+
+                _sql.UpdateItemAsync(CurrentTrack.Song).Wait();
+            }
+            catch { }
         }
 
         /// <summary>
@@ -126,10 +140,10 @@ namespace Audiotica.WindowsPhone.Player
 
         public void StartTrack(long id)
         {
-            var source = tracks.FirstOrDefault(p => p.SongId == id).Song.AudioUrl;
-            _currentTrackIndex = tracks.FindIndex(p => p.SongId == id);
+            var track = tracks.FirstOrDefault(p => p.Id == id);
+            _currentTrackIndex = tracks.IndexOf(track);
             _mediaPlayer.AutoPlay = false;
-            _mediaPlayer.SetUriSource(new Uri(source));
+            _mediaPlayer.SetUriSource(new Uri(track.Song.AudioUrl));
         }
 
         /// <summary>
@@ -155,7 +169,7 @@ namespace Audiotica.WindowsPhone.Player
         {
             if (_currentTrackIndex == 0)
             {
-                StartTrackAt(_currentTrackIndex);
+                StartTrackAt(tracks.Count - 1);
             }
             else
             {
@@ -167,12 +181,14 @@ namespace Audiotica.WindowsPhone.Player
 
         public void RefreshTracks()
         {
-            var sql = new SqlService();
-
-            var collectionService = new CollectionService(sql, null);
+            var collectionService = new CollectionService(_sql, null);
             collectionService.LoadLibrary();
-
             tracks = collectionService.PlaybackQueue.ToList();
+        }
+
+        public void Dispose()
+        {
+            _sql.Dispose();
         }
     }
 }

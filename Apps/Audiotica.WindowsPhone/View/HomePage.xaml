@@ -98,6 +98,14 @@
                             </Interactivity:Interaction.Behaviors>
                         </Button>
                         <Button Style="{StaticResource PlainButtonStyle}">
+                            <TextBlock Text="playlists" FontSize="40" />
+                            <Interactivity:Interaction.Behaviors>
+                                <Core:EventTriggerBehavior EventName="Click">
+                                    <Core:NavigateToPageAction TargetPage="Audiotica.View.CollectionPage" Parameter="3" />
+                                </Core:EventTriggerBehavior>
+                            </Interactivity:Interaction.Behaviors>
+                        </Button>
+                        <Button Style="{StaticResource PlainButtonStyle}">
                             <TextBlock Text="search" FontSize="40"/>
                             <Interactivity:Interaction.Behaviors>
                                 <Core:EventTriggerBehavior EventName="Click">
@@ -105,18 +113,10 @@
                                 </Core:EventTriggerBehavior>
                             </Interactivity:Interaction.Behaviors>
                         </Button>
-                        <Button Style="{StaticResource PlainButtonStyle}">
-                            <TextBlock Text="settings" FontSize="40"/>
-                            <Interactivity:Interaction.Behaviors>
-                                <Core:EventTriggerBehavior EventName="Click">
-                                    <Core:NavigateToPageAction TargetPage="Audiotica.View.SettingsPage" />
-                                </Core:EventTriggerBehavior>
-                            </Interactivity:Interaction.Behaviors>
-                        </Button>
                     </StackPanel>
                 </DataTemplate>
             </HubSection>
-            <HubSection Header="TOP TRACKS" HeaderTemplate="{StaticResource HubHeaderTemplate}">
+            <HubSection Header="TOP SONGS" HeaderTemplate="{StaticResource HubHeaderTemplate}">
                 <DataTemplate>
                     <GridView ItemsSource="{Binding TopTracks}" SelectionMode="None" IsItemClickEnabled="True" ItemClick="ListView_ItemClick">
                         <GridView.ItemTemplate>

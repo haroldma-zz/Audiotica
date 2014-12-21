@@ -53,7 +53,7 @@ namespace Audiotica.WindowsPhone.Player
         /// <summary>
         ///     Property to hold current playlist
         /// </summary>
-        private QueueManager queueManager
+        private QueueManager QueueManager
         {
             get
             {
@@ -97,7 +97,7 @@ namespace Audiotica.WindowsPhone.Player
             BackgroundMediaPlayer.Current.CurrentStateChanged += Current_CurrentStateChanged;
 
             //Add handlers for playlist trackchanged
-            queueManager.TrackChanged += playList_TrackChanged;
+            QueueManager.TrackChanged += playList_TrackChanged;
 
             //Initialize message channel 
             BackgroundMediaPlayer.MessageReceivedFromForeground += BackgroundMediaPlayer_MessageReceivedFromForeground;
@@ -152,8 +152,9 @@ namespace Audiotica.WindowsPhone.Player
 
                 if (_queueManager != null)
                 {
-                    AppSettingsHelper.Write(PlayerConstants.CurrentTrack, queueManager.CurrentTrack.SongId);
-                    queueManager.TrackChanged -= playList_TrackChanged;
+                    AppSettingsHelper.Write(PlayerConstants.CurrentTrack, QueueManager.CurrentTrack.Id);
+                    QueueManager.TrackChanged -= playList_TrackChanged;
+
                     _queueManager = null;
                 }
                 BackgroundMediaPlayer.Shutdown(); // shutdown media pipeline
@@ -181,9 +182,9 @@ namespace Audiotica.WindowsPhone.Player
         {
             _systemmediatransportcontrol.PlaybackStatus = MediaPlaybackStatus.Playing;
             _systemmediatransportcontrol.DisplayUpdater.Type = MediaPlaybackType.Music;
-            _systemmediatransportcontrol.DisplayUpdater.MusicProperties.Title = queueManager.CurrentTrack.Song.Name;
+            _systemmediatransportcontrol.DisplayUpdater.MusicProperties.Title = QueueManager.CurrentTrack.Song.Name;
             _systemmediatransportcontrol.DisplayUpdater.MusicProperties.Artist =
-                queueManager.CurrentTrack.Song.Artist.Name;
+                QueueManager.CurrentTrack.Song.Artist.Name;
             //_systemmediatransportcontrol.DisplayUpdater.Thumbnail =
             //  RandomAccessStreamReference.CreateFromUri(Playlist.CurrentTrack.GetArtworkUri());
             _systemmediatransportcontrol.DisplayUpdater.Update();
@@ -219,7 +220,7 @@ namespace Audiotica.WindowsPhone.Player
                     //When this happens, the task gets re-initialized and that is asynchronous and hence the wait
                     if (!_backgroundtaskrunning)
                     {
-                        queueManager.RefreshTracks();
+                        QueueManager.RefreshTracks();
                         var result = _backgroundTaskStarted.WaitOne(2000);
                         if (!result)
                             throw new Exception("Background Task didnt initialize in time");
@@ -260,15 +261,7 @@ namespace Audiotica.WindowsPhone.Player
             try
             {
                 var currenttrack = AppSettingsHelper.Read<long>(PlayerConstants.CurrentTrack);
-
-                if (queueManager.CurrentTrack == null || queueManager.CurrentTrack.SongId != currenttrack)
-                {
-                    queueManager.StartTrack(currenttrack);
-                }
-                else
-                {
-                    BackgroundMediaPlayer.Current.Play();
-                }
+                QueueManager.StartTrack(currenttrack);
             }
             catch (Exception ex)
             {
@@ -284,12 +277,12 @@ namespace Audiotica.WindowsPhone.Player
         private void playList_TrackChanged(QueueManager sender, object args)
         {
             UpdateUvcOnNewTrack();
-            AppSettingsHelper.Write(PlayerConstants.CurrentTrack, sender.CurrentTrack.SongId);
+            AppSettingsHelper.Write(PlayerConstants.CurrentTrack, sender.CurrentTrack.Id);
 
             if (_foregroundAppState != ForegroundAppStatus.Active) return;
 
             //Message channel that can be used to send messages to foreground
-            var message = new ValueSet {{PlayerConstants.Trackchanged, sender.CurrentTrack.SongId}};
+            var message = new ValueSet {{PlayerConstants.Trackchanged, sender.CurrentTrack.Id}};
             BackgroundMediaPlayer.SendMessageToForeground(message);
         }
 
@@ -299,7 +292,7 @@ namespace Audiotica.WindowsPhone.Player
         private void SkipToPrevious()
         {
             _systemmediatransportcontrol.PlaybackStatus = MediaPlaybackStatus.Changing;
-            queueManager.SkipToPrevious();
+            QueueManager.SkipToPrevious();
         }
 
         /// <summary>
@@ -308,7 +301,7 @@ namespace Audiotica.WindowsPhone.Player
         private void SkipToNext()
         {
             _systemmediatransportcontrol.PlaybackStatus = MediaPlaybackStatus.Changing;
-            queueManager.SkipToNext();
+            QueueManager.SkipToNext();
         }
 
         #endregion
@@ -343,7 +336,7 @@ namespace Audiotica.WindowsPhone.Player
                     case PlayerConstants.AppSuspended:
                         Debug.WriteLine("App suspending");
                         // App is suspended, you can save your task state at this point
-                        AppSettingsHelper.Write(PlayerConstants.CurrentTrack, queueManager.CurrentTrack.SongId);
+                        AppSettingsHelper.Write(PlayerConstants.CurrentTrack, QueueManager.CurrentTrack.Id);
                         break;
                     case PlayerConstants.AppResumed:
                         Debug.WriteLine("App resuming"); // App is resumed, now subscribe to message channel

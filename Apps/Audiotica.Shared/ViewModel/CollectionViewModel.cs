@@ -2,14 +2,19 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using System.Globalization;
 using System.Linq;
+using Windows.Globalization.Collation;
 using Windows.Graphics.Display;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
+using Audiotica.Core.Common;
 using Audiotica.Core.Utilities;
 using Audiotica.Data.Collection;
 using Audiotica.Data.Collection.Model;
+using Audiotica.Data.Collection.SqlHelper;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 
@@ -19,45 +24,36 @@ namespace Audiotica.ViewModel
 {
     public class CollectionViewModel : ViewModelBase
     {
-        private readonly ICollectionService _service;
-#if WINDOWS_PHONE_APP
         private readonly AudioPlayerHelper _audioPlayer;
-#endif
+        private readonly ICollectionService _service;
         private readonly RelayCommand<ItemClickEventArgs> _songClickCommand;
+        private ObservableCollection<AlphaKeyGroup<Album>> _sortedAlbums;
+        private ObservableCollection<AlphaKeyGroup<Artist>> _sortedArtists;
+        private ObservableCollection<AlphaKeyGroup<Song>> _sortedSongs;
 
-        public CollectionViewModel(ICollectionService service
-#if WINDOWS_PHONE_APP
-, AudioPlayerHelper audioPlayer
-#endif
-            )
+        public CollectionViewModel(ICollectionService service, AudioPlayerHelper audioPlayer)
         {
             _service = service;
-#if WINDOWS_PHONE_APP
             _audioPlayer = audioPlayer;
-#endif
 
             _songClickCommand = new RelayCommand<ItemClickEventArgs>(SongClickExecute);
 
             if (IsInDesignModeStatic)
                 _service.LoadLibrary();
+
+            SortedSongs = AlphaKeyGroup<Song>.CreateGroups(Service.Songs.ToList(),
+                CultureInfo.CurrentCulture, item => item.Name, true);
+            SortedArtists = AlphaKeyGroup<Artist>.CreateGroups(Service.Artists.ToList(),
+                CultureInfo.CurrentCulture, item => item.Name, true);
+            SortedAlbums = AlphaKeyGroup<Album>.CreateGroups(Service.Albums.ToList(),
+                CultureInfo.CurrentCulture, item => item.Name, true);
+
+            Service.Songs.CollectionChanged += OnCollectionChanged;
+            Service.Albums.CollectionChanged += OnCollectionChanged;
+            Service.Artists.CollectionChanged += OnCollectionChanged;
         }
 
-        private async void SongClickExecute(ItemClickEventArgs e)
-        {
-            var song = e.ClickedItem as Song;
-
-            await _service.ClearQueueAsync();
-
-            foreach (var queueSong in _service.Songs)
-            {
-                await _service.AddToQueueAsync(queueSong);
-            }
-
-#if WINDOWS_PHONE_APP
-            //play the song here
-            _audioPlayer.PlaySong(song.Id);
-#endif
-        }
+        #region Private Helpers 
 
         private int rowCount
         {
@@ -65,9 +61,121 @@ namespace Audiotica.ViewModel
             {
                 //extra column if running on hd device (720 and 1080)
                 var scaleFactor = DisplayInformation.GetForCurrentView().RawPixelsPerViewPixel;
-                var actualWidth = (int)(Window.Current.Bounds.Width * scaleFactor);
+                var actualWidth = (int) (Window.Current.Bounds.Width*scaleFactor);
                 return actualWidth == 720 || actualWidth == 1080 ? 5 : 4;
             }
+        }
+
+        private void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs arg)
+        {
+            BaseEntry item;
+            var removed = false;
+
+            switch (arg.Action)
+            {
+                case NotifyCollectionChangedAction.Add:
+                    item = (BaseEntry) arg.NewItems[0];
+                    break;
+                default:
+                    item = (BaseEntry) arg.OldItems[0];
+                    removed = true;
+                    break;
+            }
+
+            if (item is Song)
+            {
+                var song = item as Song;
+                UpdateSortedCollection(song, removed, song.Name, () => SortedSongs);
+            }
+            else if (item is Artist)
+            {
+                var artist = item as Artist;
+                UpdateSortedCollection(artist, removed, artist.Name, () => SortedArtists);
+            }
+            else if (item is Album)
+            {
+                var album = item as Album;
+                UpdateSortedCollection(album, removed, album.Name, () => SortedAlbums);
+            }
+        }
+
+        private void UpdateSortedCollection<T>(T item, bool removed, string key,
+            Func<ObservableCollection<AlphaKeyGroup<T>>> getSorted)
+        {
+            bool zero;
+            var sortedGroups = getSorted();
+            var group = sortedGroups.First(a => a.Key == new CharacterGroupings().Lookup(key));
+
+            if (removed)
+            {
+                group.Remove(item);
+                zero = group.Count == 0;
+            }
+
+            else
+            {
+                zero = group.Count == 0;
+                var index = 0;
+
+                //if the group is not empty, then insert acording to sort
+                if (!zero)
+                {
+                    var list = group.ToList();
+                    list.Add(item);
+                    list.Sort((x, y) => String.Compare(group.OrderKey(x), group.OrderKey(y), StringComparison.Ordinal));
+                    index = list.IndexOf(item);
+                }
+                group.Insert(index, item);
+            }
+
+            if (!zero) return;
+
+            //removing and readding to update the groups collection in the listview
+            var groupIndex = sortedGroups.IndexOf(group);
+            sortedGroups.Remove(group);
+            sortedGroups.Insert(groupIndex, group);
+        }
+
+        private bool _currentlyPreparing;
+        private async void SongClickExecute(ItemClickEventArgs e)
+        {
+            if (_currentlyPreparing) return;
+            _currentlyPreparing = true;
+
+            var song = e.ClickedItem as Song;
+
+            await _service.ClearQueueAsync();
+
+            var queueList = _service.Songs.OrderBy(p => p.Name).ToList();
+            foreach (var queueSong in queueList)
+            {
+                await _service.AddToQueueAsync(queueSong);
+            }
+
+            _audioPlayer.PlaySong(_service.PlaybackQueue[queueList.IndexOf(song)]);
+            _currentlyPreparing = false;
+        }
+
+        #endregion
+
+        #region Properties
+
+        public ObservableCollection<AlphaKeyGroup<Song>> SortedSongs
+        {
+            get { return _sortedSongs; }
+            set { Set(ref _sortedSongs, value); }
+        }
+
+        public ObservableCollection<AlphaKeyGroup<Album>> SortedAlbums
+        {
+            get { return _sortedAlbums; }
+            set { Set(ref _sortedAlbums, value); }
+        }
+
+        public ObservableCollection<AlphaKeyGroup<Artist>> SortedArtists
+        {
+            get { return _sortedArtists; }
+            set { Set(ref _sortedArtists, value); }
         }
 
         public List<Album> RandomizeAlbumList
@@ -80,10 +188,10 @@ namespace Audiotica.ViewModel
 
                 if (albumCount == 0) return null;
 
-                var h = Window.Current.Bounds.Height;
-                var rows = (int)Math.Ceiling(h / ArtworkSize);
+                var h = IsInDesignMode ? 800 : Window.Current.Bounds.Height;
+                var rows = (int) Math.Ceiling(h/ArtworkSize);
 
-                var numImages = rows * rowCount;
+                var numImages = rows*rowCount;
                 var imagesNeeded = numImages - albumCount;
 
                 var shuffle = albums
@@ -98,7 +206,7 @@ namespace Audiotica.ViewModel
                 while (imagesNeeded > 0)
                 {
                     var takeAmmount = imagesNeeded > albumCount ? albumCount : imagesNeeded;
-                    
+
                     repeatList.AddRange(shuffle.Shuffle().Take(takeAmmount));
 
                     imagesNeeded -= shuffle.Count;
@@ -114,8 +222,8 @@ namespace Audiotica.ViewModel
         {
             get
             {
-                var w = Window.Current.Bounds.Width;
-                return w / rowCount;
+                var w = IsInDesignMode ? 480 : Window.Current.Bounds.Width;
+                return w/rowCount;
             }
         }
 
@@ -128,5 +236,7 @@ namespace Audiotica.ViewModel
         {
             get { return _songClickCommand; }
         }
+
+        #endregion
     }
 }

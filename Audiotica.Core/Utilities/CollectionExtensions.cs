@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 #endregion
 
@@ -10,6 +11,27 @@ namespace Audiotica.Core.Utilities
 {
     public static class CollectionExtensions
     {
+        public static void Sort<T>(this ObservableCollection<T> observable, Comparison<T> comparison)
+        {
+            List<T> sorted = observable.ToList();
+            sorted.Sort(comparison);
+
+            int ptr = 0;
+            while (ptr < sorted.Count)
+            {
+                if (!observable[ptr].Equals(sorted[ptr]))
+                {
+                    T t = observable[ptr];
+                    observable.RemoveAt(ptr);
+                    observable.Insert(sorted.IndexOf(t), t);
+                }
+                else
+                {
+                    ptr++;
+                }
+            }
+        }
+
         public static void AddRange<T>(this IList<T> collection, IEnumerable<T> items)
         {
             foreach (var item in items)

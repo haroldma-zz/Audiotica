@@ -4,6 +4,6 @@ namespace Audiotica.Data.Mp3Providers
 {
     public interface IMp3Provider
     {
-        Task<string> GetMatch(string title, string artist);
+        Task<string> GetMatch(string title, string artist, string album = null);
     }
 }

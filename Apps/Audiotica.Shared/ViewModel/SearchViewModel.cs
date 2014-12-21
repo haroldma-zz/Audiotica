@@ -23,16 +23,16 @@ namespace Audiotica.ViewModel
     public class SearchViewModel : ViewModelBase
     {
         private readonly IScrobblerService _service;
+        private IncrementalObservableCollection<LastAlbum> _albumsCollection;
+        private PageResponse<LastAlbum> _albumsResponse;
+        private IncrementalObservableCollection<LastArtist> _artistsCollection;
+        private PageResponse<LastArtist> _artistsResponse;
         private bool _isLoading;
         private RelayCommand<KeyRoutedEventArgs> _keyDownRelayCommand;
         private string _searchTerm;
         private RelayCommand<ItemClickEventArgs> _songClickRelayCommand;
         private IncrementalObservableCollection<LastTrack> _tracksCollection;
         private PageResponse<LastTrack> _tracksResponse;
-        private PageResponse<LastAlbum> _albumsResponse;
-        private PageResponse<LastArtist> _artistsResponse;
-        private IncrementalObservableCollection<LastArtist> _artistsCollection;
-        private IncrementalObservableCollection<LastAlbum> _albumsCollection;
 
         public SearchViewModel(IScrobblerService service)
         {
@@ -98,6 +98,19 @@ namespace Audiotica.ViewModel
         {
             try
             {
+                if (Tracks != null)
+                {
+                    Tracks.Clear();
+                }
+                if (Artists != null)
+                {
+                    Artists.Clear();
+                }
+                if (Albums != null)
+                {
+                    Albums.Clear();
+                }
+
                 _tracksResponse = await _service.SearchTracksAsync(term);
 
                 Tracks = CreateIncrementalCollection(
@@ -162,7 +175,14 @@ namespace Audiotica.ViewModel
         {
             var collection = new IncrementalObservableCollection<T>
             {
-                HasMoreItemsFunc = () => getPageResponse().Page < getPageResponse().TotalPages
+                HasMoreItemsFunc = () =>
+                {
+                    if (getPageResponse() != null)
+                    {
+                        return getPageResponse().Page < getPageResponse().TotalPages;
+                    }
+                    return false;
+                }
             };
 
             collection.LoadMoreItemsFunc = count =>

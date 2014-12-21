@@ -30,7 +30,14 @@ namespace Audiotica.Data.Collection.Model
 
         public long PlayCount { get; set; }
 
+        [SqlProperty(IsNull = true)]
+        public DateTime LastPlayed { get; set; }
+
         public HeartState HeartState { get; set; }
+
+        public TimeSpan Duration { get; set; }
+
+        public bool IsOfflineMode { get; set; }
 
 
         [SqlIgnore]

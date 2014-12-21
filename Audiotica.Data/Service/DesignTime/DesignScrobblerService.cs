@@ -169,13 +169,33 @@ namespace Audiotica.Data.Service.DesignTime
             };
         }
 
-        private LastArtist CreateArtist(string artist, string artwork)
+        private LastArtist CreateArtist(string artist, string artwork, bool withSimilar = true)
         {
-            return new LastArtist
+            var a = new LastArtist
             {
                 Name = artist,
-                MainImage = new LastImageSet {ExtraLarge = new Uri(artwork)}
+                MainImage = new LastImageSet {ExtraLarge = new Uri(artwork)},
+                Bio = new LastWiki
+                {
+                    YearFormed = 2011,
+                    Content = "In the begining it was called musicDownload... then it was reborn as something else..."
+                }
             };
+
+            if (withSimilar)
+            {
+                a.Similar = new List<LastArtist>
+                {
+                    CreateArtist("Iggy Azalea",
+                        "http://musicimage.xboxlive.com/content/music.1F154700-0200-11DB-89CA-0019B92A3933/image?locale=en-US", false),
+                    CreateArtist("Ariana Grande",
+                        "http://musicimage.xboxlive.com/content/music.89C84300-0200-11DB-89CA-0019B92A3933/image?locale=en-US", false),
+                    CreateArtist("Jason Derulo",
+                        "http://musicimage.xboxlive.com/content/music.9C080600-0200-11DB-89CA-0019B92A3933/image?locale=en-US", false)
+                };
+            }
+
+            return a;
         }
 
         private LastAlbum CreateAlbum(string name, string artist, string artwork)
@@ -185,8 +205,8 @@ namespace Audiotica.Data.Service.DesignTime
                 Name = name,
                 ArtistName = artist,
                 Tracks = CreateDesignTracks(),
-                TopTags = new List<LastTag>{new LastTag{ Name = "pop"}},
-                Images = new LastImageSet { ExtraLarge = new Uri(artwork) }
+                TopTags = new List<LastTag> {new LastTag {Name = "pop"}},
+                Images = new LastImageSet {ExtraLarge = new Uri(artwork)}
             };
         }
     }

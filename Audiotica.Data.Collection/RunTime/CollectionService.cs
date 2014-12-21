@@ -20,8 +20,8 @@ namespace Audiotica.Data.Collection.RunTime
     public class CollectionService : ICollectionService
     {
         private readonly CoreDispatcher _dispatcher;
-        private readonly ISqlService _sqlService;
         private readonly Dictionary<long, QueueSong> _lookupMap = new Dictionary<long, QueueSong>();
+        private readonly ISqlService _sqlService;
 
         public CollectionService(ISqlService sqlService, CoreDispatcher dispatcher)
         {
@@ -78,10 +78,10 @@ namespace Audiotica.Data.Collection.RunTime
                     Songs.AddRange(songs);
                     Artists.AddRange(artists);
                     Albums.AddRange(albums);
-                });
+                }).AsTask().Wait();
             }
 
-            //background player
+                //background player
             else
             {
                 Songs = new ObservableCollection<Song>(songs);
@@ -157,7 +157,7 @@ namespace Audiotica.Data.Collection.RunTime
                 {
                     await _sqlService.InsertAsync(song.Album);
                     Albums.Insert(0, song.Album);
-                    song.Artist.Albums.Insert(0,song.Album);
+                    song.Artist.Albums.Insert(0, song.Album);
                 }
             }
 
@@ -219,9 +219,24 @@ namespace Audiotica.Data.Collection.RunTime
 
         public async Task DeleteSongAsync(Song song)
         {
-            // remove it from artist and albums songs
+            // remove it from artist, albums and playlists songs
             var artist = Artists.FirstOrDefault(p => p.Songs.Contains(song));
             var album = Albums.FirstOrDefault(p => p.Songs.Contains(song));
+            var playlists = Playlists.Where(p => p.Songs.Count(pp => pp.SongId == song.Id) > 0).ToList();
+
+            foreach (var playlist in playlists)
+            {
+                var songs = playlist.Songs.Where(p => p.SongId == song.Id).ToList();
+                foreach (var playlistSong in songs)
+                {
+                    await DeleteFromPlaylistAsync(playlist, playlistSong);
+                }
+
+                if (playlist.Songs.Count == 0)
+                {
+                    await DeletePlaylistAsync(playlist);
+                }
+            }
 
             if (album != null)
             {
@@ -270,7 +285,9 @@ namespace Audiotica.Data.Collection.RunTime
                 {
                     await file.DeleteAsync();
                 }
-                catch { }
+                catch
+                {
+                }
             }
         }
 
@@ -286,32 +303,6 @@ namespace Audiotica.Data.Collection.RunTime
         }
 
         #region Playback Queue
-
-        private void LoadQueue()
-        {
-            var queue = _sqlService.SelectAll<QueueSong>();
-            QueueSong head = null;
-
-            foreach (var queueSong in queue)
-            {
-                queueSong.Song = Songs.FirstOrDefault(p => p.Id == queueSong.SongId);
-
-                _lookupMap.Add(queueSong.Id, queueSong);
-                if (queueSong.PrevId == 0)
-                    head = queueSong;
-            }
-
-            if (head == null)
-                return;
-
-            for (var i = 0; i < queue.Count; i++)
-            {
-                PlaybackQueue.Add(head);
-
-                if (head.NextId != 0)
-                    head = _lookupMap[head.NextId];
-            }
-        }
 
         public async Task ClearQueueAsync()
         {
@@ -385,15 +376,180 @@ namespace Audiotica.Data.Collection.RunTime
             await _sqlService.DeleteItemAsync(queueSongToRemove);
         }
 
+        private async void LoadQueue()
+        {
+            var queue = _sqlService.SelectAll<QueueSong>();
+            QueueSong head = null;
+
+            foreach (var queueSong in queue)
+            {
+                queueSong.Song = Songs.FirstOrDefault(p => p.Id == queueSong.SongId);
+
+                _lookupMap.Add(queueSong.Id, queueSong);
+                if (queueSong.PrevId == 0)
+                    head = queueSong;
+            }
+
+            if (head == null)
+                return;
+
+            for (var i = 0; i < queue.Count; i++)
+            {
+                if (_dispatcher != null)
+                    await _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => PlaybackQueue.Add(head));
+                else
+                    PlaybackQueue.Add(head);
+
+                if (head.NextId != 0)
+                    head = _lookupMap[head.NextId];
+            }
+        }
+
         #endregion
 
         #region Playlist
 
-        private void LoadPlaylists()
+        public async Task<Playlist> CreatePlaylistAsync(string name)
+        {
+            if (Playlists.Count(p => p.Name == name) > 0)
+                throw new ArgumentException(name);
+
+            var playlist = new Playlist {Name = name};
+            await _sqlService.InsertAsync(playlist);
+
+            Playlists.Insert(0, playlist);
+
+            return playlist;
+        }
+
+        public async Task DeletePlaylistAsync(Playlist playlist)
+        {
+            await _sqlService.DeleteItemAsync(playlist);
+            await _sqlService.DeleteWhereAsync<PlaylistSong>("PlaylistId", playlist.Id.ToString());
+            Playlists.Remove(playlist);
+        }
+
+        public async Task AddToPlaylistAsync(Playlist playlist, Song song)
+        {
+            var tail = playlist.Songs.LastOrDefault();
+
+            //Create the new queue entry
+            var newSong = new PlaylistSong
+            {
+                SongId = song.Id,
+                NextId = 0,
+                PrevId = tail == null ? 0 : tail.Id,
+                Song = song,
+                PlaylistId = playlist.Id
+            };
+
+            //Add it to the database
+            await _sqlService.InsertAsync(newSong);
+
+            if (tail != null)
+            {
+                //Update the next id of the previous tail
+                tail.NextId = newSong.Id;
+                await _sqlService.UpdateItemAsync(tail);
+            }
+
+            //Add the new queue entry to the collection and map
+            playlist.Songs.Add(newSong);
+            playlist.LookupMap.Add(newSong.Id, newSong);
+        }
+
+        public async Task MovePlaylistFromToAsync(Playlist playlist, int oldIndex, int newIndex)
+        {
+            var song = playlist.Songs[newIndex];
+            var originalSong = newIndex < oldIndex 
+                ? playlist.Songs[newIndex + 1] 
+                : playlist.Songs[newIndex - 1];
+
+            #region Update next and prev ids
+
+            var songPrevId = song.PrevId;
+            var songNextId = song.NextId;
+
+            if (newIndex < oldIndex)
+            {
+                song.PrevId = originalSong.PrevId;
+                song.NextId = originalSong.Id;
+                originalSong.PrevId = song.Id;
+
+                if (song.PrevId != 0)
+                {
+                    var prevSong = playlist.LookupMap[song.PrevId];
+                    prevSong.NextId = song.Id;
+                    await _sqlService.UpdateItemAsync(prevSong);
+                }
+            }
+            else
+            {
+                song.NextId = originalSong.NextId;
+                song.PrevId = originalSong.Id;
+                originalSong.NextId = song.Id;
+
+                if (song.NextId != 0)
+                {
+                    var nextSong = playlist.LookupMap[song.NextId];
+                    nextSong.PrevId = song.Id;
+                    await _sqlService.UpdateItemAsync(nextSong);
+                }
+            }
+
+            #endregion
+
+            #region update surrounding songs
+
+            if (songPrevId != 0)
+            {
+                var prevSong = playlist.LookupMap[songPrevId];
+                prevSong.NextId = songNextId;
+                await _sqlService.UpdateItemAsync(prevSong);
+            }
+
+            if (songNextId != 0)
+            {
+                var nextSong = playlist.LookupMap[songNextId];
+                nextSong.PrevId = songPrevId;
+                await _sqlService.UpdateItemAsync(nextSong);
+            }
+
+            #endregion
+
+            await _sqlService.UpdateItemAsync(song);
+            await _sqlService.UpdateItemAsync(originalSong);
+        }
+
+        public async Task DeleteFromPlaylistAsync(Playlist playlist, PlaylistSong songToRemove)
+        {
+            #region update surounding entries
+
+            if (songToRemove.NextId != 0)
+            {
+                var nextSong = playlist.LookupMap[songToRemove.NextId];
+                nextSong.PrevId = songToRemove.PrevId;
+                await _sqlService.UpdateItemAsync(nextSong);
+            }
+
+            if (songToRemove.PrevId != 0)
+            {
+                var prevSong = playlist.LookupMap[songToRemove.PrevId];
+                prevSong.NextId = songToRemove.NextId;
+                await _sqlService.UpdateItemAsync(prevSong);
+            }
+
+            #endregion
+
+            await _sqlService.DeleteItemAsync(songToRemove);
+            playlist.Songs.Remove(songToRemove);
+        }
+
+        private async void LoadPlaylists()
         {
             var playlists = _sqlService.SelectAll<Playlist>().OrderByDescending(p => p.Id);
             var playlistSongs = _sqlService.SelectAll<PlaylistSong>();
-            
+
             foreach (var playlist in playlists)
             {
                 var songs = playlistSongs.Where(p => p.PlaylistId == playlist.Id).ToList();
@@ -425,66 +581,11 @@ namespace Audiotica.Data.Collection.RunTime
 
                 #endregion
 
-                Playlists.Add(playlist);
+                if (_dispatcher != null)
+                    await _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => Playlists.Add(playlist));
+                else
+                    Playlists.Add(playlist);
             }
-        }
-
-        public async Task<Playlist> CreatePlaylistAsync(string name)
-        {
-            if (Playlists.Count(p => p.Name == name) > 0) 
-                throw new ArgumentException(name);
-
-            var playlist = new Playlist {Name = name};
-            await _sqlService.InsertAsync(playlist);
-
-            Playlists.Insert(0, playlist);
-
-            return playlist;
-        }
-
-        public async Task DeletePlaylistAsync(Playlist playlist)
-        {
-            await _sqlService.DeleteItemAsync(playlist);
-            await _sqlService.DeleteWhereAsync<PlaylistSong>("PlaylistId", playlist.Id.ToString());
-        }
-
-        public async Task AddToPlaylistAsync(Playlist playlist, Song song)
-        {
-            var tail = playlist.Songs.LastOrDefault();
-
-            //Create the new queue entry
-            var newSong = new PlaylistSong
-            {
-                SongId = song.Id,
-                NextId = 0,
-                PrevId = tail == null ? 0 : tail.Id,
-                Song = song
-            };
-
-            //Add it to the database
-            await _sqlService.InsertAsync(newSong);
-
-            if (tail != null)
-            {
-                //Update the next id of the previous tail
-                tail.NextId = newSong.Id;
-                await _sqlService.UpdateItemAsync(tail);
-            }
-
-            //Add the new queue entry to the collection and map
-            playlist.Songs.Add(newSong);
-            playlist.LookupMap.Add(newSong.Id, newSong);
-        }
-
-        public Task MovePlaylistFromToAsync(Playlist playlist, int oldIndex, int newIndex)
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task DeleteFromPlaylistAsync(Playlist playlist, PlaylistSong songToRemove)
-        {
-            await _sqlService.DeleteItemAsync(songToRemove);
-            playlist.Songs.Remove(songToRemove);
         }
 
         #endregion
