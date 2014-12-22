@@ -81,11 +81,11 @@ namespace Audiotica.View
 
         private void HardwareButtonsOnBackPressed(object sender, BackPressedEventArgs e)
         {
-            if (SongList.SelectionMode == ListViewSelectionMode.Multiple)
-            {
-                e.Handled = true;
-                ToSingleMode();
-            }
+            if (SongList.SelectionMode != ListViewSelectionMode.Multiple &&
+                SongList.ReorderMode != ListViewReorderMode.Enabled) return;
+
+            e.Handled = true;
+            ToSingleMode();
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
