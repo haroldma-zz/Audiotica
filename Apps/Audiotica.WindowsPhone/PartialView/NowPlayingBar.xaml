@@ -71,11 +71,10 @@
             </VisualStateGroup>
         </VisualStateManager.VisualStateGroups>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <ProgressBar Value="{Binding Position, Converter={StaticResource TimespanToDoubleConverter}, Mode=TwoWay}" Maximum="{Binding Duration, Converter={StaticResource TimespanToDoubleConverter}, Mode=TwoWay}" IsIndeterminate="{Binding IsLoading}" />
-        <Grid Grid.Row="1" Background="#1F1F1F">
+        <Grid Background="#1F1F1F">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
@@ -92,5 +91,7 @@
             <AppBarButton Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center"
                           Icon="{Binding PlayPauseIcon}" Command="{Binding PlayPauseRelayCommand}" />
         </Grid>
+        <ProgressBar Grid.Row="1"
+                     Value="{Binding Position, Converter={StaticResource TimespanToDoubleConverter}, Mode=TwoWay}" Maximum="{Binding Duration, Converter={StaticResource TimespanToDoubleConverter}, Mode=TwoWay}" IsIndeterminate="{Binding IsLoading}" />
     </Grid>
 </UserControl>
