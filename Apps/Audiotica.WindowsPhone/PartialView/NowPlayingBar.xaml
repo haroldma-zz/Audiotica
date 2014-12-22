@@ -7,7 +7,8 @@
     mc:Ignorable="d"
     d:DesignHeight="800"
     d:DesignWidth="480"
-    DataContext="{Binding Player, Source={StaticResource Locator}}">
+    DataContext="{Binding Player, Source={StaticResource Locator}}"
+    Height="{Binding NowPlayingBarHeight}">
 
     <Grid x:Name="grid" VerticalAlignment="Bottom" Height="80" Visibility="Collapsed">
         <VisualStateManager.VisualStateGroups>

@@ -14,6 +14,7 @@ using Audiotica.Core.Common;
 using Audiotica.Core.Utilities;
 using Audiotica.View;
 using Audiotica.ViewModel;
+using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Threading;
 using GoogleAnalytics;
 

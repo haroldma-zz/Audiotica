@@ -2,6 +2,7 @@
 
 using System;
 using System.Linq;
+using System.Linq.Expressions;
 using Windows.Media.Playback;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -30,6 +31,8 @@ namespace Audiotica
         private IconElement _playPauseIcon;
         private readonly DispatcherTimer _timer;
         private TimeSpan _position;
+        private double _npHeight;
+        private double _npbHeight = double.NaN;
 
         public PlayerViewModel(AudioPlayerHelper helper, ICollectionService service)
         {
@@ -100,6 +103,17 @@ namespace Audiotica
         public RelayCommand PlayPauseRelayCommand
         {
             get { return _playPauseRelayCommand; }
+        }
+
+        public double NowPlayingHeight
+        {
+            get { return _npHeight; }
+            set { Set(ref _npHeight, value); }
+        }
+        public double NowPlayingBarHeight
+        {
+            get { return _npbHeight; }
+            set { Set(ref _npbHeight, value); }
         }
 
         private void HelperOnShutdown(object sender, EventArgs eventArgs)
