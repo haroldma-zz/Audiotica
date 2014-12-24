@@ -6,10 +6,12 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Globalization;
 using System.Linq;
+using System.Threading.Tasks;
 using Windows.Globalization.Collation;
 using Windows.Graphics.Display;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Media;
 using Audiotica.Core.Common;
 using Audiotica.Core.Utilities;
 using Audiotica.Data.Collection;
@@ -139,21 +141,47 @@ namespace Audiotica.ViewModel
         private bool _currentlyPreparing;
         private async void SongClickExecute(ItemClickEventArgs e)
         {
-            if (_currentlyPreparing) return;
-            _currentlyPreparing = true;
-
             var song = e.ClickedItem as Song;
-
-            await _service.ClearQueueAsync();
-
             var queueList = _service.Songs.OrderBy(p => p.Name).ToList();
-            foreach (var queueSong in queueList)
+
+            var createQueue = queueList.Count != _service.PlaybackQueue.Count
+                              && _service.PlaybackQueue.FirstOrDefault(p => p.SongId == song.Id) == null;
+
+            if (_currentlyPreparing && createQueue) return;
+
+            if (_currentlyPreparing && !createQueue)
             {
-                await _service.AddToQueueAsync(queueSong);
+                _audioPlayer.PlaySong(_service.PlaybackQueue.First(p => p.SongId == song.Id));
             }
 
-            _audioPlayer.PlaySong(_service.PlaybackQueue[queueList.IndexOf(song)]);
-            _currentlyPreparing = false;
+            else
+            {
+                _currentlyPreparing = true;
+
+                if (createQueue)
+                {
+                    await _service.ClearQueueAsync();
+                    await _service.AddToQueueAsync(song);
+                    var index = queueList.IndexOf(song);
+
+                    _audioPlayer.PlaySong(_service.PlaybackQueue[0]);
+                    await Task.Delay(500);
+
+                    for (var i = index + 1; i < queueList.Count; i++)
+                    {
+                        await _service.AddToQueueAsync(queueList[i]);
+                    }
+
+                    for (var i = 0; i < index; i++)
+                    {
+                        await _service.AddToQueueAsync(queueList[i]);
+                    }
+                }
+                else
+                    _audioPlayer.PlaySong(_service.PlaybackQueue.First(p => p.SongId == song.Id));
+
+                _currentlyPreparing = false;
+            }
         }
 
         #endregion
