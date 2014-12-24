@@ -101,6 +101,8 @@ namespace Audiotica.Data.Collection.DesignTime
             {
                 playlist.Songs = pSongs;
             }
+
+            PlaybackQueue = new ObservableCollection<QueueSong>(pSongs);
         }
 
         public Task LoadLibraryAsync()

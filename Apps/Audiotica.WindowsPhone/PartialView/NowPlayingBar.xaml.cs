@@ -5,6 +5,7 @@ using System.Diagnostics;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Data;
+using Audiotica.View;
 
 #endregion
 
@@ -36,7 +37,12 @@ namespace Audiotica.PartialView
 
         private static void IsVisibleCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            VisualStateManager.GoToState(d as NowPlayingBar, e.NewValue != null ? "Visible" : "Collapsed", true);
+            var state = e.NewValue != null ? "Visible" : "Collapsed";
+
+            if (App.RootFrame.CurrentSourcePageType == typeof (NowPlayingPage))
+                state = "Collapsed";
+
+            VisualStateManager.GoToState(d as NowPlayingBar, state, true);
         }
     }
 }

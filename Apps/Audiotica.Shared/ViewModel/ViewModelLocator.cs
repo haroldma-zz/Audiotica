@@ -27,9 +27,7 @@ namespace Audiotica.ViewModel
         public ViewModelLocator()
         {
             ServiceLocator.SetLocatorProvider(() => SimpleIoc.Default);
-#if WINDOWS_PHONE_APP
             SimpleIoc.Default.Register<AudioPlayerHelper>();
-#endif
 
             if (ViewModelBase.IsInDesignModeStatic)
             {

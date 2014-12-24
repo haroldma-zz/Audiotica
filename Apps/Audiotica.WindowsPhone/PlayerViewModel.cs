@@ -2,7 +2,6 @@
 
 using System;
 using System.Linq;
-using System.Linq.Expressions;
 using Windows.Media.Playback;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -10,9 +9,9 @@ using Audiotica.Core;
 using Audiotica.Core.Utilities;
 using Audiotica.Data.Collection;
 using Audiotica.Data.Collection.Model;
+using Audiotica.View;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
-using GalaSoft.MvvmLight.Threading;
 
 #endregion
 
@@ -25,39 +24,40 @@ namespace Audiotica
         private readonly RelayCommand _playPauseRelayCommand;
         private readonly RelayCommand _prevRelayCommand;
         private readonly ICollectionService _service;
+        private readonly DispatcherTimer _timer;
         private QueueSong _currentQueue;
         private TimeSpan _duration;
         private bool _isLoading;
-        private IconElement _playPauseIcon;
-        private readonly DispatcherTimer _timer;
-        private TimeSpan _position;
+        private RelayCommand _npBarTappedRelayCommand;
         private double _npHeight;
         private double _npbHeight = double.NaN;
+        private IconElement _playPauseIcon;
+        private TimeSpan _position;
 
         public PlayerViewModel(AudioPlayerHelper helper, ICollectionService service)
         {
-            _timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
-            _timer.Tick += TimerOnTick;
-
             _helper = helper;
-            helper.TrackChanged += HelperOnTrackChanged;
-            helper.PlaybackStateChanged += HelperOnPlaybackStateChanged;
-            helper.Shutdown += HelperOnShutdown;
             _service = service;
 
-            _nextRelayCommand = new RelayCommand(NextSong);
-            _prevRelayCommand = new RelayCommand(PrevSong);
-            _playPauseRelayCommand = new RelayCommand(PlayPauseToggle);
+            if (!IsInDesignMode)
+            {
+                helper.TrackChanged += HelperOnTrackChanged;
+                helper.PlaybackStateChanged += HelperOnPlaybackStateChanged;
+                helper.Shutdown += HelperOnShutdown;
 
-            if (!IsInDesignMode) return;
+                _nextRelayCommand = new RelayCommand(NextSong);
+                _prevRelayCommand = new RelayCommand(PrevSong);
+                _playPauseRelayCommand = new RelayCommand(PlayPauseToggle);
+                _npBarTappedRelayCommand = new RelayCommand(NowPlayingBarTapped);
 
-            CurrentQueue = service.PlaybackQueue.FirstOrDefault();
-            PlayPauseIcon = new SymbolIcon(Symbol.Play);
-        }
-
-        private void TimerOnTick(object sender, object o)
-        {
-            Position = BackgroundMediaPlayer.Current.Position;
+                _timer = new DispatcherTimer {Interval = TimeSpan.FromSeconds(1)};
+                _timer.Tick += TimerOnTick;
+            }
+            else
+            {
+                CurrentQueue = service.PlaybackQueue.FirstOrDefault();
+                PlayPauseIcon = new SymbolIcon(Symbol.Play);
+            }
         }
 
         public TimeSpan Duration
@@ -110,10 +110,37 @@ namespace Audiotica
             get { return _npHeight; }
             set { Set(ref _npHeight, value); }
         }
+
         public double NowPlayingBarHeight
         {
             get { return _npbHeight; }
             set { Set(ref _npbHeight, value); }
+        }
+
+        public ICollectionService CollectionService
+        {
+            get { return _service; }
+        }
+
+        public AudioPlayerHelper AudioPlayerHelper
+        {
+            get { return _helper; }
+        }
+
+        public RelayCommand NpBarTappedRelayCommand
+        {
+            get { return _npBarTappedRelayCommand; }
+            set { Set(ref _npBarTappedRelayCommand, value); }
+        }
+
+        private void NowPlayingBarTapped()
+        {
+            App.RootFrame.Navigate(typeof (NowPlayingPage));
+        }
+
+        private void TimerOnTick(object sender, object o)
+        {
+            Position = BackgroundMediaPlayer.Current.Position;
         }
 
         private void HelperOnShutdown(object sender, EventArgs eventArgs)
@@ -148,8 +175,8 @@ namespace Audiotica
             if (BackgroundMediaPlayer.Current.CurrentState != MediaPlayerState.Closed &&
                 BackgroundMediaPlayer.Current.CurrentState != MediaPlayerState.Stopped)
             {
-                var id = AppSettingsHelper.Read<long>(PlayerConstants.CurrentTrack);
-                CurrentQueue = _service.PlaybackQueue.FirstOrDefault(p => p.Id == id);
+                var currentId = AppSettingsHelper.Read<long>(PlayerConstants.CurrentTrack);
+                CurrentQueue = _service.PlaybackQueue.FirstOrDefault(p => p.Id == currentId);
 
                 if (CurrentQueue.Song.Duration.Ticks != Duration.Ticks)
                     CurrentQueue.Song.Duration = Duration;
