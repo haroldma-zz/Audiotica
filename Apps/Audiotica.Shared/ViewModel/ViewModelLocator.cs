@@ -1,14 +1,19 @@
 #region
 
+using System;
+using System.Collections.Generic;
 using Windows.UI.Xaml;
+using Audiotica.Data;
 using Audiotica.Data.Collection;
 using Audiotica.Data.Collection.DesignTime;
+using Audiotica.Data.Collection.Model;
 using Audiotica.Data.Collection.RunTime;
 using Audiotica.Data.Service.DesignTime;
 using Audiotica.Data.Service.Interfaces;
 using Audiotica.Data.Service.RunTime;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Ioc;
+using IF.Lastfm.Core.Api;
 using Microsoft.Practices.ServiceLocation;
 
 #endregion
@@ -29,6 +34,9 @@ namespace Audiotica.ViewModel
             ServiceLocator.SetLocatorProvider(() => SimpleIoc.Default);
             SimpleIoc.Default.Register<AudioPlayerHelper>();
 
+            var config = GetForegroundConfig();
+            var bgConfig = GetBackgroundConfig();
+
             if (ViewModelBase.IsInDesignModeStatic)
             {
                 SimpleIoc.Default.Register<IScrobblerService, DesignScrobblerService>();
@@ -38,9 +46,9 @@ namespace Audiotica.ViewModel
             else
             {
                 SimpleIoc.Default.Register<IScrobblerService, ScrobblerService>();
-                SimpleIoc.Default.Register<ICollectionService, CollectionService>();
-                SimpleIoc.Default.Register<ISqlService, SqlService>();
-                SimpleIoc.Default.Register(() => Window.Current.Dispatcher);
+                SimpleIoc.Default.Register<ISqlService>(() => new SqlService(config));
+                SimpleIoc.Default.Register<ISqlService>(() => new SqlService(bgConfig), "BackgroundSql");
+                SimpleIoc.Default.Register<ICollectionService>(() => new CollectionService(SqlService, BgSqlService, Window.Current.Dispatcher));
             }
 
             SimpleIoc.Default.Register<MainViewModel>();
@@ -51,7 +59,39 @@ namespace Audiotica.ViewModel
             SimpleIoc.Default.Register<ArtistViewModel>();
             SimpleIoc.Default.Register<SearchViewModel>();
             SimpleIoc.Default.Register<CollectionViewModel>();
-            SimpleIoc.Default.Register<PlayerViewModel>();
+            SimpleIoc.Default.Register(() => new PlayerViewModel(AudioPlayerHelper, CollectionService, BgSqlService, ScrobblerService));
+        }
+
+        private SqlServiceConfig GetForegroundConfig()
+        {
+            var dbTypes = new List<Type>
+            {
+                typeof (Artist),
+                typeof (Album),
+                typeof (Song),
+                typeof (Playlist),
+                typeof (PlaylistSong)
+            };
+            return new SqlServiceConfig()
+            {
+                Tables = dbTypes,
+                CurrentVersion = 3,
+                Path = "collection.sqldb"
+            };
+        }
+        private SqlServiceConfig GetBackgroundConfig()
+        {
+            var dbTypes = new List<Type>
+            {
+                typeof (HistoryEntry),
+                typeof (QueueSong),
+            };
+            return new SqlServiceConfig()
+            {
+                Tables = dbTypes,
+                CurrentVersion = 1,
+                Path = "player.sqldb"
+            };
         }
 
         public MainViewModel Main
@@ -116,6 +156,11 @@ namespace Audiotica.ViewModel
         public ISqlService SqlService
         {
             get { return SimpleIoc.Default.GetInstance<ISqlService>(); }
+        }
+
+        public ISqlService BgSqlService
+        {
+            get { return SimpleIoc.Default.GetInstance<ISqlService>("BackgroundSql"); }
         }
 
         public static void Cleanup()

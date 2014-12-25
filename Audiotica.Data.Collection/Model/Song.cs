@@ -37,8 +37,6 @@ namespace Audiotica.Data.Collection.Model
 
         public TimeSpan Duration { get; set; }
 
-        public bool IsOfflineMode { get; set; }
-
 
         [SqlIgnore]
         public bool IsStreaming

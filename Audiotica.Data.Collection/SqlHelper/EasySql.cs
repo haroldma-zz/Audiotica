@@ -15,6 +15,7 @@ namespace Audiotica.Data.Collection.SqlHelper
         public static readonly Dictionary<Type, string> NetToSqlKepMap = new Dictionary<Type, string>
         {
             {typeof (long), "INTEGER"},
+            {typeof (bool), "INTEGER"},
             {typeof (TimeSpan), "BIGINT"},
             {typeof (int), "INTEGER"},
             {typeof (string), "TEXT"},
@@ -157,6 +158,8 @@ namespace Audiotica.Data.Collection.SqlHelper
                     propvalue = props[i].GetValue(obj).ToString();
                 else if (proptype == typeof(TimeSpan))
                     propvalue = ((TimeSpan)props[i].GetValue(obj)).Ticks;
+                else if (proptype == typeof(bool))
+                    propvalue = Convert.ToInt32(props[i].GetValue(obj));
                 else
                     propvalue = props[i].GetValue(obj);
 

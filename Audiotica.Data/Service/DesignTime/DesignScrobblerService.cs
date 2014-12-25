@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Audiotica.Data.Service.Interfaces;
+using IF.Lastfm.Core.Api.Enums;
 using IF.Lastfm.Core.Api.Helpers;
 using IF.Lastfm.Core.Objects;
 
@@ -13,6 +14,17 @@ namespace Audiotica.Data.Service.DesignTime
 {
     public class DesignScrobblerService : IScrobblerService
     {
+        public Task<LastFmApiError> ScrobbleNowPlayingAsync(string name, string artist, DateTime played, TimeSpan duration, string album = "",
+            string albumArtist = "")
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<LastFmApiError> ScrobbleAsync(string name, string artist, DateTime played, TimeSpan duration, string album = "", string albumArtist = "")
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<LastAlbum> GetDetailAlbum(string name, string artist)
         {
             var album = CreateAlbum("Problem", "Ariana Grande",
@@ -95,6 +107,11 @@ namespace Audiotica.Data.Service.DesignTime
         public Task<List<LastTrack>> GetSimilarTracksAsync(string name, string artistName, int limit = 30)
         {
             return Task.FromResult(CreateDesignTracks());
+        }
+
+        public Task<bool> AuthenticaAsync(string username, string password)
+        {
+            throw new NotImplementedException();
         }
 
         private LastTrack CreateTrack(string title, string artist, string artwork)

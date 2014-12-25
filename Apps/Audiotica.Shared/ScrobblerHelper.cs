@@ -79,6 +79,8 @@ namespace Audiotica
             var preparedSong = new PreparedSong {Song = track.ToSong()};
             LastArtist artist;
 
+            preparedSong.Song.ArtistName = track.ArtistName;
+
             if (!string.IsNullOrEmpty(lastTrack.AlbumName + track.AlbumName))
             {
                 var lastAlbum = await App.Locator.ScrobblerService.GetDetailAlbum(
@@ -105,7 +107,6 @@ namespace Audiotica
                     : null;
 
             preparedSong.Song.Artist = artist.ToArtist();
-            preparedSong.Song.ArtistName = artist.Name;
 
             return preparedSong;
         }

@@ -93,9 +93,6 @@ namespace Audiotica
 
             var message = new ValueSet {{PlayerConstants.StartPlayback, null}};
             BackgroundMediaPlayer.SendMessageToBackground(message);
-
-            song.Song.PlayCount++;
-            song.Song.LastPlayed = DateTime.Now;
         }
 
         public void PlayPauseToggle()

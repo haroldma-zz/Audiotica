@@ -6,24 +6,57 @@ using System.Diagnostics;
 using System.Linq;
 using Windows.Foundation;
 using Windows.Media.Playback;
+using Audiotica.Data.Collection;
 using Audiotica.Data.Collection.Model;
 using Audiotica.Data.Collection.RunTime;
+using SQLitePCL;
 
 #endregion
 
 namespace Audiotica.WindowsPhone.Player
 {
-    internal class QueueManager: IDisposable
+    internal class QueueManager : IDisposable
     {
         #region Private members
 
+        private readonly ISqlService _bgSql;
         private readonly MediaPlayer _mediaPlayer;
+        private readonly ISqlService _sql;
+        private QueueSong _currentTrack;
         private int _currentTrackIndex = -1;
-        private SqlService _sql;
 
         public QueueManager()
         {
-            _sql = new SqlService();
+            var bgDbTypes = new List<Type>
+            {
+                typeof (QueueSong),
+                typeof (HistoryEntry),
+            };
+            var bgConfig = new SqlServiceConfig
+            {
+                Tables = bgDbTypes,
+                CurrentVersion = 1,
+                Path = "player.sqldb"
+            };
+            _bgSql = new SqlService(bgConfig);
+
+            var dbTypes = new List<Type>
+            {
+                typeof (Artist),
+                typeof (Album),
+                typeof (Song),
+                typeof (Playlist),
+                typeof (PlaylistSong)
+            };
+            var config = new SqlServiceConfig
+            {
+                Tables = dbTypes,
+                CurrentVersion = 3,
+                Path = "collection.sqldb"
+            };
+
+            _sql = new SqlService(config);
+
             _mediaPlayer = BackgroundMediaPlayer.Current;
             _mediaPlayer.MediaOpened += MediaPlayer_MediaOpened;
             _mediaPlayer.MediaEnded += MediaPlayer_MediaEnded;
@@ -46,7 +79,12 @@ namespace Audiotica.WindowsPhone.Player
             {
                 if (_currentTrackIndex == -1)
                     return null;
-                return _currentTrackIndex < tracks.Count ? tracks[_currentTrackIndex] : null;
+
+                if (_currentTrack != null)
+                    return _currentTrack;
+
+                _currentTrack = _currentTrackIndex < tracks.Count ? tracks[_currentTrackIndex] : null;
+                return _currentTrack;
             }
         }
 
@@ -86,17 +124,35 @@ namespace Audiotica.WindowsPhone.Player
             if (TrackChanged != null)
                 TrackChanged.Invoke(this, CurrentTrack.SongId);
 
-            try
+            OnTrackChanged();
+        }
+
+        private async void OnTrackChanged()
+        {
+            var played = DateTime.Now;
+            var historyItem = new HistoryEntry
             {
-                CurrentTrack.Song.PlayCount++;
-                CurrentTrack.Song.LastPlayed = DateTime.Now;
+                DatePlayed = played,
+                SongId = CurrentTrack.SongId
+            };
 
-                if (CurrentTrack.Song.Duration.Ticks != _mediaPlayer.NaturalDuration.Ticks)
-                    CurrentTrack.Song.Duration = _mediaPlayer.NaturalDuration;
+            bool retry;
+            do
+            {
+                retry = await _bgSql.InsertAsync(historyItem) == SQLiteResult.BUSY;
+            } while (retry);
 
-                _sql.UpdateItemAsync(CurrentTrack.Song).Wait();
-            }
-            catch { }
+
+            CurrentTrack.Song.PlayCount++;
+            CurrentTrack.Song.LastPlayed = played;
+
+            if (CurrentTrack.Song.Duration.Ticks != _mediaPlayer.NaturalDuration.Ticks)
+                CurrentTrack.Song.Duration = _mediaPlayer.NaturalDuration;
+
+            do
+            {
+                retry = await _sql.UpdateItemAsync(CurrentTrack.Song) == SQLiteResult.BUSY;
+            } while (retry);
         }
 
         /// <summary>
@@ -121,6 +177,8 @@ namespace Audiotica.WindowsPhone.Player
         /// </summary>
         private void StartTrackAt(int id)
         {
+            UpdateMediaEnded();
+
             var source = tracks[id].Song.AudioUrl;
             _currentTrackIndex = id;
             _mediaPlayer.AutoPlay = false;
@@ -132,6 +190,8 @@ namespace Audiotica.WindowsPhone.Player
         /// </summary>
         public void StartTrack(QueueSong song)
         {
+            UpdateMediaEnded();
+
             var source = song.Song.AudioUrl;
             _currentTrackIndex = tracks.FindIndex(p => p.SongId == song.SongId);
             _mediaPlayer.AutoPlay = false;
@@ -140,6 +200,8 @@ namespace Audiotica.WindowsPhone.Player
 
         public void StartTrack(long id)
         {
+            UpdateMediaEnded();
+
             var track = tracks.FirstOrDefault(p => p.Id == id);
             _currentTrackIndex = tracks.IndexOf(track);
             _mediaPlayer.AutoPlay = false;
@@ -162,6 +224,37 @@ namespace Audiotica.WindowsPhone.Player
             StartTrackAt((_currentTrackIndex + 1)%tracks.Count);
         }
 
+        private void UpdateMediaEnded()
+        {
+            if (CurrentTrack == null) return;
+
+            var historyItems = _bgSql.SelectAll<HistoryEntry>().Where(p => p.CanScrobble == false).ToList();
+
+            foreach (var historyItem in historyItems)
+            {
+                bool retry;
+                if (historyItem.SongId == CurrentTrack.SongId)
+                {
+                    historyItem.DateEnded = DateTime.Now;
+                    historyItem.CanScrobble = true;
+
+                    do
+                    {
+                        retry = _bgSql.UpdateItem(historyItem) == SQLiteResult.BUSY;
+                    } while (retry);
+                }
+                else
+                {
+                    //garbage
+                    do
+                    {
+                        retry = _bgSql.DeleteItem(historyItem) == SQLiteResult.BUSY;
+                    } while (retry);
+                }
+            }
+            _currentTrack = null;
+        }
+
         /// <summary>
         ///     Skip to next track
         /// </summary>
@@ -179,16 +272,17 @@ namespace Audiotica.WindowsPhone.Player
 
         #endregion
 
-        public void RefreshTracks()
-        {
-            var collectionService = new CollectionService(_sql, null);
-            collectionService.LoadLibrary();
-            tracks = collectionService.PlaybackQueue.ToList();
-        }
-
         public void Dispose()
         {
+            _bgSql.Dispose();
             _sql.Dispose();
+        }
+
+        public void RefreshTracks()
+        {
+            var collectionService = new CollectionService(_sql, _bgSql, null);
+            collectionService.LoadLibrary();
+            tracks = collectionService.PlaybackQueue.ToList();
         }
     }
 }

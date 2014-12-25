@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
 using Audiotica.Core.Exceptions;
 using Audiotica.Core.Utilities;
@@ -19,11 +18,57 @@ namespace Audiotica.Data.Service.RunTime
 {
     public class ScrobblerService : IScrobblerService
     {
-        private static readonly LastAuth FmAuth = new LastAuth(ApiKeys.LastFmId, "");
-        private readonly AlbumApi _albumApi = new AlbumApi(FmAuth);
-        private readonly ArtistApi _artistApi = new ArtistApi(FmAuth);
-        private readonly ChartApi _chartApi = new ChartApi(FmAuth);
-        private readonly TrackApi _trackApi = new TrackApi(FmAuth);
+        private readonly LastAuth _auth;
+        private readonly AlbumApi _albumApi;
+        private readonly ArtistApi _artistApi;
+        private readonly ChartApi _chartApi;
+        private readonly TrackApi _trackApi;
+
+        public ScrobblerService()
+        {
+            _auth = new LastAuth(ApiKeys.LastFmId, ApiKeys.LastFmSecret);;
+            _albumApi = new AlbumApi(_auth);
+            _artistApi = new ArtistApi(_auth);
+            _chartApi = new ChartApi(_auth);
+            _trackApi = new TrackApi(_auth);
+        }
+
+        private async Task<bool> GetSessionTokenAsync()
+        {
+            var creds = CredentialHelper.GetCredentials("lastfm");
+
+            if (creds == null) return false;
+
+            return await GetSessionTokenAsync(creds.UserName, creds.Password);
+        }
+
+        private async Task<bool> GetSessionTokenAsync(string username, string password)
+        {
+            var response = await _auth.GetSessionTokenAsync(username, password);
+            return response.Success;
+        }
+
+        public async Task<LastFmApiError> ScrobbleNowPlayingAsync(string name, string artist, DateTime played, TimeSpan duration, string album = "",
+            string albumArtist = "")
+        {
+            if (!_auth.Authenticated)
+                if (!await GetSessionTokenAsync())
+                    return LastFmApiError.BadAuth;
+
+            var resp = await _trackApi.UpdateNowPlayingAsync(new Scrobble(artist, album, name, played, duration, albumArtist));
+            return resp.Error;
+        }
+
+        public async Task<LastFmApiError> ScrobbleAsync(string name, string artist, DateTime played, TimeSpan duration, string album = "",
+            string albumArtist = "")
+        {
+            if (!_auth.Authenticated)
+                if (!await GetSessionTokenAsync())
+                    return LastFmApiError.BadAuth;
+            
+            var resp = await _trackApi.ScrobbleAsync(new Scrobble(artist, album, name, played, duration, albumArtist));
+            return resp.Error;
+        }
 
         public async Task<LastAlbum> GetDetailAlbum(string name, string artist)
         {
@@ -72,7 +117,9 @@ namespace Audiotica.Data.Service.RunTime
                     //removing the read more on last.fm
                     content = content.Remove(startIndex, count);
                 }
-                catch { }
+                catch
+                {
+                }
 
                 //html decode
                 resp.Content.Bio.Content = WebUtility.HtmlDecode(content);
@@ -149,6 +196,19 @@ namespace Audiotica.Data.Service.RunTime
             ThrowIfError(resp);
             return resp.Content;
         }
+
+        public async Task<bool> AuthenticaAsync(string username, string password)
+        {
+            var result = await GetSessionTokenAsync(username, password);
+
+            if (result)
+            {
+                CredentialHelper.SaveCredentials("lastfm", username, password);
+            }
+
+            return result;
+        }
+
 
         private void ThrowIfError(LastResponse resp)
         {

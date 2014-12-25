@@ -34,6 +34,7 @@ namespace Audiotica.Data.Collection
         /// </summary>
         Task DeleteSongAsync(Song song);
 
+        Task<List<HistoryEntry>> FetchHistoryAsync(); 
 
         #region Playback Queue
 

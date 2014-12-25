@@ -12,6 +12,9 @@ using Windows.UI.Core;
 using Windows.UI.Xaml.Media.Imaging;
 using Audiotica.Core.Utilities;
 using Audiotica.Data.Collection.Model;
+using GalaSoft.MvvmLight;
+using Microsoft.Practices.ServiceLocation;
+using SQLitePCL;
 
 #endregion
 
@@ -22,9 +25,11 @@ namespace Audiotica.Data.Collection.RunTime
         private readonly CoreDispatcher _dispatcher;
         private readonly Dictionary<long, QueueSong> _lookupMap = new Dictionary<long, QueueSong>();
         private readonly ISqlService _sqlService;
+        private readonly ISqlService _bgSqlService;
 
-        public CollectionService(ISqlService sqlService, CoreDispatcher dispatcher)
+        public CollectionService(ISqlService sqlService, ISqlService bgSqlService, CoreDispatcher dispatcher)
         {
+            _bgSqlService = bgSqlService;
             _sqlService = sqlService;
             _dispatcher = dispatcher;
             Songs = new ObservableCollection<Song>();
@@ -107,17 +112,25 @@ namespace Audiotica.Data.Collection.RunTime
 
             #region create artist
 
-            if (song.Artist.ProviderId == "lastid.")
-                song.Artist.ProviderId = "autc.single." + song.ProviderId;
+            var primaryArtist = song.Album == null ? song.Artist : song.Album.PrimaryArtist;
 
-            var artist = Artists.FirstOrDefault(entry => entry.ProviderId == song.Artist.ProviderId);
+            if (primaryArtist.ProviderId == "lastid.")
+                primaryArtist.ProviderId = "autc.single." + song.ProviderId;
+
+            var artist = Artists.FirstOrDefault(entry => entry.ProviderId == primaryArtist.ProviderId);
 
             if (artist == null)
             {
-                await _sqlService.InsertAsync(song.Artist);
+                await _sqlService.InsertAsync(primaryArtist);
+
+                song.Artist = primaryArtist;
+                song.ArtistId = primaryArtist.Id;
 
                 if (song.Album != null)
+                {
                     song.Album.PrimaryArtistId = song.Artist.Id;
+                    song.Album.PrimaryArtist = song.Artist;
+                }
                 Artists.Insert(0, song.Artist);
             }
 
@@ -126,7 +139,10 @@ namespace Audiotica.Data.Collection.RunTime
                 song.Artist = artist;
 
                 if (song.Album != null)
+                {
                     song.Album.PrimaryArtistId = artist.Id;
+                    song.Album.PrimaryArtist = artist;
+                }
             }
             song.ArtistId = song.Artist.Id;
 
@@ -264,6 +280,16 @@ namespace Audiotica.Data.Collection.RunTime
             Songs.Remove(song);
         }
 
+        public async Task<List<HistoryEntry>> FetchHistoryAsync()
+        {
+            var list = await Task.FromResult(_bgSqlService.SelectAll<HistoryEntry>().ToList());
+            foreach (var historyEntry in list)
+            {
+                historyEntry.Song = Songs.FirstOrDefault(p => p.Id == historyEntry.SongId);
+            }
+            return list;
+        }
+
         /// <summary>
         ///     Deleting unused files.
         ///     Artworks, since deleting them when an album is delete can cause problems.
@@ -308,7 +334,7 @@ namespace Audiotica.Data.Collection.RunTime
         {
             if (PlaybackQueue.Count == 0) return;
 
-            await _sqlService.DeleteTableAsync<QueueSong>();
+            await _bgSqlService.DeleteTableAsync<QueueSong>();
             _lookupMap.Clear();
             PlaybackQueue.Clear();
         }
@@ -327,13 +353,26 @@ namespace Audiotica.Data.Collection.RunTime
             };
 
             //Add it to the database
-            await _sqlService.InsertAsync(newQueue);
+            bool retry;
+            do
+            {
+                var result = await _bgSqlService.InsertAsync(newQueue);
+                retry = result == SQLiteResult.BUSY;
+
+                if (result != SQLiteResult.DONE)
+                {
+                    if (result != SQLiteResult.BUSY) { }
+                }
+            } while (retry);
 
             if (tail != null)
             {
                 //Update the next id of the previous tail
                 tail.NextId = newQueue.Id;
-                await _sqlService.UpdateItemAsync(tail);
+                do
+                {
+                    retry = await _bgSqlService.UpdateItemAsync(tail) == SQLiteResult.BUSY;
+                } while (retry);
             }
 
             //Add the new queue entry to the collection and map
@@ -358,7 +397,7 @@ namespace Audiotica.Data.Collection.RunTime
             if (_lookupMap.TryGetValue(queueSongToRemove.PrevId, out previousModel))
             {
                 previousModel.NextId = queueSongToRemove.NextId;
-                await _sqlService.UpdateItemAsync(previousModel);
+                await _bgSqlService.UpdateItemAsync(previousModel);
             }
 
             QueueSong nextModel;
@@ -366,19 +405,19 @@ namespace Audiotica.Data.Collection.RunTime
             if (_lookupMap.TryGetValue(queueSongToRemove.NextId, out nextModel))
             {
                 nextModel.PrevId = queueSongToRemove.PrevId;
-                await _sqlService.UpdateItemAsync(nextModel);
+                await _bgSqlService.UpdateItemAsync(nextModel);
             }
 
             PlaybackQueue.Remove(queueSongToRemove);
             _lookupMap.Remove(queueSongToRemove.Id);
 
             //Delete from database
-            await _sqlService.DeleteItemAsync(queueSongToRemove);
+            await _bgSqlService.DeleteItemAsync(queueSongToRemove);
         }
 
         private async void LoadQueue()
         {
-            var queue = _sqlService.SelectAll<QueueSong>();
+            var queue = _bgSqlService.SelectAll<QueueSong>();
             QueueSong head = null;
 
             foreach (var queueSong in queue)
@@ -402,6 +441,8 @@ namespace Audiotica.Data.Collection.RunTime
 
                 if (head.NextId != 0)
                     head = _lookupMap[head.NextId];
+                else
+                    break;
             }
         }
 

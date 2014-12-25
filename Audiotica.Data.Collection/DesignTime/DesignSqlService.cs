@@ -1,31 +1,33 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using Audiotica.Data.Collection.Model;
 using Audiotica.Data.Collection.SqlHelper;
+using SQLitePCL;
 
 namespace Audiotica.Data.Collection.DesignTime
 {
     public class DesignSqlService : ISqlService
     {
-        public void Initialize()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task InitializeAsync()
-        {
-            throw new NotImplementedException();
-        }
-
         public void ResetData()
         {
             throw new NotImplementedException();
         }
 
-        public Task InsertAsync(BaseEntry entry)
+        public SQLiteResult Insert(BaseEntry entry)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<SQLiteResult> InsertAsync(BaseEntry entry)
+        {
+            throw new NotImplementedException();
+        }
+
+        public SQLiteResult DeleteItem(BaseEntry item)
         {
             throw new NotImplementedException();
         }
@@ -35,15 +37,21 @@ namespace Audiotica.Data.Collection.DesignTime
             throw new NotImplementedException();
         }
 
-        public Task DeleteItemAsync(BaseEntry item)
+        public Task<SQLiteResult> DeleteItemAsync(BaseEntry item)
         {
             throw new NotImplementedException();
         }
 
-        public Task UpdateItemAsync(BaseEntry queue)
+        public SQLiteResult UpdateItem(BaseEntry item)
         {
             throw new NotImplementedException();
         }
+
+        public Task<SQLiteResult> UpdateItemAsync(BaseEntry queue)
+        {
+            throw new NotImplementedException();
+        }
+
 
         public List<T> SelectAll<T>() where T : new()
         {
@@ -61,6 +69,11 @@ namespace Audiotica.Data.Collection.DesignTime
         }
 
         public Task DeleteWhereAsync<T>(string property, string value)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Dispose()
         {
             throw new NotImplementedException();
         }

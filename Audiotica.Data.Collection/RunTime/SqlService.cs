@@ -6,7 +6,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using Audiotica.Data.Collection.Model;
 using Audiotica.Data.Collection.SqlHelper;
 using SQLitePCL;
 
@@ -14,13 +13,15 @@ using SQLitePCL;
 
 namespace Audiotica.Data.Collection.RunTime
 {
-    public class SqlService : ISqlService, IDisposable
+    public class SqlService : ISqlService
     {
-        private const long CurrentDbVersion = 2;
+        private readonly SqlServiceConfig _config;
 
-        public SqlService()
+        public SqlService(SqlServiceConfig config)
         {
-            DbConnection = new SQLiteConnection("collection.sqldb");
+            _config = config;
+            DbConnection = new SQLiteConnection(config.Path);
+            Initialize();
         }
 
         public SQLiteConnection DbConnection { get; set; }
@@ -34,45 +35,15 @@ namespace Audiotica.Data.Collection.RunTime
         {
             long sqlVersion;
 
-            var sql = "PRAGMA user_version";
-            using (var statement = DbConnection.Prepare(sql))
+            using (var statement = DbConnection.Prepare("PRAGMA user_version"))
             {
                 statement.Step();
                 sqlVersion = (long) statement[0];
             }
 
-            bool dbOldCreated;
-            sql = "SELECT count(*) FROM sqlite_master WHERE type='table' AND name='Song'";
-            using (var statement = DbConnection.Prepare(sql))
-            {
-                statement.Step();
-                dbOldCreated = (long) statement[0] != 0 && sqlVersion == 0;
-            }
-
-            if (sqlVersion == CurrentDbVersion) return;
-
-            if (dbOldCreated)
-            {
-                //Update db from Beta5 (Patch #1) and down
-                sql = "ALTER TABLE Song ADD COLUMN LastPlayed DATETIME";
-                using (var statement = DbConnection.Prepare(sql))
-                {
-                    statement.Step();
-                }
-
-                sql = "ALTER TABLE Song ADD COLUMN Duration BIGINT";
-                using (var statement = DbConnection.Prepare(sql))
-                {
-                    statement.Step();
-                }
-            }
+            if (sqlVersion == _config.CurrentVersion) return;
 
             CreateTablesIfNotExists();
-        }
-
-        public Task InitializeAsync()
-        {
-            return Task.Factory.StartNew(Initialize);
         }
 
         public void ResetData()
@@ -108,28 +79,16 @@ namespace Audiotica.Data.Collection.RunTime
             }
         }
 
-
-        public async Task InsertAsync(BaseEntry entry)
+        public SQLiteResult Insert(BaseEntry entry)
         {
-            try
+            SQLiteResult res;
+            using (var custstmt = DbConnection.Prepare(EasySql.CreateInsert(entry.GetType())))
             {
-                await Task.Run(() =>
-                {
-                    using (var custstmt = DbConnection.Prepare(EasySql.CreateInsert(entry.GetType())))
-                    {
-                        EasySql.FillInsert(custstmt, entry);
-                        var res = custstmt.Step();
-                        if (res != SQLiteResult.DONE)
-                            throw new Exception();
-                    }
-                }
-                    );
+                EasySql.FillInsert(custstmt, entry);
+                res = custstmt.Step();
             }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(ex.Message);
-                return;
-            }
+
+            if (res != SQLiteResult.DONE) return res;
 
             using (var idstmt = DbConnection.Prepare("SELECT last_insert_rowid()"))
             {
@@ -138,44 +97,55 @@ namespace Audiotica.Data.Collection.RunTime
                     entry.Id = (long) idstmt[0];
                 }
             }
+
+            return res;
         }
 
-        public Task DeleteItemAsync(BaseEntry item)
+        public Task<SQLiteResult> InsertAsync(BaseEntry entry)
         {
-            return Task.Run(() =>
-            {
-                using (
-                    var projstmt =
-                        DbConnection.Prepare(string.Format("DELETE FROM {0} WHERE Id = ?", item.GetType().Name)))
-                {
-                    // Reset the prepared statement so we can reuse it.
-                    projstmt.ClearBindings();
-                    projstmt.Reset();
-
-                    projstmt.Bind(1, item.Id);
-
-                    projstmt.Step();
-                }
-            });
+            return Task.FromResult(Insert(entry));
         }
 
-        public Task UpdateItemAsync(BaseEntry item)
+        public SQLiteResult DeleteItem(BaseEntry item)
         {
-            return Task.Run(() =>
+            using (
+                var projstmt =
+                    DbConnection.Prepare(string.Format("DELETE FROM {0} WHERE Id = ?", item.GetType().Name)))
             {
-                using (
-                    var projstmt =
-                        DbConnection.Prepare(EasySql.CreateUpdate(item.GetType())))
-                {
-                    // Reset the prepared statement so we can reuse it.
-                    projstmt.ClearBindings();
-                    projstmt.Reset();
+                // Reset the prepared statement so we can reuse it.
+                projstmt.ClearBindings();
+                projstmt.Reset();
 
-                    EasySql.FillUpdate(projstmt, item);
+                projstmt.Bind(1, item.Id);
 
-                    projstmt.Step();
-                }
-            });
+                return projstmt.Step();
+            }
+        }
+
+        public Task<SQLiteResult> DeleteItemAsync(BaseEntry item)
+        {
+            return Task.FromResult(DeleteItem(item));
+        }
+
+        public SQLiteResult UpdateItem(BaseEntry item)
+        {
+            using (
+                var projstmt =
+                    DbConnection.Prepare(EasySql.CreateUpdate(item.GetType())))
+            {
+                // Reset the prepared statement so we can reuse it.
+                projstmt.ClearBindings();
+                projstmt.Reset();
+
+                EasySql.FillUpdate(projstmt, item);
+
+                return projstmt.Step();
+            }
+        }
+
+        public Task<SQLiteResult> UpdateItemAsync(BaseEntry item)
+        {
+            return Task.FromResult(UpdateItem(item));
         }
 
         public List<T> SelectAll<T>() where T : new()
@@ -204,17 +174,22 @@ namespace Audiotica.Data.Collection.RunTime
                         {
                             value = Enum.ToObject(propertyInfo.PropertyType, value);
                         }
-                        
+
                             //cast dates from string
                         else if (propertyInfo.PropertyType == typeof (DateTime))
                         {
                             value = value == null ? DateTime.MinValue : DateTime.Parse(value.ToString());
                         }
 
-                         //cast timespan from ticks (int64)
-                        else if (propertyInfo.PropertyType == typeof(TimeSpan))
+                            //cast timespan from ticks (int64)
+                        else if (propertyInfo.PropertyType == typeof (TimeSpan))
                         {
-                            value = value == null ? TimeSpan.MinValue : TimeSpan.FromTicks((Int64)value);
+                            value = value == null ? TimeSpan.MinValue : TimeSpan.FromTicks((Int64) value);
+                        }
+
+                        else if (propertyInfo.PropertyType == typeof (bool))
+                        {
+                            value = (long) value == 1;
                         }
 
                         propertyInfo.SetValue(item, value);
@@ -272,60 +247,38 @@ namespace Audiotica.Data.Collection.RunTime
 
         private void CreateTablesIfNotExists()
         {
-            var sql = EasySql.CreateTable(typeof (Artist));
-            using (var statement = DbConnection.Prepare(sql))
+            foreach (var sql in _config.Tables.Select(EasySql.CreateTable))
             {
-                statement.Step();
-            }
-
-            sql = EasySql.CreateTable(typeof (Album));
-            using (var statement = DbConnection.Prepare(sql))
-            {
-                statement.Step();
-            }
-
-            sql = EasySql.CreateTable(typeof (Song));
-            using (var statement = DbConnection.Prepare(sql))
-            {
-                statement.Step();
-            }
-
-            sql = EasySql.CreateTable(typeof (QueueSong));
-            using (var statement = DbConnection.Prepare(sql))
-            {
-                statement.Step();
-            }
-
-            sql = EasySql.CreateTable(typeof (Playlist));
-            using (var statement = DbConnection.Prepare(sql))
-            {
-                statement.Step();
-            }
-
-            sql = EasySql.CreateTable(typeof (PlaylistSong));
-            using (var statement = DbConnection.Prepare(sql))
-            {
-                statement.Step();
+                using (var statement = DbConnection.Prepare(sql))
+                {
+                    statement.Step();
+                }
             }
 
             // Turn on Foreign Key constraints
-            sql = @"PRAGMA foreign_keys = ON";
-            using (var statement = DbConnection.Prepare(sql))
+            using (var statement = DbConnection.Prepare("PRAGMA foreign_keys = ON"))
             {
                 statement.Step();
             }
 
-            UpdateDbVersion();
+            UpdateDbVersion(_config.CurrentVersion);
         }
 
-        private void UpdateDbVersion()
+        private void UpdateDbVersion(double version)
         {
             //Set version to one
-            var sql = @"PRAGMA user_version = " + CurrentDbVersion;
+            var sql = @"PRAGMA user_version = " + version;
             using (var statement = DbConnection.Prepare(sql))
             {
                 statement.Step();
             }
         }
+    }
+
+    public class SqlServiceConfig
+    {
+        public double CurrentVersion { get; set; }
+        public string Path { get; set; }
+        public List<Type> Tables { get; set; }
     }
 }

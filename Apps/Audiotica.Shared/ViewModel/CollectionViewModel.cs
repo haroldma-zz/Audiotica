@@ -142,10 +142,10 @@ namespace Audiotica.ViewModel
         private async void SongClickExecute(ItemClickEventArgs e)
         {
             var song = e.ClickedItem as Song;
-            var queueList = _service.Songs.OrderBy(p => p.Name).ToList();
+            var songList = _service.Songs.OrderBy(p => p.Name).ToList();
 
-            var createQueue = queueList.Count != _service.PlaybackQueue.Count
-                              && _service.PlaybackQueue.FirstOrDefault(p => p.SongId == song.Id) == null;
+            var createQueue = songList.Count != _service.PlaybackQueue.Count
+                              || _service.PlaybackQueue.FirstOrDefault(p => p.SongId == song.Id) == null;
 
             if (_currentlyPreparing && createQueue) return;
 
@@ -162,19 +162,19 @@ namespace Audiotica.ViewModel
                 {
                     await _service.ClearQueueAsync();
                     await _service.AddToQueueAsync(song);
-                    var index = queueList.IndexOf(song);
+                    var index = songList.IndexOf(song);
 
                     _audioPlayer.PlaySong(_service.PlaybackQueue[0]);
                     await Task.Delay(500);
 
-                    for (var i = index + 1; i < queueList.Count; i++)
+                    for (var i = index + 1; i < songList.Count; i++)
                     {
-                        await _service.AddToQueueAsync(queueList[i]);
+                        await _service.AddToQueueAsync(songList[i]);
                     }
 
                     for (var i = 0; i < index; i++)
                     {
-                        await _service.AddToQueueAsync(queueList[i]);
+                        await _service.AddToQueueAsync(songList[i]);
                     }
                 }
                 else

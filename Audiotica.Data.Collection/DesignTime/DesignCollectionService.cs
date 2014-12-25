@@ -120,6 +120,11 @@ namespace Audiotica.Data.Collection.DesignTime
             throw new NotImplementedException();
         }
 
+        public Task<List<HistoryEntry>> FetchHistoryAsync()
+        {
+            throw new NotImplementedException();
+        }
+
         public Task ClearQueueAsync()
         {
             throw new NotImplementedException();

@@ -60,6 +60,7 @@
     <Compile Include="Utilities\CollectionExtensions.cs" />
     <Compile Include="Utilities\ColorHelper.cs" />
     <Compile Include="Utilities\BetaChangelogHelper.cs" />
+    <Compile Include="Utilities\CredentialHelper.cs" />
     <Compile Include="Utilities\HtmlRemoval.cs" />
     <Compile Include="Utilities\MessageBox.cs" />
     <Compile Include="Utilities\StorageHelper.cs" />
@@ -78,7 +79,7 @@
       <HintPath>..\packages\MyToolkit.Extended.2.3.22.0\lib\portable-wpa81+win8\MyToolkit.Extended.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json">
-      <HintPath>..\packages\Newtonsoft.Json.6.0.6\lib\portable-net40+sl5+wp80+win8+wpa81\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\packages\Newtonsoft.Json.6.0.7\lib\portable-net40+sl5+wp80+win8+wpa81\Newtonsoft.Json.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

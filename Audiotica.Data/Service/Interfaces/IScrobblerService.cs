@@ -1,7 +1,9 @@
 ﻿#region
 
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using IF.Lastfm.Core.Api.Enums;
 using IF.Lastfm.Core.Api.Helpers;
 using IF.Lastfm.Core.Objects;
 
@@ -11,6 +13,12 @@ namespace Audiotica.Data.Service.Interfaces
 {
     public interface IScrobblerService
     {
+        Task<LastFmApiError> ScrobbleNowPlayingAsync(string name, string artist, DateTime played, TimeSpan duration, string album = "",
+            string albumArtist = "");
+
+        Task<LastFmApiError> ScrobbleAsync(string name, string artist, DateTime played, TimeSpan duration, string album = "",
+            string albumArtist = "");
+
         Task<LastAlbum> GetDetailAlbum(string name, string artist);
         Task<LastAlbum> GetDetailAlbumByMbid(string mbid);
         Task<LastTrack> GetDetailTrack(string name, string artist);
@@ -30,5 +38,7 @@ namespace Audiotica.Data.Service.Interfaces
 
         Task<List<LastArtist>> GetSimilarArtistsAsync(string name, int limit = 30);
         Task<List<LastTrack>> GetSimilarTracksAsync(string name, string artistName, int limit = 30);
+
+        Task<bool> AuthenticaAsync(string username, string password);
     }
 }

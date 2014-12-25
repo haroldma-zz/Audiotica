@@ -96,7 +96,6 @@ namespace Audiotica
             {
                 try
                 {
-                    await Locator.SqlService.InitializeAsync();
                     await Locator.CollectionService.LoadLibraryAsync();
                 }
                 catch (Exception ex)
