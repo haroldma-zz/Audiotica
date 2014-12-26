@@ -37,5 +37,10 @@ namespace Audiotica.Core.Utilities
                 username, password);
             new PasswordVault().Add(credential);
         }
+
+        public static void DeleteCredentials(string resource)
+        {
+            new PasswordVault().Remove(GetCredentials(resource));
+        }
     }
 }

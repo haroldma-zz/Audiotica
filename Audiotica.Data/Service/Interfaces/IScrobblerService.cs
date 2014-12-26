@@ -13,6 +13,9 @@ namespace Audiotica.Data.Service.Interfaces
 {
     public interface IScrobblerService
     {
+        bool IsAuthenticated { get; }
+        void Logout();
+
         Task<LastFmApiError> ScrobbleNowPlayingAsync(string name, string artist, DateTime played, TimeSpan duration, string album = "",
             string albumArtist = "");
 
