@@ -185,8 +185,6 @@ namespace Audiotica.WindowsPhone.Player
             _systemmediatransportcontrol.DisplayUpdater.MusicProperties.Title = QueueManager.CurrentTrack.Song.Name;
             _systemmediatransportcontrol.DisplayUpdater.MusicProperties.Artist =
                 QueueManager.CurrentTrack.Song.Artist.Name;
-            //_systemmediatransportcontrol.DisplayUpdater.Thumbnail =
-            //  RandomAccessStreamReference.CreateFromUri(Playlist.CurrentTrack.GetArtworkUri());
             _systemmediatransportcontrol.DisplayUpdater.Update();
         }
 

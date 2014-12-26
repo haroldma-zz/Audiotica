@@ -142,46 +142,49 @@ namespace Audiotica.ViewModel
         private async void SongClickExecute(ItemClickEventArgs e)
         {
             var song = e.ClickedItem as Song;
-            var songList = _service.Songs.OrderBy(p => p.Name).ToList();
-
-            var createQueue = songList.Count != _service.PlaybackQueue.Count
-                              || _service.PlaybackQueue.FirstOrDefault(p => p.SongId == song.Id) == null;
-
-            if (_currentlyPreparing && createQueue) return;
-
-            if (_currentlyPreparing && !createQueue)
+            await Task.Run(async () =>
             {
-                _audioPlayer.PlaySong(_service.PlaybackQueue.First(p => p.SongId == song.Id));
-            }
+                var songList = _service.Songs.OrderBy(p => p.Name).ToList();
 
-            else
-            {
-                _currentlyPreparing = true;
+                var createQueue = songList.Count != _service.PlaybackQueue.Count
+                                  || _service.PlaybackQueue.FirstOrDefault(p => p.SongId == song.Id) == null;
 
-                if (createQueue)
+                if (_currentlyPreparing && createQueue) return;
+
+                if (_currentlyPreparing && !createQueue)
                 {
-                    await _service.ClearQueueAsync();
-                    await _service.AddToQueueAsync(song);
-                    var index = songList.IndexOf(song);
-
-                    _audioPlayer.PlaySong(_service.PlaybackQueue[0]);
-                    await Task.Delay(500);
-
-                    for (var i = index + 1; i < songList.Count; i++)
-                    {
-                        await _service.AddToQueueAsync(songList[i]);
-                    }
-
-                    for (var i = 0; i < index; i++)
-                    {
-                        await _service.AddToQueueAsync(songList[i]);
-                    }
-                }
-                else
                     _audioPlayer.PlaySong(_service.PlaybackQueue.First(p => p.SongId == song.Id));
+                }
 
-                _currentlyPreparing = false;
-            }
+                else
+                {
+                    _currentlyPreparing = true;
+
+                    if (createQueue)
+                    {
+                        await _service.ClearQueueAsync();
+                        await _service.AddToQueueAsync(song);
+                        var index = songList.IndexOf(song);
+
+                        _audioPlayer.PlaySong(_service.PlaybackQueue[0]);
+                        await Task.Delay(500);
+
+                        for (var i = index + 1; i < songList.Count; i++)
+                        {
+                            await _service.AddToQueueAsync(songList[i]);
+                        }
+
+                        for (var i = 0; i < index; i++)
+                        {
+                            await _service.AddToQueueAsync(songList[i]);
+                        }
+                    }
+                    else
+                        _audioPlayer.PlaySong(_service.PlaybackQueue.First(p => p.SongId == song.Id));
+
+                    _currentlyPreparing = false;
+                }
+            });
         }
 
         #endregion
