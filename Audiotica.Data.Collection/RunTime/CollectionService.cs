@@ -96,7 +96,9 @@ namespace Audiotica.Data.Collection.RunTime
 
             LoadQueue();
             LoadPlaylists();
-            CleanupFiles();
+
+            if (_dispatcher != null)
+                CleanupFiles();
         }
 
         public Task LoadLibraryAsync()
@@ -353,26 +355,13 @@ namespace Audiotica.Data.Collection.RunTime
             };
 
             //Add it to the database
-            bool retry;
-            do
-            {
-                var result = await _bgSqlService.InsertAsync(newQueue);
-                retry = result == SQLiteResult.BUSY;
-
-                if (result != SQLiteResult.DONE)
-                {
-                    if (result != SQLiteResult.BUSY) { }
-                }
-            } while (retry);
+            await _bgSqlService.InsertAsync(newQueue);
 
             if (tail != null)
             {
                 //Update the next id of the previous tail
                 tail.NextId = newQueue.Id;
-                do
-                {
-                    retry = await _bgSqlService.UpdateItemAsync(tail) == SQLiteResult.BUSY;
-                } while (retry);
+                await _bgSqlService.UpdateItemAsync(tail);
             }
 
             //Add the new queue entry to the collection and map

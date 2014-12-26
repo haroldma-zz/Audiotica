@@ -190,32 +190,37 @@ namespace Audiotica
                 if (CurrentQueue == null) return;
                 if (CurrentQueue.Song.Duration.Ticks != Duration.Ticks)
                     CurrentQueue.Song.Duration = Duration;
-
-                UpdateHistory();
             }
             else
             {
                 CurrentQueue = null;
             }
+
+            ScrobbleHistory();
         }
 
-        private async void UpdateHistory()
+        private async void ScrobbleHistory()
         {
             if (_isUpdating) return;
 
             _isUpdating = true;
 
+            var scrobble = AppSettingsHelper.Read<bool>("Scrobble");
 
             #region Update now playing (last.fm)
 
-            var npAlbumName = CurrentQueue.Song.Album.ProviderId.StartsWith("autc.single.")
-                           ? ""
-                           : CurrentQueue.Song.Album.Name;
-            var npArtistName = string.IsNullOrEmpty(npAlbumName) ? "" : CurrentQueue.Song.Artist.Name;
+            if (CurrentQueue != null && scrobble)
+            {
 
-            await
+                var npAlbumName = CurrentQueue.Song.Album.ProviderId.StartsWith("autc.single.")
+                    ? ""
+                    : CurrentQueue.Song.Album.Name;
+                var npArtistName = string.IsNullOrEmpty(npAlbumName) ? "" : CurrentQueue.Song.Artist.Name;
+
+                await
                     _scrobblerService.ScrobbleNowPlayingAsync(CurrentQueue.Song.Name, CurrentQueue.Song.ArtistName,
-                    DateTime.UtcNow ,CurrentQueue.Song.Duration, npAlbumName, npArtistName);
+                        DateTime.UtcNow, CurrentQueue.Song.Duration, npAlbumName, npArtistName);
+            }
 
             #endregion
 
@@ -227,10 +232,11 @@ namespace Audiotica
             {
                 if (historyEntry.Song.LastPlayed < historyEntry.DatePlayed)
                 {
+                    historyEntry.Song.PlayCount++;
                     historyEntry.Song.LastPlayed = historyEntry.DatePlayed;
                 }
 
-                if (!historyEntry.Scrobbled && historyEntry.CanScrobble)
+                if (!historyEntry.Scrobbled && historyEntry.CanScrobble && scrobble)
                 {
 
                     var diff = historyEntry.DateEnded - historyEntry.DatePlayed;
@@ -259,15 +265,11 @@ namespace Audiotica
                     }
                 }
 
-                if (!historyEntry.Scrobbled) continue;
+                if (!historyEntry.Scrobbled && scrobble) continue;
 
                 //if scrobbled the history item, then delete it
-
-                bool retry;
-                do
-                {
-                    retry = await _bgSqlService.DeleteItemAsync(historyEntry) == SQLiteResult.BUSY;
-                } while (retry);
+                if (historyEntry.CanScrobble)
+                    await _bgSqlService.DeleteItemAsync(historyEntry);
             }
 
             #endregion

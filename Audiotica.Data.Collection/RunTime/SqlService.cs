@@ -85,7 +85,12 @@ namespace Audiotica.Data.Collection.RunTime
             using (var custstmt = DbConnection.Prepare(EasySql.CreateInsert(entry.GetType())))
             {
                 EasySql.FillInsert(custstmt, entry);
-                res = custstmt.Step();
+                bool retry;
+                do
+                {
+                    res = custstmt.Step();
+                    retry = res == SQLiteResult.BUSY;
+                } while (retry);
             }
 
             if (res != SQLiteResult.DONE) return res;
@@ -118,7 +123,15 @@ namespace Audiotica.Data.Collection.RunTime
 
                 projstmt.Bind(1, item.Id);
 
-                return projstmt.Step();
+                SQLiteResult result;
+                bool retry;
+                do
+                {
+                    result = projstmt.Step();
+                    retry = result == SQLiteResult.BUSY;
+                } while (retry);
+
+                return result;
             }
         }
 
@@ -139,7 +152,15 @@ namespace Audiotica.Data.Collection.RunTime
 
                 EasySql.FillUpdate(projstmt, item);
 
-                return projstmt.Step();
+                SQLiteResult res;
+                bool retry;
+                do
+                {
+                    res = projstmt.Step();
+                    retry = res == SQLiteResult.BUSY;
+                } while (retry);
+
+                return res;
             }
         }
 
