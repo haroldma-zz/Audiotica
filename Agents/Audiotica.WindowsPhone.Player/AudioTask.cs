@@ -61,7 +61,6 @@ namespace Audiotica.WindowsPhone.Player
 
                 
                 _queueManager = new QueueManager();
-                _queueManager.RefreshTracks();
                 return _queueManager;
             }
         }
@@ -208,7 +207,6 @@ namespace Audiotica.WindowsPhone.Player
         private void systemmediatransportcontrol_ButtonPressed(SystemMediaTransportControls sender,
             SystemMediaTransportControlsButtonPressedEventArgs args)
         {
-            QueueManager.RefreshTracks();
             switch (args.Button)
             {
                 case SystemMediaTransportControlsButton.Play:
@@ -327,7 +325,6 @@ namespace Audiotica.WindowsPhone.Player
         private void BackgroundMediaPlayer_MessageReceivedFromForeground(object sender,
             MediaPlayerDataReceivedEventArgs e)
         {
-            QueueManager.RefreshTracks();
             foreach (string key in e.Data.Keys)
             {
                 switch (key.ToLower())

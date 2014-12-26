@@ -6,7 +6,6 @@ using System.Diagnostics;
 using System.Linq;
 using Windows.Foundation;
 using Windows.Media.Playback;
-using Audiotica.Core.Utilities;
 using Audiotica.Data.Collection;
 using Audiotica.Data.Collection.Model;
 using Audiotica.Data.Collection.RunTime;
@@ -169,6 +168,7 @@ namespace Audiotica.WindowsPhone.Player
         /// </summary>
         private void StartTrackAt(int id)
         {
+            RefreshTracks();
             UpdateMediaEnded();
 
             var source = tracks[id].Song.AudioUrl;
@@ -182,6 +182,7 @@ namespace Audiotica.WindowsPhone.Player
         /// </summary>
         public void StartTrack(QueueSong song)
         {
+            RefreshTracks();
             UpdateMediaEnded();
 
             var source = song.Song.AudioUrl;
@@ -192,6 +193,7 @@ namespace Audiotica.WindowsPhone.Player
 
         public void StartTrack(long id)
         {
+            RefreshTracks();
             UpdateMediaEnded();
 
             var track = tracks.FirstOrDefault(p => p.Id == id);
@@ -258,7 +260,7 @@ namespace Audiotica.WindowsPhone.Player
             _sql.Dispose();
         }
 
-        public void RefreshTracks()
+        private void RefreshTracks()
         {
             var collectionService = new CollectionService(_sql, _bgSql, null);
             collectionService.LoadLibrary();
