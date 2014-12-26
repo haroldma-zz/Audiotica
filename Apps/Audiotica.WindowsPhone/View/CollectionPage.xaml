@@ -75,10 +75,11 @@
                                         </interactivity:Interaction.Behaviors>
                                         <FlyoutBase.AttachedFlyout>
                                             <MenuFlyout>
-                                                <MenuFlyoutItem x:Uid="AddToMenuItem" Text="Add to (Disabled)"
-                                                                IsEnabled="False" />
-                                                <MenuFlyoutItem x:Uid="ShareMenuItem" Text="Share (Disabled)"
-                                                                IsEnabled="False" />
+                                                <MenuFlyoutItem Text="Add to" FontFamily="Global User Interface" Click="MenuFlyoutItem_Click">
+                                                    <FlyoutBase.AttachedFlyout>
+                                                        <ListPickerFlyout DisplayMemberPath="Name" />
+                                                    </FlyoutBase.AttachedFlyout>
+                                                </MenuFlyoutItem>
                                                 <MenuFlyoutItem x:Uid="DeleteMenuItem" Text="Delete" Foreground="Red"
                                                                 Click="DeleteSongMenuFlyoutItem_Click" />
                                             </MenuFlyout>

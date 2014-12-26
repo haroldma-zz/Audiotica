@@ -269,5 +269,11 @@ namespace Audiotica.ViewModel
         }
 
         #endregion
+
+        public class AddableCollectionItem
+        {
+            public string Name { get; set; }
+            public Playlist Playlist { get; set; }
+        }
     }
 }

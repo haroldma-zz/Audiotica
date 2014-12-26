@@ -4,11 +4,13 @@ using System.Collections.Generic;
 using System.Linq;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Navigation;
 using Audiotica.Core;
 using Audiotica.Core.Common;
 using Audiotica.Core.Utilities;
 using Audiotica.Data.Collection.Model;
+using Audiotica.ViewModel;
 
 #endregion
 
@@ -81,7 +83,7 @@ namespace Audiotica.View
         private void PickerFlyout_Confirmed(PickerFlyout sender, PickerConfirmedEventArgs args)
         {
             var listView = (ListView) sender.Content;
-            var selection = listView.SelectedItems.Select(o => (Song)o).ToList();
+            var selection = listView.SelectedItems.Select(o => (Song) o).ToList();
 
             if (selection.Count > 0)
             {
@@ -95,8 +97,47 @@ namespace Audiotica.View
 
         private void PickerFlyout_Closed(object sender, object e)
         {
-            var listView = (ListView)((PickerFlyout)sender).Content;
+            var listView = (ListView) ((PickerFlyout) sender).Content;
             listView.SelectedIndex = -1;
+        }
+
+        private void MenuFlyoutItem_Click(object sender, RoutedEventArgs e)
+        {
+            var menu = sender as MenuFlyoutItem;
+            var flyout = (ListPickerFlyout)FlyoutBase.GetAttachedFlyout(menu);
+            var song = (Song)menu.DataContext;
+
+            var list = new List<CollectionViewModel.AddableCollectionItem>
+            {
+                new CollectionViewModel.AddableCollectionItem
+                {
+                    Name = "Now Playing"
+                }
+            };
+
+            list.AddRange(App.Locator.CollectionService
+                .Playlists.Where(p => p.Songs.Count(pp => pp.SongId == song.Id) == 0)
+                .Select(p => new CollectionViewModel.AddableCollectionItem
+                {
+                    Playlist = p,
+                    Name = p.Name
+                }));
+            flyout.ItemsPicked += (pickerFlyout, args) =>
+            {
+                var item = args.AddedItems[0] as CollectionViewModel.AddableCollectionItem;
+
+                if (item.Playlist != null)
+                {
+                    App.Locator.CollectionService.AddToPlaylistAsync(item.Playlist, song);
+                }
+                else
+                {
+                    App.Locator.CollectionService.AddToQueueAsync(song);
+                }
+            };
+            flyout.ItemsSource = list;
+
+            FlyoutBase.ShowAttachedFlyout(menu);
         }
     }
 }

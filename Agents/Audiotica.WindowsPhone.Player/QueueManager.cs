@@ -215,6 +215,7 @@ namespace Audiotica.WindowsPhone.Player
         /// </summary>
         public void SkipToNext()
         {
+            RefreshTracks();
             StartTrackAt((_currentTrackIndex + 1)%tracks.Count);
         }
 
@@ -242,6 +243,7 @@ namespace Audiotica.WindowsPhone.Player
         /// </summary>
         public void SkipToPrevious()
         {
+            RefreshTracks();
             if (_currentTrackIndex == 0)
             {
                 StartTrackAt(tracks.Count - 1);
