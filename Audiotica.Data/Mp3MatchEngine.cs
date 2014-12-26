@@ -14,6 +14,7 @@ namespace Audiotica.Data
         {
             new NeteaseProvider(),
             new MeileProvider(),
+            new YouTubeProvider(),
             new Mp3ClanProvider(),
             new Mp3TruckProvider(),
             new SoundCloudProvider()
