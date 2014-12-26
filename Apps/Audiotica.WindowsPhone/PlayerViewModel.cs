@@ -14,7 +14,6 @@ using Audiotica.View;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using IF.Lastfm.Core.Api.Enums;
-using SQLitePCL;
 
 #endregion
 
@@ -22,13 +21,13 @@ namespace Audiotica
 {
     public class PlayerViewModel : ViewModelBase
     {
+        private readonly ISqlService _bgSqlService;
         private readonly AudioPlayerHelper _helper;
         private readonly RelayCommand _nextRelayCommand;
         private readonly RelayCommand _playPauseRelayCommand;
         private readonly RelayCommand _prevRelayCommand;
         private readonly IScrobblerService _scrobblerService;
         private readonly ICollectionService _service;
-        private readonly ISqlService _bgSqlService;
         private readonly DispatcherTimer _timer;
         private QueueSong _currentQueue;
         private TimeSpan _duration;
@@ -187,8 +186,9 @@ namespace Audiotica
                 var currentId = AppSettingsHelper.Read<long>(PlayerConstants.CurrentTrack);
                 CurrentQueue = _service.PlaybackQueue.FirstOrDefault(p => p.Id == currentId);
 
-                if (CurrentQueue == null) return;
-                if (CurrentQueue.Song.Duration.Ticks != Duration.Ticks)
+                if (CurrentQueue != null
+                    && CurrentQueue.Song != null
+                    && CurrentQueue.Song.Duration.Ticks != Duration.Ticks)
                     CurrentQueue.Song.Duration = Duration;
             }
             else
@@ -211,7 +211,6 @@ namespace Audiotica
 
             if (CurrentQueue != null && scrobble)
             {
-
                 var npAlbumName = CurrentQueue.Song.Album.ProviderId.StartsWith("autc.single.")
                     ? ""
                     : CurrentQueue.Song.Album.Name;
@@ -238,7 +237,6 @@ namespace Audiotica
 
                 if (!historyEntry.Scrobbled && historyEntry.CanScrobble && scrobble)
                 {
-
                     var diff = historyEntry.DateEnded - historyEntry.DatePlayed;
 
                     //only scrobbled when is has been playing for 30 secs or more

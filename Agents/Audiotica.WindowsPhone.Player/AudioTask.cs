@@ -208,6 +208,7 @@ namespace Audiotica.WindowsPhone.Player
         private void systemmediatransportcontrol_ButtonPressed(SystemMediaTransportControls sender,
             SystemMediaTransportControlsButtonPressedEventArgs args)
         {
+            QueueManager.RefreshTracks();
             switch (args.Button)
             {
                 case SystemMediaTransportControlsButton.Play:
@@ -218,7 +219,6 @@ namespace Audiotica.WindowsPhone.Player
                     //When this happens, the task gets re-initialized and that is asynchronous and hence the wait
                     if (!_backgroundtaskrunning)
                     {
-                        QueueManager.RefreshTracks();
                         var result = _backgroundTaskStarted.WaitOne(2000);
                         if (!result)
                             throw new Exception("Background Task didnt initialize in time");
@@ -327,6 +327,7 @@ namespace Audiotica.WindowsPhone.Player
         private void BackgroundMediaPlayer_MessageReceivedFromForeground(object sender,
             MediaPlayerDataReceivedEventArgs e)
         {
+            QueueManager.RefreshTracks();
             foreach (string key in e.Data.Keys)
             {
                 switch (key.ToLower())
@@ -342,7 +343,6 @@ namespace Audiotica.WindowsPhone.Player
                     case PlayerConstants.StartPlayback:
                         //Foreground App process has signalled that it is ready for playback
                         Debug.WriteLine("Starting Playback");
-                        _queueManager.RefreshTracks();
                         StartPlayback();
                         break;
                     case PlayerConstants.SkipNext: // User has chosen to skip track from app context.
