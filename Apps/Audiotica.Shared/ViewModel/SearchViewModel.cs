@@ -1,6 +1,7 @@
 ﻿#region
 
 using System;
+using System.Net;
 using System.Threading.Tasks;
 using Windows.System;
 using Windows.UI.Xaml;
@@ -98,45 +99,62 @@ namespace Audiotica.ViewModel
         {
             try
             {
-                if (Tracks != null)
+                term = term.Trim();
+                if (term.StartsWith("http://www.last.fm/music/") && term.Contains("/_/"))
                 {
-                    Tracks.Clear();
+                    term = term.Replace("http://www.last.fm/music/","");
+                    var artist = term.Substring(0, term.IndexOf("/_/"));
+                    var title = WebUtility.UrlDecode(term.Replace(artist + "/_/", ""));
+                    artist = WebUtility.UrlDecode(artist);
+
+                    var track = await _service.GetDetailTrack(title, artist);
+                    CurtainToast.Show("Last.fm link detected");
+                    await ScrobblerHelper.SaveTrackAsync(track);
                 }
-                if (Artists != null)
+
+                else
                 {
-                    Artists.Clear();
+
+                    if (Tracks != null)
+                    {
+                        Tracks.Clear();
+                    }
+                    if (Artists != null)
+                    {
+                        Artists.Clear();
+                    }
+                    if (Albums != null)
+                    {
+                        Albums.Clear();
+                    }
+
+                    _tracksResponse = await _service.SearchTracksAsync(term);
+
+                    Tracks = CreateIncrementalCollection(
+                        () => _tracksResponse,
+                        tracks => _tracksResponse = tracks,
+                        async i => await _service.SearchTracksAsync(term, i));
+                    foreach (var lastTrack in _tracksResponse)
+                        Tracks.Add(lastTrack);
+
+                    _albumsResponse = await _service.SearchAlbumsAsync(term);
+
+                    Albums = CreateIncrementalCollection(
+                        () => _albumsResponse,
+                        albums => _albumsResponse = albums,
+                        async i => await _service.SearchAlbumsAsync(term, i));
+                    foreach (var lastAlbum in _albumsResponse)
+                        Albums.Add(lastAlbum);
+
+                    _artistsResponse = await _service.SearchArtistAsync(term);
+
+                    Artists = CreateIncrementalCollection(
+                        () => _artistsResponse,
+                        artists => _artistsResponse = artists,
+                        async i => await _service.SearchArtistAsync(term, i));
+                    foreach (var lastArtist in _artistsResponse)
+                        Artists.Add(lastArtist);
                 }
-                if (Albums != null)
-                {
-                    Albums.Clear();
-                }
-
-                _tracksResponse = await _service.SearchTracksAsync(term);
-
-                Tracks = CreateIncrementalCollection(
-                    () => _tracksResponse,
-                    tracks => _tracksResponse = tracks,
-                    async i => await _service.SearchTracksAsync(term, i));
-                foreach (var lastTrack in _tracksResponse)
-                    Tracks.Add(lastTrack);
-
-                _albumsResponse = await _service.SearchAlbumsAsync(term);
-
-                Albums = CreateIncrementalCollection(
-                    () => _albumsResponse,
-                    albums => _albumsResponse = albums,
-                    async i => await _service.SearchAlbumsAsync(term, i));
-                foreach (var lastAlbum in _albumsResponse)
-                    Albums.Add(lastAlbum);
-
-                _artistsResponse = await _service.SearchArtistAsync(term);
-
-                Artists = CreateIncrementalCollection(
-                    () => _artistsResponse,
-                    artists => _artistsResponse = artists,
-                    async i => await _service.SearchArtistAsync(term, i));
-                foreach (var lastArtist in _artistsResponse)
-                    Artists.Add(lastArtist);
 
                 //if (_tracksResponse.TotalItems == 0)
                 //CurtainToast.ShowError("NoSearchResultsToast".FromLanguageResource());
