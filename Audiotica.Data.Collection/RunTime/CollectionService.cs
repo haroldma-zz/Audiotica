@@ -312,6 +312,28 @@ namespace Audiotica.Data.Collection.RunTime
                 try
                 {
                     await file.DeleteAsync();
+                    Debug.WriteLine("Deleted file: {0}", file.Name);
+                }
+                catch
+                {
+                }
+            }
+
+            var mp3Folder = await StorageHelper.GetFolderAsync("songs");
+
+            if (mp3Folder == null) return;
+
+            var songs = await mp3Folder.GetFilesAsync();
+
+            foreach (var file in from file in songs
+                let id = int.Parse(file.Name.Replace(".mp3", ""))
+                where Songs.Count(p => p.Id == id) == 0
+                select file)
+            {
+                try
+                {
+                    await file.DeleteAsync();
+                    Debug.WriteLine("Deleted file: {0}", file.Name);
                 }
                 catch
                 {

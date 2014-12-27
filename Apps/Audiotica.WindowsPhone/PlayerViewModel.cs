@@ -229,41 +229,49 @@ namespace Audiotica
 
             foreach (var historyEntry in history)
             {
-                if (historyEntry.Song.LastPlayed < historyEntry.DatePlayed)
+                if (historyEntry.Song == null)
                 {
-                    historyEntry.Song.PlayCount++;
-                    historyEntry.Song.LastPlayed = historyEntry.DatePlayed;
+                    //mark for deletion
+                    historyEntry.CanScrobble = true;
                 }
-
-                if (!historyEntry.Scrobbled && historyEntry.CanScrobble && scrobble)
+                else
                 {
-                    var diff = historyEntry.DateEnded - historyEntry.DatePlayed;
-
-                    //only scrobbled when is has been playing for 30 secs or more
-                    if (diff.TotalSeconds >= 30)
+                    if (historyEntry.Song.LastPlayed < historyEntry.DatePlayed)
                     {
-                        var albumName = historyEntry.Song.Album.ProviderId.StartsWith("autc.single.")
-                            ? ""
-                            : historyEntry.Song.Album.Name;
-                        var artistName = string.IsNullOrEmpty(albumName) ? "" : historyEntry.Song.Artist.Name;
-
-                        var result =
-                            await
-                                _scrobblerService.ScrobbleAsync(historyEntry.Song.Name, historyEntry.Song.ArtistName,
-                                    historyEntry.DatePlayed.ToUniversalTime(), historyEntry.Song.Duration, albumName,
-                                    artistName);
-
-                        //if no error happened, or there was a failure (unrecoverable), then mark as scrobled
-                        historyEntry.Scrobbled = result == LastFmApiError.None || result == LastFmApiError.Failure;
+                        historyEntry.Song.PlayCount++;
+                        historyEntry.Song.LastPlayed = historyEntry.DatePlayed;
                     }
-                    else
+
+                    if (!historyEntry.Scrobbled && historyEntry.CanScrobble && scrobble)
                     {
-                        //else mark it for delete
-                        historyEntry.Scrobbled = true;
+                        var diff = historyEntry.DateEnded - historyEntry.DatePlayed;
+
+                        //only scrobbled when is has been playing for 30 secs or more
+                        if (diff.TotalSeconds >= 30)
+                        {
+                            var albumName = historyEntry.Song.Album.ProviderId.StartsWith("autc.single.")
+                                ? ""
+                                : historyEntry.Song.Album.Name;
+                            var artistName = string.IsNullOrEmpty(albumName) ? "" : historyEntry.Song.Artist.Name;
+
+                            var result =
+                                await
+                                    _scrobblerService.ScrobbleAsync(historyEntry.Song.Name, historyEntry.Song.ArtistName,
+                                        historyEntry.DatePlayed.ToUniversalTime(), historyEntry.Song.Duration, albumName,
+                                        artistName);
+
+                            //if no error happened, or there was a failure (unrecoverable), then mark as scrobled
+                            historyEntry.Scrobbled = result == LastFmApiError.None || result == LastFmApiError.Failure;
+                        }
+                        else
+                        {
+                            //else mark it for delete
+                            historyEntry.Scrobbled = true;
+                        }
                     }
+
+                    if (!historyEntry.Scrobbled && scrobble) continue;
                 }
-
-                if (!historyEntry.Scrobbled && scrobble) continue;
 
                 //if scrobbled the history item, then delete it
                 if (historyEntry.CanScrobble)
