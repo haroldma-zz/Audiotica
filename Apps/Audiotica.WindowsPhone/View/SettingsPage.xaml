@@ -13,7 +13,7 @@
         <Pivot Title="SETTINGS+MORE" HeaderTemplate="{StaticResource PivotHeaderTemplate}">
             <PivotItem Header="APP">
                 <StackPanel>
-                    <ToggleSwitch IsEnabled="False" IsOn="{Binding Scrobble, Mode=TwoWay}" Header="Ads" />
+                    <ToggleSwitch IsEnabled="True" IsOn="{Binding Advertisements, Mode=TwoWay}" Header="Ads" />
                     <ToggleSwitch IsOn="{Binding WallpaperArt, Mode=TwoWay}" Header="Album Art Wallpaper" />
                 </StackPanel>
             </PivotItem>

@@ -11,6 +11,7 @@ using Audiotica.Data.Collection.RunTime;
 using Audiotica.Data.Service.DesignTime;
 using Audiotica.Data.Service.Interfaces;
 using Audiotica.Data.Service.RunTime;
+using Audiotica.PartialView;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Ioc;
 using IF.Lastfm.Core.Api;
@@ -107,6 +108,10 @@ namespace Audiotica.ViewModel
                 CurrentVersion = 1,
                 Path = "player.sqldb"
             };
+        }
+        public AdMediatorBar Ads
+        {
+            get { return ServiceLocator.Current.GetInstance<AdMediatorBar>(); }
         }
 
         public MainViewModel Main

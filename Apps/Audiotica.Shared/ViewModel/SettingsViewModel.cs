@@ -3,6 +3,7 @@
 using Audiotica.Core.Common;
 using Audiotica.Core.Utilities;
 using Audiotica.Data.Service.Interfaces;
+using Audiotica.PartialView;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using IF.Lastfm.Core.Api;
@@ -14,14 +15,16 @@ namespace Audiotica.ViewModel
     public class SettingsViewModel : ViewModelBase
     {
         private readonly IScrobblerService _service;
+        private readonly AdMediatorBar _adMediatorBar;
         private string _password;
         private string _username;
         private RelayCommand _loginButtonRelay;
         private bool _scrobbleSwitch;
 
-        public SettingsViewModel(IScrobblerService service)
+        public SettingsViewModel(IScrobblerService service, AdMediatorBar adMediatorBar)
         {
             _service = service;
+            _adMediatorBar = adMediatorBar;
             _loginButtonRelay = new RelayCommand(LoginButtonClicked);
 
             var creds = CredentialHelper.GetCredentials("lastfm");
@@ -82,6 +85,14 @@ namespace Audiotica.ViewModel
             }
             set
             {
+                if (value)
+                {
+                    _adMediatorBar.Enable();
+                }
+                else
+                {
+                    _adMediatorBar.Disable();
+                }
                 AppSettingsHelper.Write("Ads", value);
                 RaisePropertyChanged();
             }

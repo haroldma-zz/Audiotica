@@ -91,9 +91,11 @@
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="*"/>
                                 <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
                             <ContentPresenter ContentTemplate="{TemplateBinding ContentTemplate}" ContentTransitions="{TemplateBinding ContentTransitions}" Content="{TemplateBinding Content}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
-                            <partialView:NowPlayingBar Grid.Row="1" />
+                            <partialView:AdMediatorBar Grid.Row="1" />
+                            <partialView:NowPlayingBar Grid.Row="2" />
                         </Grid>
                     </ControlTemplate>
                 </Setter.Value>
