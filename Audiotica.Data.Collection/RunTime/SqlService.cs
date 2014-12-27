@@ -212,7 +212,7 @@ namespace Audiotica.Data.Collection.RunTime
 
                         else if (propertyInfo.PropertyType == typeof (bool))
                         {
-                            value = (long) value == 1;
+                            value = value != null && (long) value == 1;
                         }
 
                         propertyInfo.SetValue(item, value);

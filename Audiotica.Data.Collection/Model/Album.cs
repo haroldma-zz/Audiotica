@@ -37,5 +37,7 @@ namespace Audiotica.Data.Collection.Model
         public BitmapImage Artwork { get { return _artwork; } set { Set(ref _artwork, value); } }
 
         public Artist PrimaryArtist { get; set; }
+
+        public bool HasArtwork { get; set; }
     }
 }

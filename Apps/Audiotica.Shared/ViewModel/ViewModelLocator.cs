@@ -78,17 +78,25 @@ namespace Audiotica.ViewModel
             return new SqlServiceConfig()
             {
                 Tables = dbTypes,
-                CurrentVersion = 4,
+                CurrentVersion = 5,
                 Path = "collection.sqldb",
                 OnUpdate = (d, v) =>
                 {
                     if (!(v > 0)) return;
-                    using (var statement = d.Prepare("ALTER TABLE Song ADD COLUMN SongState INTEGER"))
-                    {
-                        statement.Step();
-                    }
 
-                    using (var statement = d.Prepare("ALTER TABLE Song ADD COLUMN HeartState INTEGER"))
+                    if (v < 4)
+                    {
+                        using (var statement = d.Prepare("ALTER TABLE Song ADD COLUMN SongState INTEGER"))
+                        {
+                            statement.Step();
+                        }
+
+                        using (var statement = d.Prepare("ALTER TABLE Song ADD COLUMN HeartState INTEGER"))
+                        {
+                            statement.Step();
+                        }
+                    }
+                    using (var statement = d.Prepare("ALTER TABLE Album ADD COLUMN HasArtwork INTEGER"))
                     {
                         statement.Step();
                     }
