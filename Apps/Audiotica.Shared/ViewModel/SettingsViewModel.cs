@@ -36,6 +36,11 @@ namespace Audiotica.ViewModel
             IsLogin = true;
         }
 
+        public string Version
+        {
+            get { return BetaChangelogHelper.CurrentVersion.ToString(); }
+        }
+
         private async void LoginButtonClicked()
         {
             if (_service.IsAuthenticated)
@@ -85,14 +90,18 @@ namespace Audiotica.ViewModel
             }
             set
             {
+                string label;
                 if (value)
                 {
                     _adMediatorBar.Enable();
+                    label = "enabled";
                 }
                 else
                 {
                     _adMediatorBar.Disable();
+                    label = "disabled";
                 }
+                GoogleAnalytics.EasyTracker.GetTracker().SendEvent("Settings", "Ads", label, 0);
                 AppSettingsHelper.Write("Ads", value);
                 RaisePropertyChanged();
             }

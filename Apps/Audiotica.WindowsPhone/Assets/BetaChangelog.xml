@@ -1,18 +1,20 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Changelog>
   <FirstRunMessage>
-    This beta is meant to test out the metro UI.
+    Release Candidate #1
   </FirstRunMessage>
   <JustUpdatedMessage>
-    1. Create playlists
-    2. New buttery animations
-    3. Two new mp3 providers
-    4. Better audio matching algorithm
-    5. Now playing bar has track progress
-    6. Get artwork, bio and similar in artist page
-    7. Optimize match engine for remixes, covers, etc
-    8. Minor UI tweaks
-    9. Improve player and database code
-    10. Update SQLite and other SDKs
+    1. Offline mode
+    2. Faster player and app
+    3. Added YouTube as an mp3 provider
+    4. Improve database
+    5. Fix major and minor bugs
+    6. Reorder and delete playlist songs
+    7. Manually add songs to playlist or to queue
+    8. Settings and about page
+    9. Advertisements
+    10. Scrobble w/ Last.FM
+    11. Search supports last.fm song links
+    12. Update to third party libraries
   </JustUpdatedMessage>
 </Changelog>
