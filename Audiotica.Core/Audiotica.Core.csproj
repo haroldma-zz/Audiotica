@@ -64,6 +64,7 @@
     <Compile Include="Utilities\CredentialHelper.cs" />
     <Compile Include="Utilities\HtmlRemoval.cs" />
     <Compile Include="Utilities\MessageBox.cs" />
+    <Compile Include="Utilities\StorageFolderExtensions.cs" />
     <Compile Include="Utilities\StorageHelper.cs" />
     <Compile Include="Utilities\StringExtensions.cs" />
   </ItemGroup>

@@ -33,7 +33,6 @@ namespace Audiotica.ViewModel
         public ViewModelLocator()
         {
             ServiceLocator.SetLocatorProvider(() => SimpleIoc.Default);
-            SimpleIoc.Default.Register<AudioPlayerHelper>();
 
             var config = GetForegroundConfig();
             var bgConfig = GetBackgroundConfig();
@@ -53,6 +52,8 @@ namespace Audiotica.ViewModel
                 SimpleIoc.Default.Register<ISongDownloadService>(() => new SongDownloadService(CollectionService, SqlService, Window.Current.Dispatcher));
             }
 
+            SimpleIoc.Default.Register<AudioPlayerHelper>();
+            SimpleIoc.Default.Register(() => new PlayerViewModel(AudioPlayerHelper, CollectionService, BgSqlService, ScrobblerService));
             SimpleIoc.Default.Register<MainViewModel>();
             SimpleIoc.Default.Register<AlbumViewModel>();
             SimpleIoc.Default.Register<CollectionAlbumViewModel>();
@@ -62,7 +63,6 @@ namespace Audiotica.ViewModel
             SimpleIoc.Default.Register<SearchViewModel>();
             SimpleIoc.Default.Register<SettingsViewModel>();
             SimpleIoc.Default.Register<CollectionViewModel>();
-            SimpleIoc.Default.Register(() => new PlayerViewModel(AudioPlayerHelper, CollectionService, BgSqlService, ScrobblerService));
         }
 
         private SqlServiceConfig GetForegroundConfig()

@@ -52,11 +52,14 @@ namespace Audiotica.Data.Collection.RunTime
             var songs = _sqlService.SelectAll<Song>().OrderByDescending(p => p.Id);
             var albums = _sqlService.SelectAll<Album>().OrderByDescending(p => p.Id);
             var artists = _sqlService.SelectAll<Artist>().OrderByDescending(p => p.Id);
+            var isForeground = _dispatcher != null;
 
             foreach (var song in songs)
             {
                 song.Artist = artists.FirstOrDefault(p => p.Id == song.ArtistId);
                 song.Album = albums.FirstOrDefault(p => p.Id == song.AlbumId);
+                if (isForeground)
+                    _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => Songs.Add(song)).AsTask().Wait();
             }
 
             foreach (var album in albums)
@@ -64,30 +67,27 @@ namespace Audiotica.Data.Collection.RunTime
                 album.Songs.AddRange(songs.Where(p => p.AlbumId == album.Id).OrderBy(p => p.TrackNumber));
                 album.PrimaryArtist = artists.FirstOrDefault(p => p.Id == album.PrimaryArtistId);
 
-                if (_dispatcher != null)
+                if (isForeground)
+                {
                     _dispatcher.RunAsync(CoreDispatcherPriority.Normal,
-                        async () => album.Artwork = await GetArtworkAsync(album.Id)).AsTask().Wait();
+                        async () =>
+                        {
+                            album.Artwork = await GetArtworkAsync(album.Id);
+                            Albums.Add(album);
+                        }).AsTask().Wait();
+                }
             }
 
             foreach (var artist in artists)
             {
                 artist.Songs.AddRange(songs.Where(p => p.ArtistId == artist.Id));
                 artist.Albums.AddRange(albums.Where(p => p.PrimaryArtistId == artist.Id));
+                if (isForeground)
+                    _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => Artists.Add(artist)).AsTask().Wait();
             }
 
             //Foreground app
-            if (_dispatcher != null)
-            {
-                _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-                {
-                    Songs.AddRange(songs);
-                    Artists.AddRange(artists);
-                    Albums.AddRange(albums);
-                }).AsTask().Wait();
-            }
-
-                //background player
-            else
+            if (!isForeground)
             {
                 Songs = new ObservableCollection<Song>(songs);
                 Artists = new ObservableCollection<Artist>(artists);
@@ -426,7 +426,7 @@ namespace Audiotica.Data.Collection.RunTime
             await _bgSqlService.DeleteItemAsync(queueSongToRemove);
         }
 
-        private async void LoadQueue()
+        private void LoadQueue()
         {
             var queue = _bgSqlService.SelectAll<QueueSong>();
             QueueSong head = null;
@@ -446,7 +446,7 @@ namespace Audiotica.Data.Collection.RunTime
             for (var i = 0; i < queue.Count; i++)
             {
                 if (_dispatcher != null)
-                    await _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => PlaybackQueue.Add(head));
+                    _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => PlaybackQueue.Add(head)).AsTask().Wait();
                 else
                     PlaybackQueue.Add(head);
 
