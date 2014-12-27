@@ -220,8 +220,12 @@ namespace Audiotica.WindowsPhone.Player
                         var result = _backgroundTaskStarted.WaitOne(2000);
                         if (!result)
                             throw new Exception("Background Task didnt initialize in time");
+                        StartPlayback();
                     }
-                    StartPlayback();
+                    else
+                    {
+                        BackgroundMediaPlayer.Current.Play();
+                    }
                     break;
                 case SystemMediaTransportControlsButton.Pause:
                     Debug.WriteLine("UVC pause button pressed");
