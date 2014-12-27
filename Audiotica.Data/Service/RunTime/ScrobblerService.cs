@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
+using Audiotica.Core.Common;
 using Audiotica.Core.Exceptions;
 using Audiotica.Core.Utilities;
 using Audiotica.Data.Service.Interfaces;
@@ -40,13 +41,27 @@ namespace Audiotica.Data.Service.RunTime
 
             if (creds == null) return false;
 
-            return await GetSessionTokenAsync(creds.UserName, creds.Password);
+            var result = await GetSessionTokenWithResultsAsync(creds.UserName, creds.Password);
+
+            if (result == LastFmApiError.BadAuth)
+            {
+                Logout();
+                CurtainToast.ShowError("Problem with last.fm pass");
+            }
+
+            return result == LastFmApiError.None;
         }
 
         private async Task<bool> GetSessionTokenAsync(string username, string password)
         {
             var response = await _auth.GetSessionTokenAsync(username, password);
             return response.Success;
+        }
+
+        private async Task<LastFmApiError> GetSessionTokenWithResultsAsync(string username, string password)
+        {
+            var response = await _auth.GetSessionTokenAsync(username, password);
+            return response.Error;
         }
 
         public bool IsAuthenticated { get { return _auth.Authenticated; } }
