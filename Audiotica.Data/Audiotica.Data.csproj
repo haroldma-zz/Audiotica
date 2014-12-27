@@ -49,6 +49,7 @@
     <Compile Include="Model\EchoNest\EchoSong.cs" />
     <Compile Include="Model\Mp3ClanRoot.cs" />
     <Compile Include="Model\WebSong.cs" />
+    <Compile Include="Mp3Providers\Mp3SkullProvider.cs" />
     <Compile Include="Mp3Providers\YouTubeProvider.cs" />
     <Compile Include="Mp3Providers\MeileProvider.cs" />
     <Compile Include="Mp3Providers\Mp3TruckProvider.cs" />
