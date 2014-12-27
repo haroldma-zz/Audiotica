@@ -145,5 +145,11 @@ namespace Audiotica.View
             var song = (sender as AppBarButton).DataContext as Song;
             App.Locator.Download.StartDownload(song);
         }
+
+        private void AppBarButton_Click(object sender, RoutedEventArgs e)
+        {
+            var song = (sender as AppBarButton).DataContext as Song;
+            App.Locator.Download.Cancel(song.Download);
+        }
     }
 }

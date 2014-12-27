@@ -1,5 +1,6 @@
 ﻿#region
 
+using System.Threading;
 using Windows.Networking.BackgroundTransfer;
 using GalaSoft.MvvmLight;
 
@@ -14,6 +15,7 @@ namespace Audiotica.Data.Collection.Model
         private double _bytesReceived;
         private double _bytesToReceive = 10;
         private string _status = "Waiting";
+        private CancellationTokenSource _cancellationTokenSrc;
 
         #endregion
 
@@ -22,6 +24,7 @@ namespace Audiotica.Data.Collection.Model
         public BackgroundDownload(DownloadOperation downloadOperation)
         {
             DownloadOperation = downloadOperation;
+            CancellationTokenSrc = new CancellationTokenSource();
         }
 
         #endregion
@@ -47,6 +50,12 @@ namespace Audiotica.Data.Collection.Model
         }
 
         public DownloadOperation DownloadOperation { get; private set; }
+
+        public CancellationTokenSource CancellationTokenSrc
+        {
+            get { return _cancellationTokenSrc; }
+            set { _cancellationTokenSrc = value; }
+        }
 
         #endregion
     }

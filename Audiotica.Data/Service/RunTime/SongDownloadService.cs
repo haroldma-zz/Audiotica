@@ -23,7 +23,6 @@ namespace Audiotica.Data.Service.RunTime
     {
         #region Private Fields
 
-        private readonly CancellationTokenSource _cts;
         private readonly ICollectionService _service;
         private readonly ISqlService _sqlService;
         private readonly CoreDispatcher _dispatcher;
@@ -37,7 +36,6 @@ namespace Audiotica.Data.Service.RunTime
             _service = service;
             _sqlService = sqlService;
             _dispatcher = dispatcher;
-            _cts = new CancellationTokenSource();
         }
 
         #endregion
@@ -126,16 +124,16 @@ namespace Audiotica.Data.Service.RunTime
 
             try
             {
-                var progressCallback = new Progress<Windows.Networking.BackgroundTransfer.DownloadOperation>(DownloadProgress);
+                var progressCallback = new Progress<DownloadOperation>(DownloadProgress);
                 if (start)
                 {
                     // Start the BackgroundDownload and attach a progress handler.
-                    await download.StartAsync().AsTask(_cts.Token, progressCallback);
+                    await download.StartAsync().AsTask(song.Download.CancellationTokenSrc.Token, progressCallback);
                 }
                 else
                 {
                     // The BackgroundDownload was already running when the application started, re-attach the progress handler.
-                    await download.AttachAsync().AsTask(_cts.Token, progressCallback);
+                    await download.AttachAsync().AsTask(song.Download.CancellationTokenSrc.Token, progressCallback);
                 }
 
                 //Download Completed
@@ -147,21 +145,16 @@ namespace Audiotica.Data.Service.RunTime
                 else
                 {
                     Debug.WriteLine("Download status code for {0} is bad :/", song.Name);
-                    song.SongState = SongState.None;
-                    await _sqlService.UpdateItemAsync(song);
+                    throw new Exception();
                 }
-            }
-            catch (TaskCanceledException)
-            {
-                //Cancelled
-                Debug.WriteLine("Download cancelled");
             }
             catch
             {
-                Debug.WriteLine("Unknown error for {0}", song.Name);
+                Debug.WriteLine("Download cancelled {0}", song.Name);
+
                 song.SongState = SongState.None;
                 _sqlService.UpdateItem(song);
-                //TODO [Harry,20140714] Report error!
+                StorageHelper.DeleteFileAsync(string.Format("songs/{0}.mp3", song.Id)).Wait();
             }
             finally
             {
@@ -186,12 +179,15 @@ namespace Audiotica.Data.Service.RunTime
 
         public void PauseAll()
         {
-            throw new NotImplementedException();
+            foreach (var activeDownload in ActiveDownloads)
+            {
+                activeDownload.Download.DownloadOperation.Pause();
+            }
         }
 
         public void Cancel(BackgroundDownload backgroundDownload)
         {
-            throw new NotImplementedException();
+            backgroundDownload.CancellationTokenSrc.Cancel();
         }
 
         public async void StartDownload(Song song)
