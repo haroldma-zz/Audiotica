@@ -43,6 +43,7 @@
     <Compile Include="DesignTime\DesignCollectionService.cs" />
     <Compile Include="DesignTime\DesignSqlService.cs" />
     <Compile Include="Model\HistoryEntry.cs" />
+    <Compile Include="Model\BackgroundDownload.cs" />
     <Compile Include="SqlHelper\BaseEntry.cs" />
     <Compile Include="SqlHelper\EasySql.cs" />
     <Compile Include="SqlHelper\SqlIgnore.cs" />

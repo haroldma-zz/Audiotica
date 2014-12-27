@@ -53,20 +53,11 @@ namespace Audiotica.ViewModel
             Service.Songs.CollectionChanged += OnCollectionChanged;
             Service.Albums.CollectionChanged += OnCollectionChanged;
             Service.Artists.CollectionChanged += OnCollectionChanged;
+
+            RandomizeAlbumList = new ObservableCollection<Album>();
         }
 
         #region Private Helpers 
-
-        private int rowCount
-        {
-            get
-            {
-                //extra column if running on hd device (720 and 1080)
-                var scaleFactor = DisplayInformation.GetForCurrentView().RawPixelsPerViewPixel;
-                var actualWidth = (int) (Window.Current.Bounds.Width*scaleFactor);
-                return actualWidth == 720 || actualWidth == 1080 ? 5 : 4;
-            }
-        }
 
         private void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs arg)
         {
@@ -142,46 +133,49 @@ namespace Audiotica.ViewModel
         private async void SongClickExecute(ItemClickEventArgs e)
         {
             var song = e.ClickedItem as Song;
-            var songList = _service.Songs.OrderBy(p => p.Name).ToList();
-
-            var createQueue = songList.Count != _service.PlaybackQueue.Count
-                              || _service.PlaybackQueue.FirstOrDefault(p => p.SongId == song.Id) == null;
-
-            if (_currentlyPreparing && createQueue) return;
-
-            if (_currentlyPreparing && !createQueue)
+            await Task.Run(async () =>
             {
-                _audioPlayer.PlaySong(_service.PlaybackQueue.First(p => p.SongId == song.Id));
-            }
+                var songList = _service.Songs.OrderBy(p => p.Name).ToList();
 
-            else
-            {
-                _currentlyPreparing = true;
+                var createQueue = songList.Count != _service.PlaybackQueue.Count
+                                  || _service.PlaybackQueue.FirstOrDefault(p => p.SongId == song.Id) == null;
 
-                if (createQueue)
+                if (_currentlyPreparing && createQueue) return;
+
+                if (_currentlyPreparing && !createQueue)
                 {
-                    await _service.ClearQueueAsync();
-                    await _service.AddToQueueAsync(song);
-                    var index = songList.IndexOf(song);
-
-                    _audioPlayer.PlaySong(_service.PlaybackQueue[0]);
-                    await Task.Delay(500);
-
-                    for (var i = index + 1; i < songList.Count; i++)
-                    {
-                        await _service.AddToQueueAsync(songList[i]);
-                    }
-
-                    for (var i = 0; i < index; i++)
-                    {
-                        await _service.AddToQueueAsync(songList[i]);
-                    }
-                }
-                else
                     _audioPlayer.PlaySong(_service.PlaybackQueue.First(p => p.SongId == song.Id));
+                }
 
-                _currentlyPreparing = false;
-            }
+                else
+                {
+                    _currentlyPreparing = true;
+
+                    if (createQueue)
+                    {
+                        await _service.ClearQueueAsync();
+                        await _service.AddToQueueAsync(song);
+                        var index = songList.IndexOf(song);
+
+                        _audioPlayer.PlaySong(_service.PlaybackQueue[0]);
+                        await Task.Delay(500);
+
+                        for (var i = index + 1; i < songList.Count; i++)
+                        {
+                            await _service.AddToQueueAsync(songList[i]);
+                        }
+
+                        for (var i = 0; i < index; i++)
+                        {
+                            await _service.AddToQueueAsync(songList[i]);
+                        }
+                    }
+                    else
+                        _audioPlayer.PlaySong(_service.PlaybackQueue.First(p => p.SongId == song.Id));
+
+                    _currentlyPreparing = false;
+                }
+            });
         }
 
         #endregion
@@ -206,52 +200,25 @@ namespace Audiotica.ViewModel
             set { Set(ref _sortedArtists, value); }
         }
 
-        public List<Album> RandomizeAlbumList
-        {
-            get
-            {
-                var albums = Service.Albums.Where(p => p.Artwork != CollectionConstant.MissingArtworkImage).ToList();
-
-                var albumCount = albums.Count;
-
-                if (albumCount == 0) return null;
-
-                var h = IsInDesignMode ? 800 : Window.Current.Bounds.Height;
-                var rows = (int) Math.Ceiling(h/ArtworkSize);
-
-                var numImages = rows*rowCount;
-                var imagesNeeded = numImages - albumCount;
-
-                var shuffle = albums
-                    .Shuffle()
-                    .Take(numImages > albumCount ? albumCount : numImages)
-                    .ToList();
-
-                if (imagesNeeded <= 0) return shuffle;
-
-                var repeatList = new List<Album>();
-
-                while (imagesNeeded > 0)
-                {
-                    var takeAmmount = imagesNeeded > albumCount ? albumCount : imagesNeeded;
-
-                    repeatList.AddRange(shuffle.Shuffle().Take(takeAmmount));
-
-                    imagesNeeded -= shuffle.Count;
-                }
-
-                shuffle.AddRange(repeatList);
-
-                return shuffle;
-            }
-        }
+        public ObservableCollection<Album> RandomizeAlbumList { get; set; }
 
         public double ArtworkSize
         {
             get
             {
                 var w = IsInDesignMode ? 480 : Window.Current.Bounds.Width;
-                return w/rowCount;
+                return w/RowCount;
+            }
+        }
+
+        public int RowCount
+        {
+            get
+            {
+                //extra column if running on hd device (720 and 1080)
+                var scaleFactor = DisplayInformation.GetForCurrentView().RawPixelsPerViewPixel;
+                var actualWidth = (int)(Window.Current.Bounds.Width * scaleFactor);
+                return actualWidth == 720 || actualWidth == 1080 ? 5 : 4;
             }
         }
 
@@ -266,5 +233,11 @@ namespace Audiotica.ViewModel
         }
 
         #endregion
+
+        public class AddableCollectionItem
+        {
+            public string Name { get; set; }
+            public Playlist Playlist { get; set; }
+        }
     }
 }

@@ -11,7 +11,10 @@ using Audiotica.Core.Utilities;
 using Audiotica.Data.Model;
 using Audiotica.Data.Model.SoundCloud;
 using Audiotica.Data.Service.Interfaces;
+using Google.Apis.Services;
+using Google.Apis.YouTube.v3;
 using HtmlAgilityPack;
+using Newtonsoft.Json.Linq;
 
 #endregion
 
@@ -32,8 +35,67 @@ namespace Audiotica.Data.Service.RunTime
         private const string NeteaseSuggestApi = "http://music.163.com/api/search/suggest/web?csrf_token=";
         private const string NeteaseDetailApi = "http://music.163.com/api/song/detail/?ids=%5B{0}%5D";
 
+        public async Task<List<WebSong>>  SearchYoutube(string title, string artist, string album = null, int limit = 5)
+        {
+            var youtubeService = new YouTubeService(new BaseClientService.Initializer()
+            {
+                ApiKey = ApiKeys.YoutubeId,
+                ApplicationName = "Audiotica"
+            });
+            youtubeService.HttpClient.DefaultRequestHeaders.Referrer = new Uri("http://audiotica.fm");
+
+            var searchListRequest = youtubeService.Search.List("snippet");
+            searchListRequest.Q = CreateQuery(title, artist, album, false) + " (Audio)";
+            searchListRequest.MaxResults = limit;
+
+            try
+            {
+                // Call the search.list method to retrieve results matching the specified query term.
+                var searchListResponse = await searchListRequest.ExecuteAsync();
+
+                var songs = new List<WebSong>();
+
+                foreach (var searchResult in searchListResponse.Items)
+                {
+                    if (searchResult.Id.Kind == "youtube#video")
+                    {
+                        var vid = new WebSong(searchResult);
+                        using (var client = new HttpClient())
+                        {
+                            var resp = await client.GetAsync(
+                                string.Format(
+                                    "http://www.youtube-mp3.org/a/itemInfo/?video_id={0}&ac=www&t=grp&r=1419628947067&s=139194",
+                                    vid.Id));
+                            if (resp.IsSuccessStatusCode)
+                            {
+                                var json = await resp.Content.ReadAsStringAsync();
+                                json = json.Replace(";", "").Replace("info = ", "").Replace("\"", "'");
+
+                                var o = JToken.Parse(json);
+
+                                if (o.Value<string>("status") == "serving")
+                                {
+                                    vid.Duration = TimeSpan.FromMinutes(o.Value<int>("length"));
+                                    vid.AudioUrl =
+                                        string.Format(
+                                            "http://www.youtube-mp3.org/get?ab=128&video_id={0}&h={1}&r=1419629380530.1463092791&s=36098",
+                                            vid.Id, o.Value<string>("h"));
+                                    songs.Add(vid);
+                                }
+                            }
+                        }
+                    }
+                }
+                return FilterByTypeAndMatch(songs, title, artist);
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
         public async Task<List<WebSong>> SearchSoundCloud(string title, string artist, string album = null,
-            int limit = 5)
+            int limit = 10)
         {
             var url = string.Format(SoundCloudSearchUrl, ApiKeys.SoundCloudId, limit, CreateQuery(title, artist, album));
 

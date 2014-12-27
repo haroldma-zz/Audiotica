@@ -80,10 +80,15 @@ namespace Audiotica.Core.Utilities
             return Read<string>(key);
         }
 
+        public static T Read<T>(string key)
+        {
+            return Read(key, default(T));
+        }
+
         /// <summary>
         ///     Gets the value from the settings container pertaining to the key.
         /// </summary>
-        public static T Read<T>(string key)
+        public static T Read<T>(string key, T defaultValue)
         {
             object obj;
 
@@ -102,7 +107,7 @@ namespace Audiotica.Core.Utilities
                 }
             }
             Debug.WriteLine("Key '{0}' not found.", key);
-            return default(T);
+            return defaultValue;
         }
 
         /// <summary>

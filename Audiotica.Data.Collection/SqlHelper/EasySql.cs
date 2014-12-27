@@ -27,7 +27,8 @@ namespace Audiotica.Data.Collection.SqlHelper
         public static string CreateTable(Type type)
         {
             var props = type.GetRuntimeProperties()
-                .Where(p => p.GetCustomAttribute<SqlIgnore>() == null && NetToSqlKepMap.ContainsKey(p.PropertyType));
+                .Where(p => p.CustomAttributes.Count(n =>
+                    n.AttributeType == typeof(SqlIgnore)) == 0 && (NetToSqlKepMap.ContainsKey(p.PropertyType) || p.PropertyType.GetTypeInfo().IsEnum));
 
             const string sql = "CREATE TABLE IF NOT EXISTS {0} ({1});";
             var name = type.Name;
@@ -79,7 +80,8 @@ namespace Audiotica.Data.Collection.SqlHelper
         public static string CreateInsert(Type type)
         {
             var props = type.GetRuntimeProperties()
-                .Where(p => p.CustomAttributes.Count(n => n.AttributeType == typeof(SqlIgnore)) == 0 && NetToSqlKepMap.ContainsKey(p.PropertyType));
+                .Where(p => p.CustomAttributes.Count(n =>
+                    n.AttributeType == typeof(SqlIgnore)) == 0 && (NetToSqlKepMap.ContainsKey(p.PropertyType) || p.PropertyType.GetTypeInfo().IsEnum));
 
             const string sql = "INSERT INTO {0} ({1}) VALUES ({2});";
             var name = type.Name;
@@ -105,7 +107,8 @@ namespace Audiotica.Data.Collection.SqlHelper
         public static string CreateUpdate(Type type)
         {
             var props = type.GetRuntimeProperties()
-                .Where(p => p.CustomAttributes.Count(n => n.AttributeType == typeof(SqlIgnore)) == 0 && NetToSqlKepMap.ContainsKey(p.PropertyType));
+                .Where(p => p.CustomAttributes.Count(n => 
+                    n.AttributeType == typeof(SqlIgnore)) == 0 && (NetToSqlKepMap.ContainsKey(p.PropertyType) || p.PropertyType.GetTypeInfo().IsEnum));
 
             const string sql = "UPDATE {0} SET {1} WHERE Id = ?;";
             var name = type.Name;
@@ -139,7 +142,8 @@ namespace Audiotica.Data.Collection.SqlHelper
             var type = obj.GetType();
 
             var props = type.GetRuntimeProperties()
-                .Where(p => p.CustomAttributes.Count(n => n.AttributeType == typeof(SqlIgnore)) == 0 && NetToSqlKepMap.ContainsKey(p.PropertyType)).ToList();
+                .Where(p => p.CustomAttributes.Count(n =>
+                    n.AttributeType == typeof(SqlIgnore)) == 0 && (NetToSqlKepMap.ContainsKey(p.PropertyType) || p.PropertyType.GetTypeInfo().IsEnum)).ToList();
 
             for (var i = 0; i < props.Count; i++)
             {

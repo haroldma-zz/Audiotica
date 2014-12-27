@@ -4,6 +4,7 @@ using System;
 using System.Linq;
 using Windows.UI.Xaml.Media.Imaging;
 using Audiotica.Data.Model.SoundCloud;
+using Google.Apis.YouTube.v3.Data;
 
 #endregion
 
@@ -11,7 +12,17 @@ namespace Audiotica.Data.Model
 {
     public class WebSong
     {
-        public WebSong() { }
+        public WebSong()
+        {
+            
+        }
+        public WebSong(SearchResult youtubeVideo)
+        {
+            Id = youtubeVideo.Id.VideoId;
+            Title = youtubeVideo.Snippet.Title;
+            Provider = Mp3Provider.YouTube;
+            ArtworkImage = new BitmapImage(new Uri(youtubeVideo.Snippet.Thumbnails.High.Url));
+        }
 
         public WebSong(Mp3ClanSong mp3ClanSong)
         {
@@ -87,6 +98,7 @@ namespace Audiotica.Data.Model
     {
         Mp3Clan,
         SoundCloud,
+        YouTube,
         Meile,
         Netease,
         Mp3Trunk

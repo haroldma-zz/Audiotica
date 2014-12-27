@@ -39,6 +39,7 @@ namespace Audiotica
         {
             InitializeComponent();
             Suspending += OnSuspending;
+            Resuming += (sender, o) => Locator.AudioPlayerHelper.OnAppActive();
         }
 
         private bool _init;
@@ -62,7 +63,7 @@ namespace Audiotica
             }
 
             // ReSharper disable once CSharpWarnings::CS4014
-            BootAppServicesAsync();
+            BootAppServices();
 
             if (RootFrame != null && RootFrame.Content == null)
             {
@@ -90,24 +91,24 @@ namespace Audiotica
             Window.Current.Activate();
         }
 
-        private async Task BootAppServicesAsync()
+        private async void BootAppServices()
         {
             if (!_init)
             {
                 try
                 {
                     await Locator.CollectionService.LoadLibraryAsync();
+                    Locator.Download.LoadDownloads();
                 }
                 catch (Exception ex)
                 {
                     EasyTracker.GetTracker().SendException(ex.Message + " " + ex.StackTrace, true);
                     CurtainToast.ShowError("ErrorBootingToast".FromLanguageResource());
                 }
+
+                _init = true;
             }
-
             Locator.AudioPlayerHelper.OnAppActive();
-
-            _init = true;
         }
 
 #if WINDOWS_PHONE_APP

@@ -11,6 +11,7 @@ using Audiotica.Data.Collection.RunTime;
 using Audiotica.Data.Service.DesignTime;
 using Audiotica.Data.Service.Interfaces;
 using Audiotica.Data.Service.RunTime;
+using Audiotica.PartialView;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Ioc;
 using IF.Lastfm.Core.Api;
@@ -49,6 +50,7 @@ namespace Audiotica.ViewModel
                 SimpleIoc.Default.Register<ISqlService>(() => new SqlService(config));
                 SimpleIoc.Default.Register<ISqlService>(() => new SqlService(bgConfig), "BackgroundSql");
                 SimpleIoc.Default.Register<ICollectionService>(() => new CollectionService(SqlService, BgSqlService, Window.Current.Dispatcher));
+                SimpleIoc.Default.Register<ISongDownloadService>(() => new SongDownloadService(CollectionService, SqlService, Window.Current.Dispatcher));
             }
 
             SimpleIoc.Default.Register<MainViewModel>();
@@ -58,6 +60,7 @@ namespace Audiotica.ViewModel
             SimpleIoc.Default.Register<CollectionPlaylistViewModel>();
             SimpleIoc.Default.Register<ArtistViewModel>();
             SimpleIoc.Default.Register<SearchViewModel>();
+            SimpleIoc.Default.Register<SettingsViewModel>();
             SimpleIoc.Default.Register<CollectionViewModel>();
             SimpleIoc.Default.Register(() => new PlayerViewModel(AudioPlayerHelper, CollectionService, BgSqlService, ScrobblerService));
         }
@@ -75,8 +78,21 @@ namespace Audiotica.ViewModel
             return new SqlServiceConfig()
             {
                 Tables = dbTypes,
-                CurrentVersion = 3,
-                Path = "collection.sqldb"
+                CurrentVersion = 4,
+                Path = "collection.sqldb",
+                OnUpdate = (d, v) =>
+                {
+                    if (!(v > 0)) return;
+                    using (var statement = d.Prepare("ALTER TABLE Song ADD COLUMN SongState INTEGER"))
+                    {
+                        statement.Step();
+                    }
+
+                    using (var statement = d.Prepare("ALTER TABLE Song ADD COLUMN HeartState INTEGER"))
+                    {
+                        statement.Step();
+                    }
+                }
             };
         }
         private SqlServiceConfig GetBackgroundConfig()
@@ -92,6 +108,10 @@ namespace Audiotica.ViewModel
                 CurrentVersion = 1,
                 Path = "player.sqldb"
             };
+        }
+        public AdMediatorBar Ads
+        {
+            get { return ServiceLocator.Current.GetInstance<AdMediatorBar>(); }
         }
 
         public MainViewModel Main
@@ -138,6 +158,11 @@ namespace Audiotica.ViewModel
             get { return ServiceLocator.Current.GetInstance<SearchViewModel>(); }
         }
 
+        public SettingsViewModel Settings
+        {
+            get { return ServiceLocator.Current.GetInstance<SettingsViewModel>(); }
+        }
+
         public CollectionViewModel Collection
         {
             get { return ServiceLocator.Current.GetInstance<CollectionViewModel>(); }
@@ -151,6 +176,11 @@ namespace Audiotica.ViewModel
         public IScrobblerService ScrobblerService
         {
             get { return SimpleIoc.Default.GetInstance<IScrobblerService>(); }
+        }
+
+        public ISongDownloadService Download
+        {
+            get { return SimpleIoc.Default.GetInstance<ISongDownloadService>(); }
         }
 
         public ISqlService SqlService

@@ -61,7 +61,6 @@ namespace Audiotica.WindowsPhone.Player
 
                 
                 _queueManager = new QueueManager();
-                _queueManager.RefreshTracks();
                 return _queueManager;
             }
         }
@@ -185,8 +184,6 @@ namespace Audiotica.WindowsPhone.Player
             _systemmediatransportcontrol.DisplayUpdater.MusicProperties.Title = QueueManager.CurrentTrack.Song.Name;
             _systemmediatransportcontrol.DisplayUpdater.MusicProperties.Artist =
                 QueueManager.CurrentTrack.Song.Artist.Name;
-            //_systemmediatransportcontrol.DisplayUpdater.Thumbnail =
-            //  RandomAccessStreamReference.CreateFromUri(Playlist.CurrentTrack.GetArtworkUri());
             _systemmediatransportcontrol.DisplayUpdater.Update();
         }
 
@@ -220,7 +217,6 @@ namespace Audiotica.WindowsPhone.Player
                     //When this happens, the task gets re-initialized and that is asynchronous and hence the wait
                     if (!_backgroundtaskrunning)
                     {
-                        QueueManager.RefreshTracks();
                         var result = _backgroundTaskStarted.WaitOne(2000);
                         if (!result)
                             throw new Exception("Background Task didnt initialize in time");
@@ -344,7 +340,6 @@ namespace Audiotica.WindowsPhone.Player
                     case PlayerConstants.StartPlayback:
                         //Foreground App process has signalled that it is ready for playback
                         Debug.WriteLine("Starting Playback");
-                        _queueManager.RefreshTracks();
                         StartPlayback();
                         break;
                     case PlayerConstants.SkipNext: // User has chosen to skip track from app context.

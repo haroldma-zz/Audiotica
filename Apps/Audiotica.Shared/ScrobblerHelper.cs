@@ -19,7 +19,7 @@ namespace Audiotica
         {
             return new Artist
             {
-                Name = lastArtist.Name,
+                Name = lastArtist.Name.Trim().Replace("  ", " "),
                 ProviderId =
                     !string.IsNullOrEmpty(lastArtist.Mbid) ? ("mbid." + lastArtist.Mbid) : ("lastid." + lastArtist.Id),
             };
@@ -31,7 +31,7 @@ namespace Audiotica
             {
                 ProviderId =
                     !string.IsNullOrEmpty(lastAlbum.Mbid) ? ("mbid." + lastAlbum.Mbid) : ("lastid." + lastAlbum.Id),
-                Name = lastAlbum.Name,
+                Name = lastAlbum.Name.Trim().Replace("  ", " "),
                 ReleaseDate = lastAlbum.ReleaseDateUtc.DateTime,
                 Genre = lastAlbum.TopTags != null ? lastAlbum.TopTags.First().Name : ""
             };
@@ -44,7 +44,7 @@ namespace Audiotica
             var song = new Song
             {
                 ProviderId = !string.IsNullOrEmpty(track.Mbid) ? ("mbid." + track.Mbid) : ("lastid." + track.Id),
-                Name = track.Name
+                Name = track.Name.Trim().Replace("  ", " ")
             };
             return song;
         }

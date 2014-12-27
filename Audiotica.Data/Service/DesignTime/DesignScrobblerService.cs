@@ -14,6 +14,13 @@ namespace Audiotica.Data.Service.DesignTime
 {
     public class DesignScrobblerService : IScrobblerService
     {
+        public bool IsAuthenticated { get; private set; }
+
+        public void Logout()
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<LastFmApiError> ScrobbleNowPlayingAsync(string name, string artist, DateTime played, TimeSpan duration, string album = "",
             string albumArtist = "")
         {

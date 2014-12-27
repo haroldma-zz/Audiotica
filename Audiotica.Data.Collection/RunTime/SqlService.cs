@@ -43,6 +43,8 @@ namespace Audiotica.Data.Collection.RunTime
 
             if (sqlVersion == _config.CurrentVersion) return;
 
+            if (_config.OnUpdate != null)
+                _config.OnUpdate(DbConnection, sqlVersion);
             CreateTablesIfNotExists();
         }
 
@@ -85,7 +87,12 @@ namespace Audiotica.Data.Collection.RunTime
             using (var custstmt = DbConnection.Prepare(EasySql.CreateInsert(entry.GetType())))
             {
                 EasySql.FillInsert(custstmt, entry);
-                res = custstmt.Step();
+                bool retry;
+                do
+                {
+                    res = custstmt.Step();
+                    retry = res == SQLiteResult.BUSY;
+                } while (retry);
             }
 
             if (res != SQLiteResult.DONE) return res;
@@ -118,7 +125,15 @@ namespace Audiotica.Data.Collection.RunTime
 
                 projstmt.Bind(1, item.Id);
 
-                return projstmt.Step();
+                SQLiteResult result;
+                bool retry;
+                do
+                {
+                    result = projstmt.Step();
+                    retry = result == SQLiteResult.BUSY;
+                } while (retry);
+
+                return result;
             }
         }
 
@@ -139,7 +154,15 @@ namespace Audiotica.Data.Collection.RunTime
 
                 EasySql.FillUpdate(projstmt, item);
 
-                return projstmt.Step();
+                SQLiteResult res;
+                bool retry;
+                do
+                {
+                    res = projstmt.Step();
+                    retry = res == SQLiteResult.BUSY;
+                } while (retry);
+
+                return res;
             }
         }
 
@@ -163,7 +186,7 @@ namespace Audiotica.Data.Collection.RunTime
                             .Where(
                                 p =>
                                     p.GetCustomAttribute<SqlIgnore>() == null &&
-                                    EasySql.NetToSqlKepMap.ContainsKey(p.PropertyType));
+                                    (EasySql.NetToSqlKepMap.ContainsKey(p.PropertyType) || p.PropertyType.GetTypeInfo().IsEnum));
 
                     foreach (var propertyInfo in props)
                     {
@@ -172,7 +195,7 @@ namespace Audiotica.Data.Collection.RunTime
                         //cast enums from long
                         if (propertyInfo.GetMethod.ReturnType.GetTypeInfo().IsEnum)
                         {
-                            value = Enum.ToObject(propertyInfo.PropertyType, value);
+                            value = Enum.ToObject(propertyInfo.PropertyType, value ?? 0);
                         }
 
                             //cast dates from string
@@ -280,5 +303,6 @@ namespace Audiotica.Data.Collection.RunTime
         public double CurrentVersion { get; set; }
         public string Path { get; set; }
         public List<Type> Tables { get; set; }
+        public Action<SQLiteConnection, double> OnUpdate;
     }
 }

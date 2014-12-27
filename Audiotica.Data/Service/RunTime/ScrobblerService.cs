@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
+using Audiotica.Core.Common;
 using Audiotica.Core.Exceptions;
 using Audiotica.Core.Utilities;
 using Audiotica.Data.Service.Interfaces;
@@ -18,7 +19,7 @@ namespace Audiotica.Data.Service.RunTime
 {
     public class ScrobblerService : IScrobblerService
     {
-        private readonly LastAuth _auth;
+        private LastAuth _auth;
         private readonly AlbumApi _albumApi;
         private readonly ArtistApi _artistApi;
         private readonly ChartApi _chartApi;
@@ -26,11 +27,12 @@ namespace Audiotica.Data.Service.RunTime
 
         public ScrobblerService()
         {
-            _auth = new LastAuth(ApiKeys.LastFmId, ApiKeys.LastFmSecret);;
+            _auth = new LastAuth(ApiKeys.LastFmId, ApiKeys.LastFmSecret);
             _albumApi = new AlbumApi(_auth);
             _artistApi = new ArtistApi(_auth);
             _chartApi = new ChartApi(_auth);
             _trackApi = new TrackApi(_auth);
+            GetSessionTokenAsync();
         }
 
         private async Task<bool> GetSessionTokenAsync()
@@ -39,13 +41,35 @@ namespace Audiotica.Data.Service.RunTime
 
             if (creds == null) return false;
 
-            return await GetSessionTokenAsync(creds.UserName, creds.Password);
+            var result = await GetSessionTokenWithResultsAsync(creds.UserName, creds.Password);
+
+            if (result == LastFmApiError.BadAuth)
+            {
+                Logout();
+                CurtainToast.ShowError("Problem with last.fm pass");
+            }
+
+            return result == LastFmApiError.None;
         }
 
         private async Task<bool> GetSessionTokenAsync(string username, string password)
         {
             var response = await _auth.GetSessionTokenAsync(username, password);
             return response.Success;
+        }
+
+        private async Task<LastFmApiError> GetSessionTokenWithResultsAsync(string username, string password)
+        {
+            var response = await _auth.GetSessionTokenAsync(username, password);
+            return response.Error;
+        }
+
+        public bool IsAuthenticated { get { return _auth.Authenticated; } }
+
+        public void Logout()
+        {
+            CredentialHelper.DeleteCredentials("lastfm");
+            _auth = new LastAuth(ApiKeys.LastFmId, ApiKeys.LastFmSecret);
         }
 
         public async Task<LastFmApiError> ScrobbleNowPlayingAsync(string name, string artist, DateTime played, TimeSpan duration, string album = "",

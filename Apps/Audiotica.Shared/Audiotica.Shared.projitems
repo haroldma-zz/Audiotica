@@ -18,6 +18,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)NavigationHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PageBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ShowFlyoutAction.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SongStateConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SuspensionManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModel\AlbumViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModel\ArtistViewModel.cs" />
@@ -27,6 +28,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)ViewModel\CollectionViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModel\MainViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModel\SearchViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModel\SettingsViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModel\ViewModelLocator.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ScrobblerHelper.cs" />
   </ItemGroup>
@@ -38,11 +40,6 @@
     <None Include="$(MSBuildThisFileDirectory)analytics.xsd" />
   </ItemGroup>
   <ItemGroup>
-    <PRIResource Include="$(MSBuildThisFileDirectory)Strings\it-IT\Resources.resw" />
-    <PRIResource Include="$(MSBuildThisFileDirectory)Strings\hu-HU\Resources.resw" />
-    <PRIResource Include="$(MSBuildThisFileDirectory)Strings\nl-NL\Resources.resw" />
-    <PRIResource Include="$(MSBuildThisFileDirectory)Strings\es-ES\Resources.resw" />
     <PRIResource Include="$(MSBuildThisFileDirectory)Strings\en-US\Resources.resw" />
-    <PRIResource Include="$(MSBuildThisFileDirectory)Strings\pt-BR\Resources.resw" />
   </ItemGroup>
 </Project>

@@ -1,14 +1,18 @@
 ﻿#region
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using Windows.Graphics.Display;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Navigation;
 using Audiotica.Core;
 using Audiotica.Core.Common;
 using Audiotica.Core.Utilities;
 using Audiotica.Data.Collection.Model;
+using Audiotica.ViewModel;
 
 #endregion
 
@@ -30,6 +34,51 @@ namespace Audiotica.View
                 var pivotIndex = int.Parse(e.Parameter.ToString());
                 CollectionPivot.SelectedIndex = pivotIndex;
             }
+
+            LoadWallpaperArt();
+        }
+
+        private void LoadWallpaperArt()
+        {
+            var vm = (CollectionViewModel)DataContext;
+
+            if (vm.RandomizeAlbumList.Count != 0 || !AppSettingsHelper.Read("WallpaperArt", true)) return;
+
+            var albums = App.Locator.CollectionService.Albums.Where(p => p.Artwork != CollectionConstant.MissingArtworkImage).ToList();
+
+            var albumCount = albums.Count;
+
+            if (albumCount <= 0) return;
+
+            var h = Window.Current.Bounds.Height;
+            var rows = (int)Math.Ceiling(h / vm.ArtworkSize);
+
+            var numImages = rows * vm.RowCount;
+            var imagesNeeded = numImages - albumCount;
+
+            var shuffle = albums
+                .Shuffle()
+                .Take(numImages > albumCount ? albumCount : numImages)
+                .ToList();
+
+            if (imagesNeeded > 0)
+            {
+
+                var repeatList = new List<Album>();
+
+                while (imagesNeeded > 0)
+                {
+                    var takeAmmount = imagesNeeded > albumCount ? albumCount : imagesNeeded;
+
+                    repeatList.AddRange(shuffle.Shuffle().Take(takeAmmount));
+
+                    imagesNeeded -= shuffle.Count;
+                }
+
+                shuffle.AddRange(repeatList);
+            }
+
+            vm.RandomizeAlbumList.AddRange(shuffle);
         }
 
         private void AlbumListView_ItemClick(object sender, ItemClickEventArgs e)
@@ -81,7 +130,7 @@ namespace Audiotica.View
         private void PickerFlyout_Confirmed(PickerFlyout sender, PickerConfirmedEventArgs args)
         {
             var listView = (ListView) sender.Content;
-            var selection = listView.SelectedItems.Select(o => (Song)o).ToList();
+            var selection = listView.SelectedItems.Select(o => (Song) o).ToList();
 
             if (selection.Count > 0)
             {
@@ -95,8 +144,75 @@ namespace Audiotica.View
 
         private void PickerFlyout_Closed(object sender, object e)
         {
-            var listView = (ListView)((PickerFlyout)sender).Content;
+            var listView = (ListView) ((PickerFlyout) sender).Content;
             listView.SelectedIndex = -1;
+        }
+
+        private void MenuFlyoutItem_Click(object sender, RoutedEventArgs e)
+        {
+            var menu = (MenuFlyoutItem)sender;
+            var flyout = (ListPickerFlyout)FlyoutBase.GetAttachedFlyout(menu);
+            var song = (Song)menu.DataContext;
+
+            var list = new List<CollectionViewModel.AddableCollectionItem>
+            {
+                new CollectionViewModel.AddableCollectionItem
+                {
+                    Name = "Now Playing"
+                }
+            };
+
+            list.AddRange(App.Locator.CollectionService
+                .Playlists.Where(p => p.Songs.Count(pp => pp.SongId == song.Id) == 0)
+                .Select(p => new CollectionViewModel.AddableCollectionItem
+                {
+                    Playlist = p,
+                    Name = p.Name
+                }));
+            flyout.ItemsPicked += (pickerFlyout, args) =>
+            {
+                var item = args.AddedItems[0] as CollectionViewModel.AddableCollectionItem;
+
+                if (item.Playlist != null)
+                {
+                    App.Locator.CollectionService.AddToPlaylistAsync(item.Playlist, song);
+                }
+                else
+                {
+                    App.Locator.CollectionService.AddToQueueAsync(song);
+                }
+            };
+            flyout.ItemsSource = list;
+
+            FlyoutBase.ShowAttachedFlyout(menu);
+        }
+
+        private void DownloadAppBarButton_Click(object sender, RoutedEventArgs e)
+        {
+            var song = (sender as AppBarButton).DataContext as Song;
+            App.Locator.Download.StartDownload(song);
+        }
+
+        private void AppBarButton_Click(object sender, RoutedEventArgs e)
+        {
+            var song = (sender as AppBarButton).DataContext as Song;
+            App.Locator.Download.Cancel(song.Download);
+        }
+
+        private async void DeleteMenuFlyoutItem_Click_1(object sender, RoutedEventArgs e)
+        {
+            var playlist = (Playlist)((FrameworkElement)sender).DataContext;
+
+            try
+            {
+                //delete from the queue
+                await App.Locator.CollectionService.DeletePlaylistAsync(playlist);
+                CurtainToast.Show("Playlist deleted");
+            }
+            catch
+            {
+                CurtainToast.ShowError("Problem deleting");
+            }
         }
     }
 }

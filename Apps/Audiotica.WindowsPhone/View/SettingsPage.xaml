@@ -1,0 +1,43 @@
+﻿<audiotica:PageBase
+    x:Class="Audiotica.View.SettingsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:audiotica="using:Audiotica"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+    DataContext="{Binding Source={StaticResource Locator}, Path=Settings}">
+
+    <Grid>
+        <Pivot Title="SETTINGS+MORE" HeaderTemplate="{StaticResource PivotHeaderTemplate}">
+            <PivotItem Header="APP">
+                <StackPanel>
+                    <ToggleSwitch IsEnabled="True" IsOn="{Binding Advertisements, Mode=TwoWay}" Header="Ads" />
+                    <ToggleSwitch IsOn="{Binding WallpaperArt, Mode=TwoWay}" Header="Album Art Wallpaper" />
+                </StackPanel>
+            </PivotItem>
+            <PivotItem Header="LAST.FM">
+                <StackPanel>
+                    <TextBox IsEnabled="{Binding IsLogin,Converter={StaticResource BoolToOppositeConverter}}" Header="Username" Text="{Binding LastFmUsername, Mode=TwoWay}" />
+                    <PasswordBox IsEnabled="{Binding IsLogin, Converter={StaticResource BoolToOppositeConverter}}" Header="Password" Password="{Binding LastFmPassword, Mode=TwoWay}" />
+                    <Button Content="Login/Logout" Command="{Binding LoginButtonRelay}" HorizontalAlignment="Stretch" Margin="0,0,0,20" />
+                    <ToggleSwitch IsOn="{Binding Scrobble, Mode=TwoWay}" IsEnabled="{Binding IsLogin}" Header="Scrobble" />
+                </StackPanel>
+            </PivotItem>
+            <PivotItem Header="ABOUT">
+                <Grid>
+                    <StackPanel VerticalAlignment="Top">
+                        <TextBlock Text="A reboot of the original Audiotica downloader.  Now as a fully complete open source alternative to Xbox Music.  Using Last.FM for metadata and countless websites for audio, you could called it the SickBeard of music." FontSize="20" TextWrapping="Wrap" Margin="0,0,0,20" />
+                        <HyperlinkButton Content="Blog" NavigateUri="http://blog.zumicts.com" FontSize="25" Foreground="{StaticResource PhoneAccentBrush}" FontFamily="Global User Interface" />
+                        <HyperlinkButton Content="Email" NavigateUri="mailto:harry@zumicts.com" FontSize="25" Foreground="{StaticResource PhoneAccentBrush}" />
+                        <HyperlinkButton Content="@zumicts" NavigateUri="http://twitter.com/zumicts" FontSize="25" Foreground="{StaticResource PhoneAccentBrush}" />
+                        <HyperlinkButton Content="/r/audioticawp" NavigateUri="http://reddit.com/r/AudioticaWP" FontSize="25" Foreground="{StaticResource PhoneAccentBrush}" />
+                        <HyperlinkButton Content="Source code at Github" NavigateUri="http://github.com/zumicts/Audiotica" FontSize="25" Foreground="{StaticResource PhoneAccentBrush}" />
+                    </StackPanel>
+                    <TextBlock Text="{Binding Version}" TextAlignment="Right" FontSize="20" VerticalAlignment="Bottom" Margin="0,0,0,5" />
+                </Grid>
+            </PivotItem>
+        </Pivot>
+    </Grid>
+</audiotica:PageBase>
