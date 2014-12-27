@@ -17,7 +17,8 @@ namespace Audiotica.Data
             new YouTubeProvider(),
             new Mp3ClanProvider(),
             new Mp3TruckProvider(),
-            new SoundCloudProvider()
+            new SoundCloudProvider(),
+            new Mp3SkullProvider()
         };
 
         public static async Task<string> FindMp3For(LastTrack track)
