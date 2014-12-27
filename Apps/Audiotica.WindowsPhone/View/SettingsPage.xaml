@@ -10,18 +10,22 @@
     DataContext="{Binding Source={StaticResource Locator}, Path=Settings}">
 
     <Grid>
-        <Pivot Title="SETTINGS" HeaderTemplate="{StaticResource PivotHeaderTemplate}">
-            <PivotItem Header="LAST.FM">
+        <Pivot Title="SETTINGS+MORE" HeaderTemplate="{StaticResource PivotHeaderTemplate}">
+            <PivotItem Header="APP">
                 <StackPanel>
-                    <TextBox Header="Username" Text="{Binding LastFmUsername, Mode=TwoWay}" />
-                    <PasswordBox Header="Password" Password="{Binding LastFmPassword, Mode=TwoWay}" />
-                    <Button Content="Login/Logout" Command="{Binding LoginButtonRelay}" HorizontalAlignment="Stretch" Margin="0,0,0,20" />
-                    <ToggleSwitch IsOn="{Binding Scrobble, Mode=TwoWay}" IsEnabled="{Binding ScrobbleSwitchEnabled}" Header="Scrobble" />
+                    <ToggleSwitch IsEnabled="False" IsOn="{Binding Scrobble, Mode=TwoWay}" Header="Ads" />
+                    <ToggleSwitch IsOn="{Binding WallpaperArt, Mode=TwoWay}" Header="Album Art Wallpaper" />
                 </StackPanel>
             </PivotItem>
-            <PivotItem Header="ABOUT">
-
+            <PivotItem Header="LAST.FM">
+                <StackPanel>
+                    <TextBox IsEnabled="{Binding IsLogin,Converter={StaticResource BoolToOppositeConverter}}" Header="Username" Text="{Binding LastFmUsername, Mode=TwoWay}" />
+                    <PasswordBox IsEnabled="{Binding IsLogin, Converter={StaticResource BoolToOppositeConverter}}" Header="Password" Password="{Binding LastFmPassword, Mode=TwoWay}" />
+                    <Button Content="Login/Logout" Command="{Binding LoginButtonRelay}" HorizontalAlignment="Stretch" Margin="0,0,0,20" />
+                    <ToggleSwitch IsOn="{Binding Scrobble, Mode=TwoWay}" IsEnabled="{Binding IsLogin}" Header="Scrobble" />
+                </StackPanel>
             </PivotItem>
+            <PivotItem Header="ABOUT" />
         </Pivot>
     </Grid>
 </audiotica:PageBase>

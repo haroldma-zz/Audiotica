@@ -30,7 +30,7 @@ namespace Audiotica.ViewModel
             LastFmUsername = creds.UserName;
             creds.RetrievePassword();
             LastFmPassword = creds.Password;
-            ScrobbleSwitchEnabled = true;
+            IsLogin = true;
         }
 
         private async void LoginButtonClicked()
@@ -41,7 +41,7 @@ namespace Audiotica.ViewModel
                 CurtainToast.Show("Logged out");
                 LastFmUsername = null;
                 LastFmPassword = null;
-                ScrobbleSwitchEnabled = false;
+                IsLogin = false;
                 Scrobble = false;
             }
             else
@@ -49,12 +49,41 @@ namespace Audiotica.ViewModel
                 if (await _service.AuthenticaAsync(LastFmUsername, LastFmPassword))
                 {
                     CurtainToast.Show("Login successful");
-                    ScrobbleSwitchEnabled = true;
+                    IsLogin = true;
                 }
                 else
                 {
                     CurtainToast.ShowError("Failed to login");
                 }
+            }
+        }
+
+        public bool WallpaperArt
+        {
+            get
+            {
+                return AppSettingsHelper.Read("WallpaperArt", true);
+            }
+            set
+            {
+                if (!value)
+                    App.Locator.Collection.RandomizeAlbumList.Clear();
+
+                AppSettingsHelper.Write("WallpaperArt", value);
+                RaisePropertyChanged();
+            }
+        }
+
+        public bool Advertisements
+        {
+            get
+            {
+                return AppSettingsHelper.Read("Ads", true);
+            }
+            set
+            {
+                AppSettingsHelper.Write("Ads", value);
+                RaisePropertyChanged();
             }
         }
 
@@ -71,7 +100,7 @@ namespace Audiotica.ViewModel
             }
         }
 
-        public bool ScrobbleSwitchEnabled
+        public bool IsLogin
         {
             get { return _scrobbleSwitch; }
             set { Set(ref _scrobbleSwitch, value); }

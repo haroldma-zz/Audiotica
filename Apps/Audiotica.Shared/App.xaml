@@ -12,6 +12,7 @@
         <common:VisibilityConverter x:Key="VisibilityConverter" />
         <common:NullToBooleanConverter x:Key="NullToBooleanConverter" />
         <common:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
+        <common:BoolToOppositeConverter x:Key="BoolToOppositeConverter" />
         <common:TimespanToDoubleConverter x:Key="TimespanToDoubleConverter" />
         <common:UpperCaseConverter x:Key="UpperCaseConverter" />
         <local:SongStateConverter x:Key="DownloadingSongStateConverter" SongState="Downloading" />

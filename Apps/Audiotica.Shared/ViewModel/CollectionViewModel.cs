@@ -53,20 +53,11 @@ namespace Audiotica.ViewModel
             Service.Songs.CollectionChanged += OnCollectionChanged;
             Service.Albums.CollectionChanged += OnCollectionChanged;
             Service.Artists.CollectionChanged += OnCollectionChanged;
+
+            RandomizeAlbumList = new ObservableCollection<Album>();
         }
 
         #region Private Helpers 
-
-        private int rowCount
-        {
-            get
-            {
-                //extra column if running on hd device (720 and 1080)
-                var scaleFactor = DisplayInformation.GetForCurrentView().RawPixelsPerViewPixel;
-                var actualWidth = (int) (Window.Current.Bounds.Width*scaleFactor);
-                return actualWidth == 720 || actualWidth == 1080 ? 5 : 4;
-            }
-        }
 
         private void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs arg)
         {
@@ -209,52 +200,25 @@ namespace Audiotica.ViewModel
             set { Set(ref _sortedArtists, value); }
         }
 
-        public List<Album> RandomizeAlbumList
-        {
-            get
-            {
-                var albums = Service.Albums.Where(p => p.Artwork != CollectionConstant.MissingArtworkImage).ToList();
-
-                var albumCount = albums.Count;
-
-                if (albumCount == 0) return null;
-
-                var h = IsInDesignMode ? 800 : Window.Current.Bounds.Height;
-                var rows = (int) Math.Ceiling(h/ArtworkSize);
-
-                var numImages = rows*rowCount;
-                var imagesNeeded = numImages - albumCount;
-
-                var shuffle = albums
-                    .Shuffle()
-                    .Take(numImages > albumCount ? albumCount : numImages)
-                    .ToList();
-
-                if (imagesNeeded <= 0) return shuffle;
-
-                var repeatList = new List<Album>();
-
-                while (imagesNeeded > 0)
-                {
-                    var takeAmmount = imagesNeeded > albumCount ? albumCount : imagesNeeded;
-
-                    repeatList.AddRange(shuffle.Shuffle().Take(takeAmmount));
-
-                    imagesNeeded -= shuffle.Count;
-                }
-
-                shuffle.AddRange(repeatList);
-
-                return shuffle;
-            }
-        }
+        public ObservableCollection<Album> RandomizeAlbumList { get; set; }
 
         public double ArtworkSize
         {
             get
             {
                 var w = IsInDesignMode ? 480 : Window.Current.Bounds.Width;
-                return w/rowCount;
+                return w/RowCount;
+            }
+        }
+
+        public int RowCount
+        {
+            get
+            {
+                //extra column if running on hd device (720 and 1080)
+                var scaleFactor = DisplayInformation.GetForCurrentView().RawPixelsPerViewPixel;
+                var actualWidth = (int)(Window.Current.Bounds.Width * scaleFactor);
+                return actualWidth == 720 || actualWidth == 1080 ? 5 : 4;
             }
         }
 

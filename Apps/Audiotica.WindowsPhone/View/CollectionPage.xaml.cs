@@ -1,7 +1,9 @@
 ﻿#region
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using Windows.Graphics.Display;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -32,6 +34,51 @@ namespace Audiotica.View
                 var pivotIndex = int.Parse(e.Parameter.ToString());
                 CollectionPivot.SelectedIndex = pivotIndex;
             }
+
+            LoadWallpaperArt();
+        }
+
+        private void LoadWallpaperArt()
+        {
+            var vm = (CollectionViewModel)DataContext;
+
+            if (vm.RandomizeAlbumList.Count != 0 || !AppSettingsHelper.Read("WallpaperArt", true)) return;
+
+            var albums = App.Locator.CollectionService.Albums.Where(p => p.Artwork != CollectionConstant.MissingArtworkImage).ToList();
+
+            var albumCount = albums.Count;
+
+            if (albumCount <= 0) return;
+
+            var h = Window.Current.Bounds.Height;
+            var rows = (int)Math.Ceiling(h / vm.ArtworkSize);
+
+            var numImages = rows * vm.RowCount;
+            var imagesNeeded = numImages - albumCount;
+
+            var shuffle = albums
+                .Shuffle()
+                .Take(numImages > albumCount ? albumCount : numImages)
+                .ToList();
+
+            if (imagesNeeded > 0)
+            {
+
+                var repeatList = new List<Album>();
+
+                while (imagesNeeded > 0)
+                {
+                    var takeAmmount = imagesNeeded > albumCount ? albumCount : imagesNeeded;
+
+                    repeatList.AddRange(shuffle.Shuffle().Take(takeAmmount));
+
+                    imagesNeeded -= shuffle.Count;
+                }
+
+                shuffle.AddRange(repeatList);
+            }
+
+            vm.RandomizeAlbumList.AddRange(shuffle);
         }
 
         private void AlbumListView_ItemClick(object sender, ItemClickEventArgs e)
@@ -103,7 +150,7 @@ namespace Audiotica.View
 
         private void MenuFlyoutItem_Click(object sender, RoutedEventArgs e)
         {
-            var menu = sender as MenuFlyoutItem;
+            var menu = (MenuFlyoutItem)sender;
             var flyout = (ListPickerFlyout)FlyoutBase.GetAttachedFlyout(menu);
             var song = (Song)menu.DataContext;
 
