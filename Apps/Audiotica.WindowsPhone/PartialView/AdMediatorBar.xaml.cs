@@ -38,7 +38,7 @@ namespace Audiotica.PartialView
                 _adMediator793A03 = new AdMediatorControl
                 {
                     Id = "AdMediator-Id-AAEBB1F0-7803-406A-83F8-88A32158097A",
-                    HorizontalAlignment = HorizontalAlignment.Left,
+                    HorizontalAlignment = HorizontalAlignment.Center,
                     VerticalAlignment = VerticalAlignment.Bottom
                 };
                 RootGrid.Children.Add(_adMediator793A03);
