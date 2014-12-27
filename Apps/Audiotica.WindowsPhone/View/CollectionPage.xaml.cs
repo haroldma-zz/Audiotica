@@ -198,5 +198,21 @@ namespace Audiotica.View
             var song = (sender as AppBarButton).DataContext as Song;
             App.Locator.Download.Cancel(song.Download);
         }
+
+        private async void DeleteMenuFlyoutItem_Click_1(object sender, RoutedEventArgs e)
+        {
+            var playlist = (Playlist)((FrameworkElement)sender).DataContext;
+
+            try
+            {
+                //delete from the queue
+                await App.Locator.CollectionService.DeletePlaylistAsync(playlist);
+                CurtainToast.Show("Playlist deleted");
+            }
+            catch
+            {
+                CurtainToast.ShowError("Problem deleting");
+            }
+        }
     }
 }

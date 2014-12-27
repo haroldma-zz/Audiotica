@@ -181,6 +181,16 @@
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <Grid Margin="0,0,0,15">
+                                <interactivity:Interaction.Behaviors>
+                                    <core:EventTriggerBehavior EventName="Holding">
+                                        <audiotica:ShowFlyoutAction />
+                                    </core:EventTriggerBehavior>
+                                </interactivity:Interaction.Behaviors>
+                                <FlyoutBase.AttachedFlyout>
+                                    <MenuFlyout>
+                                        <MenuFlyoutItem x:Uid="DeleteMenuItem" Text="Delete" Foreground="Red" Click="DeleteMenuFlyoutItem_Click_1" />
+                                    </MenuFlyout>
+                                </FlyoutBase.AttachedFlyout>
                                 <StackPanel>
                                     <TextBlock Text="{Binding Name}" FontSize="30" FontFamily="Global User Interface"
                                                TextTrimming="CharacterEllipsis" FontWeight="Bold" />
