@@ -49,6 +49,7 @@ namespace Audiotica.ViewModel
                 SimpleIoc.Default.Register<ISqlService>(() => new SqlService(config));
                 SimpleIoc.Default.Register<ISqlService>(() => new SqlService(bgConfig), "BackgroundSql");
                 SimpleIoc.Default.Register<ICollectionService>(() => new CollectionService(SqlService, BgSqlService, Window.Current.Dispatcher));
+                SimpleIoc.Default.Register<ISongDownloadService>(() => new SongDownloadService(CollectionService, SqlService, Window.Current.Dispatcher));
             }
 
             SimpleIoc.Default.Register<MainViewModel>();
@@ -76,8 +77,21 @@ namespace Audiotica.ViewModel
             return new SqlServiceConfig()
             {
                 Tables = dbTypes,
-                CurrentVersion = 3,
-                Path = "collection.sqldb"
+                CurrentVersion = 4,
+                Path = "collection.sqldb",
+                OnUpdate = (d, v) =>
+                {
+                    if (!(v > 0)) return;
+                    using (var statement = d.Prepare("ALTER TABLE Song ADD COLUMN SongState INTEGER"))
+                    {
+                        statement.Step();
+                    }
+
+                    using (var statement = d.Prepare("ALTER TABLE Song ADD COLUMN HeartState INTEGER"))
+                    {
+                        statement.Step();
+                    }
+                }
             };
         }
         private SqlServiceConfig GetBackgroundConfig()
@@ -157,6 +171,11 @@ namespace Audiotica.ViewModel
         public IScrobblerService ScrobblerService
         {
             get { return SimpleIoc.Default.GetInstance<IScrobblerService>(); }
+        }
+
+        public ISongDownloadService Download
+        {
+            get { return SimpleIoc.Default.GetInstance<ISongDownloadService>(); }
         }
 
         public ISqlService SqlService

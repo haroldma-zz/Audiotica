@@ -18,6 +18,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)NavigationHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PageBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ShowFlyoutAction.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SongStateConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SuspensionManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModel\AlbumViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModel\ArtistViewModel.cs" />

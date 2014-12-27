@@ -9,6 +9,8 @@ namespace Audiotica.Data.Collection.Model
 {
     public class Song : BaseEntry
     {
+        private BackgroundDownload _download;
+        private SongState _songState;
         public string ProviderId { get; set; }
 
         [SqlProperty(ReferenceTo = typeof (Artist))]
@@ -26,7 +28,11 @@ namespace Audiotica.Data.Collection.Model
 
         public string AudioUrl { get; set; }
 
-        public SongState SongState { get; set; }
+        public SongState SongState
+        {
+            get { return _songState; }
+            set { Set(ref _songState, value); }
+        }
 
         public long PlayCount { get; set; }
 
@@ -41,12 +47,18 @@ namespace Audiotica.Data.Collection.Model
         [SqlIgnore]
         public bool IsStreaming
         {
-            get { return new Uri(AudioUrl).IsAbsoluteUri; }
+            get { return new Uri(AudioUrl).IsAbsoluteUri && SongState != SongState.Downloaded; }
         }
 
         public Artist Artist { get; set; }
 
         public Album Album { get; set; }
+
+        public BackgroundDownload Download
+        {
+            get { return _download; }
+            set { Set(ref _download, value); }
+        }
     }
 
     public enum HeartState

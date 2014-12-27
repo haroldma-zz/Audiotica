@@ -68,30 +68,49 @@
                             <ListView.ItemTemplate>
                                 <DataTemplate>
                                     <Grid Margin="0,0,0,15">
-                                        <interactivity:Interaction.Behaviors>
-                                            <core:EventTriggerBehavior EventName="Holding">
-                                                <audiotica:ShowFlyoutAction />
-                                            </core:EventTriggerBehavior>
-                                        </interactivity:Interaction.Behaviors>
-                                        <FlyoutBase.AttachedFlyout>
-                                            <MenuFlyout>
-                                                <MenuFlyoutItem Text="Add to" FontFamily="Global User Interface" Click="MenuFlyoutItem_Click">
-                                                    <FlyoutBase.AttachedFlyout>
-                                                        <ListPickerFlyout DisplayMemberPath="Name" />
-                                                    </FlyoutBase.AttachedFlyout>
-                                                </MenuFlyoutItem>
-                                                <MenuFlyoutItem x:Uid="DeleteMenuItem" Text="Delete" Foreground="Red"
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="*" />
+                                            <RowDefinition Height="Auto" />
+                                        </Grid.RowDefinitions>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+                                            <interactivity:Interaction.Behaviors>
+                                                <core:EventTriggerBehavior EventName="Holding">
+                                                    <audiotica:ShowFlyoutAction />
+                                                </core:EventTriggerBehavior>
+                                            </interactivity:Interaction.Behaviors>
+                                            <FlyoutBase.AttachedFlyout>
+                                                <MenuFlyout>
+                                                    <MenuFlyoutItem Text="Add to" FontFamily="Global User Interface" Click="MenuFlyoutItem_Click">
+                                                        <FlyoutBase.AttachedFlyout>
+                                                            <ListPickerFlyout DisplayMemberPath="Name" />
+                                                        </FlyoutBase.AttachedFlyout>
+                                                    </MenuFlyoutItem>
+                                                    <MenuFlyoutItem x:Uid="DeleteMenuItem" Text="Delete" Foreground="Red"
                                                                 Click="DeleteSongMenuFlyoutItem_Click" />
-                                            </MenuFlyout>
-                                        </FlyoutBase.AttachedFlyout>
-                                        <StackPanel>
-                                            <TextBlock Text="{Binding Name}" FontSize="30"
+                                                </MenuFlyout>
+                                            </FlyoutBase.AttachedFlyout>
+                                            <StackPanel>
+                                                <TextBlock Text="{Binding Name}" FontSize="30"
                                                        FontFamily="Global User Interface"
                                                        TextTrimming="CharacterEllipsis" FontWeight="Bold" />
-                                            <TextBlock Text="{Binding Artist.Name}" FontSize="22" FontWeight="Thin"
+                                                <TextBlock Text="{Binding Artist.Name}" FontSize="22" FontWeight="Thin"
                                                        Foreground="#89FFFFFF" TextTrimming="CharacterEllipsis"
                                                        Margin="0,-5,0,0" />
-                                        </StackPanel>
+                                            </StackPanel>
+                                            <Grid Grid.Column="1" Visibility="{Binding SongState, Converter={StaticResource NoneSongStateConverter}}">
+                                                <AppBarButton Icon="Download" IsCompact="True" Margin="0,-5,0,0" Click="DownloadAppBarButton_Click" FontFamily="Global User Interface"/>
+                                            </Grid>
+                                            <Grid Grid.Column="1" Visibility="{Binding SongState, Converter={StaticResource DownloadingSongStateConverter}}">
+                                                <AppBarButton Icon="Cancel" IsCompact="True" Margin="0,-5,0,0"/>
+                                            </Grid>
+                                        </Grid>
+                                        <Grid Grid.Row="1" Visibility="{Binding SongState, Converter={StaticResource DownloadingSongStateConverter}}" Margin="0,10,0,0">
+                                            <ProgressBar Value="{Binding Download.BytesReceived, Mode=TwoWay}" Maximum="{Binding Download.BytesToReceive, Mode=TwoWay}" />
+                                        </Grid>
                                     </Grid>
                                 </DataTemplate>
                             </ListView.ItemTemplate>

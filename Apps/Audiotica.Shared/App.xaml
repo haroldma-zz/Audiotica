@@ -14,6 +14,8 @@
         <common:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
         <common:TimespanToDoubleConverter x:Key="TimespanToDoubleConverter" />
         <common:UpperCaseConverter x:Key="UpperCaseConverter" />
+        <local:SongStateConverter x:Key="DownloadingSongStateConverter" SongState="Downloading" />
+        <local:SongStateConverter x:Key="NoneSongStateConverter" SongState="None" />
 
         <Style TargetType="Pivot">
             <Setter Property="Margin" Value="0" />

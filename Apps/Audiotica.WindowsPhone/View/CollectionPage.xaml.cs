@@ -139,5 +139,11 @@ namespace Audiotica.View
 
             FlyoutBase.ShowAttachedFlyout(menu);
         }
+
+        private void DownloadAppBarButton_Click(object sender, RoutedEventArgs e)
+        {
+            var song = (sender as AppBarButton).DataContext as Song;
+            App.Locator.Download.StartDownload(song);
+        }
     }
 }

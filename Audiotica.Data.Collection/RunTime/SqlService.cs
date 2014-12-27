@@ -43,6 +43,8 @@ namespace Audiotica.Data.Collection.RunTime
 
             if (sqlVersion == _config.CurrentVersion) return;
 
+            if (_config.OnUpdate != null)
+                _config.OnUpdate(DbConnection, sqlVersion);
             CreateTablesIfNotExists();
         }
 
@@ -184,7 +186,7 @@ namespace Audiotica.Data.Collection.RunTime
                             .Where(
                                 p =>
                                     p.GetCustomAttribute<SqlIgnore>() == null &&
-                                    EasySql.NetToSqlKepMap.ContainsKey(p.PropertyType));
+                                    (EasySql.NetToSqlKepMap.ContainsKey(p.PropertyType) || p.PropertyType.GetTypeInfo().IsEnum));
 
                     foreach (var propertyInfo in props)
                     {
@@ -193,7 +195,7 @@ namespace Audiotica.Data.Collection.RunTime
                         //cast enums from long
                         if (propertyInfo.GetMethod.ReturnType.GetTypeInfo().IsEnum)
                         {
-                            value = Enum.ToObject(propertyInfo.PropertyType, value);
+                            value = Enum.ToObject(propertyInfo.PropertyType, value ?? 0);
                         }
 
                             //cast dates from string
@@ -301,5 +303,6 @@ namespace Audiotica.Data.Collection.RunTime
         public double CurrentVersion { get; set; }
         public string Path { get; set; }
         public List<Type> Tables { get; set; }
+        public Action<SQLiteConnection, double> OnUpdate;
     }
 }

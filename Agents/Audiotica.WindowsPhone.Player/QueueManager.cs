@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Linq;
 using Windows.Foundation;
 using Windows.Media.Playback;
+using Audiotica.Core.Utilities;
 using Audiotica.Data.Collection;
 using Audiotica.Data.Collection.Model;
 using Audiotica.Data.Collection.RunTime;
@@ -50,7 +51,7 @@ namespace Audiotica.WindowsPhone.Player
             var config = new SqlServiceConfig
             {
                 Tables = dbTypes,
-                CurrentVersion = 3,
+                CurrentVersion = 4,
                 Path = "collection.sqldb"
             };
 
@@ -171,7 +172,10 @@ namespace Audiotica.WindowsPhone.Player
             RefreshTracks();
             UpdateMediaEnded();
 
-            var source = tracks[id].Song.AudioUrl;
+            var track = tracks[id];
+            var source = track.Song.IsStreaming
+                ? track.Song.AudioUrl
+                : string.Format("ms-appdata:///local/songs/{0}.mp3", track.SongId);
             _currentTrackIndex = id;
             _mediaPlayer.AutoPlay = false;
             _mediaPlayer.SetUriSource(new Uri(source));
@@ -180,13 +184,15 @@ namespace Audiotica.WindowsPhone.Player
         /// <summary>
         ///     Starts a given track
         /// </summary>
-        public void StartTrack(QueueSong song)
+        public void StartTrack(QueueSong track)
         {
             RefreshTracks();
             UpdateMediaEnded();
 
-            var source = song.Song.AudioUrl;
-            _currentTrackIndex = tracks.FindIndex(p => p.SongId == song.SongId);
+            var source = track.Song.IsStreaming
+                ? track.Song.AudioUrl
+                : string.Format("ms-appdata:///local/songs/{0}.mp3", track.SongId);
+            _currentTrackIndex = tracks.FindIndex(p => p.SongId == track.SongId);
             _mediaPlayer.AutoPlay = false;
             _mediaPlayer.SetUriSource(new Uri(source));
         }
@@ -199,7 +205,18 @@ namespace Audiotica.WindowsPhone.Player
             var track = tracks.FirstOrDefault(p => p.Id == id);
             _currentTrackIndex = tracks.IndexOf(track);
             _mediaPlayer.AutoPlay = false;
-            _mediaPlayer.SetUriSource(new Uri(track.Song.AudioUrl));
+
+            if (track.Song.IsStreaming)
+            {
+                _mediaPlayer.SetUriSource(new Uri(track.Song.AudioUrl));
+            }
+            else
+            {
+                var file =
+                    StorageHelper.GetFileAsync(string.Format("songs/{0}.mp3", track.SongId)).Result;
+                var stream = file.OpenReadAsync().AsTask().Result;
+                _mediaPlayer.SetStreamSource(stream);
+            }
         }
 
         /// <summary>

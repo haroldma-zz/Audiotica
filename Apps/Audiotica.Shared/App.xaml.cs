@@ -98,6 +98,7 @@ namespace Audiotica
                 try
                 {
                     await Locator.CollectionService.LoadLibraryAsync();
+                    Locator.Download.LoadDownloads();
                 }
                 catch (Exception ex)
                 {
