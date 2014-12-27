@@ -77,6 +77,7 @@ namespace Audiotica.ViewModel
                 if (!value)
                     App.Locator.Collection.RandomizeAlbumList.Clear();
 
+                GoogleAnalytics.EasyTracker.GetTracker().SendEvent("Settings", "WallpaperArt", value ? "Enabled" : "Disabled", 0);
                 AppSettingsHelper.Write("WallpaperArt", value);
                 RaisePropertyChanged();
             }
@@ -90,18 +91,15 @@ namespace Audiotica.ViewModel
             }
             set
             {
-                string label;
                 if (value)
                 {
                     _adMediatorBar.Enable();
-                    label = "enabled";
                 }
                 else
                 {
                     _adMediatorBar.Disable();
-                    label = "disabled";
                 }
-                GoogleAnalytics.EasyTracker.GetTracker().SendEvent("Settings", "Ads", label, 0);
+                GoogleAnalytics.EasyTracker.GetTracker().SendEvent("Settings", "Ads", value ? "Enabled": "Disabled", 0);
                 AppSettingsHelper.Write("Ads", value);
                 RaisePropertyChanged();
             }
@@ -116,6 +114,7 @@ namespace Audiotica.ViewModel
             set
             {
                 AppSettingsHelper.Write("Scrobble", value);
+                GoogleAnalytics.EasyTracker.GetTracker().SendEvent("Settings", "Scrobble", value ? "Enabled" : "Disabled", 0);
                 RaisePropertyChanged();
             }
         }
