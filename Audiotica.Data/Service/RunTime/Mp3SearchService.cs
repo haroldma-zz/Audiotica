@@ -26,6 +26,7 @@ namespace Audiotica.Data.Service.RunTime
             "https://api.soundcloud.com/search/sounds?client_id={0}&limit={1}&q={2}";
 
         private const string Mp3ClanSearchUrl = "http://mp3clan.com/app/mp3Search.php?q={0}&count={1}";
+        private const string Mp3SkullSearchUrl = "http://mp3skull.com/search_db.php?q={0}";
 
         private const string Mp3TruckSearchUrl = "https://mp3truck.net/ajaxRequest.php";
 
@@ -144,6 +145,45 @@ namespace Audiotica.Data.Service.RunTime
 
                 return FilterByTypeAndMatch(parseResp.response.Select(p => new WebSong(p)).ToList(),
                     title, artist);
+            }
+        }
+
+        public async Task<List<WebSong>> SearchMp3Skull(string title, string artist, string album = null)        
+        {
+            var url = string.Format(Mp3SkullSearchUrl, CreateQuery(title, artist, album));
+
+            using (var client = new HttpClient())
+            {
+                var resp = await client.GetAsync(url);
+                var html = await resp.Content.ReadAsStringAsync();
+
+                //Meile has no search api, so we go to old school web page scrapping
+                //using HtmlAgilityPack this is very easy
+                var doc = new HtmlDocument();
+                doc.LoadHtml(html);
+
+                //Get the hyperlink node with the class='name'
+                var songNameNodes = doc.DocumentNode.Descendants("a")
+                    .Where(p => p.Attributes.Contains("class") && p.Attributes["class"].Value == "name");
+
+                if (songNameNodes == null) return null;
+
+                //in it there is an attribute that contains the url to the song
+                var songUrls = songNameNodes.Select(p => p.Attributes["href"].Value);
+                var songIds = songUrls.Where(p => p.Contains("/song/")).ToList();
+
+                var songs = new List<WebSong>();
+
+                foreach (var songId in songIds)
+                {
+                    var song = await GetDetailsForMeileSong(songId.Replace("/song/", ""), client);
+                    if (song != null)
+                    {
+                        songs.Add(new WebSong(song));
+                    }
+                }
+
+                return songs.Any() ? FilterByTypeAndMatch(songs, title, artist) : null;
             }
         }
 
