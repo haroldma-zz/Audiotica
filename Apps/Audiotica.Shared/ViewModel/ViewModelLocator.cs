@@ -66,6 +66,7 @@ namespace Audiotica.ViewModel
             SimpleIoc.Default.Register<SearchViewModel>();
             SimpleIoc.Default.Register<SettingsViewModel>();
             SimpleIoc.Default.Register<CollectionViewModel>();
+            SimpleIoc.Default.Register<SpotifyAlbumViewModel>();
         }
 
         private SqlServiceConfig GetForegroundConfig()
@@ -183,6 +184,11 @@ namespace Audiotica.ViewModel
         public CollectionViewModel Collection
         {
             get { return ServiceLocator.Current.GetInstance<CollectionViewModel>(); }
+        }
+
+        public SpotifyAlbumViewModel SpotifyAlbum
+        {
+            get { return ServiceLocator.Current.GetInstance<SpotifyAlbumViewModel>(); }
         }
 
         public ICollectionService CollectionService

@@ -93,12 +93,12 @@ namespace Audiotica.ViewModel
 
         private async void SongClickExecute(ItemClickEventArgs item)
         {
-            var song = (FullTrack) item.ClickedItem;
+            var track = (FullTrack) item.ClickedItem;
 
             CurtainToast.Show("MatchingSongToast".FromLanguageResource());
 
-            var track = await _service.GetDetailTrack(song.Name, song.Artists[0].Name);
-            await ScrobblerHelper.SaveTrackAsync(track);
+            var album = await _spotify.GetAlbumAsync(track.Album.Id);
+            await SpotifyHelper.SaveTrackAsync(track, album);
         }
 
         public async Task SearchAsync(string term)

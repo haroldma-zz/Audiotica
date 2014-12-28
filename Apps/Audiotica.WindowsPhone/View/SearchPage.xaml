@@ -20,17 +20,8 @@
         <Pivot Title="SEARCH" HeaderTemplate="{StaticResource PivotHeaderTemplate}">
             <PivotItem Header="SONGS">
                 <ListView IsItemClickEnabled="True"
-                          ItemsSource="{Binding Tracks}">
-                    <ListView.ItemTemplate>
-                        <DataTemplate>
-                            <StackPanel Margin="0,0,0,15">
-                                <TextBlock Text="{Binding Name}" FontSize="30"
-                           TextTrimming="CharacterEllipsis" FontWeight="Bold" />
-                                <TextBlock Text="{Binding Artists[0].Name}" FontSize="22" FontWeight="Thin" Foreground="#89FFFFFF"
-                           TextTrimming="CharacterEllipsis"/>
-                            </StackPanel>
-                        </DataTemplate>
-                    </ListView.ItemTemplate>
+                          ItemsSource="{Binding Tracks}"
+                          ItemTemplate="{StaticResource SpotifyTrackDataTemplate}">
                     <interactivity:Interaction.Behaviors>
                         <Core:EventTriggerBehavior EventName="ItemClick">
                             <Core:InvokeCommandAction Command="{Binding SongClickRelayCommand}" />

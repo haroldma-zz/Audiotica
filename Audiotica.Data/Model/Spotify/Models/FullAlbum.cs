@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Newtonsoft.Json;
 
 namespace Audiotica.Data.Model.Spotify.Models
@@ -10,6 +11,7 @@ namespace Audiotica.Data.Model.Spotify.Models
         public String AlbumType { get; set; }
         [JsonProperty("artists")]
         public List<SimpleArtist> Artists { get; set; }
+        public SimpleArtist Artist { get { return Artists.FirstOrDefault(); } }
         [JsonProperty("available_markets")]
         public List<String> AvailableMarkets { get; set; }
         [JsonProperty("copyrights")]

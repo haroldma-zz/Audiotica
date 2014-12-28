@@ -116,6 +116,9 @@
     </Compile>
     <Compile Include="PlayerViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="View\SpotifyAlbumPage.xaml.cs">
+      <DependentUpon>SpotifyAlbumPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\AlbumPage.xaml.cs">
       <DependentUpon>AlbumPage.xaml</DependentUpon>
     </Compile>
@@ -184,6 +187,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="PartialView\NowPlayingBar.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\SpotifyAlbumPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

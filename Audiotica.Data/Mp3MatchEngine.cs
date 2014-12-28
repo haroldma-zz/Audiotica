@@ -1,6 +1,7 @@
 ﻿#region
 
 using System.Threading.Tasks;
+using Audiotica.Data.Model.Spotify.Models;
 using Audiotica.Data.Mp3Providers;
 using IF.Lastfm.Core.Objects;
 
@@ -20,13 +21,10 @@ namespace Audiotica.Data
             new SoundCloudProvider()
         };
 
-        public static async Task<string> FindMp3For(LastTrack track)
-        {
-            //match engines get better results using ft instead of feat
-            //so rename if it contains that
-            var title = track.Name.Replace("feat.", "ft.");
-            var artist = track.ArtistName;
 
+        public static async Task<string> FindMp3For(string title, string artist)
+        {
+            title = title.Replace("feat.", "ft.");
 
             var currentProvider = 0;
             while (currentProvider < Providers.Length)

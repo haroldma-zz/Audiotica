@@ -28,6 +28,7 @@
 #region
 
 using System;
+using System.Threading;
 using Windows.UI;
 using Windows.UI.Text;
 using Windows.UI.Xaml;
@@ -73,8 +74,11 @@ namespace Audiotica.Core.Common
             {
                 _popup.IsOpen = false;
                 _popup = null;
-                _timer.Stop();
-                _timer = null;
+                if (_timer != null)
+                {
+                    _timer.Stop();
+                    _timer = null;
+                }
                 _current = null;
             }
             catch

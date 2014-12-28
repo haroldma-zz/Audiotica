@@ -21,15 +21,7 @@ namespace Audiotica.View
         private async void ListView_ItemClick(object sender, ItemClickEventArgs e)
         {
             var album = e.ClickedItem as SimpleAlbum;
-
-            var full = await App.Locator.Spotify.GetAlbum(album.Id);
-
-            var lastAlbum = new LastAlbum()
-            {
-                Name = full.Name,
-                ArtistName = full.Artists[0].Name
-            };
-            Frame.Navigate(typeof(AlbumPage), lastAlbum);
+            Frame.Navigate(typeof(SpotifyAlbumPage), album.Id);
         }
 
         private void ListView_ItemClick_1(object sender, ItemClickEventArgs e)

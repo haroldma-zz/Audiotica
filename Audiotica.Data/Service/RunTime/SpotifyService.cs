@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿#region
+
 using System.Threading.Tasks;
 using Audiotica.Data.Model.Spotify;
 using Audiotica.Data.Model.Spotify.Models;
 using Audiotica.Data.Service.Interfaces;
+
+#endregion
 
 namespace Audiotica.Data.Service.RunTime
 {
@@ -16,6 +16,18 @@ namespace Audiotica.Data.Service.RunTime
         public SpotifyService(SpotifyWebApi spotify)
         {
             _spotify = spotify;
+        }
+
+        public async Task<FullAlbum> GetAlbumAsync(string id)
+        {
+            var result = await _spotify.GetAlbum(id);
+            return result;
+        }
+
+        public async Task<Paging<SimpleTrack>> GetAlbumTracksAsync(string id)
+        {
+            var result = await _spotify.GetAlbumTracks(id);
+            return result;
         }
 
         public async Task<Paging<FullTrack>> SearchTracksAsync(string query, int limit = 20, int offset = 0)

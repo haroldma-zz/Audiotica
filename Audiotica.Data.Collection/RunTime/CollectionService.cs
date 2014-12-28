@@ -122,11 +122,8 @@ namespace Audiotica.Data.Collection.RunTime
 
             var primaryArtist = song.Album == null ? song.Artist : song.Album.PrimaryArtist;
 
-            if (primaryArtist.ProviderId == "lastid.")
-                primaryArtist.ProviderId = "autc.single." + song.ProviderId;
-
-            var artist = Artists.FirstOrDefault(entry => entry.ProviderId == primaryArtist.ProviderId);
-
+            var artist = Artists.FirstOrDefault(entry => entry.ProviderId == primaryArtist.ProviderId
+                                                         || entry.Name == primaryArtist.Name);
             if (artist == null)
             {
                 await _sqlService.InsertAsync(primaryArtist);
@@ -173,7 +170,7 @@ namespace Audiotica.Data.Collection.RunTime
             }
             else
             {
-                var album = Albums.FirstOrDefault(p => p.ProviderId == song.Album.ProviderId);
+                var album = Albums.FirstOrDefault(p => p.ProviderId == song.Album.ProviderId || p.Name == song.Album.Name);
 
                 if (album != null)
                     song.Album = album;

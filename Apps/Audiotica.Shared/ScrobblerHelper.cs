@@ -51,7 +51,7 @@ namespace Audiotica
 
         public static async Task SaveTrackAsync(LastTrack track)
         {
-            var url = await Mp3MatchEngine.FindMp3For(track);
+            var url = await Mp3MatchEngine.FindMp3For(track.Name, track.ArtistName);
 
             if (string.IsNullOrEmpty(url))
                 CurtainToast.ShowError("NoMatchFoundToast".FromLanguageResource());

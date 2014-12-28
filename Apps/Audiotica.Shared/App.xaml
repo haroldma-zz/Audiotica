@@ -158,6 +158,14 @@
                            TextTrimming="CharacterEllipsis"/>
             </StackPanel>
         </DataTemplate>
+        <DataTemplate x:Key="SpotifyTrackDataTemplate">
+            <StackPanel Margin="0,0,0,15">
+                <TextBlock Text="{Binding Name}" FontSize="30"
+                           TextTrimming="CharacterEllipsis" FontWeight="Bold" />
+                <TextBlock Text="{Binding Artist.Name}" FontSize="22" FontWeight="Thin" Foreground="#89FFFFFF"
+                           TextTrimming="CharacterEllipsis"/>
+            </StackPanel>
+        </DataTemplate>
 
         <Style x:Key="PlainButtonStyle" TargetType="Button">
             <Setter Property="HorizontalAlignment" Value="Stretch"/>
