@@ -240,7 +240,8 @@ namespace Audiotica.Data.Collection.RunTime
             await _sqlService.InsertAsync(song);
 
             song.Artist.Songs.Insert(0, song);
-            song.Album.Songs.Insert(0, song);
+            song.Album.Songs.Add(song);
+            song.Album.Songs.Sort((p, m) => p.TrackNumber.CompareTo(m.TrackNumber));
             Songs.Insert(0, song);
         }
 
