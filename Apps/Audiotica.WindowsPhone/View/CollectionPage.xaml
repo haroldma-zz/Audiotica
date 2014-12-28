@@ -203,7 +203,7 @@
         </Pivot>
     </Grid>
     <Page.BottomAppBar>
-        <CommandBar Visibility="Collapsed">
+        <CommandBar ClosedDisplayMode="Minimal">
             <AppBarButton Icon="Add" Label="New Playlist" FontFamily="Global User Interface">
                 <AppBarButton.Flyout>
                     <PickerFlyout Title="NEW PLAYLIST" ConfirmationButtonsVisible="True" Placement="Full"

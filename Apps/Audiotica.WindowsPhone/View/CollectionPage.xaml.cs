@@ -123,8 +123,8 @@ namespace Audiotica.View
 
         private void CollectionPivot_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            BottomAppBar.Visibility =
-                CollectionPivot.SelectedIndex == 3 ? Visibility.Visible : Visibility.Collapsed;
+            (BottomAppBar as CommandBar).ClosedDisplayMode =
+                CollectionPivot.SelectedIndex == 3 ? AppBarClosedDisplayMode.Compact : AppBarClosedDisplayMode.Minimal;
         }
 
         private void PickerFlyout_Confirmed(PickerFlyout sender, PickerConfirmedEventArgs args)
