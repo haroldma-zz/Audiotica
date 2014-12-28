@@ -1,6 +1,7 @@
 ﻿using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
+using Audiotica.Data.Model.Spotify.Models;
 using IF.Lastfm.Core.Objects;
 
 namespace Audiotica.View
@@ -10,23 +11,38 @@ namespace Audiotica.View
         public SearchPage()
         {
             InitializeComponent();
+            Loaded += (sender, args) =>
+            {
+                if (!isBack)
+                    SearchTextBox.Focus(FocusState.Keyboard);
+            };
         }
 
-        private void ListView_ItemClick(object sender, ItemClickEventArgs e)
+        private async void ListView_ItemClick(object sender, ItemClickEventArgs e)
         {
-            var album = e.ClickedItem as LastAlbum;
-            Frame.Navigate(typeof(AlbumPage), album);
+            var album = e.ClickedItem as SimpleAlbum;
+
+            var full = await App.Locator.Spotify.GetAlbum(album.Id);
+
+            var lastAlbum = new LastAlbum()
+            {
+                Name = full.Name,
+                ArtistName = full.Artists[0].Name
+            };
+            Frame.Navigate(typeof(AlbumPage), lastAlbum);
         }
 
         private void ListView_ItemClick_1(object sender, ItemClickEventArgs e)
         {
-            var artist = e.ClickedItem as LastArtist;
+            var artist = e.ClickedItem as SimpleArtist;
             Frame.Navigate(typeof(ArtistPage), artist.Name);
         }
 
-        private void PageBase_Loaded(object sender, RoutedEventArgs e)
+        private bool isBack;
+        protected override void OnNavigatedTo(NavigationEventArgs e)
         {
-            SearchTextBox.Focus(FocusState.Keyboard);
+            base.OnNavigatedTo(e);
+            isBack = e.NavigationMode == NavigationMode.Back;
         }
 
         private void SearchTextBox_GotFocus(object sender, RoutedEventArgs e)

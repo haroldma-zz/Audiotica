@@ -8,6 +8,7 @@ using Audiotica.Data.Collection;
 using Audiotica.Data.Collection.DesignTime;
 using Audiotica.Data.Collection.Model;
 using Audiotica.Data.Collection.RunTime;
+using Audiotica.Data.Model.Spotify;
 using Audiotica.Data.Service.DesignTime;
 using Audiotica.Data.Service.Interfaces;
 using Audiotica.Data.Service.RunTime;
@@ -46,12 +47,14 @@ namespace Audiotica.ViewModel
             else
             {
                 SimpleIoc.Default.Register<IScrobblerService, ScrobblerService>();
+                SimpleIoc.Default.Register<ISpotifyService, SpotifyService>();
                 SimpleIoc.Default.Register<ISqlService>(() => new SqlService(config));
                 SimpleIoc.Default.Register<ISqlService>(() => new SqlService(bgConfig), "BackgroundSql");
                 SimpleIoc.Default.Register<ICollectionService>(() => new CollectionService(SqlService, BgSqlService, Window.Current.Dispatcher));
                 SimpleIoc.Default.Register<ISongDownloadService>(() => new SongDownloadService(CollectionService, SqlService, Window.Current.Dispatcher));
             }
 
+            SimpleIoc.Default.Register<SpotifyWebApi>();
             SimpleIoc.Default.Register<AudioPlayerHelper>();
             SimpleIoc.Default.Register(() => new PlayerViewModel(AudioPlayerHelper, CollectionService, BgSqlService, ScrobblerService));
             SimpleIoc.Default.Register<MainViewModel>();
@@ -117,6 +120,12 @@ namespace Audiotica.ViewModel
                 Path = "player.sqldb"
             };
         }
+
+        public SpotifyWebApi Spotify
+        {
+            get { return ServiceLocator.Current.GetInstance<SpotifyWebApi>(); }
+        }
+
         public AdMediatorBar Ads
         {
             get { return ServiceLocator.Current.GetInstance<AdMediatorBar>(); }

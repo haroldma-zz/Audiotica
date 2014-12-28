@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Audiotica.Core.Common;
 using Audiotica.Core.Exceptions;
 using Audiotica.Core.Utilities;
+using Audiotica.Data.Model.Spotify;
 using Audiotica.Data.Service.Interfaces;
 using GalaSoft.MvvmLight;
 using GoogleAnalytics;

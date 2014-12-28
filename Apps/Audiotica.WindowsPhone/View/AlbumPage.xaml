@@ -22,7 +22,7 @@
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
                     <Image Height="100" Width="100"
-                           Source="{Binding Album.Images.Largest}" />
+                           Source="{Binding Album.Images.Medium}" />
                     <StackPanel Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="5,0,0,0">
                         <TextBlock Text="{Binding Album.Name}" FontSize="22" TextAlignment="Right"
                                    TextTrimming="CharacterEllipsis" FontWeight="Bold" />

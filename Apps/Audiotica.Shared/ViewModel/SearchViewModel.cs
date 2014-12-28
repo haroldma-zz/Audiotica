@@ -11,6 +11,7 @@ using Windows.UI.Xaml.Input;
 using Audiotica.Core.Common;
 using Audiotica.Core.Exceptions;
 using Audiotica.Core.Utilities;
+using Audiotica.Data.Model.Spotify.Models;
 using Audiotica.Data.Service.Interfaces;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
@@ -25,20 +26,22 @@ namespace Audiotica.ViewModel
     public class SearchViewModel : ViewModelBase
     {
         private readonly IScrobblerService _service;
-        private IncrementalObservableCollection<LastAlbum> _albumsCollection;
-        private PageResponse<LastAlbum> _albumsResponse;
-        private IncrementalObservableCollection<LastArtist> _artistsCollection;
-        private PageResponse<LastArtist> _artistsResponse;
+        private readonly ISpotifyService _spotify;
+        private IncrementalObservableCollection<SimpleAlbum> _albumsCollection;
+        private Paging<SimpleAlbum> _albumsResponse;
+        private IncrementalObservableCollection<SimpleArtist> _artistsCollection;
+        private Paging<SimpleArtist> _artistsResponse;
         private bool _isLoading;
         private RelayCommand<KeyRoutedEventArgs> _keyDownRelayCommand;
         private string _searchTerm;
         private RelayCommand<ItemClickEventArgs> _songClickRelayCommand;
-        private IncrementalObservableCollection<LastTrack> _tracksCollection;
-        private PageResponse<LastTrack> _tracksResponse;
+        private IncrementalObservableCollection<FullTrack> _tracksCollection;
+        private Paging<FullTrack> _tracksResponse;
 
-        public SearchViewModel(IScrobblerService service)
+        public SearchViewModel(IScrobblerService service, ISpotifyService spotify)
         {
             _service = service;
+            _spotify = spotify;
             KeyDownRelayCommand = new RelayCommand<KeyRoutedEventArgs>(KeyDownExecute);
             SongClickRelayCommand = new RelayCommand<ItemClickEventArgs>(SongClickExecute);
 
@@ -64,19 +67,19 @@ namespace Audiotica.ViewModel
             set { Set(ref _searchTerm, value); }
         }
 
-        public IncrementalObservableCollection<LastTrack> Tracks
+        public IncrementalObservableCollection<FullTrack> Tracks
         {
             get { return _tracksCollection; }
             set { Set(ref _tracksCollection, value); }
         }
 
-        public IncrementalObservableCollection<LastArtist> Artists
+        public IncrementalObservableCollection<SimpleArtist> Artists
         {
             get { return _artistsCollection; }
             set { Set(ref _artistsCollection, value); }
         }
 
-        public IncrementalObservableCollection<LastAlbum> Albums
+        public IncrementalObservableCollection<SimpleAlbum> Albums
         {
             get { return _albumsCollection; }
             set { Set(ref _albumsCollection, value); }
@@ -90,9 +93,11 @@ namespace Audiotica.ViewModel
 
         private async void SongClickExecute(ItemClickEventArgs item)
         {
-            var track = (LastTrack) item.ClickedItem;
+            var song = (FullTrack) item.ClickedItem;
 
             CurtainToast.Show("MatchingSongToast".FromLanguageResource());
+
+            var track = await _service.GetDetailTrack(song.Name, song.Artists[0].Name);
             await ScrobblerHelper.SaveTrackAsync(track);
         }
 
@@ -129,31 +134,32 @@ namespace Audiotica.ViewModel
                         Albums.Clear();
                     }
 
-                    _tracksResponse = await _service.SearchTracksAsync(term);
+                    _tracksResponse = await _spotify.SearchTracksAsync(term);
 
                     Tracks = CreateIncrementalCollection(
                         () => _tracksResponse,
                         tracks => _tracksResponse = tracks,
-                        async i => await _service.SearchTracksAsync(term, i));
-                    foreach (var lastTrack in _tracksResponse)
+                        async i => await _spotify.SearchTracksAsync(term, i));
+                    foreach (var lastTrack in _tracksResponse.Items)
                         Tracks.Add(lastTrack);
 
-                    _albumsResponse = await _service.SearchAlbumsAsync(term);
+                    _albumsResponse = await _spotify.SearchAlbumsAsync(term);
 
                     Albums = CreateIncrementalCollection(
                         () => _albumsResponse,
                         albums => _albumsResponse = albums,
-                        async i => await _service.SearchAlbumsAsync(term, i));
-                    foreach (var lastAlbum in _albumsResponse)
+                        async i => await _spotify.SearchAlbumsAsync(term, i));
+                    foreach (var lastAlbum in _albumsResponse.Items)
                         Albums.Add(lastAlbum);
 
-                    _artistsResponse = await _service.SearchArtistAsync(term);
+                    _artistsResponse = await _spotify.SearchArtistsAsync(term);
 
                     Artists = CreateIncrementalCollection(
                         () => _artistsResponse,
                         artists => _artistsResponse = artists,
-                        async i => await _service.SearchArtistAsync(term, i));
-                    foreach (var lastArtist in _artistsResponse)
+                        async i => await _spotify.SearchArtistsAsync(term, i));
+
+                    foreach (var lastArtist in _artistsResponse.Items)
                         Artists.Add(lastArtist);
                 }
 
@@ -189,8 +195,8 @@ namespace Audiotica.ViewModel
         }
 
         private IncrementalObservableCollection<T> CreateIncrementalCollection<T>(
-            Func<PageResponse<T>> getPageResponse, Action<PageResponse<T>> setPageResponse,
-            Func<int, Task<PageResponse<T>>> searchFunc) where T : new()
+            Func<Paging<T>> getPageResponse, Action<Paging<T>> setPageResponse,
+            Func<int, Task<Paging<T>>> searchFunc) where T : new()
         {
             var collection = new IncrementalObservableCollection<T>
             {
@@ -198,7 +204,7 @@ namespace Audiotica.ViewModel
                 {
                     if (getPageResponse() != null)
                     {
-                        return getPageResponse().Page < getPageResponse().TotalPages;
+                        return !string.IsNullOrEmpty(getPageResponse().Next);
                     }
                     return false;
                 }
@@ -212,9 +218,9 @@ namespace Audiotica.ViewModel
                     {
                         IsLoading = true;
 
-                        var resp = await searchFunc(getPageResponse().Page + 1);
+                        var resp = await searchFunc(getPageResponse().Offset + 1);
 
-                        foreach (var item in resp.Content)
+                        foreach (var item in resp.Items)
                             collection.Add(item);
 
                         IsLoading = false;
@@ -223,7 +229,7 @@ namespace Audiotica.ViewModel
 
                         return new LoadMoreItemsResult
                         {
-                            Count = (uint) resp.Content.Count
+                            Count = (uint) resp.Items.Count
                         };
                     }
                     catch
