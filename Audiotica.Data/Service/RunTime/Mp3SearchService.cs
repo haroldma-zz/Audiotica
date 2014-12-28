@@ -26,7 +26,7 @@ namespace Audiotica.Data.Service.RunTime
             "https://api.soundcloud.com/search/sounds?client_id={0}&limit={1}&q={2}";
 
         private const string Mp3ClanSearchUrl = "http://mp3clan.com/app/mp3Search.php?q={0}&count={1}";
-        private const string Mp3SkullSearchUrl = "http://mp3skull.com/search_db.php?q={0}";
+        private const string Mp3SkullSearchUrl = "http://mp3skull.com/search_db.php?q={0}&fckh={1}";
 
         private const string Mp3TruckSearchUrl = "https://mp3truck.net/ajaxRequest.php";
 
@@ -147,7 +147,7 @@ namespace Audiotica.Data.Service.RunTime
                     title, artist);
             }
         }
-
+        
         public async Task<List<WebSong>> SearchMp3Skull(string title, string artist, string album = null)        
         {
             var url = string.Format(Mp3SkullSearchUrl, CreateQuery(title, artist, album));
@@ -186,7 +186,7 @@ namespace Audiotica.Data.Service.RunTime
                 return songs.Any() ? FilterByTypeAndMatch(songs, title, artist) : null;
             }
         }
-
+        
         public async Task<List<WebSong>> SearchMp3Truck(string title, string artist, string album = null)
         {
             using (var client = new HttpClient())
@@ -351,7 +351,7 @@ namespace Audiotica.Data.Service.RunTime
                 }
             }
         }
-
+        
         public Task<int> GetBitrateFromCc(string ccId)
         {
             throw new NotImplementedException();
