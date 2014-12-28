@@ -75,7 +75,16 @@ namespace Audiotica.ViewModel
             try
             {
                 Album = await _service.GetDetailAlbum(album.Name, album.ArtistName);
-                Tracks = new ObservableCollection<LastTrack>(Album.Tracks);
+
+                if (Album.Tracks == null && Album.Name.Contains("Deluxe Edition"))
+                {
+                    Album = await _service.GetDetailAlbum(album.Name.Replace("(Deluxe Edition)", ""), album.ArtistName);    
+                }
+
+                if (Album.Tracks != null)
+                    Tracks = new ObservableCollection<LastTrack>(Album.Tracks);
+                else
+                    CurtainToast.ShowError("No tracks for album");
             }
             catch (Exception e)
             {

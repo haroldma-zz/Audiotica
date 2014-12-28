@@ -31,7 +31,7 @@ namespace Audiotica.Data.Model.Spotify.Models
         [JsonProperty("popularity")]
         public int Popularity { get; set; }
         [JsonProperty("release_date")]
-        public DateTime ReleaseDate { get; set; }
+        public string ReleaseDate { get; set; }
         [JsonProperty("release_date_precision")]
         public String ReleaseDatePrecision { get; set; }
         [JsonProperty("tracks")]

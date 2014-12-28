@@ -139,7 +139,7 @@ namespace Audiotica.ViewModel
                     Tracks = CreateIncrementalCollection(
                         () => _tracksResponse,
                         tracks => _tracksResponse = tracks,
-                        async i => await _spotify.SearchTracksAsync(term, i));
+                        async i => await _spotify.SearchTracksAsync(term, offset: i));
                     foreach (var lastTrack in _tracksResponse.Items)
                         Tracks.Add(lastTrack);
 
@@ -148,7 +148,7 @@ namespace Audiotica.ViewModel
                     Albums = CreateIncrementalCollection(
                         () => _albumsResponse,
                         albums => _albumsResponse = albums,
-                        async i => await _spotify.SearchAlbumsAsync(term, i));
+                        async i => await _spotify.SearchAlbumsAsync(term, offset: i));
                     foreach (var lastAlbum in _albumsResponse.Items)
                         Albums.Add(lastAlbum);
 
@@ -157,7 +157,7 @@ namespace Audiotica.ViewModel
                     Artists = CreateIncrementalCollection(
                         () => _artistsResponse,
                         artists => _artistsResponse = artists,
-                        async i => await _spotify.SearchArtistsAsync(term, i));
+                        async i => await _spotify.SearchArtistsAsync(term, offset: i));
 
                     foreach (var lastArtist in _artistsResponse.Items)
                         Artists.Add(lastArtist);
@@ -202,9 +202,10 @@ namespace Audiotica.ViewModel
             {
                 HasMoreItemsFunc = () =>
                 {
-                    if (getPageResponse() != null)
+                    var page = getPageResponse();
+                    if (page != null)
                     {
-                        return !string.IsNullOrEmpty(getPageResponse().Next);
+                        return !string.IsNullOrEmpty(page.Next);
                     }
                     return false;
                 }
@@ -218,7 +219,8 @@ namespace Audiotica.ViewModel
                     {
                         IsLoading = true;
 
-                        var resp = await searchFunc(getPageResponse().Offset + 1);
+                        var pageResp = getPageResponse();
+                        var resp = await searchFunc(pageResp.Offset + pageResp.Limit);
 
                         foreach (var item in resp.Items)
                             collection.Add(item);
