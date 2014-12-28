@@ -17,7 +17,7 @@ namespace Audiotica.Data.Mp3Providers
     {
         public async Task<string> GetMatch(string title, string artist, string album = null)
         {
-            var results = await new Mp3SearchService().SearchMeile(title, artist, album);
+            var results = await new Mp3SearchService().SearchMeile(title, artist, album).ConfigureAwait(false);
             return results != null && results.Any() ? results.FirstOrDefault().AudioUrl : null;
         }
     }

@@ -8,7 +8,6 @@ using Audiotica.Core.Utilities;
 using Audiotica.Data;
 using Audiotica.Data.Collection.Model;
 using Audiotica.Data.Model.Spotify.Models;
-using IF.Lastfm.Core.Objects;
 
 #endregion
 
@@ -60,29 +59,37 @@ namespace Audiotica
 
         public static async Task SaveTrackAsync(SimpleTrack track, FullAlbum album)
         {
-            var artist = track is FullTrack ? (track as FullTrack).Artist : track.Artist;
-            var url = await Mp3MatchEngine.FindMp3For(track.Name, artist.Name);
-
-            if (string.IsNullOrEmpty(url))
-                CurtainToast.ShowError("NoMatchFoundToast".FromLanguageResource());
-
+            var preparedSong = track.ToSong();
+            if (App.Locator.CollectionService.SongAlreadyExists(preparedSong.ProviderId))
+            {
+                CurtainToast.ShowError("Song already saved");
+            }
             else
             {
-                var preparedSong = track.ToSong();
-                preparedSong.ArtistName = artist.Name;
-                preparedSong.Album = album.ToAlbum();
-                preparedSong.Artist = album.Artist.ToArtist();
-                preparedSong.Album.PrimaryArtist = preparedSong.Artist;
-                preparedSong.AudioUrl = url;
+                var artist = track is FullTrack ? (track as FullTrack).Artist : track.Artist;
+                var url = await Mp3MatchEngine.FindMp3For(track.Name, artist.Name);
 
-                try
+                if (string.IsNullOrEmpty(url))
+                    CurtainToast.ShowError("NoMatchFoundToast".FromLanguageResource());
+
+                else
                 {
-                    await App.Locator.CollectionService.AddSongAsync(preparedSong, album.Images[0].Url);
-                    CurtainToast.Show("SongSavedToast".FromLanguageResource());
-                }
-                catch (Exception e)
-                {
-                    CurtainToast.ShowError(e.Message);
+                    preparedSong.ArtistName = artist.Name;
+                    preparedSong.Album = album.ToAlbum();
+                    preparedSong.Artist = album.Artist.ToArtist();
+                    preparedSong.Album.PrimaryArtist = preparedSong.Artist;
+                    preparedSong.AudioUrl = url;
+
+                    try
+                    {
+                        await
+                            App.Locator.CollectionService.AddSongAsync(preparedSong, album.Images[0].Url);
+                        CurtainToast.Show("SongSavedToast".FromLanguageResource());
+                    }
+                    catch (Exception e)
+                    {
+                        CurtainToast.ShowError(e.Message);
+                    }
                 }
             }
         }

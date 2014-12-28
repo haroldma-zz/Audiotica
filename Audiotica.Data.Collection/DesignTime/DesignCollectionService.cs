@@ -125,6 +125,11 @@ namespace Audiotica.Data.Collection.DesignTime
             throw new NotImplementedException();
         }
 
+        public bool SongAlreadyExists(string providerId)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task ClearQueueAsync()
         {
             throw new NotImplementedException();

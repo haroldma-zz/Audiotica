@@ -9,9 +9,9 @@ namespace Audiotica.Core.Utilities
 {
     public static class StringExtensions
     {
-        public static Task<T> DeserializeAsync<T>(this string json)
+        public static async Task<T> DeserializeAsync<T>(this string json)
         {
-            return Task.Factory.StartNew(() =>
+            return await Task.Factory.StartNew(() =>
             {
                 try
                 {
@@ -21,7 +21,7 @@ namespace Audiotica.Core.Utilities
                 {
                     return default(T);
                 }
-            });
+            }).ConfigureAwait(false);
         }
 
         public static string FromLanguageResource(this string str)

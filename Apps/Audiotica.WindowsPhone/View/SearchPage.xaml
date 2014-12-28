@@ -16,6 +16,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <Pivot Title="SEARCH" HeaderTemplate="{StaticResource PivotHeaderTemplate}">
             <PivotItem Header="SONGS">
@@ -65,7 +66,8 @@
                 </ListView>
             </PivotItem>
         </Pivot>
-        <TextBox Name="SearchTextBox" Grid.Row="1" PlaceholderText="search" Text="{Binding SearchTerm, Mode=TwoWay}" Height="60" FontSize="25" GotFocus="SearchTextBox_GotFocus">
+        <ProgressBar IsIndeterminate="{Binding IsLoading}" Visibility="{Binding IsLoading, Converter={StaticResource VisibilityConverter}}" Grid.Row="1" />
+        <TextBox Name="SearchTextBox" Grid.Row="2" PlaceholderText="search" Text="{Binding SearchTerm, Mode=TwoWay}" Height="60" FontSize="25" GotFocus="SearchTextBox_GotFocus">
             <TextBox.Resources>
                 <x:Double x:Key="TextControlThemeMinWidth">51</x:Double>
                 <x:Double x:Key="TextControlThemeMinHeight">34</x:Double>

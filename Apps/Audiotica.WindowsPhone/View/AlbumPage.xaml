@@ -45,5 +45,8 @@
                 </ListView>
             </Grid>
         </ListView>
+        <Grid Visibility="{Binding IsLoading, Converter={StaticResource VisibilityConverter}}" Background="{StaticResource ApplicationPageBackgroundThemeBrush}">
+            <ProgressBar IsIndeterminate="{Binding IsLoading}" />
+        </Grid>
     </Grid>
 </audiotica:PageBase>

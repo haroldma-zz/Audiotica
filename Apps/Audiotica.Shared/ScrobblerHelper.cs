@@ -51,31 +51,41 @@ namespace Audiotica
 
         public static async Task SaveTrackAsync(LastTrack track)
         {
-            var url = await Mp3MatchEngine.FindMp3For(track.Name, track.ArtistName);
-
-            if (string.IsNullOrEmpty(url))
-                CurtainToast.ShowError("NoMatchFoundToast".FromLanguageResource());
-
+            if (App.Locator.CollectionService.SongAlreadyExists(track.ToSong().ProviderId))
+            {
+                CurtainToast.ShowError("Song already saved");
+            }
             else
             {
-                var preparedSong = await PrepareTrackForDownloadAsync(track);
-                preparedSong.Song.AudioUrl = url;
+                var url = await Mp3MatchEngine.FindMp3For(track.Name, track.ArtistName);
 
-                try
+                if (string.IsNullOrEmpty(url))
+                    CurtainToast.ShowError("NoMatchFoundToast".FromLanguageResource());
+
+                else
                 {
-                    await App.Locator.CollectionService.AddSongAsync(preparedSong.Song, preparedSong.ArtworkUrl);
-                    CurtainToast.Show("SongSavedToast".FromLanguageResource());
-                }
-                catch (Exception e)
-                {
-                    CurtainToast.ShowError(e.Message);
+                    var preparedSong = await PrepareTrackForDownloadAsync(track);
+                    preparedSong.Song.AudioUrl = url;
+
+                    try
+                    {
+                        await
+                            App.Locator.CollectionService.AddSongAsync(preparedSong.Song, preparedSong.ArtworkUrl);
+                        CurtainToast.Show("SongSavedToast".FromLanguageResource());
+                    }
+                    catch (Exception e)
+                    {
+                        CurtainToast.ShowError(e.Message);
+                    }
                 }
             }
         }
 
         internal static async Task<PreparedSong> PrepareTrackForDownloadAsync(LastTrack lastTrack)
         {
-            var track = await App.Locator.ScrobblerService.GetDetailTrack(lastTrack.Name, lastTrack.ArtistName);
+            var track =
+                await
+                    App.Locator.ScrobblerService.GetDetailTrack(lastTrack.Name, lastTrack.ArtistName);
             var preparedSong = new PreparedSong {Song = track.ToSong()};
             LastArtist artist;
 
@@ -89,7 +99,8 @@ namespace Audiotica
                 if (track.ArtistMbid == null)
                     artist = await App.Locator.ScrobblerService.GetDetailArtist(track.ArtistName);
                 else
-                    artist = await App.Locator.ScrobblerService.GetDetailArtistByMbid(track.ArtistMbid);
+                    artist =
+                        await App.Locator.ScrobblerService.GetDetailArtistByMbid(track.ArtistMbid);
 
                 preparedSong.Song.Album = lastAlbum.ToAlbum();
                 preparedSong.Song.Album.PrimaryArtist = artist.ToArtist();

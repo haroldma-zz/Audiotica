@@ -51,39 +51,33 @@ namespace Audiotica.Data.Service.RunTime
             try
             {
                 // Call the search.list method to retrieve results matching the specified query term.
-                var searchListResponse = await searchListRequest.ExecuteAsync();
+                var searchListResponse = await searchListRequest.ExecuteAsync().ConfigureAwait(false);
 
                 var songs = new List<WebSong>();
 
-                foreach (var searchResult in searchListResponse.Items)
+                foreach (var vid in from searchResult in searchListResponse.Items where searchResult.Id.Kind == "youtube#video" select new WebSong(searchResult))
                 {
-                    if (searchResult.Id.Kind == "youtube#video")
+                    using (var client = new HttpClient())
                     {
-                        var vid = new WebSong(searchResult);
-                        using (var client = new HttpClient())
-                        {
-                            var resp = await client.GetAsync(
-                                string.Format(
-                                    "http://www.youtube-mp3.org/a/itemInfo/?video_id={0}&ac=www&t=grp&r=1419628947067&s=139194",
-                                    vid.Id));
-                            if (resp.IsSuccessStatusCode)
-                            {
-                                var json = await resp.Content.ReadAsStringAsync();
-                                json = json.Replace(";", "").Replace("info = ", "").Replace("\"", "'");
+                        var resp = await client.GetAsync(
+                            string.Format(
+                                "http://www.youtube-mp3.org/a/itemInfo/?video_id={0}&ac=www&t=grp&r=1419628947067&s=139194",
+                                vid.Id));
+                        if (!resp.IsSuccessStatusCode) continue;
 
-                                var o = JToken.Parse(json);
+                        var json = await resp.Content.ReadAsStringAsync();
+                        json = json.Replace(";", "").Replace("info = ", "").Replace("\"", "'");
 
-                                if (o.Value<string>("status") == "serving")
-                                {
-                                    vid.Duration = TimeSpan.FromMinutes(o.Value<int>("length"));
-                                    vid.AudioUrl =
-                                        string.Format(
-                                            "http://www.youtube-mp3.org/get?ab=128&video_id={0}&h={1}&r=1419629380530.1463092791&s=36098",
-                                            vid.Id, o.Value<string>("h"));
-                                    songs.Add(vid);
-                                }
-                            }
-                        }
+                        var o = JToken.Parse(json);
+
+                        if (o.Value<string>("status") != "serving") continue;
+
+                        vid.Duration = TimeSpan.FromMinutes(o.Value<int>("length"));
+                        vid.AudioUrl =
+                            string.Format(
+                                "http://www.youtube-mp3.org/get?ab=128&video_id={0}&h={1}&r=1419629380530.1463092791&s=36098",
+                                vid.Id, o.Value<string>("h"));
+                        songs.Add(vid);
                     }
                 }
                 return FilterByTypeAndMatch(songs, title, artist);
@@ -103,8 +97,8 @@ namespace Audiotica.Data.Service.RunTime
             {
                 var resp = await client.GetAsync(new Uri(url));
 
-                var json = await resp.Content.ReadAsStringAsync();
-                var parseResp = await json.DeserializeAsync<SoundCloudRoot>();
+                var json = await resp.Content.ReadAsStringAsync().ConfigureAwait(false);
+                var parseResp = await json.DeserializeAsync<SoundCloudRoot>().ConfigureAwait(false);
 
                 if (parseResp == null || parseResp.collection == null || !resp.IsSuccessStatusCode) return null;
 
@@ -136,9 +130,9 @@ namespace Audiotica.Data.Service.RunTime
 
             using (var client = new HttpClient())
             {
-                var resp = await client.GetAsync(url);
-                var json = await resp.Content.ReadAsStringAsync();
-                var parseResp = await json.DeserializeAsync<Mp3ClanRoot>();
+                var resp = await client.GetAsync(url).ConfigureAwait(false);
+                var json = await resp.Content.ReadAsStringAsync().ConfigureAwait(false);
+                var parseResp = await json.DeserializeAsync<Mp3ClanRoot>().ConfigureAwait(false);
 
                 if (parseResp == null || parseResp.response == null || !resp.IsSuccessStatusCode) return null;
 
@@ -161,11 +155,11 @@ namespace Audiotica.Data.Service.RunTime
 
                 using (var content = new FormUrlEncodedContent(data))
                 {
-                    var resp = await client.PostAsync(Mp3TruckSearchUrl, content);
+                    var resp = await client.PostAsync(Mp3TruckSearchUrl, content).ConfigureAwait(false);
 
                     if (!resp.IsSuccessStatusCode) return null;
 
-                    var html = await resp.Content.ReadAsStringAsync();
+                    var html = await resp.Content.ReadAsStringAsync().ConfigureAwait(false);
 
                     var doc = new HtmlDocument();
                     doc.LoadHtml(html);
@@ -220,13 +214,12 @@ namespace Audiotica.Data.Service.RunTime
                                                                                      &&
                                                                                      p.Attributes["class"].Value
                                                                                          .Contains("mp3download"));
-                        if (linkNode != null)
-                        {
-                            song.AudioUrl = linkNode.Attributes["href"]
-                                .Value.Replace("/idl.php?u=", "");
+                        if (linkNode == null) continue;
 
-                            songs.Add(song);
-                        }
+                        song.AudioUrl = linkNode.Attributes["href"]
+                            .Value.Replace("/idl.php?u=", "");
+
+                        songs.Add(song);
                     }
 
                     return songs.Any() ? FilterByTypeAndMatch(songs, title, artist) : null;
@@ -240,8 +233,8 @@ namespace Audiotica.Data.Service.RunTime
 
             using (var client = new HttpClient())
             {
-                var resp = await client.GetAsync(url);
-                var html = await resp.Content.ReadAsStringAsync();
+                var resp = await client.GetAsync(url).ConfigureAwait(false);
+                var html = await resp.Content.ReadAsStringAsync().ConfigureAwait(false);
 
                 //Meile has no search api, so we go to old school web page scrapping
                 //using HtmlAgilityPack this is very easy
@@ -262,7 +255,7 @@ namespace Audiotica.Data.Service.RunTime
 
                 foreach (var songId in songIds)
                 {
-                    var song = await GetDetailsForMeileSong(songId.Replace("/song/", ""), client);
+                    var song = await GetDetailsForMeileSong(songId.Replace("/song/", ""), client).ConfigureAwait(false);
                     if (song != null)
                     {
                         songs.Add(new WebSong(song));
@@ -289,8 +282,8 @@ namespace Audiotica.Data.Service.RunTime
 
                 using (var data = new FormUrlEncodedContent(dict))
                 {
-                    var resp = await client.PostAsync(NeteaseSuggestApi, data);
-                    var json = await resp.Content.ReadAsStringAsync();
+                    var resp = await client.PostAsync(NeteaseSuggestApi, data).ConfigureAwait(false);
+                    var json = await resp.Content.ReadAsStringAsync().ConfigureAwait(false);
                     var parseResp = await json.DeserializeAsync<NeteaseRoot>();
                     if (!resp.IsSuccessStatusCode) throw new NetworkException();
 
@@ -300,7 +293,7 @@ namespace Audiotica.Data.Service.RunTime
 
                     foreach (var neteaseSong in parseResp.result.songs)
                     {
-                        var song = await GetDetailsForNeteaseSong(neteaseSong.id, client);
+                        var song = await GetDetailsForNeteaseSong(neteaseSong.id, client).ConfigureAwait(false);
                         if (song != null)
                         {
                             songs.Add(new WebSong(song));

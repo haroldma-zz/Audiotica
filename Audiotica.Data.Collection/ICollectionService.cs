@@ -35,6 +35,7 @@ namespace Audiotica.Data.Collection
         Task DeleteSongAsync(Song song);
 
         Task<List<HistoryEntry>> FetchHistoryAsync(); 
+        bool SongAlreadyExists(string providerId); 
 
         #region Playback Queue
 

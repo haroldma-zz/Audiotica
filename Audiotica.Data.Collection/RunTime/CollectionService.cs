@@ -113,11 +113,13 @@ namespace Audiotica.Data.Collection.RunTime
             return Task.Factory.StartNew(LoadLibrary);
         }
 
+        public bool SongAlreadyExists(string providerId)
+        {
+            return Songs.Count(p => p.ProviderId == providerId) > 0;
+        }
+
         public async Task AddSongAsync(Song song, string artworkUrl)
         {
-            if (Songs.Count(p => p.ProviderId == song.ProviderId) > 0)
-                throw new Exception("AlreadySavedToast".FromLanguageResource());
-
             #region create artist
 
             var primaryArtist = song.Album == null ? song.Artist : song.Album.PrimaryArtist;

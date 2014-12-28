@@ -54,6 +54,7 @@ namespace Audiotica.ViewModel
             }
             else
             {
+                CurtainToast.Show("Please wait...");
                 if (await _service.AuthenticaAsync(LastFmUsername, LastFmPassword))
                 {
                     CurtainToast.Show("Login successful");
