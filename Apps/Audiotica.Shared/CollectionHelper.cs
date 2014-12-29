@@ -87,13 +87,17 @@ namespace Audiotica
 
             var collAlbum = App.Locator.CollectionService.Albums.FirstOrDefault(p => p.ProviderId.Contains(album.Id));
 
-            var alreadySaved = collAlbum != null && collAlbum.Songs.Count >= album.Tracks.Items.Count;
+            var alreadySaved = collAlbum != null;
             var alreadySaving = SavingAlbums.FirstOrDefault(p => p.Id == album.Id) != null;
 
             if (alreadySaved)
             {
-                CurtainToast.ShowError("Already saved \"{0}\".", album.Name);
-                return;
+                var missingTracks = collAlbum.Songs.Count < album.Tracks.Items.Count;
+                if (!missingTracks)
+                {
+                    CurtainToast.ShowError("Already saved \"{0}\".", album.Name);
+                    return;
+                }
             }
 
             if (alreadySaving)
@@ -106,18 +110,21 @@ namespace Audiotica
 
             CurtainToast.Show("Saving album \"{0}\".", album.Name);
 
-            SavingError result;
             var index = 0;
 
-            do
+            if (!alreadySaved)
             {
-                //first save one song (to avoid duplicate album creation)
-                result = await _SaveTrackAsync(album.Tracks.Items[index], album);
-                index++;
-            } while (result != SavingError.None && index < album.Tracks.Items.Count);
+                SavingError result;
+                do
+                {
+                    //first save one song (to avoid duplicate album creation)
+                    result = await _SaveTrackAsync(album.Tracks.Items[index], album);
+                    index++;
+                } while (result != SavingError.None && index < album.Tracks.Items.Count);
+            }
 
             //save the rest at the rest time
-            var songs = album.Tracks.Items.Skip(index + 1).Select(track => _SaveTrackAsync(track, album));
+            var songs = album.Tracks.Items.Skip(index).Select(track => _SaveTrackAsync(track, album));
             var results = await Task.WhenAll(songs);
 
             //now wait a split second before showing success message
@@ -125,7 +132,7 @@ namespace Audiotica
 
             var successCount = results.Count(p => p == SavingError.None || p == SavingError.AlreadyExists
                                                   || p == SavingError.AlreadySaving);
-            var missingCount = successCount == 0 ? -1 : successCount + (index + 1) - album.Tracks.Items.Count;
+            var missingCount = successCount == 0 ? -1 : album.Tracks.Items.Count - (successCount + index);
             var success = missingCount == 0;
             var missing = missingCount > 0;
 

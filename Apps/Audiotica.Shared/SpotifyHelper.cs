@@ -68,7 +68,16 @@ namespace Audiotica
             }
 
             var artist = track is FullTrack ? (track as FullTrack).Artist : track.Artist;
-            var url = await Mp3MatchEngine.FindMp3For(track.Name, artist.Name).ConfigureAwait(false);
+            string url;
+
+            try
+            {
+                url = await Mp3MatchEngine.FindMp3For(track.Name, artist.Name).ConfigureAwait(false);
+            }
+            catch
+            {
+                return SavingError.Unknown;
+            }
 
             if (string.IsNullOrEmpty(url))
                 return SavingError.NoMatch;
