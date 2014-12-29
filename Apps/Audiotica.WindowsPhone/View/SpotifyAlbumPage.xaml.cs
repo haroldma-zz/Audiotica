@@ -40,7 +40,7 @@ namespace Audiotica.View
         private async void Button_Click(object sender, RoutedEventArgs e)
         {
             var vm = (sender as Button).DataContext as SpotifyAlbumViewModel;
-            CollectionHelper.SaveAlbumAsync(vm.Album);
+            await CollectionHelper.SaveAlbumAsync(vm.Album);
         }
     }
 }

@@ -1,14 +1,9 @@
 ﻿#region
 
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Reactive.Linq;
-using System.Reactive.Threading.Tasks;
 using System.Threading.Tasks;
 using Audiotica.Core.Common;
-using Audiotica.Data.Collection.Model;
-using Audiotica.Data.Collection.SqlHelper;
 using Audiotica.Data.Model.Spotify.Models;
 
 #endregion
@@ -73,7 +68,7 @@ namespace Audiotica
         public static async Task SaveAlbumAsync(FullAlbum album)
         {
             var collAlbum = App.Locator.CollectionService.Albums.FirstOrDefault(p => p.ProviderId.Contains(album.Id));
-            
+
             var alreadySaved = collAlbum != null && collAlbum.Songs.Count >= album.Tracks.Items.Count;
             var alreadySaving = SavingAlbums.FirstOrDefault(p => p.Id == album.Id) != null;
 

@@ -22,6 +22,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)ShowFlyoutAction.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SongStateConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SuspensionManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModel\SpotifyArtistViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModel\SpotifyAlbumViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModel\AlbumViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModel\ArtistViewModel.cs" />

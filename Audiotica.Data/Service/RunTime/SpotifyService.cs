@@ -1,5 +1,6 @@
 ﻿#region
 
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Audiotica.Data.Model.Spotify;
 using Audiotica.Data.Model.Spotify.Models;
@@ -18,16 +19,29 @@ namespace Audiotica.Data.Service.RunTime
             _spotify = spotify;
         }
 
-        public async Task<FullAlbum> GetAlbumAsync(string id)
+        public Task<FullArtist> GetArtistAsync(string id)
         {
-            var result = await _spotify.GetAlbum(id);
-            return result;
+            return _spotify.GetArtist(id);
         }
 
-        public async Task<Paging<SimpleTrack>> GetAlbumTracksAsync(string id)
+        public async Task<List<FullTrack>> GetArtistTracksAsync(string id)
         {
-            var result = await _spotify.GetAlbumTracks(id);
-            return result;
+            return (await _spotify.GetArtistsTopTracks(id, "us")).Tracks;
+        }
+
+        public Task<Paging<SimpleAlbum>> GetArtistAlbumsAsync(string id)
+        {
+            return _spotify.GetArtistsAlbums(id, AlbumType.ALBUM, limit:50, market:"us");
+        }
+
+        public Task<FullAlbum> GetAlbumAsync(string id)
+        {
+            return _spotify.GetAlbum(id);
+        }
+
+        public Task<Paging<SimpleTrack>> GetAlbumTracksAsync(string id)
+        {
+            return _spotify.GetAlbumTracks(id);
         }
 
         public async Task<Paging<FullTrack>> SearchTracksAsync(string query, int limit = 20, int offset = 0)

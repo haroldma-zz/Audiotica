@@ -92,7 +92,7 @@ namespace Audiotica.ViewModel
         private async void SongClickExecute(ItemClickEventArgs item)
         {
             var track = (SimpleTrack)item.ClickedItem;
-            CollectionHelper.SaveTrackAsync(track, Album);
+            await CollectionHelper.SaveTrackAsync(track, Album);
         }
     }
 }
