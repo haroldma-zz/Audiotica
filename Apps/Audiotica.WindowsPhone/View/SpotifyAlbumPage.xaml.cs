@@ -1,11 +1,12 @@
 ﻿#region
 
+using System.Linq;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
+using Audiotica.Core.Common;
 using Audiotica.ViewModel;
 using GalaSoft.MvvmLight.Messaging;
-using IF.Lastfm.Core.Objects;
 
 #endregion
 
@@ -33,8 +34,13 @@ namespace Audiotica.View
         {
             var vm = (sender as HyperlinkButton).DataContext as AlbumViewModel;
 
-            Frame.Navigate(typeof (ArtistPage), vm.Album.ArtistName
-                );
+            Frame.Navigate(typeof (ArtistPage), vm.Album.ArtistName);
+        }
+
+        private async void Button_Click(object sender, RoutedEventArgs e)
+        {
+            var vm = (sender as Button).DataContext as SpotifyAlbumViewModel;
+            CollectionHelper.SaveAlbumAsync(vm.Album);
         }
     }
 }

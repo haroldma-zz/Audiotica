@@ -66,7 +66,7 @@ namespace Audiotica.Data.Service.RunTime
                         if (!resp.IsSuccessStatusCode) continue;
 
                         var json = await resp.Content.ReadAsStringAsync();
-                        json = json.Replace(";", "").Replace("info = ", "").Replace("\"", "'");
+                        json = json.Replace(";", "").Replace("info = ", "");
 
                         var o = JToken.Parse(json);
 
@@ -285,7 +285,7 @@ namespace Audiotica.Data.Service.RunTime
                     var resp = await client.PostAsync(NeteaseSuggestApi, data).ConfigureAwait(false);
                     var json = await resp.Content.ReadAsStringAsync().ConfigureAwait(false);
                     var parseResp = await json.DeserializeAsync<NeteaseRoot>();
-                    if (!resp.IsSuccessStatusCode) throw new NetworkException();
+                    if (!resp.IsSuccessStatusCode) return null;
 
                     if (parseResp == null || parseResp.result == null || parseResp.result.songs == null) return null;
 
@@ -384,6 +384,7 @@ namespace Audiotica.Data.Service.RunTime
 
             var resp = await client.GetAsync(url);
             var json = await resp.Content.ReadAsStringAsync();
+
             var parseResp = await json.DeserializeAsync<MeileDetailRoot>();
 
             if (parseResp == null || !resp.IsSuccessStatusCode) return null;
@@ -396,7 +397,7 @@ namespace Audiotica.Data.Service.RunTime
             var detailResp = await client.GetAsync(string.Format(NeteaseDetailApi, songId));
             var detailJson = await detailResp.Content.ReadAsStringAsync();
             var detailParseResp = await detailJson.DeserializeAsync<NeteaseDetailRoot>();
-            if (!detailResp.IsSuccessStatusCode) throw new NetworkException();
+            if (!detailResp.IsSuccessStatusCode) return null;
 
             return detailParseResp.songs == null ? null : detailParseResp.songs.FirstOrDefault();
         }

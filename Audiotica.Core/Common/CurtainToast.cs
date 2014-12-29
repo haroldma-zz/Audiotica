@@ -28,7 +28,7 @@
 #region
 
 using System;
-using System.Threading;
+using Windows.Foundation;
 using Windows.UI;
 using Windows.UI.Text;
 using Windows.UI.Xaml;
@@ -45,7 +45,6 @@ namespace Audiotica.Core.Common
 {
     public class CurtainToast
     {
-        private const int Height = 85 + 2;
         private const int PaddingPopup = 150;
         private const int MillisecondsToHide = 1500;
         private static CurtainToast _current;
@@ -54,18 +53,8 @@ namespace Audiotica.Core.Common
 
         public CurtainToast(string msg, bool isError = false)
         {
-            _popup = CreatePopup(msg, isError);
+            CreatePopup(msg, isError);
             ShowPopup();
-        }
-
-        private int viewStart
-        {
-            get { return (-2 - PaddingPopup); }
-        }
-
-        private int MaxView
-        {
-            get { return viewStart + PaddingPopup; }
         }
 
         public void Dismiss()
@@ -73,12 +62,12 @@ namespace Audiotica.Core.Common
             try
             {
                 _popup.IsOpen = false;
-                _popup = null;
                 if (_timer != null)
                 {
                     _timer.Stop();
                     _timer = null;
                 }
+                _popup = null;
                 _current = null;
             }
             catch
@@ -88,6 +77,16 @@ namespace Audiotica.Core.Common
 
         public static CurtainToast Show(string msg)
         {
+            return Show(msg, null);
+        }
+
+        public static CurtainToast Show(string msg, params object[] args)
+        {
+            if (args != null)
+            {
+                msg = string.Format(msg, args);
+            }
+
             if (_current != null)
                 _current.Dismiss();
 
@@ -98,6 +97,15 @@ namespace Audiotica.Core.Common
 
         public static CurtainToast ShowError(string msg)
         {
+            return ShowError(msg, null);
+        }
+        public static CurtainToast ShowError(string msg, params object[] args)
+        {
+            if (args != null)
+            {
+                msg = string.Format(msg, args);
+            }
+
             if (_current != null)
                 _current.Dismiss();
 
@@ -107,19 +115,19 @@ namespace Audiotica.Core.Common
         }
 
 
-        private Popup CreatePopup(string msg, bool isError)
+        private void CreatePopup(string msg, bool isError)
         {
-            var notification = new Popup();
+            _popup = new Popup {VerticalAlignment = VerticalAlignment.Top};
 
             #region grid
 
             var grid = new Grid
             {
                 Background = new SolidColorBrush(ColorHelper.GetColorFromHexa("#1F1F1F")),
-                Height = Height + PaddingPopup,
                 Width = Window.Current.Bounds.Width,
                 IsHoldingEnabled = true,
-                ManipulationMode = ManipulationModes.TranslateY
+                ManipulationMode = ManipulationModes.TranslateY,
+                VerticalAlignment = VerticalAlignment.Top
             };
 
             grid.ManipulationStarted += grid_ManipulationStarted;
@@ -130,12 +138,13 @@ namespace Audiotica.Core.Common
 
             #region stackpanel
 
-            var panel = new StackPanel
+            var panel = new Grid
             {
-                Margin = new Thickness(30, 0, 20, 10),
-                Orientation = Orientation.Horizontal,
-                VerticalAlignment = VerticalAlignment.Bottom
+                Margin = new Thickness(30, PaddingPopup, 20, 20),
+                VerticalAlignment = VerticalAlignment.Bottom,
             };
+            panel.ColumnDefinitions.Add(new ColumnDefinition{Width = GridLength.Auto});
+            panel.ColumnDefinitions.Add(new ColumnDefinition());
 
             #endregion
 
@@ -155,8 +164,10 @@ namespace Audiotica.Core.Common
                 FontSize = 22,
                 VerticalAlignment = VerticalAlignment.Center,
                 Margin = new Thickness(20, 0, 0, 0),
-                Foreground = new SolidColorBrush(Colors.White)
+                Foreground = new SolidColorBrush(Colors.White),
+                TextWrapping = TextWrapping.Wrap
             };
+            Grid.SetColumn(subMsg, 1);
 
             #endregion
 
@@ -164,11 +175,16 @@ namespace Audiotica.Core.Common
             panel.Children.Add(subMsg);
             grid.Children.Add(panel);
 
-            notification.Child = grid;
-            notification.IsOpen = true;
-            notification.VerticalOffset = -(Height + PaddingPopup);
+            _popup.Child = grid;
+            _popup.IsOpen = true;
 
-            return notification;
+            //Make the framework (re)calculate the size of the element
+            grid.Measure(new Size(Double.MaxValue, Double.MaxValue));
+            Size visualSize = grid.DesiredSize;
+            grid.Arrange(new Rect(new Point(0, 0), visualSize));
+            grid.UpdateLayout();
+
+            _popup.VerticalOffset = -grid.DesiredSize.Height;
         }
 
         private void ShowPopup()
@@ -178,7 +194,7 @@ namespace Audiotica.Core.Common
             {
                 EnableDependentAnimation = true,
                 From = _popup.VerticalOffset,
-                To = viewStart,
+                To = -(PaddingPopup - 40),
                 Duration = new Duration(TimeSpan.FromMilliseconds(300))
             };
 
@@ -234,7 +250,7 @@ namespace Audiotica.Core.Common
             {
                 EnableDependentAnimation = true,
                 From = _popup.VerticalOffset,
-                To = -(Height + PaddingPopup),
+                To = -(_popup.Child as Grid).ActualHeight,
                 Duration = new Duration(TimeSpan.FromMilliseconds(100))
             };
 
@@ -246,9 +262,7 @@ namespace Audiotica.Core.Common
             {
                 try
                 {
-                    _popup.IsOpen = false;
-                    _popup = null;
-                    _current = null;
+                    Dismiss();
                 }
                 catch
                 {
@@ -274,13 +288,13 @@ namespace Audiotica.Core.Common
         {
             _popup.VerticalOffset += e.Delta.Translation.Y;
 
-            if (_popup.VerticalOffset >= MaxView)
-                _popup.VerticalOffset = MaxView;
+            if (_popup.VerticalOffset >= (_popup.Child as Grid).ActualHeight)
+                _popup.VerticalOffset = _popup.ActualHeight;
         }
 
         private void grid_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
         {
-            if (e.Velocities.Linear.Y <= 0 || _popup.VerticalOffset >= viewStart + 25)
+            if (e.Velocities.Linear.Y <= 0 || _popup.VerticalOffset >= -PaddingPopup + 25)
             {
                 CompleteCurtainAnimation();
             }

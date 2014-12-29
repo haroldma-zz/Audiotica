@@ -21,7 +21,7 @@ namespace Audiotica.Data.Model
             Id = youtubeVideo.Id.VideoId;
             Title = youtubeVideo.Snippet.Title;
             Provider = Mp3Provider.YouTube;
-            ArtworkImage = new BitmapImage(new Uri(youtubeVideo.Snippet.Thumbnails.High.Url));
+            ArtworkImage = new Uri(youtubeVideo.Snippet.Thumbnails.High.Url);
         }
 
         public WebSong(Mp3ClanSong mp3ClanSong)
@@ -53,7 +53,7 @@ namespace Audiotica.Data.Model
             ByteSize = soundCloudSong.original_content_size;
             if (!string.IsNullOrEmpty(soundCloudSong.artwork_url))
             {
-                ArtworkImage = new BitmapImage(new Uri(soundCloudSong.artwork_url));
+                ArtworkImage = new Uri(soundCloudSong.artwork_url);
             }
         }
 
@@ -79,7 +79,7 @@ namespace Audiotica.Data.Model
             Duration = TimeSpan.FromSeconds(meileSong.duration);
             if (!string.IsNullOrEmpty(meileSong.normalCover))
             {
-                ArtworkImage = new BitmapImage(new Uri(meileSong.normalCover));
+                ArtworkImage = new Uri(meileSong.normalCover);
             }
         }
 
@@ -89,7 +89,7 @@ namespace Audiotica.Data.Model
         public string AudioUrl { get; set; }
         public int BitRate { get; set; }
         public int ByteSize { get; set; }
-        public BitmapImage ArtworkImage { get; set; }
+        public Uri ArtworkImage { get; set; }
         public TimeSpan Duration { get; set; }
         public Mp3Provider Provider { get; set; }
     }

@@ -92,9 +92,7 @@ namespace Audiotica.ViewModel
         private async void SongClickExecute(ItemClickEventArgs item)
         {
             var track = (SimpleTrack)item.ClickedItem;
-
-            CurtainToast.Show("MatchingSongToast".FromLanguageResource());
-            await SpotifyHelper.SaveTrackAsync(track, Album);
+            CollectionHelper.SaveTrackAsync(track, Album);
         }
     }
 }
