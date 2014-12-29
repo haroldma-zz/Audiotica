@@ -26,6 +26,8 @@ namespace Audiotica.Data
             title = title.ToLower()
                 .Replace("feat.", "ft.") //better alternatives for matching
                 .Replace("- live", "(live)")
+                .Replace("- remix", "(remix)")
+                .Replace("- cover", "(cover)")
                 .Replace("- bonus track", "");
 
             var currentProvider = 0;
