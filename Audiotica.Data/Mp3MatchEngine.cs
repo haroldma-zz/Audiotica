@@ -47,8 +47,7 @@ namespace Audiotica.Data
 
             var currentProvider = 0;
             string url = null;
-            var stopwatch = new Stopwatch();
-            stopwatch.Start();
+
             while (currentProvider < Providers.Length)
             {
                 var mp3Provider = Providers[currentProvider];
@@ -58,8 +57,6 @@ namespace Audiotica.Data
                     break;
                 currentProvider++;
             }
-            stopwatch.Stop();
-            Debug.WriteLine(stopwatch.Elapsed);
             return url;
         }
 

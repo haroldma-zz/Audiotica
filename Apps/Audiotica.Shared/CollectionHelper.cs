@@ -118,24 +118,24 @@ namespace Audiotica
 
             //save the rest at the rest time
             var songs = album.Tracks.Items.Skip(index + 1).Select(track => _SaveTrackAsync(track, album));
-            await Task.WhenAll(songs);
+            var results = await Task.WhenAll(songs);
 
             //now wait a split second before showing success message
             await Task.Delay(1000);
 
-            if (collAlbum == null)
-            {
-                collAlbum = App.Locator.CollectionService.Albums.FirstOrDefault(p => p.ProviderId.Contains(album.Id));
-            }
+            var successCount = results.Count(p => p == SavingError.None || p == SavingError.AlreadyExists
+                                                  || p == SavingError.AlreadySaving);
+            var missingCount = successCount == 0 ? -1 : successCount + (index + 1) - album.Tracks.Items.Count;
+            var success = missingCount == 0;
+            var missing = missingCount > 0;
 
-            var missing = collAlbum == null ? -1 : album.Tracks.Items.Count - collAlbum.Songs.Count;
-
-            if (missing == 0)
+            if (success)
                 CurtainToast.Show("Saved album \"{0}\".", album.Name);
-            else if (missing < 0)
-                CurtainToast.ShowError("Failed to save album \"{0}\".", album.Name);
+            else if (missing)
+                CurtainToast.ShowError("Couldn't save {0} song(s) of \"{1}\".", missingCount, album.Name);
             else
-                CurtainToast.ShowError("Couldn't save {0} song(s) of \"{1}\".", missing, album.Name);
+                CurtainToast.ShowError("Failed to save album \"{0}\".", album.Name);
+                
 
             SavingAlbums.Remove(album);
         }
