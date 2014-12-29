@@ -26,7 +26,7 @@ namespace Audiotica.Data.Service.RunTime
             "https://api.soundcloud.com/search/sounds?client_id={0}&limit={1}&q={2}";
 
         private const string Mp3ClanSearchUrl = "http://mp3clan.com/app/mp3Search.php?q={0}&count={1}";
-        private const string Mp3SkullSearchUrl = "http://mp3skull.com/search_db.php?q={0}&fckh={1}";
+        private const string Mp3SkullSearchUrl = "http://mp3skull.com/search_db.php?q={0}&fckh=368119e2f5deabcc90a578a7beb4166d";
 
         private const string Mp3TruckSearchUrl = "https://mp3truck.net/ajaxRequest.php";
 
