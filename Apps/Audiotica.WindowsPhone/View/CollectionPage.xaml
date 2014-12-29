@@ -99,7 +99,7 @@
                                                        TextTrimming="CharacterEllipsis" FontWeight="Bold" />
                                                 <TextBlock FontSize="22" FontWeight="Thin"
                                                        Foreground="#89FFFFFF" TextTrimming="CharacterEllipsis"
-                                                       Margin="0,-5,0,0">
+                                                       Margin="0,-5,0,0" TextWrapping="Wrap">
                                                     <Run Text="{Binding Artist.Name}" />
                                                     <Run Text="-" />
                                                     <Run Text="{Binding Album.Name}" />
