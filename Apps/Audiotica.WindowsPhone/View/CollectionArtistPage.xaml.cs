@@ -59,7 +59,7 @@ namespace Audiotica.View
         private void ListView_ItemClick(object sender, ItemClickEventArgs e)
         {
             var artist = e.ClickedItem as LastArtist;
-            Frame.Navigate(typeof(ArtistPage), artist.Name);
+            Frame.Navigate(typeof(SpotifyArtistPage), "name." + artist.Name);
         }
     }
 }

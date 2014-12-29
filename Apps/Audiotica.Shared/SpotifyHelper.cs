@@ -42,7 +42,8 @@ namespace Audiotica
         {
             if (album.ReleaseDatePrecision == "year")
             {
-                return new DateTime(int.Parse(album.ReleaseDate), 0, 0);
+                var year = int.Parse(album.ReleaseDate);
+                return new DateTime(year, 1, 1);
             }
             return DateTime.Parse(album.ReleaseDate);
         }

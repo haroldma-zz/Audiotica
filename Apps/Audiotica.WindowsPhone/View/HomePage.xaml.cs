@@ -7,6 +7,7 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Navigation;
 using Audiotica.Core.Common;
 using Audiotica.Core.Utilities;
+using Audiotica.Data.Model.Spotify;
 using IF.Lastfm.Core.Objects;
 
 #endregion
@@ -33,7 +34,7 @@ namespace Audiotica.View
         private void Grid_Tapped(object sender, TappedRoutedEventArgs e)
         {
             var artist = ((Grid) sender).DataContext as LastArtist;
-            if (artist != null) Frame.Navigate(typeof (ArtistPage), artist.Name);
+            Frame.Navigate(typeof (SpotifyArtistPage), "name." + artist.Name);
         }
     }
 }

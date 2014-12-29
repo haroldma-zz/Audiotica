@@ -7,6 +7,7 @@ using Windows.UI.Xaml.Controls;
 using Audiotica.Core.Common;
 using Audiotica.Core.Utilities;
 using Audiotica.Data;
+using Audiotica.Data.Model.Spotify;
 using Audiotica.Data.Model.Spotify.Models;
 using Audiotica.Data.Service.Interfaces;
 using GalaSoft.MvvmLight;
@@ -21,7 +22,7 @@ namespace Audiotica.ViewModel
     public class SpotifyArtistViewModel : ViewModelBase
     {
         private readonly ISpotifyService _service;
-        private FullArtist _artist;
+        private SimpleArtist _artist;
         private bool _isLoading;
         private RelayCommand<ItemClickEventArgs> _songClickRelayCommand;
         private Paging<SimpleAlbum> _topAlbums;
@@ -44,7 +45,7 @@ namespace Audiotica.ViewModel
             set { Set(ref _songClickRelayCommand, value); }
         }
 
-        public FullArtist Artist
+        public SimpleArtist Artist
         {
             get { return _artist; }
             set { Set(ref _artist, value); }
@@ -84,6 +85,11 @@ namespace Audiotica.ViewModel
 
             try
             {
+                if (id.StartsWith("name."))
+                {
+                    var spotify = await App.Locator.Spotify.SearchItems(id.Replace("name.", ""), SearchType.ARTIST, 1);
+                    id = spotify.Artists.Items[0].Id;
+                }
                 Artist = await _service.GetArtistAsync(id);
             }
             catch (Exception e)

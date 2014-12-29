@@ -2,6 +2,7 @@
 
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
+using Audiotica.Data.Model.Spotify;
 using Audiotica.Data.Model.Spotify.Models;
 using GalaSoft.MvvmLight.Messaging;
 using IF.Lastfm.Core.Objects;
@@ -17,14 +18,14 @@ namespace Audiotica.View
             InitializeComponent();
         }
 
-        protected override void OnNavigatedTo(NavigationEventArgs e)
+        protected override async void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
-            var name = e.Parameter as string;
+            var id = e.Parameter as string;
 
-            if (name == null) return;
+            if (id == null) return;
 
-            var msg = new GenericMessage<string>(name);
+            var msg = new GenericMessage<string>(id);
             Messenger.Default.Send(msg, "spotify-artist-detail-id");
         }
 
