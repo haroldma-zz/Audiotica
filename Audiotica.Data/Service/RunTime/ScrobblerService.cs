@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using Audiotica.Core.Common;
 using Audiotica.Core.Exceptions;
 using Audiotica.Core.Utilities;
-using Audiotica.Data.Model.Spotify;
 using Audiotica.Data.Service.Interfaces;
 using IF.Lastfm.Core.Api;
 using IF.Lastfm.Core.Api.Enums;

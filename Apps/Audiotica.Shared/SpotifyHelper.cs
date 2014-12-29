@@ -8,7 +8,7 @@ using Audiotica.Core.Exceptions;
 using Audiotica.Core.Utilities;
 using Audiotica.Data;
 using Audiotica.Data.Collection.Model;
-using Audiotica.Data.Model.Spotify.Models;
+using Audiotica.Data.Spotify.Models;
 
 #endregion
 

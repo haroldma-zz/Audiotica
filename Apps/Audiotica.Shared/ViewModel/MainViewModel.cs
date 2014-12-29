@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 using Audiotica.Core.Common;
 using Audiotica.Core.Exceptions;
 using Audiotica.Core.Utilities;
-using Audiotica.Data.Model.Spotify;
 using Audiotica.Data.Service.Interfaces;
+using Audiotica.Data.Spotify.Models;
 using GalaSoft.MvvmLight;
 using GoogleAnalytics;
 using IF.Lastfm.Core.Objects;
@@ -21,18 +21,20 @@ namespace Audiotica.ViewModel
     {
         private readonly AudioPlayerHelper _audioPlayer;
         private readonly IScrobblerService _service;
+        private readonly ISpotifyService _spotify;
         private bool _isFeaturedLoading;
         private bool _isNewLoading;
         private bool _isSliderLoading;
         private List<LastArtist> _spotlightItems;
-        private List<LastTrack> _topTracks;
+        private List<ChartTrack> _topTracks;
 
         /// <summary>
         ///     Initializes a new instance of the MainViewModel class.
         /// </summary>
-        public MainViewModel(IScrobblerService service, AudioPlayerHelper audioPlayer)
+        public MainViewModel(IScrobblerService service, ISpotifyService spotify, AudioPlayerHelper audioPlayer)
         {
             _service = service;
+            _spotify = spotify;
             _audioPlayer = audioPlayer;
 
             //Load data automatically
@@ -63,7 +65,7 @@ namespace Audiotica.ViewModel
             set { Set(ref _spotlightItems, value); }
         }
 
-        public List<LastTrack> TopTracks
+        public List<ChartTrack> TopTracks
         {
             get { return _topTracks; }
             set { Set(ref _topTracks, value); }
@@ -79,6 +81,21 @@ namespace Audiotica.ViewModel
 
             try
             {
+                var page = rnd.Next(1, 9) * 10;
+                TopTracks = (await _spotify.GetMostStreamedTracksAsync())
+                    .Where(p => p.percent_age_group_18_24 >= 30).Skip(page).Take(10).ToList();
+            }
+            catch (Exception e)
+            {
+                ShowNetworkError(e);
+            }
+            finally
+            {
+                IsFeaturedLoading = false;
+            }
+
+            try
+            {
                 var page = rnd.Next(1, 25);
                 SpotlightItems = (await _service.GetTopArtistsAsync(page, 10)).Content.ToList();
             }
@@ -91,19 +108,6 @@ namespace Audiotica.ViewModel
                 IsSliderLoading = false;
             }
 
-            try
-            {
-                var page = rnd.Next(1, 25);
-                TopTracks = (await _service.GetTopTracksAsync(page, 10)).Content.ToList();
-            }
-            catch (Exception e)
-            {
-                ShowNetworkError(e);
-            }
-            finally
-            {
-                IsFeaturedLoading = false;
-            }
             try
             {
                 // NewAlbums = (await _service.GetNewAlbums()).Items;

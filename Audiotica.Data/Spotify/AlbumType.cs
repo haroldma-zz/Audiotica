@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Audiotica.Data.Model.Spotify
+namespace Audiotica.Data.Spotify
 {
     [Flags]
     public enum AlbumType

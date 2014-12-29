@@ -1,7 +1,7 @@
 using System;
 using Newtonsoft.Json;
 
-namespace Audiotica.Data.Model.Spotify.Models
+namespace Audiotica.Data.Spotify.Models
 {
     public class PlaylistTrack
     {

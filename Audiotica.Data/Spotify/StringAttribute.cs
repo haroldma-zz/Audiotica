@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Audiotica.Data.Model.Spotify
+namespace Audiotica.Data.Spotify
 {
     public class StringAttribute : Attribute
     {

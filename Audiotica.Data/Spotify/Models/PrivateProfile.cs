@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using Newtonsoft.Json;
 
-namespace Audiotica.Data.Model.Spotify.Models
+namespace Audiotica.Data.Spotify.Models
 {
-    public class SimplePlaylist : BasicModel
+    public class PrivateProfile : BasicModel
     {
-        [JsonProperty("collaborative")]
-        public Boolean Collaborative { get; set; }
+        [JsonProperty("country")]
+        public String Country { get; set; }
+        [JsonProperty("display_name")]
+        public String DisplayName { get; set; }
         [JsonProperty("external_urls")]
         public Dictionary<string, string> ExternalUrls { get; set; }
         [JsonProperty("href")]
@@ -16,14 +18,8 @@ namespace Audiotica.Data.Model.Spotify.Models
         public String Id { get; set; }
         [JsonProperty("images")]
         public List<Image> Images { get; set; }
-        [JsonProperty("name")]
-        public String Name { get; set; }
-        [JsonProperty("owner")]
-        public PublicProfile Owner { get; set; }
-        [JsonProperty("public")]
-        public Boolean Public { get; set; }
-        [JsonProperty("tracks")]
-        public PlaylistTrackCollection Tracks { get; set; }
+        [JsonProperty("product")]
+        public String Product { get; set; }
         [JsonProperty("type")]
         public String Type { get; set; }
         [JsonProperty("uri")]

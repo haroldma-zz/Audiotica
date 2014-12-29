@@ -2,24 +2,24 @@
 using System.Collections.Generic;
 using Newtonsoft.Json;
 
-namespace Audiotica.Data.Model.Spotify.Models
+namespace Audiotica.Data.Spotify.Models
 {
-    public class PrivateProfile : BasicModel
+    public class SimpleAlbum : BasicModel
     {
-        [JsonProperty("country")]
-        public String Country { get; set; }
-        [JsonProperty("display_name")]
-        public String DisplayName { get; set; }
+        [JsonProperty("album_type")]
+        public String AlbumType { get; set; }
+        [JsonProperty("available_markets")]
+        public List<String> AvailableMarkets { get; set; }
         [JsonProperty("external_urls")]
-        public Dictionary<string, string> ExternalUrls { get; set; }
+        public Dictionary<String, String> ExternalUrls { get; set; }
         [JsonProperty("href")]
         public String Href { get; set; }
         [JsonProperty("id")]
         public String Id { get; set; }
         [JsonProperty("images")]
         public List<Image> Images { get; set; }
-        [JsonProperty("product")]
-        public String Product { get; set; }
+        [JsonProperty("name")]
+        public String Name { get; set; }
         [JsonProperty("type")]
         public String Type { get; set; }
         [JsonProperty("uri")]

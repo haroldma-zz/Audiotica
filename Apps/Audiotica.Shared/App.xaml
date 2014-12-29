@@ -15,6 +15,7 @@
         <common:BoolToOppositeConverter x:Key="BoolToOppositeConverter" />
         <common:TimespanToDoubleConverter x:Key="TimespanToDoubleConverter" />
         <common:UpperCaseConverter x:Key="UpperCaseConverter" />
+        <common:NotEmptyToStringConverter x:Key="DashNotEmptyToStringConverter" NotEmptyText="-" />
         <local:SongStateConverter x:Key="DownloadingSongStateConverter" SongState="Downloading" />
         <local:SongStateConverter x:Key="NoneSongStateConverter" SongState="None" />
 
@@ -109,7 +110,7 @@
 
         <DataTemplate x:Key="SongDataTemplate">
             <StackPanel Margin="0,0,0,15">
-                <TextBlock Text="{Binding Name}" FontSize="30" FontFamily="Global User Interface"
+                <TextBlock Text="{Binding Name}" FontSize="30" FontFamily="Global User Interface" TextWrapping="Wrap"
                            TextTrimming="CharacterEllipsis" FontWeight="Bold" />
                 <TextBlock Text="{Binding Artist.Name}" FontSize="22" FontWeight="Thin" Foreground="#89FFFFFF"
                            TextTrimming="CharacterEllipsis" />
@@ -122,16 +123,20 @@
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
-                <Grid Background="{StaticResource PhoneAccentBrush}">
+                <Grid VerticalAlignment="Top" Background="{StaticResource PhoneAccentBrush}">
                     <Image Width="175" Height="175" Source="{Binding Artwork}" />
                 </Grid>
-                <StackPanel Grid.Column="1" Margin="10">
+                <Grid Grid.Column="1" Margin="10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
                     <TextBlock Margin="0,5,0,0" Text="{Binding Name}" FontSize="30"
-                               FontFamily="Global User Interface"
+                               FontFamily="Global User Interface" TextWrapping="Wrap"
                                TextTrimming="CharacterEllipsis" FontWeight="Bold" />
-                    <TextBlock Text="{Binding PrimaryArtist.Name}" FontSize="22" FontWeight="Thin"
-                               Foreground="#89FFFFFF" TextTrimming="CharacterEllipsis" />
-                </StackPanel>
+                    <TextBlock Grid.Row="1" Text="{Binding PrimaryArtist.Name}" FontSize="22" FontWeight="Thin"
+                               Foreground="#89FFFFFF" TextTrimming="CharacterEllipsis" TextWrapping="Wrap" />
+                </Grid>
             </Grid>
         </DataTemplate>
 
@@ -143,21 +148,25 @@
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
                 <Grid Background="{StaticResource PhoneAccentBrush}">
-                    <Image Width="175" Height="175" Source="{Binding Images.Largest}" />
+                    <Image VerticalAlignment="Top" Width="175" Height="175" Source="{Binding Images.Largest}" />
                 </Grid>
-                <StackPanel Grid.Column="1" Margin="10">
+                <Grid Grid.Column="1" Margin="10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
                     <TextBlock Margin="0,5,0,0" Text="{Binding Name}" FontSize="30"
-                               FontFamily="Global User Interface"
+                               FontFamily="Global User Interface" TextWrapping="Wrap"
                                TextTrimming="CharacterEllipsis" FontWeight="Bold" />
-                    <TextBlock Text="{Binding ArtistName}" FontSize="22" FontWeight="Thin"
-                               Foreground="#89FFFFFF" TextTrimming="CharacterEllipsis" />
-                </StackPanel>
+                    <TextBlock Grid.Row="1" Text="{Binding ArtistName}" FontSize="22" FontWeight="Thin"
+                               Foreground="#89FFFFFF" TextTrimming="CharacterEllipsis" TextWrapping="Wrap" />
+                </Grid>
             </Grid>
         </DataTemplate>
 
         <DataTemplate x:Key="LastTrackDataTemplate">
             <StackPanel Margin="0,0,0,15">
-                <TextBlock Text="{Binding Name}" FontSize="30" FontFamily="Global User Interface"
+                <TextBlock Text="{Binding Name}" TextWrapping="Wrap" FontSize="30" FontFamily="Global User Interface"
                            TextTrimming="CharacterEllipsis" FontWeight="Bold" />
                 <TextBlock Text="{Binding ArtistName}" FontSize="22" FontWeight="Thin" Foreground="#89FFFFFF"
                            TextTrimming="CharacterEllipsis" />
@@ -167,8 +176,12 @@
             <StackPanel Margin="0,0,0,15">
                 <TextBlock Text="{Binding Name}" FontSize="30" TextWrapping="Wrap"
                            TextTrimming="CharacterEllipsis" FontWeight="Bold" />
-                <TextBlock Text="{Binding Artist.Name}" FontSize="22" FontWeight="Thin" Foreground="#89FFFFFF"
-                           TextTrimming="CharacterEllipsis" TextWrapping="Wrap" />
+                <TextBlock FontSize="22" FontWeight="Thin" Foreground="#89FFFFFF"
+                           TextTrimming="CharacterEllipsis" TextWrapping="Wrap">
+                    <Run Text="{Binding Artist.Name}" />
+                    <Run Text="{Binding Album.Name, Converter={StaticResource DashNotEmptyToStringConverter}}" />
+                    <Run Text="{Binding Album.Name}" />
+                </TextBlock>
             </StackPanel>
         </DataTemplate>
 
@@ -178,7 +191,7 @@
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
-                <Grid Background="{StaticResource PhoneAccentBrush}">
+                <Grid VerticalAlignment="Top" Background="{StaticResource PhoneAccentBrush}">
                     <Image Width="175" Height="175" Source="{Binding Images[0].Url}" />
                 </Grid>
                 <StackPanel Grid.Column="1" Margin="10">

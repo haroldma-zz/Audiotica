@@ -2,8 +2,7 @@
 
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
-using Audiotica.Data.Model.Spotify;
-using Audiotica.Data.Model.Spotify.Models;
+using Audiotica.Data.Spotify.Models;
 using GalaSoft.MvvmLight.Messaging;
 using IF.Lastfm.Core.Objects;
 

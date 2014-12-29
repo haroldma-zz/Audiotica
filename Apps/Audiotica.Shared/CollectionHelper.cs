@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Audiotica.Core.Common;
-using Audiotica.Data.Model.Spotify.Models;
+using Audiotica.Data.Spotify.Models;
 
 #endregion
 
@@ -15,9 +15,20 @@ namespace Audiotica
         public static List<SimpleTrack> SavingTracks = new List<SimpleTrack>();
         public static List<FullAlbum> SavingAlbums = new List<FullAlbum>();
 
-        public static async Task SaveTrackAsync(SimpleTrack track, FullAlbum album)
+        public static async Task SaveTrackAsync(ChartTrack chartTrack)
         {
-            CurtainToast.Show("Finding mp3 for '{0}'.", track.Name);
+            CurtainToast.Show("Finding mp3 for '{0}'.", chartTrack.Name);
+            var track = await App.Locator.Spotify.GetTrack(chartTrack.track_id);
+            var album = await App.Locator.Spotify.GetAlbum(track.Album.Id);
+
+            await SaveTrackAsync(track, album, false);
+        }
+
+        public static async Task SaveTrackAsync(SimpleTrack track, FullAlbum album, bool showFindingMessage = true)
+        {
+            if (showFindingMessage)
+                CurtainToast.Show("Finding mp3 for '{0}'.", track.Name);
+
             var result = await _SaveTrackAsync(track, album);
 
             switch (result)

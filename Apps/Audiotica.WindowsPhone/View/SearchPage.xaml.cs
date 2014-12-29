@@ -1,7 +1,7 @@
 ﻿using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
-using Audiotica.Data.Model.Spotify.Models;
+using Audiotica.Data.Spotify.Models;
 using IF.Lastfm.Core.Objects;
 
 namespace Audiotica.View

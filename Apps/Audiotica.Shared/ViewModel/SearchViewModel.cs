@@ -11,8 +11,8 @@ using Windows.UI.Xaml.Input;
 using Audiotica.Core.Common;
 using Audiotica.Core.Exceptions;
 using Audiotica.Core.Utilities;
-using Audiotica.Data.Model.Spotify.Models;
 using Audiotica.Data.Service.Interfaces;
+using Audiotica.Data.Spotify.Models;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using IF.Lastfm.Core.Api.Helpers;
@@ -29,8 +29,8 @@ namespace Audiotica.ViewModel
         private readonly ISpotifyService _spotify;
         private IncrementalObservableCollection<SimpleAlbum> _albumsCollection;
         private Paging<SimpleAlbum> _albumsResponse;
-        private IncrementalObservableCollection<SimpleArtist> _artistsCollection;
-        private Paging<SimpleArtist> _artistsResponse;
+        private IncrementalObservableCollection<FullArtist> _artistsCollection;
+        private Paging<FullArtist> _artistsResponse;
         private bool _isLoading;
         private RelayCommand<KeyRoutedEventArgs> _keyDownRelayCommand;
         private string _searchTerm;
@@ -73,7 +73,7 @@ namespace Audiotica.ViewModel
             set { Set(ref _tracksCollection, value); }
         }
 
-        public IncrementalObservableCollection<SimpleArtist> Artists
+        public IncrementalObservableCollection<FullArtist> Artists
         {
             get { return _artistsCollection; }
             set { Set(ref _artistsCollection, value); }

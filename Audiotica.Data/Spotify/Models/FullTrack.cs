@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
 
-namespace Audiotica.Data.Model.Spotify.Models
+namespace Audiotica.Data.Spotify.Models
 {
     public class FullTrack : SimpleTrack
     {

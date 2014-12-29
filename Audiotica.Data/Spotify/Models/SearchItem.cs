@@ -1,11 +1,11 @@
 ﻿using Newtonsoft.Json;
 
-namespace Audiotica.Data.Model.Spotify.Models
+namespace Audiotica.Data.Spotify.Models
 {
     public class SearchItem : BasicModel
     {
         [JsonProperty("artists")]
-        public Paging<SimpleArtist> Artists { get; set; }
+        public Paging<FullArtist> Artists { get; set; }
         [JsonProperty("albums")]
         public Paging<SimpleAlbum> Albums { get; set; }
         [JsonProperty("tracks")]

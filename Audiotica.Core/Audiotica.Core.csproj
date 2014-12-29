@@ -45,6 +45,7 @@
     <Compile Include="Common\CurtainToast.cs" />
     <Compile Include="Common\IncrementalObservableCollection.cs" />
     <Compile Include="Common\BoolToOppositeConverter.cs" />
+    <Compile Include="Common\NotEmptyToStringConverter.cs" />
     <Compile Include="Common\UpperCaseConverter.cs" />
     <Compile Include="Common\TimespanToDoubleConverter.cs" />
     <Compile Include="Common\NullToVisibilityConverter.cs" />

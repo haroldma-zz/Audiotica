@@ -4,10 +4,10 @@ using System.Diagnostics;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using Audiotica.Data.Model.Spotify.Models;
+using Audiotica.Data.Spotify.Models;
 using Newtonsoft.Json;
 
-namespace Audiotica.Data.Model.Spotify
+namespace Audiotica.Data.Spotify
 {
     public class SpotifyWebApi : IDisposable
     {
@@ -23,7 +23,25 @@ namespace Audiotica.Data.Model.Spotify
         }
 
         #region Search and Fetch
-        public Task<SearchItem> SearchItems(String q, SearchType type, int limit = 20, int offset = 0)
+
+        public Task<List<ChartTrack>> GetViralTracks(string country = "US", string time = "weekly")
+        {
+            return _GetViralTracks("most_viral", country, time); ;
+        }
+
+        public Task<List<ChartTrack>> GetMostStreamedTracks(string country = "US", string time = "weekly")
+        {
+            return _GetViralTracks("most_streamed", country, time);
+        }
+
+        private async Task<List<ChartTrack>> _GetViralTracks(string type, string country = "US", string time = "weekly")
+        {
+            return (await DownloadDataAsync<SpotifyChartsRoot>(
+                string.Format("http://charts.spotify.com/api/tracks/{0}/{1}/{2}/latest", 
+                type, country, time))).tracks;
+        }
+
+        public Task<SearchItem> SearchItems(String q, SearchType type, int limit = 20, int offset = 0, string market = "US")
         {
             limit = Math.Min(50, limit);
             var builder = new StringBuilder("https://api.spotify.com/v1/search");
@@ -31,6 +49,7 @@ namespace Audiotica.Data.Model.Spotify
             builder.Append("&type=" + type.GetSearchValue(","));
             builder.Append("&limit=" + limit);
             builder.Append("&offset=" + offset);
+            builder.Append("&market=" + market);
 
             return DownloadDataAsync<SearchItem>(builder.ToString());
         }
@@ -62,7 +81,7 @@ namespace Audiotica.Data.Model.Spotify
         {
             limit = Math.Min(50, limit);
             var builder = new StringBuilder("https://api.spotify.com/v1/artists/" + id + "/albums");
-            builder.Append("?type=" + type.GetAlbumValue(","));
+            builder.Append("?album_type=" + type.GetAlbumValue(","));
             builder.Append("&limit=" + limit);
             builder.Append("&offset=" + offset);
             if (market != "")

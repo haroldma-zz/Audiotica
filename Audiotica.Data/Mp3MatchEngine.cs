@@ -1,7 +1,6 @@
 ﻿#region
 
 using System.Threading.Tasks;
-using Audiotica.Data.Model.Spotify.Models;
 using Audiotica.Data.Mp3Providers;
 using IF.Lastfm.Core.Objects;
 

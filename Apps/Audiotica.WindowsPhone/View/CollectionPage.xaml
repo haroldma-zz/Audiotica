@@ -95,11 +95,15 @@
                                             </FlyoutBase.AttachedFlyout>
                                             <StackPanel>
                                                 <TextBlock Text="{Binding Name}" FontSize="30"
-                                                       FontFamily="Global User Interface"
+                                                       FontFamily="Global User Interface" TextWrapping="Wrap"
                                                        TextTrimming="CharacterEllipsis" FontWeight="Bold" />
-                                                <TextBlock Text="{Binding Artist.Name}" FontSize="22" FontWeight="Thin"
+                                                <TextBlock FontSize="22" FontWeight="Thin"
                                                        Foreground="#89FFFFFF" TextTrimming="CharacterEllipsis"
-                                                       Margin="0,-5,0,0" />
+                                                       Margin="0,-5,0,0">
+                                                    <Run Text="{Binding Artist.Name}" />
+                                                    <Run Text="-" />
+                                                    <Run Text="{Binding Album.Name}" />
+                                                </TextBlock>
                                             </StackPanel>
                                             <Grid Grid.Column="1" Visibility="{Binding SongState, Converter={StaticResource NoneSongStateConverter}}">
                                                 <AppBarButton Icon="Download" IsCompact="True" Margin="0,-5,0,0" Click="DownloadAppBarButton_Click" FontFamily="Global User Interface"/>

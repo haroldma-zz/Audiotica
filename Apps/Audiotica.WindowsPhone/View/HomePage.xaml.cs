@@ -7,7 +7,7 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Navigation;
 using Audiotica.Core.Common;
 using Audiotica.Core.Utilities;
-using Audiotica.Data.Model.Spotify;
+using Audiotica.Data.Spotify.Models;
 using IF.Lastfm.Core.Objects;
 
 #endregion
@@ -24,11 +24,10 @@ namespace Audiotica.View
         //TODO [Harry,20140908] move this to view model with RelayCommand
         private async void ListView_ItemClick(object sender, ItemClickEventArgs e)
         {
-            var track = e.ClickedItem as LastTrack;
-            if (track == null) return;
+            var chartTrack = e.ClickedItem as ChartTrack;
+            if (chartTrack == null) return;
 
-            CurtainToast.Show("MatchingSongToast".FromLanguageResource());
-            await ScrobblerHelper.SaveTrackAsync(track);
+            await CollectionHelper.SaveTrackAsync(chartTrack);
         }
 
         private void Grid_Tapped(object sender, TappedRoutedEventArgs e)

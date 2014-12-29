@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Audiotica.Data.Model.Spotify.Models
+namespace Audiotica.Data.Spotify.Models
 {
     public class CheckUserTracks : BasicModel
     {

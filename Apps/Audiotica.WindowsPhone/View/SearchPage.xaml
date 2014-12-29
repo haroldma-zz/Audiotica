@@ -41,8 +41,24 @@
                           ItemsSource="{Binding Artists}" ItemClick="ListView_ItemClick_1">
                     <ListView.ItemTemplate>
                         <DataTemplate>
-                            <TextBlock Margin="0,0,0,15" Text="{Binding Name}" FontSize="30" FontFamily="Global User Interface"
+                            <Grid Margin="0,0,0,15">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Ellipse Width="75" Height="75" Margin="0,0,10,0">
+                                    <Ellipse.Fill>
+                                        <ImageBrush Stretch="UniformToFill" ImageSource="/Assets/MissingArtwork.png" />
+                                    </Ellipse.Fill>
+                                </Ellipse>
+                                <Ellipse Grid.Column="0" Width="75" Height="75" Margin="0,0,10,0">
+                                    <Ellipse.Fill>
+                                        <ImageBrush Stretch="UniformToFill" ImageSource="{Binding Images[0].Url}" />
+                                    </Ellipse.Fill>
+                                </Ellipse>
+                                <TextBlock VerticalAlignment="Center" Grid.Column="1" Text="{Binding Name}" FontSize="30" FontFamily="Global User Interface"
                                                TextTrimming="CharacterEllipsis" FontWeight="Bold" />
+                            </Grid>
                         </DataTemplate>
                     </ListView.ItemTemplate>
                 </ListView>

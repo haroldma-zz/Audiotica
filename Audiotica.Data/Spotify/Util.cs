@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reactive.Linq;
 using System.Reflection;
 
-namespace Audiotica.Data.Model.Spotify
+namespace Audiotica.Data.Spotify
 {
     public static class Util
     {
