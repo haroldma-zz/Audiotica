@@ -45,14 +45,16 @@ namespace Audiotica.Core.Common
 {
     public class CurtainToast
     {
+        private readonly Color _color;
         private const int PaddingPopup = 150;
         private const int MillisecondsToHide = 1500;
         private static CurtainToast _current;
         private Popup _popup;
         private DispatcherTimer _timer;
 
-        public CurtainToast(string msg, bool isError = false)
+        public CurtainToast(Color color, string msg, bool isError = false)
         {
+            _color = color;
             CreatePopup(msg, isError);
             ShowPopup();
         }
@@ -90,7 +92,7 @@ namespace Audiotica.Core.Common
             if (_current != null)
                 _current.Dismiss();
 
-            var curtain = new CurtainToast(msg);
+            var curtain = new CurtainToast(Colors.DarkGreen ,msg);
             _current = curtain;
             return curtain;
         }
@@ -109,7 +111,7 @@ namespace Audiotica.Core.Common
             if (_current != null)
                 _current.Dismiss();
 
-            var curtain = new CurtainToast(msg, true);
+            var curtain = new CurtainToast(Colors.DarkRed, msg, true);
             _current = curtain;
             return curtain;
         }
@@ -123,7 +125,7 @@ namespace Audiotica.Core.Common
 
             var grid = new Grid
             {
-                Background = new SolidColorBrush(ColorHelper.GetColorFromHexa("#1F1F1F")),
+                Background = new SolidColorBrush(_color),
                 Width = Window.Current.Bounds.Width,
                 IsHoldingEnabled = true,
                 ManipulationMode = ManipulationModes.TranslateY,
