@@ -68,15 +68,9 @@ namespace Audiotica.Data.Collection.RunTime
                 album.PrimaryArtist = artists.FirstOrDefault(p => p.Id == album.PrimaryArtistId);
 
                 if (isForeground)
-                    _dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
+                    _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                     {
                         var artworkPath = string.Format(CollectionConstant.ArtworkPath, album.Id);
-                        if (BetaChangelogHelper.JustUpdated)
-                        {
-                            album.HasArtwork = await StorageHelper.FileExistsAsync(artworkPath);
-                            await _sqlService.UpdateItemAsync(album);
-                        }
-
                         album.Artwork = album.HasArtwork
                             ? new BitmapImage(new Uri(CollectionConstant.LocalStorageAppPath + artworkPath))
                             : CollectionConstant.MissingArtworkImage;
