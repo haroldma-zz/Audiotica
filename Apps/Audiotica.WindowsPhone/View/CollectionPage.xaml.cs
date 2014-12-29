@@ -234,5 +234,24 @@ namespace Audiotica.View
             App.Locator.AudioPlayerHelper.PlaySong(App.Locator.CollectionService.PlaybackQueue[index]);
             _currentlyPreparing = false;
         }
+
+        private async void AlbumPlayAppBarButton_Click_1(object sender, RoutedEventArgs e)
+        {
+            if (_currentlyPreparing) return;
+            _currentlyPreparing = true;
+
+            var album = (sender as AppBarButton).DataContext as Album;
+            var index = new Random().Next(0, album.Songs.Count - 1);
+
+            await App.Locator.CollectionService.ClearQueueAsync().ConfigureAwait(false);
+
+            foreach (var queueSong in album.Songs)
+            {
+                await App.Locator.CollectionService.AddToQueueAsync(queueSong);
+            }
+
+            App.Locator.AudioPlayerHelper.PlaySong(App.Locator.CollectionService.PlaybackQueue[index]);
+            _currentlyPreparing = false;
+        }
     }
 }

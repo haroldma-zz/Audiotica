@@ -84,36 +84,46 @@
                                             </interactivity:Interaction.Behaviors>
                                             <FlyoutBase.AttachedFlyout>
                                                 <MenuFlyout>
-                                                    <MenuFlyoutItem Text="Add to" FontFamily="Global User Interface" Click="MenuFlyoutItem_Click">
+                                                    <MenuFlyoutItem Text="Add to" FontFamily="Global User Interface"
+                                                                    Click="MenuFlyoutItem_Click">
                                                         <FlyoutBase.AttachedFlyout>
                                                             <ListPickerFlyout DisplayMemberPath="Name" />
                                                         </FlyoutBase.AttachedFlyout>
                                                     </MenuFlyoutItem>
-                                                    <MenuFlyoutItem x:Uid="DeleteMenuItem" Text="Delete" Foreground="Red"
-                                                                Click="DeleteSongMenuFlyoutItem_Click" />
+                                                    <MenuFlyoutItem x:Uid="DeleteMenuItem" Text="Delete"
+                                                                    Foreground="Red"
+                                                                    Click="DeleteSongMenuFlyoutItem_Click" />
                                                 </MenuFlyout>
                                             </FlyoutBase.AttachedFlyout>
                                             <StackPanel>
                                                 <TextBlock Text="{Binding Name}" FontSize="30"
-                                                       FontFamily="Global User Interface" TextWrapping="Wrap"
-                                                       TextTrimming="CharacterEllipsis" FontWeight="Bold" />
+                                                           FontFamily="Global User Interface" TextWrapping="Wrap"
+                                                           TextTrimming="CharacterEllipsis" FontWeight="Bold" />
                                                 <TextBlock FontSize="22" FontWeight="Thin"
-                                                       Foreground="#89FFFFFF" TextTrimming="CharacterEllipsis"
-                                                       Margin="0,-5,0,0" TextWrapping="Wrap">
+                                                           Foreground="#89FFFFFF" TextTrimming="CharacterEllipsis"
+                                                           Margin="0,-5,0,0" TextWrapping="Wrap">
                                                     <Run Text="{Binding Artist.Name}" />
                                                     <Run Text="-" />
                                                     <Run Text="{Binding Album.Name}" />
                                                 </TextBlock>
                                             </StackPanel>
-                                            <Grid Grid.Column="1" Visibility="{Binding SongState, Converter={StaticResource NoneSongStateConverter}}">
-                                                <AppBarButton Icon="Download" IsCompact="True" Margin="0,-5,0,0" Click="DownloadAppBarButton_Click" FontFamily="Global User Interface"/>
+                                            <Grid Grid.Column="1"
+                                                  Visibility="{Binding SongState, Converter={StaticResource NoneSongStateConverter}}">
+                                                <AppBarButton Icon="Download" IsCompact="True" Margin="0,-5,0,0"
+                                                              Click="DownloadAppBarButton_Click"
+                                                              FontFamily="Global User Interface" />
                                             </Grid>
-                                            <Grid Grid.Column="1" Visibility="{Binding SongState, Converter={StaticResource DownloadingSongStateConverter}}">
-                                                <AppBarButton Icon="Cancel" IsCompact="True" Margin="0,-5,0,0" Click="AppBarButton_Click"/>
+                                            <Grid Grid.Column="1"
+                                                  Visibility="{Binding SongState, Converter={StaticResource DownloadingSongStateConverter}}">
+                                                <AppBarButton Icon="Cancel" IsCompact="True" Margin="0,-5,0,0"
+                                                              Click="AppBarButton_Click" />
                                             </Grid>
                                         </Grid>
-                                        <Grid Grid.Row="1" Visibility="{Binding SongState, Converter={StaticResource DownloadingSongStateConverter}}" Margin="0,10,0,0">
-                                            <ProgressBar Value="{Binding Download.BytesReceived, Mode=TwoWay}" Maximum="{Binding Download.BytesToReceive, Mode=TwoWay}" />
+                                        <Grid Grid.Row="1"
+                                              Visibility="{Binding SongState, Converter={StaticResource DownloadingSongStateConverter}}"
+                                              Margin="0,10,0,0">
+                                            <ProgressBar Value="{Binding Download.BytesReceived, Mode=TwoWay}"
+                                                         Maximum="{Binding Download.BytesToReceive, Mode=TwoWay}" />
                                         </Grid>
                                     </Grid>
                                 </DataTemplate>
@@ -138,7 +148,8 @@
             <PivotItem Header="ARTISTS">
                 <SemanticZoom>
                     <SemanticZoom.ZoomedInView>
-                        <ListView IsItemClickEnabled="True" ItemsSource="{Binding Source={StaticResource ArtistGroups}}"
+                        <ListView IsItemClickEnabled="True"
+                                  ItemsSource="{Binding Source={StaticResource ArtistGroups}}"
                                   Padding="0,0,0,25" ItemClick="ArtistListView_ItemClick">
                             <ListView.GroupStyle>
                                 <GroupStyle HidesIfEmpty="True" HeaderTemplate="{StaticResource GroupHeaderTemplate}" />
@@ -150,9 +161,13 @@
                                             <ColumnDefinition Width="Auto" />
                                             <ColumnDefinition Width="*" />
                                         </Grid.ColumnDefinitions>
-                                        <AppBarButton Icon="Play" IsCompact="True" Margin="0,-10,10,0" FontFamily="Global User Interface" Click="ArtistPlayAppBarButton_Click_1"/>
-                                        <TextBlock Grid.Column="1" Text="{Binding Name}" FontSize="30" FontFamily="Global User Interface"
-                                               TextTrimming="CharacterEllipsis" FontWeight="Bold" VerticalAlignment="Center" />
+                                        <AppBarButton Icon="Play" IsCompact="True" Margin="0,-10,10,0"
+                                                      FontFamily="Global User Interface"
+                                                      Click="ArtistPlayAppBarButton_Click_1" />
+                                        <TextBlock Grid.Column="1" Text="{Binding Name}" FontSize="30"
+                                                   FontFamily="Global User Interface"
+                                                   TextTrimming="CharacterEllipsis" FontWeight="Bold"
+                                                   VerticalAlignment="Center" />
                                     </Grid>
                                 </DataTemplate>
                             </ListView.ItemTemplate>
@@ -163,13 +178,114 @@
                                   ItemsSource="{Binding Source={StaticResource ArtistGroups}, Path=CollectionGroups}"
                                   ItemTemplate="{StaticResource JumpTemplate}" />
                     </SemanticZoom.ZoomedOutView>
-                </SemanticZoom>  
+                </SemanticZoom>
             </PivotItem>
             <PivotItem Header="ALBUMS">
                 <SemanticZoom>
                     <SemanticZoom.ZoomedInView>
                         <ListView IsItemClickEnabled="True" ItemsSource="{Binding Source={StaticResource AlbumGroups}}"
-                                  Padding="0,0,0,25" ItemClick="AlbumListView_ItemClick" ItemTemplate="{StaticResource AlbumDataTemplate}">
+                                  Padding="0,0,0,25" ItemClick="AlbumListView_ItemClick">
+                            <ListView.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid Margin="0,0,0,10">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
+                                            <Grid VerticalAlignment="Top"
+                                                  Background="{StaticResource PhoneAccentBrush}">
+                                                <Image Width="175" Height="175" Source="{Binding Artwork}" />
+                                            </Grid>
+                                            <Grid Grid.Column="1" Margin="10">
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="Auto" />
+                                                    <RowDefinition Height="Auto" />
+                                                </Grid.RowDefinitions>
+                                                <TextBlock Margin="0,5,0,0" Text="{Binding Name}" FontSize="30"
+                                                           FontFamily="Global User Interface" TextWrapping="Wrap"
+                                                           TextTrimming="CharacterEllipsis" FontWeight="Bold" />
+                                                <TextBlock Grid.Row="1" Text="{Binding PrimaryArtist.Name}"
+                                                           FontSize="22" FontWeight="Thin"
+                                                           Foreground="#89FFFFFF" TextTrimming="CharacterEllipsis"
+                                                           TextWrapping="Wrap" FontFamily="Global User Interface" />
+                                            </Grid>
+                                        </Grid>
+                                        <AppBarButton HorizontalAlignment="Left" Icon="Play" IsCompact="True" Margin="5,-5,10,0" Click="AlbumPlayAppBarButton_Click_1" >
+                                            <AppBarButton.Resources>
+                                                <FontFamily x:Key="ContentControlThemeFontFamily">Segoe WP</FontFamily>
+                                                <SolidColorBrush x:Key="AppBarItemBackgroundThemeBrush" Color="Transparent"/>
+                                                <Style x:Key="AppBarButtonStyle1" TargetType="AppBarButton">
+                                                    <Setter Property="Foreground" Value="{ThemeResource AppBarItemForegroundThemeBrush}"/>
+                                                    <Setter Property="VerticalAlignment" Value="Top"/>
+                                                    <Setter Property="HorizontalAlignment" Value="Left"/>
+                                                    <Setter Property="FontFamily" Value="{ThemeResource ContentControlThemeFontFamily}"/>
+                                                    <Setter Property="FontWeight" Value="Normal"/>
+                                                    <Setter Property="Template">
+                                                        <Setter.Value>
+                                                            <ControlTemplate TargetType="AppBarButton">
+                                                                <StackPanel x:Name="LayoutRoot" Background="Transparent" Width="80">
+                                                                    <VisualStateManager.VisualStateGroups>
+                                                                        <VisualStateGroup x:Name="ApplicationViewStates">
+                                                                            <VisualState x:Name="FullSize"/>
+                                                                            <VisualState x:Name="Compact">
+                                                                                <Storyboard>
+                                                                                    <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Visibility" Storyboard.TargetName="TextLabel">
+                                                                                        <DiscreteObjectKeyFrame KeyTime="0" Value="Collapsed"/>
+                                                                                    </ObjectAnimationUsingKeyFrames>
+                                                                                    <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Width" Storyboard.TargetName="LayoutRoot">
+                                                                                        <DiscreteObjectKeyFrame KeyTime="0" Value="48"/>
+                                                                                    </ObjectAnimationUsingKeyFrames>
+                                                                                </Storyboard>
+                                                                            </VisualState>
+                                                                        </VisualStateGroup>
+                                                                        <VisualStateGroup x:Name="CommonStates">
+                                                                            <VisualState x:Name="Normal"/>
+                                                                            <VisualState x:Name="Pressed">
+                                                                                <Storyboard>
+                                                                                    <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Stroke" Storyboard.TargetName="Ellipse">
+                                                                                        <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource AppBarItemForegroundThemeBrush}"/>
+                                                                                    </ObjectAnimationUsingKeyFrames>
+                                                                                    <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Foreground" Storyboard.TargetName="Content">
+                                                                                        <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource AppBarItemPressedForegroundThemeBrush}"/>
+                                                                                    </ObjectAnimationUsingKeyFrames>
+                                                                                </Storyboard>
+                                                                            </VisualState>
+                                                                            <VisualState x:Name="Disabled">
+                                                                                <Storyboard>
+                                                                                    <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Stroke" Storyboard.TargetName="Ellipse">
+                                                                                        <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource AppBarItemDisabledForegroundThemeBrush}"/>
+                                                                                    </ObjectAnimationUsingKeyFrames>
+                                                                                    <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Foreground" Storyboard.TargetName="Content">
+                                                                                        <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource AppBarItemDisabledForegroundThemeBrush}"/>
+                                                                                    </ObjectAnimationUsingKeyFrames>
+                                                                                    <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Foreground" Storyboard.TargetName="TextLabel">
+                                                                                        <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource AppBarItemDisabledForegroundThemeBrush}"/>
+                                                                                    </ObjectAnimationUsingKeyFrames>
+                                                                                </Storyboard>
+                                                                            </VisualState>
+                                                                        </VisualStateGroup>
+                                                                    </VisualStateManager.VisualStateGroups>
+                                                                    <Grid HorizontalAlignment="Center" Height="38.5" Margin="0,12,0,4" Width="38.5">
+                                                                        <Ellipse x:Name="Ellipse" Height="38.5" Stroke="{ThemeResource AppBarItemForegroundThemeBrush}" StrokeThickness="2.5" UseLayoutRounding="False" Width="38.5" Fill="#7F000000"/>
+                                                                        <Grid x:Name="ContentRoot" Background="Transparent">
+                                                                            <ContentPresenter x:Name="Content" AutomationProperties.AccessibilityView="Raw" Content="{TemplateBinding Icon}" Foreground="{TemplateBinding Foreground}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+                                                                        </Grid>
+                                                                    </Grid>
+                                                                    <TextBlock x:Name="TextLabel" Foreground="{ThemeResource AppBarItemForegroundThemeBrush}" FontSize="9.5" FontFamily="{TemplateBinding FontFamily}" Margin="0,0,0,10.5" TextAlignment="Center" TextWrapping="Wrap" Text="{TemplateBinding Label}" Width="70.5"/>
+                                                                </StackPanel>
+                                                            </ControlTemplate>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                </Style>
+                                            </AppBarButton.Resources>
+                                            <AppBarButton.Style>
+                                                <StaticResource ResourceKey="AppBarButtonStyle1"/>
+                                            </AppBarButton.Style>
+                                        </AppBarButton>
+                                    </Grid>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
                             <ListView.GroupStyle>
                                 <GroupStyle HidesIfEmpty="True" HeaderTemplate="{StaticResource GroupHeaderTemplate}" />
                             </ListView.GroupStyle>
@@ -195,7 +311,8 @@
                                 </interactivity:Interaction.Behaviors>
                                 <FlyoutBase.AttachedFlyout>
                                     <MenuFlyout>
-                                        <MenuFlyoutItem x:Uid="DeleteMenuItem" Text="Delete" Foreground="Red" Click="DeleteMenuFlyoutItem_Click_1" />
+                                        <MenuFlyoutItem x:Uid="DeleteMenuItem" Text="Delete" Foreground="Red"
+                                                        Click="DeleteMenuFlyoutItem_Click_1" />
                                     </MenuFlyout>
                                 </FlyoutBase.AttachedFlyout>
                                 <StackPanel>
