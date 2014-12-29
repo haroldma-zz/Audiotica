@@ -28,6 +28,9 @@ namespace Audiotica
                 case SavingError.AlreadyExists:
                     CurtainToast.ShowError("Already saved '{0}'.", track.Name);
                     break;
+                case SavingError.None:
+                    CurtainToast.Show("Saved song '{0}'.", track.Name);
+                    break;
             }
         }
 
@@ -51,9 +54,6 @@ namespace Audiotica
                     break;
                 case SavingError.NoMatch:
                     CurtainToast.ShowError("No mp3 found for '{0}'.", track.Name);
-                    break;
-                case SavingError.None:
-                    CurtainToast.Show("Saved song '{0}'.", track.Name);
                     break;
                 case SavingError.Unknown:
                     CurtainToast.ShowError("Problem saving song '{0}'", track.Name);
@@ -88,9 +88,15 @@ namespace Audiotica
 
             CurtainToast.Show("Saving album '{0}'.", album.Name);
 
-            var songs = album.Tracks.Items.Select(track => _SaveTrackAsync(track, album));
+            //first save one song (to avoid duplicate album creation)
+            await _SaveTrackAsync(album.Tracks.Items[0], album);
+
+            //save the rest at the rest time
+            var songs = album.Tracks.Items.Skip(1).Select(track => _SaveTrackAsync(track, album));
             await Task.WhenAll(songs);
 
+            //now wait a split second before showing success message
+            await Task.Delay(500);
             CurtainToast.Show("Saved album '{0}'.", album.Name);
 
             SavingAlbums.Remove(album);
