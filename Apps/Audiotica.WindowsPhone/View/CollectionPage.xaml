@@ -162,7 +162,6 @@
                                             <ColumnDefinition Width="*" />
                                         </Grid.ColumnDefinitions>
                                         <AppBarButton Icon="Play" IsCompact="True" Margin="0,-10,10,0"
-                                                      FontFamily="Global User Interface"
                                                       Click="ArtistPlayAppBarButton_Click_1" />
                                         <TextBlock Grid.Column="1" Text="{Binding Name}" FontSize="30"
                                                    FontFamily="Global User Interface"
@@ -304,6 +303,10 @@
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <Grid Margin="0,0,0,15">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
                                 <interactivity:Interaction.Behaviors>
                                     <core:EventTriggerBehavior EventName="Holding">
                                         <audiotica:ShowFlyoutAction />
@@ -315,10 +318,9 @@
                                                         Click="DeleteMenuFlyoutItem_Click_1" />
                                     </MenuFlyout>
                                 </FlyoutBase.AttachedFlyout>
-                                <StackPanel>
-                                    <TextBlock Text="{Binding Name}" FontSize="30" FontFamily="Global User Interface"
+                                <AppBarButton Icon="Play" IsCompact="True" Margin="0,-10,10,0" Click="AppBarButton_Click_1" FontFamily="Global User Interface"/>
+                                <TextBlock VerticalAlignment="Center" Grid.Column="1" Text="{Binding Name}" FontSize="30" FontFamily="Global User Interface"
                                                TextTrimming="CharacterEllipsis" FontWeight="Bold" />
-                                </StackPanel>
                             </Grid>
                         </DataTemplate>
                     </ListView.ItemTemplate>
