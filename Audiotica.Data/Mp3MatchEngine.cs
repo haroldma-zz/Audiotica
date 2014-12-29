@@ -24,7 +24,10 @@ namespace Audiotica.Data
 
         public static async Task<string> FindMp3For(string title, string artist)
         {
-            title = title.ToLower().Replace("feat.", "ft.").Replace("- live", "(live)");
+            title = title.ToLower()
+                .Replace("feat.", "ft.") //better alternatives for matching
+                .Replace("- live", "(live)")
+                .Replace("- bonus track", "");
 
             var currentProvider = 0;
             while (currentProvider < Providers.Length)
