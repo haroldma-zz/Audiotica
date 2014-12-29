@@ -13,7 +13,7 @@
         <Pivot Title="SETTINGS+MORE" HeaderTemplate="{StaticResource PivotHeaderTemplate}">
             <PivotItem Header="APP">
                 <StackPanel>
-                    <ToggleSwitch IsEnabled="True" IsOn="{Binding Advertisements, Mode=TwoWay}" Header="Ads" />
+                    <ToggleSwitch IsEnabled="False" IsOn="{Binding Advertisements, Mode=TwoWay}" Header="Ads" />
                     <ToggleSwitch IsOn="{Binding WallpaperArt, Mode=TwoWay}" Header="Album Art Wallpaper" />
                 </StackPanel>
             </PivotItem>
@@ -29,7 +29,7 @@
                 <Grid>
                     <StackPanel VerticalAlignment="Top">
                         <Image Height="100" Source="ms-appx:///Assets/Logo.png"/>
-                        <TextBlock Text="A reboot of the original Audiotica downloader.  Now as a fully complete and open source alternative to Xbox Music.  Using Last.FM for metadata and countless websites for audio, you could called it the SickBeard of music." FontSize="20" TextWrapping="Wrap" Margin="0,0,0,20" />
+                        <TextBlock Text="A reboot of the original Audiotica downloader.  Now as a fully complete and open source alternative to Xbox Music.  Using Last.FM for metadata and countless websites for audio, you could call it the SickBeard of music." FontSize="20" TextWrapping="Wrap" Margin="0,0,0,20" />
                         <HyperlinkButton Content="Blog" NavigateUri="http://blog.zumicts.com" FontSize="25" Foreground="{StaticResource PhoneAccentBrush}" FontFamily="Global User Interface" />
                         <HyperlinkButton Content="Email" NavigateUri="mailto:harry@zumicts.com" FontSize="25" Foreground="{StaticResource PhoneAccentBrush}" />
                         <HyperlinkButton Content="@zumicts" NavigateUri="http://twitter.com/zumicts" FontSize="25" Foreground="{StaticResource PhoneAccentBrush}" />
