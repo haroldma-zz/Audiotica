@@ -63,7 +63,8 @@ namespace Audiotica.Core.Common
         {
             try
             {
-                _popup.IsOpen = false;
+                if (_popup != null)
+                    _popup.IsOpen = false;
                 if (_timer != null)
                 {
                     _timer.Stop();

@@ -19,6 +19,7 @@ using Audiotica.Data.Collection.Model;
 using Audiotica.Data.Collection.SqlHelper;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
+using GalaSoft.MvvmLight.Threading;
 
 #endregion
 
@@ -61,35 +62,38 @@ namespace Audiotica.ViewModel
 
         private void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs arg)
         {
-            BaseEntry item;
-            var removed = false;
+            DispatcherHelper.RunAsync(() =>
+            {
+                BaseEntry item;
+                var removed = false;
 
-            switch (arg.Action)
-            {
-                case NotifyCollectionChangedAction.Add:
-                    item = (BaseEntry) arg.NewItems[0];
-                    break;
-                default:
-                    item = (BaseEntry) arg.OldItems[0];
-                    removed = true;
-                    break;
-            }
+                switch (arg.Action)
+                {
+                    case NotifyCollectionChangedAction.Add:
+                        item = (BaseEntry) arg.NewItems[0];
+                        break;
+                    default:
+                        item = (BaseEntry) arg.OldItems[0];
+                        removed = true;
+                        break;
+                }
 
-            if (item is Song)
-            {
-                var song = item as Song;
-                UpdateSortedCollection(song, removed, song.Name, () => SortedSongs);
-            }
-            else if (item is Artist)
-            {
-                var artist = item as Artist;
-                UpdateSortedCollection(artist, removed, artist.Name, () => SortedArtists);
-            }
-            else if (item is Album)
-            {
-                var album = item as Album;
-                UpdateSortedCollection(album, removed, album.Name, () => SortedAlbums);
-            }
+                if (item is Song)
+                {
+                    var song = item as Song;
+                    UpdateSortedCollection(song, removed, song.Name, () => SortedSongs);
+                }
+                else if (item is Artist)
+                {
+                    var artist = item as Artist;
+                    UpdateSortedCollection(artist, removed, artist.Name, () => SortedArtists);
+                }
+                else if (item is Album)
+                {
+                    var album = item as Album;
+                    UpdateSortedCollection(album, removed, album.Name, () => SortedAlbums);
+                }
+            });
         }
 
         private void UpdateSortedCollection<T>(T item, bool removed, string key,
@@ -175,7 +179,7 @@ namespace Audiotica.ViewModel
 
                     _currentlyPreparing = false;
                 }
-            });
+            }).ConfigureAwait(false);
         }
 
         #endregion

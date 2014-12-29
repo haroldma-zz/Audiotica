@@ -57,7 +57,7 @@ namespace Audiotica
             }
             else
             {
-                var url = await Mp3MatchEngine.FindMp3For(track.Name, track.ArtistName);
+                var url = await Mp3MatchEngine.FindMp3For(track.Name, track.ArtistName).ConfigureAwait(false);
 
                 if (string.IsNullOrEmpty(url))
                     CurtainToast.ShowError("NoMatchFoundToast".FromLanguageResource());
@@ -70,7 +70,7 @@ namespace Audiotica
                     try
                     {
                         await
-                            App.Locator.CollectionService.AddSongAsync(preparedSong.Song, preparedSong.ArtworkUrl);
+                            App.Locator.CollectionService.AddSongAsync(preparedSong.Song, preparedSong.ArtworkUrl).ConfigureAwait(false);
                         CurtainToast.Show("SongSavedToast".FromLanguageResource());
                     }
                     catch (Exception e)
@@ -85,7 +85,7 @@ namespace Audiotica
         {
             var track =
                 await
-                    App.Locator.ScrobblerService.GetDetailTrack(lastTrack.Name, lastTrack.ArtistName);
+                    App.Locator.ScrobblerService.GetDetailTrack(lastTrack.Name, lastTrack.ArtistName).ConfigureAwait(false);
             var preparedSong = new PreparedSong {Song = track.ToSong()};
             LastArtist artist;
 
@@ -97,10 +97,10 @@ namespace Audiotica
                     string.IsNullOrEmpty(lastTrack.AlbumName) ? track.AlbumName : lastTrack.AlbumName, track.ArtistName);
 
                 if (track.ArtistMbid == null)
-                    artist = await App.Locator.ScrobblerService.GetDetailArtist(track.ArtistName);
+                    artist = await App.Locator.ScrobblerService.GetDetailArtist(track.ArtistName).ConfigureAwait(false);
                 else
                     artist =
-                        await App.Locator.ScrobblerService.GetDetailArtistByMbid(track.ArtistMbid);
+                        await App.Locator.ScrobblerService.GetDetailArtistByMbid(track.ArtistMbid).ConfigureAwait(false);
 
                 preparedSong.Song.Album = lastAlbum.ToAlbum();
                 preparedSong.Song.Album.PrimaryArtist = artist.ToArtist();

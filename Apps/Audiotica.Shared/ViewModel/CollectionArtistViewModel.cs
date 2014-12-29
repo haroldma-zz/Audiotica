@@ -70,7 +70,7 @@ namespace Audiotica.ViewModel
 
             var song = e.ClickedItem as Song;
 
-            await _service.ClearQueueAsync();
+            await _service.ClearQueueAsync().ConfigureAwait(false);
 
             foreach (var queueSong in _artist.Songs)
             {

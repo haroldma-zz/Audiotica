@@ -31,7 +31,7 @@ namespace Audiotica
 
         public static ViewModelLocator Locator
         {
-            get { return Current.Resources["Locator"] as ViewModelLocator; }
+            get { return _locator ?? (_locator = Current.Resources["Locator"] as ViewModelLocator); }
         }
 
         public static Frame RootFrame { get; private set; }
@@ -44,6 +44,7 @@ namespace Audiotica
         }
 
         private bool _init;
+        private static ViewModelLocator _locator;
 
         protected override async void OnLaunched(LaunchActivatedEventArgs e)
         {

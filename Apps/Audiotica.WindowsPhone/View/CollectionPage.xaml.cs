@@ -44,7 +44,7 @@ namespace Audiotica.View
 
             if (vm.RandomizeAlbumList.Count != 0 || !AppSettingsHelper.Read("WallpaperArt", true)) return;
 
-            var albums = App.Locator.CollectionService.Albums.Where(p => p.Artwork != CollectionConstant.MissingArtworkImage).ToList();
+            var albums = App.Locator.CollectionService.Albums.ToList().Where(p => p.Artwork != CollectionConstant.MissingArtworkImage).ToList();
 
             var albumCount = albums.Count;
 
@@ -213,6 +213,26 @@ namespace Audiotica.View
             {
                 CurtainToast.ShowError("Problem deleting");
             }
+        }
+
+        private bool _currentlyPreparing ;
+        private async void ArtistPlayAppBarButton_Click_1(object sender, RoutedEventArgs e)
+        {
+            if (_currentlyPreparing) return;
+            _currentlyPreparing = true;
+
+            var artist = (sender as AppBarButton).DataContext as Artist;
+            var index = new Random().Next(0, artist.Songs.Count - 1);
+
+            await App.Locator.CollectionService.ClearQueueAsync().ConfigureAwait(false);
+
+            foreach (var queueSong in artist.Songs)
+            {
+                await App.Locator.CollectionService.AddToQueueAsync(queueSong);
+            }
+
+            App.Locator.AudioPlayerHelper.PlaySong(App.Locator.CollectionService.PlaybackQueue[index]);
+            _currentlyPreparing = false;
         }
     }
 }

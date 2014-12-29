@@ -68,7 +68,7 @@ namespace Audiotica
             }
 
             var artist = track is FullTrack ? (track as FullTrack).Artist : track.Artist;
-            var url = await Mp3MatchEngine.FindMp3For(track.Name, artist.Name);
+            var url = await Mp3MatchEngine.FindMp3For(track.Name, artist.Name).ConfigureAwait(false);
 
             if (string.IsNullOrEmpty(url))
                 return SavingError.NoMatch;
@@ -82,7 +82,7 @@ namespace Audiotica
             try
             {
                 await
-                    App.Locator.CollectionService.AddSongAsync(preparedSong, album.Images[0].Url);
+                    App.Locator.CollectionService.AddSongAsync(preparedSong, album.Images[0].Url).ConfigureAwait(false);
                 return SavingError.None;
             }
             catch (NetworkException)

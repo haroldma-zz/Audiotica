@@ -216,8 +216,9 @@ namespace Audiotica.Data.Collection.RunTime
                                     await stream.CopyToAsync(fileStream);
                                     song.Album.HasArtwork = true;
                                     //now set it
-                                    song.Album.Artwork =
-                                        new BitmapImage(new Uri(CollectionConstant.LocalStorageAppPath + filePath));
+                                    await _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                                        song.Album.Artwork =
+                                            new BitmapImage(new Uri(CollectionConstant.LocalStorageAppPath + filePath)));
                                 }
                             }
                         }
