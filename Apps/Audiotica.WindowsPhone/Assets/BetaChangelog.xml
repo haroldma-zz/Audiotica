@@ -1,20 +1,15 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Changelog>
   <FirstRunMessage>
-    Release Candidate #1
+    Release Candidate #2
   </FirstRunMessage>
   <JustUpdatedMessage>
-    1. Offline mode
-    2. Faster player and app
-    3. Added YouTube as an mp3 provider
-    4. Improve database
-    5. Fix major and minor bugs
-    6. Reorder and delete playlist songs
-    7. Manually add songs to playlist or to queue
-    8. Settings and about page
-    9. Advertisements
-    10. Scrobble w/ Last.FM
-    11. Search supports last.fm song links
-    12. Update to third party libraries
+    1. Metadata powered by Spotify
+    2. Vastly improve startup time
+    3. Improve app performace in general
+    4. Save entire albums
+    5. Mp3 match engine rewritten and optimized
+    6. Fix bugs
+    7. Lot of UI improvements
   </JustUpdatedMessage>
 </Changelog>
