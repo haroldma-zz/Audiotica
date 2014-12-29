@@ -51,7 +51,7 @@ namespace Audiotica
 
         public static async Task SaveTrackAsync(LastTrack track)
         {
-            if (App.Locator.CollectionService.SongAlreadyExists(track.ToSong().ProviderId))
+            if (App.Locator.CollectionService.SongAlreadyExists(track.ToSong().ProviderId, track.Name, track.AlbumName, track.ArtistName))
             {
                 CurtainToast.ShowError("Song already saved");
             }

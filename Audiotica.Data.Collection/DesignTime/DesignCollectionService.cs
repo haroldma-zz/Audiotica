@@ -125,7 +125,7 @@ namespace Audiotica.Data.Collection.DesignTime
             throw new NotImplementedException();
         }
 
-        public bool SongAlreadyExists(string providerId)
+        public bool SongAlreadyExists(string providerId, string name, string album, string artist)
         {
             throw new NotImplementedException();
         }

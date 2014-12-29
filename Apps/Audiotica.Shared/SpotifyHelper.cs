@@ -62,7 +62,7 @@ namespace Audiotica
         public static async Task<SavingError> SaveTrackAsync(SimpleTrack track, FullAlbum album)
         {
             var preparedSong = track.ToSong();
-            if (App.Locator.CollectionService.SongAlreadyExists(preparedSong.ProviderId))
+            if (App.Locator.CollectionService.SongAlreadyExists(preparedSong.ProviderId, track.Name, album.Name, album.Artist.Name))
             {
                 return SavingError.AlreadyExists;
             }

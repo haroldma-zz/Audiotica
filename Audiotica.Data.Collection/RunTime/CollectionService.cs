@@ -113,9 +113,10 @@ namespace Audiotica.Data.Collection.RunTime
             return Task.Factory.StartNew(LoadLibrary);
         }
 
-        public bool SongAlreadyExists(string providerId)
+        public bool SongAlreadyExists(string providerId, string name, string album, string artist)
         {
-            return Songs.Count(p => p.ProviderId == providerId) > 0;
+            return Songs.FirstOrDefault(p => p.ProviderId == providerId 
+                || (p.Name == name && p.Album.Name == album && p.ArtistName == artist)) != null;
         }
 
         public async Task AddSongAsync(Song song, string artworkUrl)
