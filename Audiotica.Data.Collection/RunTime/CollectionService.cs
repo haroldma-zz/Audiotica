@@ -139,7 +139,7 @@ namespace Audiotica.Data.Collection.RunTime
                     song.Album.PrimaryArtistId = song.Artist.Id;
                     song.Album.PrimaryArtist = song.Artist;
                 }
-                Artists.Insert(0, song.Artist);
+                _dispatcher.RunAsync(CoreDispatcherPriority.Normal,  () => Artists.Insert(0, song.Artist));
             }
 
             else
@@ -168,8 +168,11 @@ namespace Audiotica.Data.Collection.RunTime
                     ProviderId = "autc.single." + song.ProviderId
                 };
                 await _sqlService.InsertAsync(song.Album);
-                Albums.Insert(0, song.Album);
-                song.Artist.Albums.Insert(0, song.Album);
+                _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                {
+                    Albums.Insert(0, song.Album);
+                    song.Artist.Albums.Insert(0, song.Album);
+                });
             }
             else
             {
@@ -180,8 +183,11 @@ namespace Audiotica.Data.Collection.RunTime
                 else
                 {
                     await _sqlService.InsertAsync(song.Album);
-                    Albums.Insert(0, song.Album);
-                    song.Artist.Albums.Insert(0, song.Album);
+                    _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                    {
+                        Albums.Insert(0, song.Album);
+                        song.Artist.Albums.Insert(0, song.Album);
+                    });
                 }
             }
 
@@ -234,17 +240,21 @@ namespace Audiotica.Data.Collection.RunTime
             }
 
             if (song.Album.Artwork == null)
-                song.Album.Artwork = CollectionConstant.MissingArtworkImage;
+                _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                    song.Album.Artwork = CollectionConstant.MissingArtworkImage);
 
             #endregion
 
             //Insert to db
             await _sqlService.InsertAsync(song);
 
-            song.Artist.Songs.Insert(0, song);
-            song.Album.Songs.Add(song);
-            song.Album.Songs.Sort((p, m) => p.TrackNumber.CompareTo(m.TrackNumber));
-            Songs.Insert(0, song);
+            _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+            {
+                song.Artist.Songs.Insert(0, song);
+                song.Album.Songs.Add(song);
+                song.Album.Songs.Sort((p, m) => p.TrackNumber.CompareTo(m.TrackNumber));
+                Songs.Insert(0, song);
+            });
         }
 
         public async Task DeleteSongAsync(Song song)

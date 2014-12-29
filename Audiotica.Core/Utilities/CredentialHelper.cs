@@ -12,18 +12,8 @@ namespace Audiotica.Core.Utilities
         public static PasswordCredential GetCredentials(string resource)
         {
             var vault = new PasswordVault();
-            PasswordCredential credential = null;
-
-            try
-            {
-                // Try to get an existing credential from the vault.
-                credential = vault.FindAllByResource(resource).FirstOrDefault();
-            }
-            catch (Exception)
-            {
-                // When there is no matching resource an error occurs, which we ignore.
-            }
-
+            
+            var credential = vault.RetrieveAll().FirstOrDefault(p => p.Resource == resource);
             if (credential == null) return null;
 
             credential.RetrievePassword();

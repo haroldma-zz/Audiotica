@@ -150,11 +150,12 @@ namespace Audiotica.Core.Utilities
 
         private static async Task<StorageFolder> _GetFolderAsync(string name, StorageFolder parent)
         {
-            try
+            var item = await parent.TryGetItemAsync(name).ConfigureAwait(false);
+            if (item is StorageFolder)
             {
-                return await parent.GetFolderAsync(name).AsTask().ConfigureAwait(false);
+                return item as StorageFolder;
             }
-            catch (FileNotFoundException)
+            else
             {
                 return null;
             }

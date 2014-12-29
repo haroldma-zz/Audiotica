@@ -78,13 +78,6 @@
     <Compile Include="Spotify\StringAttribute.cs" />
     <Compile Include="Spotify\Util.cs" />
     <Compile Include="Model\WebSong.cs" />
-    <Compile Include="Mp3Providers\YouTubeProvider.cs" />
-    <Compile Include="Mp3Providers\MeileProvider.cs" />
-    <Compile Include="Mp3Providers\Mp3TruckProvider.cs" />
-    <Compile Include="Mp3Providers\Mp3ClanProvider.cs" />
-    <Compile Include="Mp3Providers\NeteaseProvider.cs" />
-    <Compile Include="Mp3Providers\SoundCloudProvider.cs" />
-    <Compile Include="Mp3Providers\VkProvider.cs" />
     <Compile Include="Model\MeileDetail.cs" />
     <Compile Include="Model\NeteaseDetail.cs" />
     <Compile Include="Model\NeteaseSearch.cs" />
@@ -103,7 +96,6 @@
     <Compile Include="Service\RunTime\Mp3SearchService.cs" />
     <Compile Include="Service\RunTime\ScrobblerService.cs" />
     <Compile Include="Mp3MatchEngine.cs" />
-    <Compile Include="Mp3Providers\IMp3Provider.cs" />
     <Compile Include="Service\RunTime\SongDownloadService.cs" />
     <Compile Include="Service\RunTime\SpotifyService.cs" />
   </ItemGroup>

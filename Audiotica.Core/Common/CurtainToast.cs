@@ -47,7 +47,7 @@ namespace Audiotica.Core.Common
     {
         private readonly Color _color;
         private const int PaddingPopup = 150;
-        private const int MillisecondsToHide = 1500;
+        private int MillisecondsToHide = 1500;
         private static CurtainToast _current;
         private Popup _popup;
         private DispatcherTimer _timer;
@@ -93,7 +93,7 @@ namespace Audiotica.Core.Common
             if (_current != null)
                 _current.Dismiss();
 
-            var curtain = new CurtainToast(Colors.DarkGreen ,msg);
+            var curtain = new CurtainToast(Colors.DarkGreen ,msg) {MillisecondsToHide = 1500};
             _current = curtain;
             return curtain;
         }
@@ -112,7 +112,7 @@ namespace Audiotica.Core.Common
             if (_current != null)
                 _current.Dismiss();
 
-            var curtain = new CurtainToast(Colors.DarkRed, msg, true);
+            var curtain = new CurtainToast(Colors.DarkRed, msg, true) {MillisecondsToHide = 2500};
             _current = curtain;
             return curtain;
         }
@@ -291,8 +291,8 @@ namespace Audiotica.Core.Common
         {
             _popup.VerticalOffset += e.Delta.Translation.Y;
 
-            if (_popup.VerticalOffset >= (_popup.Child as Grid).ActualHeight)
-                _popup.VerticalOffset = _popup.ActualHeight;
+            if (_popup.VerticalOffset >= 0)
+                _popup.VerticalOffset = 0;
         }
 
         private void grid_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)

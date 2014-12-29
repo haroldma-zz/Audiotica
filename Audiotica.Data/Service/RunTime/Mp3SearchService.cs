@@ -68,11 +68,16 @@ namespace Audiotica.Data.Service.RunTime
                         var json = await resp.Content.ReadAsStringAsync();
                         json = json.Replace(";", "").Replace("info = ", "");
 
+                        //must be a valid json to continue
+                        if (!json.StartsWith("{") || !json.EndsWith("}")) continue;
+
                         var o = JToken.Parse(json);
 
                         if (o.Value<string>("status") != "serving") continue;
 
-                        vid.Duration = TimeSpan.FromMinutes(o.Value<int>("length"));
+                        var length = o.Value<string>("length");
+                        if (!string.IsNullOrEmpty(length))
+                            vid.Duration = TimeSpan.FromMinutes(int.Parse(length));
                         vid.AudioUrl =
                             string.Format(
                                 "http://www.youtube-mp3.org/get?ab=128&video_id={0}&h={1}&r=1419629380530.1463092791&s=36098",

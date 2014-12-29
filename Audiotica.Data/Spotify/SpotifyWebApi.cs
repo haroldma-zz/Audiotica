@@ -36,9 +36,11 @@ namespace Audiotica.Data.Spotify
 
         private async Task<List<ChartTrack>> _GetViralTracks(string type, string country = "US", string time = "weekly")
         {
-            return (await DownloadDataAsync<SpotifyChartsRoot>(
+            var viral = (await DownloadDataAsync<SpotifyChartsRoot>(
                 string.Format("http://charts.spotify.com/api/tracks/{0}/{1}/{2}/latest", 
-                type, country, time))).tracks;
+                type, country, time)));
+
+            return viral != null ? viral.tracks : null;
         }
 
         public Task<SearchItem> SearchItems(String q, SearchType type, int limit = 20, int offset = 0, string market = "US")
@@ -92,7 +94,7 @@ namespace Audiotica.Data.Spotify
         {
             return DownloadDataAsync<FullArtist>("https://api.spotify.com/v1/artists/" + id);
         }
-        public Task<Paging<SimpleTrack>> GetAlbumTracks(String id, int limit = 20, int offset = 0)
+        public Task<Paging<SimpleTrack>> GetAlbumTracks(String id, int limit = 50, int offset = 0)
         {
             limit = Math.Min(50, limit);
             var builder = new StringBuilder("https://api.spotify.com/v1/albums/" + id + "/tracks");
