@@ -37,7 +37,9 @@ namespace Audiotica.Data.Service.RunTime
 
         public async Task<List<FullTrack>> GetArtistTracksAsync(string id)
         {
-            return (await _spotify.GetArtistsTopTracks(id, "US")).Tracks;
+            var tracks = (await _spotify.GetArtistsTopTracks(id, "US")).Tracks;
+            RemoveDuplicates(tracks);
+            return tracks;
         }
 
         public async Task<Paging<SimpleAlbum>> GetArtistAlbumsAsync(string id)
@@ -60,6 +62,7 @@ namespace Audiotica.Data.Service.RunTime
         public async Task<Paging<FullTrack>> SearchTracksAsync(string query, int limit = 20, int offset = 0)
         {
             var results = await _spotify.SearchItems(query, SearchType.TRACK, limit, offset);
+            RemoveDuplicates(results.Tracks.Items);
             return results.Tracks;
         }
 
@@ -97,6 +100,35 @@ namespace Audiotica.Data.Service.RunTime
             foreach (var album in toRemove.SelectMany(remove => remove.Value))
             {
                 albums.Remove(album);
+            }
+        }
+
+        public void RemoveDuplicates(List<FullTrack> tracks)
+        {
+            var toRemove = new Dictionary<string, List<FullTrack>>();
+
+            foreach (var track in tracks)
+            {
+                var duplicate = tracks.Where(p => 
+                    p.Name == track.Name 
+                    && p.Artist.Name == track.Artist.Name
+                    && p.Album.Name == track.Album.Name).ToList();
+
+                if (duplicate.Count <= 1) continue;
+
+                //the first album should be kept
+                duplicate.Remove(track);
+
+                var key = track.Name + track.Artist.Name + track.Album.Name;
+
+                //mark the rest for deletion
+                if (!toRemove.ContainsKey(key))
+                    toRemove.Add(key, duplicate);
+            }
+
+            foreach (var album in toRemove.SelectMany(remove => remove.Value))
+            {
+                tracks.Remove(album);
             }
         }
     }
