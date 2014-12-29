@@ -17,7 +17,7 @@
             <ImageBrush Opacity=".25" Stretch="UniformToFill" ImageSource="{Binding Artist.Images[0].Url}" />
         </Grid.Background>
         <Pivot Title="{Binding Artist.Name, Converter={StaticResource UpperCaseConverter}}" HeaderTemplate="{StaticResource PivotHeaderTemplate}">
-            <PivotItem Header="SONGS">
+            <PivotItem Header="TOP SONGS">
                 <ListView IsItemClickEnabled="True" ItemsSource="{Binding TopTracks}"
 					ItemTemplate="{StaticResource SpotifyTrackDataTemplate}">
                     <interactivity:Interaction.Behaviors>
