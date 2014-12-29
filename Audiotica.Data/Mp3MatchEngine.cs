@@ -40,7 +40,7 @@ namespace Audiotica.Data
                 .Replace("feat.", "ft.") //better alternatives for matching
                 .Replace("- live", "(live)")
                 .Replace("- remix", "(remix)")
-                .Replace("a capella", "acappella")
+                .Replace("a cappella", "acappella")
                 .Replace("- acoustic version", "(acoustic version)")
                 .Replace("- cover", "(cover)")
                 .Replace("- bonus track", "");
