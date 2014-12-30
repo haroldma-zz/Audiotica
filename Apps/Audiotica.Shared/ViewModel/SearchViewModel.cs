@@ -103,63 +103,47 @@ namespace Audiotica.ViewModel
         {
             try
             {
-                term = term.Trim();
-                if (term.StartsWith("http://www.last.fm/music/") && term.Contains("/_/"))
+                if (Tracks != null)
                 {
-                    term = term.Replace("http://www.last.fm/music/","");
-                    var artist = term.Substring(0, term.IndexOf("/_/"));
-                    var title = WebUtility.UrlDecode(term.Replace(artist + "/_/", ""));
-                    artist = WebUtility.UrlDecode(artist);
-
-                    var track = await _service.GetDetailTrack(title, artist);
-                    CurtainToast.Show("Last.fm link detected");
-                    await CollectionHelper.SaveTrackAsync(track);
+                    Tracks.Clear();
+                }
+                if (Artists != null)
+                {
+                    Artists.Clear();
+                }
+                if (Albums != null)
+                {
+                    Albums.Clear();
                 }
 
-                else
-                {
+                _tracksResponse = await _spotify.SearchTracksAsync(term);
 
-                    if (Tracks != null)
-                    {
-                        Tracks.Clear();
-                    }
-                    if (Artists != null)
-                    {
-                        Artists.Clear();
-                    }
-                    if (Albums != null)
-                    {
-                        Albums.Clear();
-                    }
+                Tracks = CreateIncrementalCollection(
+                    () => _tracksResponse,
+                    tracks => _tracksResponse = tracks,
+                    async i => await _spotify.SearchTracksAsync(term, offset: i));
+                foreach (var lastTrack in _tracksResponse.Items)
+                    Tracks.Add(lastTrack);
 
-                    _tracksResponse = await _spotify.SearchTracksAsync(term);
+                _albumsResponse = await _spotify.SearchAlbumsAsync(term);
 
-                    Tracks = CreateIncrementalCollection(
-                        () => _tracksResponse,
-                        tracks => _tracksResponse = tracks,
-                        async i => await _spotify.SearchTracksAsync(term, offset: i));
-                    foreach (var lastTrack in _tracksResponse.Items)
-                        Tracks.Add(lastTrack);
+                Albums = CreateIncrementalCollection(
+                    () => _albumsResponse,
+                    albums => _albumsResponse = albums,
+                    async i => await _spotify.SearchAlbumsAsync(term, offset: i));
+                foreach (var lastAlbum in _albumsResponse.Items)
+                    Albums.Add(lastAlbum);
 
-                    _albumsResponse = await _spotify.SearchAlbumsAsync(term);
+                _artistsResponse = await _spotify.SearchArtistsAsync(term);
 
-                    Albums = CreateIncrementalCollection(
-                        () => _albumsResponse,
-                        albums => _albumsResponse = albums,
-                        async i => await _spotify.SearchAlbumsAsync(term, offset: i));
-                    foreach (var lastAlbum in _albumsResponse.Items)
-                        Albums.Add(lastAlbum);
+                Artists = CreateIncrementalCollection(
+                    () => _artistsResponse,
+                    artists => _artistsResponse = artists,
+                    async i => await _spotify.SearchArtistsAsync(term, offset: i));
 
-                    _artistsResponse = await _spotify.SearchArtistsAsync(term);
+                foreach (var lastArtist in _artistsResponse.Items)
+                    Artists.Add(lastArtist);
 
-                    Artists = CreateIncrementalCollection(
-                        () => _artistsResponse,
-                        artists => _artistsResponse = artists,
-                        async i => await _spotify.SearchArtistsAsync(term, offset: i));
-
-                    foreach (var lastArtist in _artistsResponse.Items)
-                        Artists.Add(lastArtist);
-                }
 
                 //if (_tracksResponse.TotalItems == 0)
                 //CurtainToast.ShowError("NoSearchResultsToast".FromLanguageResource());
@@ -178,18 +162,33 @@ namespace Audiotica.ViewModel
         {
             if (e.Key != VirtualKey.Enter) return;
 
-            IsLoading = true;
             _tracksResponse = null;
-            ((TextBox) e.OriginalSource).IsEnabled = false;
 
             //Close the keyboard
             ((Page) ((Grid) ((TextBox) e.OriginalSource).Parent).Parent).Focus(
                 FocusState.Keyboard);
+            
+            var term = ((TextBox) e.OriginalSource).Text;
 
-            await SearchAsync(((TextBox) e.OriginalSource).Text);
+            term = term.Trim();
+            if (term.StartsWith("http://www.last.fm/music/") && term.Contains("/_/"))
+            {
+                term = term.Replace("http://www.last.fm/music/", "");
+                var artist = term.Substring(0, term.IndexOf("/_/"));
+                var title = WebUtility.UrlDecode(term.Replace(artist + "/_/", ""));
+                artist = WebUtility.UrlDecode(artist);
 
-            ((TextBox) e.OriginalSource).IsEnabled = true;
-            IsLoading = false;
+                var track = await _service.GetDetailTrack(title, artist);
+                await CollectionHelper.SaveTrackAsync(track);
+            }
+            else
+            {
+                ((TextBox)e.OriginalSource).IsEnabled = false;
+                IsLoading = true;
+                await SearchAsync(term);
+                ((TextBox)e.OriginalSource).IsEnabled = true;
+                IsLoading = false;
+            }
         }
 
         private IncrementalObservableCollection<T> CreateIncrementalCollection<T>(
