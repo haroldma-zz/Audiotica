@@ -58,7 +58,7 @@ namespace Audiotica
                 _playPauseRelayCommand = new RelayCommand(PlayPauseToggle);
                 _npBarTappedRelayCommand = new RelayCommand(NowPlayingBarTapped);
 
-                _timer = new DispatcherTimer {Interval = TimeSpan.FromSeconds(.5)};
+                _timer = new DispatcherTimer {Interval = TimeSpan.FromSeconds(2)};
                 _timer.Tick += TimerOnTick;
             }
             else
