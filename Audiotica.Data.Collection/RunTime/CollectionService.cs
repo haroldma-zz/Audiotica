@@ -157,7 +157,7 @@ namespace Audiotica.Data.Collection.RunTime
                 song.Album = new Album
                 {
                     PrimaryArtistId = song.ArtistId,
-                    Name = song.Name + " (Single)",
+                    Name = song.Name,
                     PrimaryArtist = song.Artist,
                     ProviderId = "autc.single." + song.ProviderId
                 };

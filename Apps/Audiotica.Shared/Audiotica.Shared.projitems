@@ -18,6 +18,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)CollectionHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)NavigationHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PageBase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SavingError.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SpotifyHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ShowFlyoutAction.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SongStateConverter.cs" />

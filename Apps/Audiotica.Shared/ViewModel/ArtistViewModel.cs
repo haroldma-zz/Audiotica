@@ -113,9 +113,7 @@ namespace Audiotica.ViewModel
         private async void SongClickExecute(ItemClickEventArgs item)
         {
             var track = (LastTrack)item.ClickedItem;
-
-            CurtainToast.Show("MatchingSongToast".FromLanguageResource());
-            await ScrobblerHelper.SaveTrackAsync(track);
+            await CollectionHelper.SaveTrackAsync(track);
         }
     }
 }

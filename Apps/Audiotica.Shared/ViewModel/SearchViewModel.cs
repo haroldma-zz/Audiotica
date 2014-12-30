@@ -113,7 +113,7 @@ namespace Audiotica.ViewModel
 
                     var track = await _service.GetDetailTrack(title, artist);
                     CurtainToast.Show("Last.fm link detected");
-                    await ScrobblerHelper.SaveTrackAsync(track);
+                    await CollectionHelper.SaveTrackAsync(track);
                 }
 
                 else

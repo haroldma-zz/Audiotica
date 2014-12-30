@@ -1,10 +1,8 @@
 ﻿#region
 
-using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Audiotica.Core.Common;
-using Audiotica.Core.Utilities;
+using Audiotica.Core.Exceptions;
 using Audiotica.Data;
 using Audiotica.Data.Collection.Model;
 using IF.Lastfm.Core.Objects;
@@ -49,35 +47,36 @@ namespace Audiotica
             return song;
         }
 
-        public static async Task SaveTrackAsync(LastTrack track)
+        public static async Task<SavingError> SaveTrackAsync(LastTrack track)
         {
-            if (App.Locator.CollectionService.SongAlreadyExists(track.ToSong().ProviderId, track.Name, track.AlbumName, track.ArtistName))
+            if (App.Locator.CollectionService.SongAlreadyExists(track.ToSong().ProviderId, track.Name, track.AlbumName,
+                track.ArtistName))
             {
-                CurtainToast.ShowError("Song already saved");
+                return SavingError.AlreadyExists;
             }
-            else
+
+            var url = await Mp3MatchEngine.FindMp3For(track.Name, track.ArtistName).ConfigureAwait(false);
+
+            if (string.IsNullOrEmpty(url))
+                return SavingError.NoMatch;
+
+            var preparedSong = await PrepareTrackForDownloadAsync(track);
+            preparedSong.Song.AudioUrl = url;
+
+            try
             {
-                var url = await Mp3MatchEngine.FindMp3For(track.Name, track.ArtistName).ConfigureAwait(false);
-
-                if (string.IsNullOrEmpty(url))
-                    CurtainToast.ShowError("NoMatchFoundToast".FromLanguageResource());
-
-                else
-                {
-                    var preparedSong = await PrepareTrackForDownloadAsync(track);
-                    preparedSong.Song.AudioUrl = url;
-
-                    try
-                    {
-                        await
-                            App.Locator.CollectionService.AddSongAsync(preparedSong.Song, preparedSong.ArtworkUrl).ConfigureAwait(false);
-                        CurtainToast.Show("SongSavedToast".FromLanguageResource());
-                    }
-                    catch (Exception e)
-                    {
-                        CurtainToast.ShowError(e.Message);
-                    }
-                }
+                await
+                    App.Locator.CollectionService.AddSongAsync(preparedSong.Song, preparedSong.ArtworkUrl)
+                        .ConfigureAwait(false);
+                return SavingError.None;
+            }
+            catch (NetworkException)
+            {
+                return SavingError.Network;
+            }
+            catch
+            {
+                return SavingError.Unknown;
             }
         }
 
@@ -85,7 +84,8 @@ namespace Audiotica
         {
             var track =
                 await
-                    App.Locator.ScrobblerService.GetDetailTrack(lastTrack.Name, lastTrack.ArtistName).ConfigureAwait(false);
+                    App.Locator.ScrobblerService.GetDetailTrack(lastTrack.Name, lastTrack.ArtistName)
+                        .ConfigureAwait(false);
             var preparedSong = new PreparedSong {Song = track.ToSong()};
             LastArtist artist;
 

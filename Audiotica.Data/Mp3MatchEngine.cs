@@ -84,7 +84,7 @@ namespace Audiotica.Data
                     webSongs = await service.SearchMp3Truck(title, artist, album).ConfigureAwait(false);
                     break;
                 case MatchProvider.SoundCloud:
-                    webSongs = await service.SearchSoundCloud(title, artist, album, 3).ConfigureAwait(false);
+                    webSongs = await service.SearchSoundCloud(title, artist, album).ConfigureAwait(false);
                     break;
             }
 

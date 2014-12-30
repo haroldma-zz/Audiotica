@@ -2,10 +2,10 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Audiotica.Core.Common;
 using Audiotica.Data.Spotify.Models;
+using IF.Lastfm.Core.Objects;
 
 #endregion
 
@@ -13,8 +13,10 @@ namespace Audiotica
 {
     public static class CollectionHelper
     {
-        public static List<SimpleTrack> SavingTracks = new List<SimpleTrack>();
-        public static List<FullAlbum> SavingAlbums = new List<FullAlbum>();
+        public static List<SimpleTrack> SpotifySavingTracks = new List<SimpleTrack>();
+        public static List<LastTrack> LastfmSavingTracks = new List<LastTrack>();
+        public static List<FullAlbum> SpotifySavingAlbums = new List<FullAlbum>();
+        public static List<LastAlbum> LastfmSavingAlbums = new List<LastAlbum>();
 
         public static async Task SaveTrackAsync(ChartTrack chartTrack)
         {
@@ -31,50 +33,16 @@ namespace Audiotica
                 CurtainToast.Show("Finding mp3 for \"{0}\".", track.Name);
 
             var result = await _SaveTrackAsync(track, album);
-
-            switch (result)
-            {
-                case SavingError.AlreadySaving:
-                    CurtainToast.ShowError("Already saving \"{0}\".", track.Name);
-                    break;
-                case SavingError.AlreadyExists:
-                    CurtainToast.ShowError("Already saved \"{0}\".", track.Name);
-                    break;
-                case SavingError.None:
-                    CurtainToast.Show("Saved \"{0}\".", track.Name);
-                    break;
-            }
+            ShowResults(result, track.Name);
         }
 
-        private static async Task<SavingError> _SaveTrackAsync(SimpleTrack track, FullAlbum album)
+        public static async Task SaveTrackAsync(LastTrack track, bool showFindingMessage = true)
         {
-            var alreadySaving = SavingTracks.FirstOrDefault(p => p.Id == track.Id) != null;
+            if (showFindingMessage)
+                CurtainToast.Show("Finding mp3 for \"{0}\".", track.Name);
 
-            if (alreadySaving)
-            {
-                return SavingError.AlreadySaving;
-            }
-
-            SavingTracks.Add(track);
-
-            var result = await SpotifyHelper.SaveTrackAsync(track, album);
-
-            switch (result)
-            {
-                case SavingError.Network:
-                    CurtainToast.Show("Network error finding mp3 for \"{0}\".", track.Name);
-                    break;
-                case SavingError.NoMatch:
-                    CurtainToast.ShowError("No mp3 found for \"{0}\".", track.Name);
-                    break;
-                case SavingError.Unknown:
-                    CurtainToast.ShowError("Problem saving \"{0}\"", track.Name);
-                    break;
-            }
-
-            SavingTracks.Remove(track);
-
-            return result;
+            var result = await _SaveTrackAsync(track);
+            ShowResults(result, track.Name);
         }
 
         public static async Task SaveAlbumAsync(FullAlbum album)
@@ -88,7 +56,7 @@ namespace Audiotica
             var collAlbum = App.Locator.CollectionService.Albums.FirstOrDefault(p => p.ProviderId.Contains(album.Id));
 
             var alreadySaved = collAlbum != null;
-            var alreadySaving = SavingAlbums.FirstOrDefault(p => p.Id == album.Id) != null;
+            var alreadySaving = SpotifySavingAlbums.FirstOrDefault(p => p.Id == album.Id) != null;
 
             if (alreadySaved)
             {
@@ -106,7 +74,7 @@ namespace Audiotica
                 return;
             }
 
-            SavingAlbums.Add(album);
+            SpotifySavingAlbums.Add(album);
 
             CurtainToast.Show("Saving \"{0}\".", album.Name);
 
@@ -142,19 +110,92 @@ namespace Audiotica
                 CurtainToast.ShowError("Couldn't save {0} song(s) of \"{1}\".", missingCount, album.Name);
             else
                 CurtainToast.ShowError("Failed to save \"{0}\".", album.Name);
-                
 
-            SavingAlbums.Remove(album);
+
+            SpotifySavingAlbums.Remove(album);
         }
-    }
 
-    public enum SavingError
-    {
-        None,
-        AlreadyExists,
-        NoMatch,
-        Network,
-        AlreadySaving,
-        Unknown
+        #region Heper methods
+
+        private static void ShowResults(SavingError result, string trackName)
+        {
+            switch (result)
+            {
+                case SavingError.AlreadySaving:
+                    CurtainToast.ShowError("Already saving \"{0}\".", trackName);
+                    break;
+                case SavingError.AlreadyExists:
+                    CurtainToast.ShowError("Already saved \"{0}\".", trackName);
+                    break;
+                case SavingError.None:
+                    CurtainToast.Show("Saved \"{0}\".", trackName);
+                    break;
+            }
+        }
+
+        private static async Task<SavingError> _SaveTrackAsync(SimpleTrack track, FullAlbum album)
+        {
+            var alreadySaving = SpotifySavingTracks.FirstOrDefault(p => p.Id == track.Id) != null;
+
+            if (alreadySaving)
+            {
+                return SavingError.AlreadySaving;
+            }
+
+            SpotifySavingTracks.Add(track);
+
+            var result = await SpotifyHelper.SaveTrackAsync(track, album);
+
+            switch (result)
+            {
+                case SavingError.Network:
+                    CurtainToast.Show("Network error finding mp3 for \"{0}\".", track.Name);
+                    break;
+                case SavingError.NoMatch:
+                    CurtainToast.ShowError("No mp3 found for \"{0}\".", track.Name);
+                    break;
+                case SavingError.Unknown:
+                    CurtainToast.ShowError("Problem saving \"{0}\"", track.Name);
+                    break;
+            }
+
+            SpotifySavingTracks.Remove(track);
+
+            return result;
+        }
+
+        private static async Task<SavingError> _SaveTrackAsync(LastTrack track)
+        {
+            var alreadySaving = LastfmSavingTracks.FirstOrDefault(p => p.Id == track.Id) != null;
+
+            if (alreadySaving)
+            {
+                return SavingError.AlreadySaving;
+            }
+
+            LastfmSavingTracks.Add(track);
+
+            var result = await ScrobblerHelper.SaveTrackAsync(track);
+
+            switch (result)
+            {
+                case SavingError.Network:
+                    CurtainToast.Show("Network error finding mp3 for \"{0}\".", track.Name);
+                    break;
+                case SavingError.NoMatch:
+                    CurtainToast.ShowError("No mp3 found for \"{0}\".", track.Name);
+                    break;
+                case SavingError.Unknown:
+                    CurtainToast.ShowError("Problem saving \"{0}\"", track.Name);
+                    break;
+            }
+
+            LastfmSavingTracks.Remove(track);
+
+            return result;
+        }
+
+        #endregion
+
     }
 }

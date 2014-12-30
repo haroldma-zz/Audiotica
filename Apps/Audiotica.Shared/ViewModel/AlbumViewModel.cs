@@ -4,8 +4,6 @@ using System;
 using System.Collections.ObjectModel;
 using Windows.UI.Xaml.Controls;
 using Audiotica.Core.Common;
-using Audiotica.Core.Utilities;
-using Audiotica.Data;
 using Audiotica.Data.Service.Interfaces;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
@@ -78,7 +76,7 @@ namespace Audiotica.ViewModel
 
                 if (Album.Tracks == null && Album.Name.Contains("Deluxe Edition"))
                 {
-                    Album = await _service.GetDetailAlbum(album.Name.Replace("(Deluxe Edition)", ""), album.ArtistName);    
+                    Album = await _service.GetDetailAlbum(album.Name.Replace("(Deluxe Edition)", ""), album.ArtistName);
                 }
 
                 if (Album.Tracks != null)
@@ -95,10 +93,8 @@ namespace Audiotica.ViewModel
 
         private async void SongClickExecute(ItemClickEventArgs item)
         {
-            var track = (LastTrack)item.ClickedItem;
-
-            CurtainToast.Show("MatchingSongToast".FromLanguageResource());
-            await ScrobblerHelper.SaveTrackAsync(track);
+            var track = (LastTrack) item.ClickedItem;
+            await CollectionHelper.SaveTrackAsync(track);
         }
     }
 }
