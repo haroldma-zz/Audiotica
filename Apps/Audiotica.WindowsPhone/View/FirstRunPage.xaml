@@ -9,26 +9,77 @@
     mc:Ignorable="d"
     Background="{StaticResource ApplicationPageBackgroundThemeBrush}">
 
-    <ScrollViewer>
-        <StackPanel Margin="20,40,20,0">
-            <TextBlock FontSize="50" TextWrapping="Wrap" Margin="0,0,0,20">
-                <Run Text="Welcome." />
-                <LineBreak />
-                <Run Text="To a new way of finding and listening to the music you want." />
-            </TextBlock>
-            <TextBlock TextWrapping="Wrap" FontSize="30">
-                <Run Text="Whenever you select a song to save, on the background, Audiotica will search for the best mp3." />
-                <LineBreak />
-                <LineBreak />
-                <Run
-                    Text="If you life scrobbling your tracks, go to settings from the home page, login and enabled it.  In there you can find ways to contact me for requests or feedback." />
-                <LineBreak />
-                <LineBreak />
-                <Run Text="Enjoy," />
-                <LineBreak />
-                <Run Text="-Harry AKA Zumicts" />
-            </TextBlock>
-            <Button Content="Continue" HorizontalAlignment="Stretch" Click="Button_Click" Margin="0,10,0,0" />
+    <Grid>
+        <Grid.Resources>
+            <Storyboard x:Name="BackgroundAnimation" RepeatBehavior="Forever">
+                <DoubleAnimationUsingKeyFrames
+                    Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateX)"
+                    Storyboard.TargetName="MainImage">
+                    <EasingDoubleKeyFrame KeyTime="0:0:0" Value="0" />
+                    <EasingDoubleKeyFrame KeyTime="0:1:3" Value="-640" />
+                    <EasingDoubleKeyFrame KeyTime="0:3:0" Value="0" />
+                </DoubleAnimationUsingKeyFrames>
+            </Storyboard>
+            <Storyboard x:Name="ContinueButtonAnimation">
+                <DoubleAnimationUsingKeyFrames
+                    Storyboard.TargetProperty="(UIElement.Opacity)"
+                    Storyboard.TargetName="ContinueButton">
+                    <EasingDoubleKeyFrame KeyTime="0:0:0.3" Value="1" />
+                </DoubleAnimationUsingKeyFrames>
+            </Storyboard>
+        </Grid.Resources>
+        <Image x:Name="MainImage"
+               VerticalAlignment="Stretch"
+               Source="/Assets/ElectricDaisyCarnival.jpg"
+               Opacity="0.40"
+               Margin="0,0,-643,0"
+               RenderTransformOrigin="0,0.5"
+               Stretch="UniformToFill" HorizontalAlignment="Left">
+            <Image.RenderTransform>
+                <CompositeTransform />
+            </Image.RenderTransform>
+        </Image>
+        
+        <StackPanel Margin="20" HorizontalAlignment="Right" VerticalAlignment="Bottom" Orientation="Horizontal">
+            <TextBlock Text="&lt;&lt; swipe" VerticalAlignment="Center" FontSize="32"/>
+            <TextBlock Text=" ☝" FontSize="50" />
         </StackPanel>
-    </ScrollViewer>
+        
+        <FlipView x:Name="FlipView" SelectionChanged="FlipView_SelectionChanged">
+            <Grid Margin="20,50,100,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <TextBlock x:Uid="FirstRunWelcomeTitle" Text="HELLO AND ✌ WELCOME!" FontSize="52" TextWrapping="Wrap" FontWeight="Bold" />
+                <TextBlock x:Uid="FirstRunWelcomeSubtitle"
+                           Grid.Row="1"
+                           Text="With Audiotica you'll never have to break a sweat to get music!  It is the one stop place to find everything you'll ever need."
+                           FontSize="22" TextWrapping="Wrap" />
+            </Grid>
+            <Grid Margin="20,50,125,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <TextBlock x:Uid="FirstRunMusicLoversTitle" Text="MADE BY AND FOR MUSIC ❤ LOVERS!" FontSize="52" TextWrapping="Wrap" FontWeight="Bold" />
+                <TextBlock x:Uid="FirstRunMusicLoversSubtitle"
+                           Grid.Row="1"
+                           Text="Did you know that over a hundred music lovers, like you, help morph Audiotica into what it is."
+                           FontSize="22" TextWrapping="Wrap" />
+            </Grid>
+            <Grid Margin="20,50,125,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <TextBlock x:Uid="FirstRunBackendTitle" Text="SPOTIFY+LAST.FM" FontSize="52" TextWrapping="Wrap" FontWeight="Bold" />
+                <TextBlock x:Uid="FirstRunBackendSubtitle" Grid.Row="1"
+                           Text="How do you get all the best music on the internet?  By getting the best of Spotify and adding a hint of Last.FM.  Did I mention you can also scrobble?"
+                           FontSize="22" TextWrapping="Wrap" />
+            </Grid>
+        </FlipView>
+        
+        <Button x:Name="ContinueButton" Opacity="0" Visibility="Collapsed" Content="Continue" Background="#642C90"  VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Margin="20,0,20,20" Click="Button_Click" Height="80" />
+    </Grid>
 </audiotica:PageBase>

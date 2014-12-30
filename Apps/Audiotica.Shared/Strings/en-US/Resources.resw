@@ -226,6 +226,29 @@
   <data name="FeedbackDialogTitle" xml:space="preserve">
     <value>Rate Audiotica!</value>
   </data>
+  <data name="FirstRunBackendSubtitle.Text" xml:space="preserve">
+    <value>How do you get all the best music on the internet?  By getting the best of Spotify and adding a hint of Last.FM.  Did I mention you can also scrobble?</value>
+  </data>
+  <data name="FirstRunBackendTitle.Text" xml:space="preserve">
+    <value>SPOTIFY+LAST.FM</value>
+    <comment>Both are service names</comment>
+  </data>
+  <data name="FirstRunMusicLoversSubtitle.Text" xml:space="preserve">
+    <value>Did you know that over a hundred music lovers, like you, help morph Audiotica into what it is.</value>
+    <comment>Audiotica is the name of the app</comment>
+  </data>
+  <data name="FirstRunMusicLoversTitle.Text" xml:space="preserve">
+    <value>MADE BY AND FOR MUSIC ❤ LOVERS!</value>
+    <comment>contains an emoji, if inappropriate not necessary</comment>
+  </data>
+  <data name="FirstRunWelcomeSubtitle.Text" xml:space="preserve">
+    <value>With Audiotica you'll never have to break a sweat to get music!  It is the one stop place to find everything you'll ever need.</value>
+    <comment>Audiotica is the name of the app</comment>
+  </data>
+  <data name="FirstRunWelcomeTitle.Text" xml:space="preserve">
+    <value>HELLO AND ✌ WELCOME!</value>
+    <comment>contains an emoji, if inappropriate not necessary</comment>
+  </data>
   <data name="GenericAccept" xml:space="preserve">
     <value>Accept</value>
   </data>

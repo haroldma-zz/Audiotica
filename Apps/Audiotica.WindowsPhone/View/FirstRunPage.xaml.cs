@@ -22,9 +22,23 @@ namespace Audiotica.View
             this.InitializeComponent();
         }
 
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            base.OnNavigatedTo(e);
+            BackgroundAnimation.Begin();
+        }
+
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             Frame.Navigate(typeof (HomePage));
+        }
+
+        private void FlipView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (ContinueButton == null || FlipView.SelectedIndex != 2) return;
+
+            ContinueButton.Visibility = Visibility.Visible;
+            ContinueButtonAnimation.Begin();
         }
     }
 }
