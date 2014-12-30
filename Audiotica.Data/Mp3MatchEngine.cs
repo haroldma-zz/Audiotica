@@ -43,7 +43,8 @@ namespace Audiotica.Data
                 .Replace("a cappella", "acappella")
                 .Replace("- acoustic version", "(acoustic)")
                 .Replace("- cover", "(cover)")
-                .Replace("- bonus track", "");
+                .Replace("- bonus track", "")
+                .Replace("- deluxe edition", "");
 
             var currentProvider = 0;
             string url = null;
