@@ -116,6 +116,9 @@
     </Compile>
     <Compile Include="PlayerViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="View\FirstRunPage.xaml.cs">
+      <DependentUpon>FirstRunPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\SpotifyArtistPage.xaml.cs">
       <DependentUpon>SpotifyArtistPage.xaml</DependentUpon>
     </Compile>
@@ -192,6 +195,10 @@
     <Page Include="PartialView\NowPlayingBar.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\FirstRunPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\SpotifyArtistPage.xaml">
       <Generator>MSBuild:Compile</Generator>

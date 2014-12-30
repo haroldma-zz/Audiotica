@@ -15,35 +15,31 @@ namespace Audiotica.Core.Utilities
             string caption,
             MessageBoxButton button = MessageBoxButton.Ok)
         {
-            var dispatcher = CoreWindow.GetForCurrentThread().Dispatcher;
             var result = MessageBoxResult.None;
-            await dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
-            {
-                var md = new MessageDialog(messageBoxText, caption);
+            var md = new MessageDialog(messageBoxText, caption);
 
-                if (button.HasFlag(MessageBoxButton.Ok))
-                {
-                    md.Commands.Add(new UICommand("OK",
-                        cmd => result = MessageBoxResult.Ok));
-                }
-                if (button.HasFlag(MessageBoxButton.Yes))
-                {
-                    md.Commands.Add(new UICommand("Yes",
-                        cmd => result = MessageBoxResult.Yes));
-                }
-                if (button.HasFlag(MessageBoxButton.No))
-                {
-                    md.Commands.Add(new UICommand("No",
-                        cmd => result = MessageBoxResult.No));
-                }
-                if (button.HasFlag(MessageBoxButton.Cancel))
-                {
-                    md.Commands.Add(new UICommand("Cancel",
-                        cmd => result = MessageBoxResult.Cancel));
-                    md.CancelCommandIndex = (uint) md.Commands.Count - 1;
-                }
-                await md.ShowAsync();
-            });
+            if (button.HasFlag(MessageBoxButton.Ok))
+            {
+                md.Commands.Add(new UICommand("OK",
+                    cmd => result = MessageBoxResult.Ok));
+            }
+            if (button.HasFlag(MessageBoxButton.Yes))
+            {
+                md.Commands.Add(new UICommand("Yes",
+                    cmd => result = MessageBoxResult.Yes));
+            }
+            if (button.HasFlag(MessageBoxButton.No))
+            {
+                md.Commands.Add(new UICommand("No",
+                    cmd => result = MessageBoxResult.No));
+            }
+            if (button.HasFlag(MessageBoxButton.Cancel))
+            {
+                md.Commands.Add(new UICommand("Cancel",
+                    cmd => result = MessageBoxResult.Cancel));
+                md.CancelCommandIndex = (uint) md.Commands.Count - 1;
+            }
+            await md.ShowAsync();
             return result;
         }
 

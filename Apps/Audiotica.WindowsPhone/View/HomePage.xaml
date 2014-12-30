@@ -160,6 +160,7 @@
     <Page.BottomAppBar>
         <CommandBar ClosedDisplayMode="Minimal">
             <CommandBar.SecondaryCommands>
+                <AppBarButton Label="rate+review" Click="AppBarButton_Click"/>
                 <AppBarButton Label="settings+more">
                     <Interactivity:Interaction.Behaviors>
                         <Core:EventTriggerBehavior EventName="Click">

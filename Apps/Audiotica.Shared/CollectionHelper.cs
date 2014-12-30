@@ -41,7 +41,7 @@ namespace Audiotica
                     CurtainToast.ShowError("Already saved \"{0}\".", track.Name);
                     break;
                 case SavingError.None:
-                    CurtainToast.Show("Saved song \"{0}\".", track.Name);
+                    CurtainToast.Show("Saved \"{0}\".", track.Name);
                     break;
             }
         }
@@ -68,7 +68,7 @@ namespace Audiotica
                     CurtainToast.ShowError("No mp3 found for \"{0}\".", track.Name);
                     break;
                 case SavingError.Unknown:
-                    CurtainToast.ShowError("Problem saving song \"{0}\"", track.Name);
+                    CurtainToast.ShowError("Problem saving \"{0}\"", track.Name);
                     break;
             }
 
@@ -108,7 +108,7 @@ namespace Audiotica
 
             SavingAlbums.Add(album);
 
-            CurtainToast.Show("Saving album \"{0}\".", album.Name);
+            CurtainToast.Show("Saving \"{0}\".", album.Name);
 
             var index = 0;
 
@@ -137,11 +137,11 @@ namespace Audiotica
             var missing = missingCount > 0;
 
             if (success)
-                CurtainToast.Show("Saved album \"{0}\".", album.Name);
+                CurtainToast.Show("Saved \"{0}\".", album.Name);
             else if (missing)
                 CurtainToast.ShowError("Couldn't save {0} song(s) of \"{1}\".", missingCount, album.Name);
             else
-                CurtainToast.ShowError("Failed to save album \"{0}\".", album.Name);
+                CurtainToast.ShowError("Failed to save \"{0}\".", album.Name);
                 
 
             SavingAlbums.Remove(album);

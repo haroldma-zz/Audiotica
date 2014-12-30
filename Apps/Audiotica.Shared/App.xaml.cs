@@ -2,9 +2,11 @@
 
 // The Blank Application template is documented at http://go.microsoft.com/fwlink/?LinkId=234227
 using System;
-using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
+using Windows.ApplicationModel.Store;
+using Windows.System;
+using Windows.UI.Popups;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -14,10 +16,8 @@ using Audiotica.Core.Common;
 using Audiotica.Core.Utilities;
 using Audiotica.View;
 using Audiotica.ViewModel;
-using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Threading;
 using GoogleAnalytics;
-using MyToolkit.Utilities;
 
 #endregion
 
@@ -40,7 +40,7 @@ namespace Audiotica
         {
             InitializeComponent();
             Suspending += OnSuspending;
-            Resuming += (sender, o) => Locator.AudioPlayerHelper.OnAppActive();
+            Resuming += OnResuming;
         }
 
         private bool _init;
@@ -83,8 +83,12 @@ namespace Audiotica
                 RootFrame.ContentTransitions = null;
                 RootFrame.Navigated += RootFrame_FirstNavigated;
 #endif
+                var page = typeof (HomePage);
 
-                if (!RootFrame.Navigate(typeof (HomePage), e.Arguments))
+                if (BetaChangelogHelper.IsFirstRun)
+                    page = typeof (FirstRunPage);
+
+                if (!RootFrame.Navigate(page, e.Arguments))
                 {
                     CurtainToast.ShowError("Failed to create initial page");
                 }
@@ -122,6 +126,28 @@ namespace Audiotica
 
             ApplicationView.GetForCurrentView().VisibleBoundsChanged += OnVisibleBoundsChanged;
             OnVisibleBoundsChanged(null, null);
+
+            ReviewReminder();
+        }
+
+        private async void ReviewReminder()
+        {
+            var launchCount = AppSettingsHelper.Read<int>("LaunchCount");
+            AppSettingsHelper.Write("LaunchCount", ++launchCount);
+            if (launchCount != 5) return;
+
+            var md = new MessageDialog(
+                "Your feedback helps you improve this app. If you like it, please take a minute and rate it with five stars so we can continue working on new features and updates.",
+                "Rate Audiotica!");
+            md.Commands.Add(new UICommand("rate"));
+            md.Commands.Add(new UICommand("no, thanks"));
+
+            var result = await md.ShowAsync();
+
+            if (result.Label == "rate")
+            {
+                Launcher.LaunchUriAsync(new Uri("ms-windows-store:reviewapp?appid=" + CurrentApp.AppId));
+            }
         }
 
         private void OnVisibleBoundsChanged(ApplicationView sender, object args)
@@ -133,6 +159,11 @@ namespace Audiotica
             RootFrame.Margin = new Thickness(0, 0, 0, diff);
         }
 #endif
+
+        private void OnResuming(object sender, object o)
+        {
+            Locator.AudioPlayerHelper.OnAppActive();
+        }
 
         private void OnSuspending(object sender, SuspendingEventArgs e)
         {
