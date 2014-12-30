@@ -19,7 +19,7 @@ namespace Audiotica.Core.Common
             if (value == null)
                 return Visibility.Collapsed;
 
-            var emptyList = !(value as IEnumerable<object>).Any();
+            var emptyList = value is int ? (int)value == 0 : !(value as IEnumerable<object>).Any();
 
             if (!Reverse && emptyList)
                 return Visibility.Visible;

@@ -26,7 +26,7 @@ namespace Audiotica.ViewModel
         private bool _isMostStreamedEnabled;
         private bool _isMostStreamedLoading;
         private bool _isRecommendationLoading;
-        private List<Song> _mostPlayed;
+        private List<Song> _mostPlayed = new List<Song>();
         private List<LastArtist> _recommendedArtists;
         private List<ChartTrack> _topTracks;
 
@@ -108,8 +108,6 @@ namespace Audiotica.ViewModel
 
         public async Task LoadChartDataAsync()
         {
-            IsMostStreamedEnabled = true;
-
             var rnd = new Random(DateTime.Now.Millisecond);
 
             try
@@ -117,11 +115,11 @@ namespace Audiotica.ViewModel
                 IsMostStreamedLoading = true;
                 var page = rnd.Next(0, 9)*10;
                 TopTracks = (await _spotify.GetMostStreamedTracksAsync())
-                    .Where(p => p.percent_age_group_18_24 >= 30).Skip(page).Take(10).ToList();
+                    .Skip(page).Take(20).ToList();
             }
             catch
             {
-                IsMostStreamedEnabled = false;
+                TopTracks = new List<ChartTrack>();
             }
             IsMostStreamedLoading = false;
 

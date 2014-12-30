@@ -182,6 +182,12 @@
   <data name="CollectionAppBarNewPlaylist.Label" xml:space="preserve">
     <value>New Playlist</value>
   </data>
+  <data name="CollectionEmpty.Text" xml:space="preserve">
+    <value>It seems you haven't saved any music yet.</value>
+  </data>
+  <data name="CollectionNoPlaylist.Text" xml:space="preserve">
+    <value>You haven't made any playlist yet. Try pressing the new button below.</value>
+  </data>
   <data name="CollectionPivot.Title" xml:space="preserve">
     <value>COLLECTION</value>
     <comment>uppercase on purpose</comment>
@@ -272,9 +278,22 @@
     <value>MOST PLAYED BY YOU</value>
     <comment>uppercase on purpose</comment>
   </data>
+  <data name="HubMostPlayedEmpty.Text" xml:space="preserve">
+    <value>You haven't play any music in the past week.</value>
+  </data>
+  <data name="HubMostStreamedEmpty.Text" xml:space="preserve">
+    <value>Seems there was a problem loading top songs from Spotify.</value>
+  </data>
   <data name="HubRecommendations.Header" xml:space="preserve">
     <value>RECOMMENDATIONS</value>
     <comment>uppercase on purpose</comment>
+  </data>
+  <data name="HubRecommendationsEmpty.Text" xml:space="preserve">
+    <value>You don't have any recommendations at the moment.</value>
+    <comment>song recommendations by last.fm</comment>
+  </data>
+  <data name="HubRecommendationsNotLogin.Text" xml:space="preserve">
+    <value>Login, on the settings page, and scrobble with Last.FM to get recommendations.</value>
   </data>
   <data name="HubTopSongs.Header" xml:space="preserve">
     <value>TOP SONGS</value>

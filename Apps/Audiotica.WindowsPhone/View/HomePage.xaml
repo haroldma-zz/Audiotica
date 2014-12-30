@@ -70,39 +70,43 @@
         <HubSection x:Uid="HubMostPlayed" Header="MOST PLAYED BY YOU"
                     HeaderTemplate="{StaticResource HubHeaderTemplate}">
             <DataTemplate>
-                <GridView ItemsSource="{Binding MostPlayed}" SelectionMode="None" IsItemClickEnabled="True"
-                          Padding="0,0,0,10" ItemClick="MostPlayedGridView_ItemClick">
-                    <GridView.ItemTemplate>
-                        <DataTemplate>
-                            <StackPanel Margin="0,5,5,0" Width="150">
-                                <Grid Background="{StaticResource PhoneAccentBrush}">
-                                    <Image Source="{Binding Album.Artwork}" Height="150" Width="150" />
-                                </Grid>
-                                <TextBlock Text="{Binding Name}" FontSize="15" TextTrimming="CharacterEllipsis" />
-                                <TextBlock Text="{Binding ArtistName}" FontSize="12"
-                                           TextTrimming="CharacterEllipsis" Foreground="#89FFFFFF"
-                                           FontFamily="Global User Interface" />
-                            </StackPanel>
-                        </DataTemplate>
-                    </GridView.ItemTemplate>
-                </GridView>
+                <Grid>
+                    <TextBlock
+                        x:Uid="HubMostPlayedEmpty"
+                        Visibility="{Binding MostPlayed, Converter={StaticResource EmptyListToVisibilityConverter}}"
+                        Text="You haven't play any music in the past week." Style="{StaticResource SubtleTextBlockStyle}" />
+                    <GridView ItemsSource="{Binding MostPlayed}" SelectionMode="None" IsItemClickEnabled="True"
+                              Padding="0,0,0,10" ItemClick="MostPlayedGridView_ItemClick">
+                        <GridView.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Margin="0,5,5,0" Width="150">
+                                    <Grid Background="{StaticResource PhoneAccentBrush}">
+                                        <Image Source="{Binding Album.Artwork}" Height="150" Width="150" />
+                                    </Grid>
+                                    <TextBlock Text="{Binding Name}" FontSize="15" TextTrimming="CharacterEllipsis" />
+                                    <TextBlock Text="{Binding ArtistName}" FontSize="12"
+                                               TextTrimming="CharacterEllipsis" Foreground="#89FFFFFF"
+                                               FontFamily="Global User Interface" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </GridView.ItemTemplate>
+                    </GridView>
+                </Grid>
             </DataTemplate>
         </HubSection>
         <HubSection x:Uid="HubRecommendations" Header="RECOMMENDATIONS"
                     HeaderTemplate="{StaticResource HubHeaderTemplate}">
             <DataTemplate>
                 <Grid>
-                    <TextBlock
+                    <TextBlock x:Uid="HubRecommendationsNotLogin"
                         Visibility="{Binding IsLastfmEnabled, Converter={StaticResource ReverseVisibilityConverter}}"
-                        FontSize="25" TextWrapping="Wrap"
-                        Text="Login, on the settings page, and scrobble with last.fm to get recommendations."
-                        FontFamily="Segoe WP Light" Foreground="#89FFFFFF" />
+                        Text="Login, on the settings page, and scrobble with Last.FM to get recommendations."
+                        Style="{StaticResource SubtleTextBlockStyle}" />
 
-                    <TextBlock
+                    <TextBlock x:Uid="HubRecommendationsEmpty"
                         Visibility="{Binding RecommendedArtists, Converter={StaticResource EmptyListToVisibilityConverter}}"
-                        FontSize="25" TextWrapping="Wrap"
-                        Text="You don't have any recommendations at the moment." FontFamily="Segoe WP Light"
-                        Foreground="#89FFFFFF" />
+                        Text="You don't have any recommendations at the moment." 
+                        Style="{StaticResource SubtleTextBlockStyle}" />
                     <Grid Visibility="{Binding IsLastfmEnabled, Converter={StaticResource VisibilityConverter}}">
                         <ProgressBar VerticalAlignment="Top" IsIndeterminate="{Binding IsRecommendationLoading}"
                                      Visibility="{Binding IsRecommendationLoading, Converter={StaticResource VisibilityConverter}}" />
@@ -112,12 +116,16 @@
                 </Grid>
             </DataTemplate>
         </HubSection>
-        <HubSection x:Uid="HubTopSongs" Header="TOP SONGS" HeaderTemplate="{StaticResource HubHeaderTemplate}"
-                    Visibility="{Binding IsMostStreamedEnabled, Converter={StaticResource VisibilityConverter}}">
+        <HubSection x:Uid="HubTopSongs" Header="TOP SONGS" HeaderTemplate="{StaticResource HubHeaderTemplate}">
             <DataTemplate>
                 <Grid>
                     <ProgressBar VerticalAlignment="Top" IsIndeterminate="{Binding IsMostStreamedLoading}"
                                  Visibility="{Binding IsMostStreamedLoading, Converter={StaticResource VisibilityConverter}}" />
+                    <TextBlock x:Uid="HubMostStreamedEmpty"
+                        Visibility="{Binding TopTracks, Converter={StaticResource EmptyListToVisibilityConverter}}"
+                        Text="Seems there was a problem loading top songs from Spotify." 
+                        Style="{StaticResource SubtleTextBlockStyle}" />
+                    
                     <GridView ItemsSource="{Binding TopTracks}" SelectionMode="None" IsItemClickEnabled="True"
                               ItemClick="TopSongsGridView_ItemClick" Padding="0,0,0,10">
                         <GridView.ItemTemplate>
