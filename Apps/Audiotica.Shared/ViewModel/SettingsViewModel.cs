@@ -33,7 +33,7 @@ namespace Audiotica.ViewModel
             LastFmUsername = creds.UserName;
             creds.RetrievePassword();
             LastFmPassword = creds.Password;
-            IsLogin = true;
+            IsLoggedIn = true;
         }
 
         public string Version
@@ -85,7 +85,7 @@ namespace Audiotica.ViewModel
             }
         }
 
-        public bool IsLogin
+        public bool IsLoggedIn
         {
             get { return _scrobbleSwitch; }
             set { Set(ref _scrobbleSwitch, value); }
@@ -111,13 +111,13 @@ namespace Audiotica.ViewModel
 
         private async void LoginButtonClicked()
         {
-            if (_service.IsAuthenticated)
+            if (IsLoggedIn)
             {
                 _service.Logout();
                 CurtainPrompt.Show("AuthLogoutSuccess".FromLanguageResource());
                 LastFmUsername = null;
                 LastFmPassword = null;
-                IsLogin = false;
+                IsLoggedIn = false;
                 Scrobble = false;
             }
             else
@@ -125,7 +125,7 @@ namespace Audiotica.ViewModel
                 if (string.IsNullOrEmpty(LastFmUsername)
                     || string.IsNullOrEmpty(LastFmPassword))
                 {
-                    CurtainPrompt.ShowError("AuthLogoutErrorForgot".FromLanguageResource());
+                    CurtainPrompt.ShowError("AuthLoginErrorForgot".FromLanguageResource());
                 }
 
                 else
@@ -134,7 +134,7 @@ namespace Audiotica.ViewModel
                     if (await _service.AuthenticaAsync(LastFmUsername, LastFmPassword))
                     {
                         CurtainPrompt.Show("AuthLoginSuccess".FromLanguageResource());
-                        IsLogin = true;
+                        IsLoggedIn = true;
                         Scrobble = true;
                     }
                     else

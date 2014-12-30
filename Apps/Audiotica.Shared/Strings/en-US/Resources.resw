@@ -125,10 +125,12 @@
     <value>Album has no tracks.</value>
   </data>
   <data name="AppBarHubReview.Label" xml:space="preserve">
-    <value>Rate+Review</value>
+    <value>rate+review</value>
+    <comment>lowercase on purpose</comment>
   </data>
   <data name="AppBarHubSettings.Label" xml:space="preserve">
-    <value>Settings+More</value>
+    <value>settings+more</value>
+    <comment>lowercase on purpose</comment>
   </data>
   <data name="AppErrorBooting" xml:space="preserve">
     <value>Problem booting some app services.</value>
@@ -146,14 +148,14 @@
   <data name="AuthLoginError" xml:space="preserve">
     <value>Problem logging you in.</value>
   </data>
+  <data name="AuthLoginErrorForgot" xml:space="preserve">
+    <value>You forgot to enter your username/password.</value>
+  </data>
   <data name="AuthLoginSuccess" xml:space="preserve">
     <value>You have been logged in.</value>
   </data>
   <data name="AuthLogoutError" xml:space="preserve">
     <value>Problem logging you out.</value>
-  </data>
-  <data name="AuthLogoutErrorForgot" xml:space="preserve">
-    <value>You forgot to enter your username/password.</value>
   </data>
   <data name="AuthLogoutSuccess" xml:space="preserve">
     <value>You have been logged out.</value>
@@ -255,6 +257,59 @@
   <data name="PlaylistCreateSuccess" xml:space="preserve">
     <value>Created playlist "{0}".</value>
     <comment>{0} is a playlist name</comment>
+  </data>
+  <data name="SettingsAbout.Header" xml:space="preserve">
+    <value>ABOUT</value>
+    <comment>uppercase on purpose</comment>
+  </data>
+  <data name="SettingsAboutBlock.Text" xml:space="preserve">
+    <value>A fully complete and open source alternative to Xbox Music.  Using Spotify and Last.FM for metadata with countless other websites for audio, making it able find any song.</value>
+  </data>
+  <data name="SettingsAboutBlog.Content" xml:space="preserve">
+    <value>Blog</value>
+  </data>
+  <data name="SettingsAboutEmail.Content" xml:space="preserve">
+    <value>Email</value>
+  </data>
+  <data name="SettingsAboutGithub.Content" xml:space="preserve">
+    <value>Source code at Github</value>
+    <comment>Github is the name of a website</comment>
+  </data>
+  <data name="SettingsApp.Header" xml:space="preserve">
+    <value>APP</value>
+    <comment>uppercase on purpose</comment>
+  </data>
+  <data name="SettingsLastFM.Header" xml:space="preserve">
+    <value>LAST.FM</value>
+    <comment>website name, no need for translation (uppercase on purpose)</comment>
+  </data>
+  <data name="SettingsLastFMLoggedIn.FalseContent" xml:space="preserve">
+    <value>Login</value>
+  </data>
+  <data name="SettingsLastFMLoggedIn.TrueContent" xml:space="preserve">
+    <value>Logout</value>
+  </data>
+  <data name="SettingsLastFMPassword.Header" xml:space="preserve">
+    <value>Password</value>
+  </data>
+  <data name="SettingsLastFMScrobble.Header" xml:space="preserve">
+    <value>Scrobble</value>
+    <comment>http://www.urbandictionary.com/define.php?term=Scrobble</comment>
+  </data>
+  <data name="SettingsLastFMUsername.Header" xml:space="preserve">
+    <value>Username</value>
+  </data>
+  <data name="SettingsPivot.Title" xml:space="preserve">
+    <value>SETTINGS+MORE</value>
+    <comment>uppercase on purpose</comment>
+  </data>
+  <data name="SettingsToggleAds.Header" xml:space="preserve">
+    <value>Ads</value>
+    <comment>alternative: Advertisements</comment>
+  </data>
+  <data name="SettingsToggleWallpaper.Header" xml:space="preserve">
+    <value>Album Art Wallpaper</value>
+    <comment>alternative: Album Art Background</comment>
   </data>
   <data name="SongSavingFindingMp3" xml:space="preserve">
     <value>Finding mp3 for "{0}".</value>

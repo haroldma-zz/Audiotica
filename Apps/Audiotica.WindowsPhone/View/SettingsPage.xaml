@@ -5,36 +5,41 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:audiotica="using:Audiotica"
+    xmlns:common="using:Audiotica.Core.Common"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
     DataContext="{Binding Source={StaticResource Locator}, Path=Settings}">
 
     <Grid>
-        <Pivot Title="SETTINGS+MORE" HeaderTemplate="{StaticResource PivotHeaderTemplate}">
-            <PivotItem Header="APP">
+        <Pivot x:Uid="SettingsPivot" Title="SETTINGS+MORE" HeaderTemplate="{StaticResource PivotHeaderTemplate}">
+            <PivotItem x:Uid="SettingsApp" Header="APP">
                 <StackPanel>
-                    <ToggleSwitch IsEnabled="False" IsOn="{Binding Advertisements, Mode=TwoWay}" Header="Ads" />
-                    <ToggleSwitch IsOn="{Binding WallpaperArt, Mode=TwoWay}" Header="Album Art Wallpaper" />
+                    <ToggleSwitch x:Uid="SettingsToggleAds" Header="Ads" IsEnabled="False" IsOn="{Binding Advertisements, Mode=TwoWay}" />
+                    <ToggleSwitch x:Uid="SettingsToggleWallpaper" Header="Album Art Wallpaper" IsOn="{Binding WallpaperArt, Mode=TwoWay}" />
                 </StackPanel>
             </PivotItem>
-            <PivotItem Header="LAST.FM">
+            <PivotItem x:Uid="SettingsLastFM" Header="LAST.FM">
                 <StackPanel>
-                    <TextBox IsEnabled="{Binding IsLogin,Converter={StaticResource BoolToOppositeConverter}}" Header="Username" Text="{Binding LastFmUsername, Mode=TwoWay}" />
-                    <PasswordBox IsEnabled="{Binding IsLogin, Converter={StaticResource BoolToOppositeConverter}}" Header="Password" Password="{Binding LastFmPassword, Mode=TwoWay}" />
-                    <Button Content="Login/Logout" Command="{Binding LoginButtonRelay}" HorizontalAlignment="Stretch" Margin="0,0,0,20" />
-                    <ToggleSwitch IsOn="{Binding Scrobble, Mode=TwoWay}" IsEnabled="{Binding IsLogin}" Header="Scrobble" />
+                    <StackPanel.Resources>
+                        <common:BoolToStringConverter x:Uid="SettingsLastFMLoggedIn" x:Key="IsLoggedInConverter" 
+                                                      TrueContent="Logout" FalseContent="Login"/>
+                    </StackPanel.Resources>
+                    <TextBox x:Uid="SettingsLastFMUsername" Header="Username" IsEnabled="{Binding IsLoggedIn,Converter={StaticResource BoolToOppositeConverter}}" Text="{Binding LastFmUsername, Mode=TwoWay}" />
+                    <PasswordBox x:Uid="SettingsLastFMPassword" Header="Password" IsEnabled="{Binding IsLoggedIn, Converter={StaticResource BoolToOppositeConverter}}" Password="{Binding LastFmPassword, Mode=TwoWay}" />
+                    <Button Content="{Binding IsLoggedIn, Converter={StaticResource IsLoggedInConverter}}" Command="{Binding LoginButtonRelay}" HorizontalAlignment="Stretch" Margin="0,0,0,20" />
+                    <ToggleSwitch x:Uid="SettingsLastFMScrobble" Header="Scrobble" IsOn="{Binding Scrobble, Mode=TwoWay}" IsEnabled="{Binding IsLoggedIn}" />
                 </StackPanel>
             </PivotItem>
-            <PivotItem Header="ABOUT">
+            <PivotItem x:Uid="SettingsAbout" Header="ABOUT">
                 <Grid>
                     <StackPanel VerticalAlignment="Top">
                         <Image Height="100" Source="ms-appx:///Assets/Logo.png"/>
-                        <TextBlock Text="A reboot of the original Audiotica downloader.  Now as a fully complete and open source alternative to Xbox Music.  Using Last.FM for metadata and countless websites for audio, you could call it the SickBeard of music." FontSize="20" TextWrapping="Wrap" Margin="0,0,0,20" />
-                        <HyperlinkButton Content="Blog" NavigateUri="http://blog.zumicts.com" FontSize="25" Foreground="{StaticResource PhoneAccentBrush}" FontFamily="Global User Interface" />
-                        <HyperlinkButton Content="Email" NavigateUri="mailto:harry@zumicts.com" FontSize="25" Foreground="{StaticResource PhoneAccentBrush}" />
+                        <TextBlock x:Uid="SettingsAboutBlock" Text="A fully complete and open source alternative to Xbox Music.  Using Spotify and Last.FM for metadata with countless other websites for audio, making it able find any song." FontSize="20" TextWrapping="Wrap" Margin="0,0,0,20" />
+                        <HyperlinkButton x:Uid="SettingsAboutBlog" Content="Blog" NavigateUri="http://blog.zumicts.com" FontSize="25" Foreground="{StaticResource PhoneAccentBrush}" FontFamily="Global User Interface" />
+                        <HyperlinkButton x:Uid="SettingsAboutEmail" Content="Email" NavigateUri="mailto:harry@zumicts.com" FontSize="25" Foreground="{StaticResource PhoneAccentBrush}" />
                         <HyperlinkButton Content="@zumicts" NavigateUri="http://twitter.com/zumicts" FontSize="25" Foreground="{StaticResource PhoneAccentBrush}" />
                         <HyperlinkButton Content="/r/audioticawp" NavigateUri="http://reddit.com/r/AudioticaWP" FontSize="25" Foreground="{StaticResource PhoneAccentBrush}" />
-                        <HyperlinkButton Content="Source code at Github" NavigateUri="http://github.com/zumicts/Audiotica" FontSize="25" Foreground="{StaticResource PhoneAccentBrush}" />
+                        <HyperlinkButton x:Uid="SettingsAboutGithub" Content="Source code at Github" NavigateUri="http://github.com/zumicts/Audiotica" FontSize="25" Foreground="{StaticResource PhoneAccentBrush}" />
                     </StackPanel>
                     <TextBlock Text="{Binding Version}" TextAlignment="Right" FontSize="20" VerticalAlignment="Bottom" Margin="0,0,0,5" />
                 </Grid>
