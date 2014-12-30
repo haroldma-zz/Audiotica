@@ -17,7 +17,7 @@
             <ImageBrush Opacity=".25" Stretch="UniformToFill" ImageSource="{Binding LastArtist.MainImage.Largest}" />
         </Grid.Background>
         <Pivot x:Name="ArtistPivot" Title="{Binding Artist.Name, Converter={StaticResource UpperCaseConverter}}" HeaderTemplate="{StaticResource PivotHeaderTemplate}">
-            <PivotItem Header="SONGS">
+            <PivotItem x:Uid="PivotSongs" Header="SONGS">
                 <ListView IsItemClickEnabled="True" ItemsSource="{Binding Artist.Songs}"
                           ItemTemplate="{StaticResource SongDataTemplate}">
                     <interactivity:Interaction.Behaviors>
@@ -27,17 +27,17 @@
                     </interactivity:Interaction.Behaviors>
                 </ListView>
             </PivotItem>
-            <PivotItem Header="ALBUMS">
+            <PivotItem x:Uid="PivotAlbums" Header="ALBUMS">
                 <ListView ItemsSource="{Binding Artist.Albums}"
                           ItemTemplate="{StaticResource AlbumDataTemplate}"
                           SelectionMode="None"
                           IsItemClickEnabled="True" ItemClick="AlbumListView_ItemClick" />
             </PivotItem>
-            <PivotItem x:Name="SimilarPivot" Header="SIMILAR">
+            <PivotItem x:Uid="PivotSimilar" x:Name="SimilarPivot" Header="SIMILAR">
                 <ListView ItemsSource="{Binding LastArtist.Similar}" IsItemClickEnabled="True"
                           ItemClick="ListView_ItemClick" ItemTemplate="{StaticResource SimilarLastArtistDataTemplate}"/>
             </PivotItem>
-            <PivotItem x:Name="BioPivot" Header="BIO">
+            <PivotItem x:Uid="PivotBio" x:Name="BioPivot" Header="BIO">
                 <ScrollViewer>
                     <TextBlock FontSize="24" TextWrapping="Wrap" Text="{Binding LastArtist.Bio.Content}" />
                 </ScrollViewer>

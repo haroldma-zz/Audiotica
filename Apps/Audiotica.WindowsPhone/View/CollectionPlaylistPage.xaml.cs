@@ -33,14 +33,14 @@ namespace Audiotica.View
 
         private void CreateCommands()
         {
-            var acceptButton = new AppBarButton {Icon = new SymbolIcon(Symbol.Accept), Label = "Accept"};
+            var acceptButton = new AppBarButton { Icon = new SymbolIcon(Symbol.Accept), Label = "GenericAccept".FromLanguageResource() };
             acceptButton.Click += AcceptButtonOnClick;
             _reorderModeCommands = new List<ICommandBarElement>
             {
                 acceptButton
             };
 
-            var deleteButton = new AppBarButton {Icon = new SymbolIcon(Symbol.Delete), Label = "Remove"};
+            var deleteButton = new AppBarButton { Icon = new SymbolIcon(Symbol.Delete), Label = "GenericRemove".FromLanguageResource() };
             deleteButton.Click += DeleteButtonOnClick;
             _selectionModeCommands = new List<ICommandBarElement>
             {

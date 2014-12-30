@@ -124,6 +124,15 @@
   <data name="AlbumNoTracks" xml:space="preserve">
     <value>Album has no tracks.</value>
   </data>
+  <data name="AlbumSaveAllButton.Content" xml:space="preserve">
+    <value>Save All</value>
+  </data>
+  <data name="AppBarAccept.Label" xml:space="preserve">
+    <value>Accept</value>
+  </data>
+  <data name="AppBarAdd.Label" xml:space="preserve">
+    <value>Add</value>
+  </data>
   <data name="AppBarHubReview.Label" xml:space="preserve">
     <value>rate+review</value>
     <comment>lowercase on purpose</comment>
@@ -131,6 +140,16 @@
   <data name="AppBarHubSettings.Label" xml:space="preserve">
     <value>settings+more</value>
     <comment>lowercase on purpose</comment>
+  </data>
+  <data name="AppBarPin.Label" xml:space="preserve">
+    <value>Pin</value>
+    <comment>to create a tile in the start screen of the phone</comment>
+  </data>
+  <data name="AppBarReorder.Label" xml:space="preserve">
+    <value>Reorder</value>
+  </data>
+  <data name="AppBarSelect.Label" xml:space="preserve">
+    <value>Select</value>
   </data>
   <data name="AppErrorBooting" xml:space="preserve">
     <value>Problem booting some app services.</value>
@@ -207,11 +226,17 @@
   <data name="FeedbackDialogTitle" xml:space="preserve">
     <value>Rate Audiotica!</value>
   </data>
+  <data name="GenericAccept" xml:space="preserve">
+    <value>Accept</value>
+  </data>
   <data name="GenericLoadingMore" xml:space="preserve">
     <value>Loading more...</value>
   </data>
   <data name="GenericLoadingMoreError" xml:space="preserve">
     <value>Problem loading more items.</value>
+  </data>
+  <data name="GenericRemove" xml:space="preserve">
+    <value>Remove</value>
   </data>
   <data name="GenericWait" xml:space="preserve">
     <value>Please wait...</value>
@@ -269,12 +294,24 @@
     <value>ARTISTS</value>
     <comment>uppercase on purpose</comment>
   </data>
+  <data name="PivotBio.Header" xml:space="preserve">
+    <value>BIO</value>
+    <comment>uppercase on purpose</comment>
+  </data>
   <data name="PivotPlaylists.Header" xml:space="preserve">
     <value>PLAYLISTS</value>
     <comment>uppercase on purpose</comment>
   </data>
+  <data name="PivotSimilar.Header" xml:space="preserve">
+    <value>SIMILAR</value>
+    <comment>uppercase on purpose</comment>
+  </data>
   <data name="PivotSongs.Header" xml:space="preserve">
     <value>SONGS</value>
+    <comment>uppercase on purpose</comment>
+  </data>
+  <data name="PivotTopSongs.Header" xml:space="preserve">
+    <value>TOP SONGS</value>
     <comment>uppercase on purpose</comment>
   </data>
   <data name="PlaylistCreateNameForgot" xml:space="preserve">
@@ -287,9 +324,23 @@
     <value>Created playlist "{0}".</value>
     <comment>{0} is a playlist name</comment>
   </data>
+  <data name="PlaylistNewHeader.Text" xml:space="preserve">
+    <value>NEW PLAYLIST</value>
+    <comment>uppercase on purpose</comment>
+  </data>
   <data name="PlaylistNewPicker.Title" xml:space="preserve">
     <value>NEW PLAYLIST</value>
     <comment>uppercase on purpose</comment>
+  </data>
+  <data name="PlaylistNewSettings.Text" xml:space="preserve">
+    <value>settings</value>
+    <comment>lowercase on purpose</comment>
+  </data>
+  <data name="PlaylistTextBox.Header" xml:space="preserve">
+    <value>Playlist name</value>
+  </data>
+  <data name="PlaylistTextBox.PlaceholderText" xml:space="preserve">
+    <value>Untitled playlist</value>
   </data>
   <data name="SearchBox.PlaceholderText" xml:space="preserve">
     <value>search</value>

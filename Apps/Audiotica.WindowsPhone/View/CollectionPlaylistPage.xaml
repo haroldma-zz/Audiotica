@@ -49,8 +49,8 @@
     <Page.BottomAppBar>
         <CommandBar>
 <!--            <AppBarButton Icon="Add" Label="Add" />-->
-            <AppBarButton Icon="List" Label="Select" Click="SelectAppBarButton_Click" />
-            <AppBarButton Icon="Sort" Label="Reorder" Click="ReorderAppBarButton_Click" />
+            <AppBarButton x:Uid="AppBarSelect" Icon="List" Label="Select" Click="SelectAppBarButton_Click" />
+            <AppBarButton x:Uid="AppBarReorder" Icon="Sort" Label="Reorder" Click="ReorderAppBarButton_Click" />
 <!--            <AppBarButton Icon="Pin" Label="Pin" />-->
         </CommandBar>
     </Page.BottomAppBar>

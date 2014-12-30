@@ -134,11 +134,9 @@ namespace Audiotica.ViewModel
         {
             IsLastfmEnabled = b;
             IsRecommendationLoading = b;
+            RecommendedArtists = null;
             if (!b)
-            {
-                RecommendedArtists = null;
                 return;
-            }
 
             try
             {

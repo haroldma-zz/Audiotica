@@ -23,17 +23,17 @@
 
         <!-- Title Panel -->
         <StackPanel Grid.Row="0" Margin="19,0,0,0">
-            <TextBlock Text="NEW PLAYLIST" FontSize="24" FontWeight="Bold" Style="{ThemeResource TitleTextBlockStyle}" Margin="0,12,0,0"/>
-            <TextBlock Text="settings" Margin="0,-6.5,0,26.5" Style="{ThemeResource HeaderTextBlockStyle}" CharacterSpacing="{ThemeResource PivotHeaderItemCharacterSpacing}"/>
+            <TextBlock x:Uid="PlaylistNewHeader" Text="NEW PLAYLIST" FontSize="24" FontWeight="Bold" Style="{ThemeResource TitleTextBlockStyle}" Margin="0,12,0,0"/>
+            <TextBlock x:Uid="PlaylistNewSettings" Text="settings" Margin="0,-6.5,0,26.5" Style="{ThemeResource HeaderTextBlockStyle}" CharacterSpacing="{ThemeResource PivotHeaderItemCharacterSpacing}"/>
         </StackPanel>
 
-        <Grid Grid.Row="1" x:Name="ContentRoot" Margin="19,9.5,19,0">
-            <TextBox x:Name="PlaylistNameText" Header="Playlist name" PlaceholderText="Untitled playlist" />
+        <Grid Grid.Row="1" Margin="19,9.5,19,0">
+            <TextBox x:Uid="PlaylistTextBox" Header="Playlist name" PlaceholderText="Untitled playlist" x:Name="PlaylistNameText" />
         </Grid>
     </Grid>
     <Page.BottomAppBar>
         <CommandBar>
-            <AppBarButton Icon="Accept" Label="Accept" Click="AppBarButton_Click" />
+            <AppBarButton x:Uid="AppBarAccept" Icon="Accept" Label="Accept" Click="AppBarButton_Click" />
         </CommandBar>
     </Page.BottomAppBar>
 </audiotica:PageBase>
