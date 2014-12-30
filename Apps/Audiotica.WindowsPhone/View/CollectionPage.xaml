@@ -60,7 +60,7 @@
 
         <Pivot Name="CollectionPivot" x:Uid="CollectionPivot" Title="COLLECTION" HeaderTemplate="{StaticResource PivotHeaderTemplate}"
                SelectionChanged="CollectionPivot_SelectionChanged">
-            <PivotItem x:Uid="CollectionSongs" Header="SONGS">
+            <PivotItem x:Uid="PivotSongs" Header="SONGS">
                 <SemanticZoom>
                     <SemanticZoom.ZoomedInView>
                         <ListView IsItemClickEnabled="True" ItemsSource="{Binding Source={StaticResource SongGroups}}"
@@ -145,7 +145,7 @@
                     </SemanticZoom.ZoomedOutView>
                 </SemanticZoom>
             </PivotItem>
-            <PivotItem x:Uid="CollectionArtists" Header="ARTISTS">
+            <PivotItem x:Uid="PivotArtists" Header="ARTISTS">
                 <SemanticZoom>
                     <SemanticZoom.ZoomedInView>
                         <ListView IsItemClickEnabled="True"
@@ -179,7 +179,7 @@
                     </SemanticZoom.ZoomedOutView>
                 </SemanticZoom>
             </PivotItem>
-            <PivotItem x:Uid="CollectionAlbums" Header="ALBUMS">
+            <PivotItem x:Uid="PivotAlbums" Header="ALBUMS">
                 <SemanticZoom>
                     <SemanticZoom.ZoomedInView>
                         <ListView IsItemClickEnabled="True" ItemsSource="{Binding Source={StaticResource AlbumGroups}}"
@@ -297,7 +297,7 @@
                     </SemanticZoom.ZoomedOutView>
                 </SemanticZoom>
             </PivotItem>
-            <PivotItem x:Uid="CollectionPlaylists" Header="PLAYLIST">
+            <PivotItem x:Uid="PivotPlaylists" Header="PLAYLIST">
                 <ListView IsItemClickEnabled="True" ItemsSource="{Binding Service.Playlists}" Padding="0,0,0,25"
                           Margin="0" ItemClick="PlaylistListView_ItemClick">
                     <ListView.ItemTemplate>

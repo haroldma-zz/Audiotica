@@ -160,27 +160,11 @@
   <data name="AuthLogoutSuccess" xml:space="preserve">
     <value>You have been logged out.</value>
   </data>
-  <data name="CollectionAlbums.Header" xml:space="preserve">
-    <value>ALBUMS</value>
-    <comment>uppercase on purpose</comment>
-  </data>
   <data name="CollectionAppBarNewPlaylist.Label" xml:space="preserve">
     <value>New Playlist</value>
   </data>
-  <data name="CollectionArtists.Header" xml:space="preserve">
-    <value>ARTISTS</value>
-    <comment>uppercase on purpose</comment>
-  </data>
   <data name="CollectionPivot.Title" xml:space="preserve">
     <value>COLLECTION</value>
-    <comment>uppercase on purpose</comment>
-  </data>
-  <data name="CollectionPlaylists.Header" xml:space="preserve">
-    <value>PLAYLISTS</value>
-    <comment>uppercase on purpose</comment>
-  </data>
-  <data name="CollectionSongs.Header" xml:space="preserve">
-    <value>SONGS</value>
     <comment>uppercase on purpose</comment>
   </data>
   <data name="EntryAlreadySaved" xml:space="preserve">
@@ -277,6 +261,22 @@
   <data name="NowPlayingName" xml:space="preserve">
     <value>Now Playing</value>
   </data>
+  <data name="PivotAlbums.Header" xml:space="preserve">
+    <value>ALBUMS</value>
+    <comment>uppercase on purpose</comment>
+  </data>
+  <data name="PivotArtists.Header" xml:space="preserve">
+    <value>ARTISTS</value>
+    <comment>uppercase on purpose</comment>
+  </data>
+  <data name="PivotPlaylists.Header" xml:space="preserve">
+    <value>PLAYLISTS</value>
+    <comment>uppercase on purpose</comment>
+  </data>
+  <data name="PivotSongs.Header" xml:space="preserve">
+    <value>SONGS</value>
+    <comment>uppercase on purpose</comment>
+  </data>
   <data name="PlaylistCreateNameForgot" xml:space="preserve">
     <value>You forgot to give the playlist a name.</value>
   </data>
@@ -289,6 +289,14 @@
   </data>
   <data name="PlaylistNewPicker.Title" xml:space="preserve">
     <value>NEW PLAYLIST</value>
+    <comment>uppercase on purpose</comment>
+  </data>
+  <data name="SearchBox.PlaceholderText" xml:space="preserve">
+    <value>search</value>
+    <comment>lowercase on purpose</comment>
+  </data>
+  <data name="SearchPivot.Title" xml:space="preserve">
+    <value>SEARCH</value>
     <comment>uppercase on purpose</comment>
   </data>
   <data name="SettingsAbout.Header" xml:space="preserve">
