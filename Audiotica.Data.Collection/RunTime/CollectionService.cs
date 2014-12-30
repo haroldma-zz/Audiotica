@@ -170,7 +170,7 @@ namespace Audiotica.Data.Collection.RunTime
             }
             else
             {
-                var album = Albums.FirstOrDefault(p => p.ProviderId == song.Album.ProviderId || p.Name == song.Album.Name);
+                var album = Albums.FirstOrDefault(p => p.ProviderId == song.Album.ProviderId);
 
                 if (album != null)
                     song.Album = album;
@@ -191,11 +191,9 @@ namespace Audiotica.Data.Collection.RunTime
 
             #region Download artwork
 
+            var filePath = string.Format(CollectionConstant.ArtworkPath, song.Album.Id);
             if (artworkUrl != null)
             {
-//Use the album if one is available
-                var filePath = string.Format(CollectionConstant.ArtworkPath, song.Album.Id);
-
                 //Check if the album artwork has already been downloaded
                 var artworkExists = await StorageHelper.FileExistsAsync(filePath);
 
@@ -215,10 +213,6 @@ namespace Audiotica.Data.Collection.RunTime
                                 {
                                     await stream.CopyToAsync(fileStream);
                                     song.Album.HasArtwork = true;
-                                    //now set it
-                                    await _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-                                        song.Album.Artwork =
-                                            new BitmapImage(new Uri(CollectionConstant.LocalStorageAppPath + filePath)));
                                 }
                             }
                         }
@@ -233,16 +227,18 @@ namespace Audiotica.Data.Collection.RunTime
                 await _sqlService.UpdateItemAsync(song.Album);
             }
 
-            if (song.Album.Artwork == null)
-                _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-                    song.Album.Artwork = CollectionConstant.MissingArtworkImage);
+            await _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => 
+                song.Album.Artwork = 
+                song.Album.HasArtwork 
+                ? new BitmapImage(new Uri(CollectionConstant.LocalStorageAppPath + filePath)) 
+                : CollectionConstant.MissingArtworkImage);
 
             #endregion
 
             //Insert to db
             await _sqlService.InsertAsync(song);
 
-            _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+            await _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
             {
                 song.Artist.Songs.Insert(0, song);
                 song.Album.Songs.Add(song);
