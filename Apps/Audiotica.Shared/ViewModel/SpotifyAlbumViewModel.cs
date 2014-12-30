@@ -82,9 +82,9 @@ namespace Audiotica.ViewModel
                 }
                 Tracks = new ObservableCollection<SimpleTrack>(Album.Tracks.Items);
             }
-            catch (Exception e)
+            catch
             {
-                CurtainToast.ShowError(e.Message);
+                CurtainPrompt.ShowError("AppNetworkIssue".FromLanguageResource());
             }
             IsLoading = false;
         }

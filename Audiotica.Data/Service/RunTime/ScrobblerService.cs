@@ -46,7 +46,7 @@ namespace Audiotica.Data.Service.RunTime
             if (result == LastFmApiError.BadAuth)
             {
                 Logout();
-                CurtainToast.ShowError("Problem with last.fm pass");
+                CurtainPrompt.ShowError("AuthBadCredentials".FromLanguageResource(), "Last.FM");
             }
 
             return result == LastFmApiError.None;

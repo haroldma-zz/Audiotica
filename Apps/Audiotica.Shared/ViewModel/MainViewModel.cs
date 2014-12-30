@@ -87,7 +87,6 @@ namespace Audiotica.ViewModel
             }
             catch (Exception e)
             {
-                ShowNetworkError(e);
             }
             finally
             {
@@ -101,7 +100,6 @@ namespace Audiotica.ViewModel
             }
             catch (Exception e)
             {
-                ShowNetworkError(e);
             }
             finally
             {
@@ -114,22 +112,11 @@ namespace Audiotica.ViewModel
             }
             catch (Exception e)
             {
-                ShowNetworkError(e);
             }
             finally
             {
                 IsNewLoading = false;
             }
-        }
-
-        private void ShowNetworkError(Exception e)
-        {
-            CurtainToast.ShowError("NetworkIssueToast".FromLanguageResource());
-
-            var ex = e.Message + "\n" + e.StackTrace;
-            if (e is LastException)
-                ex = (e as LastException).Description + "\n" + ex;
-            EasyTracker.GetTracker().SendException(ex, false);
         }
     }
 }

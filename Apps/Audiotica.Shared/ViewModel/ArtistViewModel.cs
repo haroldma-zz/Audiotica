@@ -85,26 +85,26 @@ namespace Audiotica.ViewModel
             {
                 Artist = await _service.GetDetailArtist(name);
             }
-            catch (Exception e)
+            catch
             {
-                CurtainToast.ShowError(e.Message);
+                CurtainPrompt.ShowError("AppNetworkIssue".FromLanguageResource());
             }
             try
             {
                 TopTracks = (await _service.GetArtistTopTracks(name)).Content.ToList();
             }
-            catch (Exception e)
+            catch
             {
-                CurtainToast.ShowError(e.Message);
+                CurtainPrompt.ShowError("AppNetworkIssue".FromLanguageResource());
             }
 
             try
             {
                 TopAlbums = (await _service.GetArtistTopAlbums(name)).Content.ToList();
             }
-            catch (Exception e)
+            catch
             {
-                CurtainToast.ShowError(e.Message);
+                CurtainPrompt.ShowError("AppNetworkIssue".FromLanguageResource());
             }
 
             IsLoading = false;

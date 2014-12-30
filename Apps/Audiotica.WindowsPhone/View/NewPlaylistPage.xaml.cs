@@ -6,6 +6,7 @@ using System.Linq;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 using Audiotica.Core.Common;
+using Audiotica.Core.Utilities;
 using Audiotica.Data.Collection.Model;
 
 #endregion
@@ -43,7 +44,7 @@ namespace Audiotica.View
 
             if (string.IsNullOrEmpty(name))
             {
-                CurtainToast.ShowError("You forgot to give it a name");
+                CurtainPrompt.ShowError("PlaylistCreateNameForgot".FromLanguageResource());
             }
             else
             {
@@ -51,7 +52,7 @@ namespace Audiotica.View
                     Playlists.FirstOrDefault(p => 
                         String.Equals(p.Name, name, StringComparison.CurrentCultureIgnoreCase)) != null)
                 {
-                    CurtainToast.ShowError("Name is already taken");
+                    CurtainPrompt.ShowError("PlaylistCreateNameTaken".FromLanguageResource());
                 }
                 else
                 {
@@ -61,7 +62,7 @@ namespace Audiotica.View
                     {
                         await App.Locator.CollectionService.AddToPlaylistAsync(playlist, song);
                     }
-                    CurtainToast.Show("Playlist created");
+                    CurtainPrompt.Show("PlaylistCreateSuccess".FromLanguageResource(), playlist.Name);
                     Frame.GoBack();
                 }
             }

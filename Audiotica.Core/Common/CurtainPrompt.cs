@@ -43,16 +43,16 @@ using ColorHelper = Audiotica.Core.Utilities.ColorHelper;
 
 namespace Audiotica.Core.Common
 {
-    public class CurtainToast
+    public class CurtainPrompt
     {
         private readonly Color _color;
         private const int PaddingPopup = 150;
-        private int MillisecondsToHide = 1500;
-        private static CurtainToast _current;
+        private int _millisecondsToHide = 1500;
+        private static CurtainPrompt _current;
         private Popup _popup;
         private DispatcherTimer _timer;
 
-        public CurtainToast(Color color, string msg, bool isError = false)
+        public CurtainPrompt(Color color, string msg, bool isError = false)
         {
             _color = color;
             CreatePopup(msg, isError);
@@ -78,12 +78,12 @@ namespace Audiotica.Core.Common
             }
         }
 
-        public static CurtainToast Show(string msg)
+        public static CurtainPrompt Show(string msg)
         {
             return Show(msg, null);
         }
 
-        public static CurtainToast Show(string msg, params object[] args)
+        public static CurtainPrompt Show(string msg, params object[] args)
         {
             if (args != null)
             {
@@ -93,16 +93,16 @@ namespace Audiotica.Core.Common
             if (_current != null)
                 _current.Dismiss();
 
-            var curtain = new CurtainToast(Colors.DarkGreen ,msg) {MillisecondsToHide = 1500};
+            var curtain = new CurtainPrompt(Colors.DarkGreen ,msg) {_millisecondsToHide = 1500};
             _current = curtain;
             return curtain;
         }
 
-        public static CurtainToast ShowError(string msg)
+        public static CurtainPrompt ShowError(string msg)
         {
             return ShowError(msg, null);
         }
-        public static CurtainToast ShowError(string msg, params object[] args)
+        public static CurtainPrompt ShowError(string msg, params object[] args)
         {
             if (args != null)
             {
@@ -112,7 +112,7 @@ namespace Audiotica.Core.Common
             if (_current != null)
                 _current.Dismiss();
 
-            var curtain = new CurtainToast(Colors.DarkRed, msg, true) {MillisecondsToHide = 2500};
+            var curtain = new CurtainPrompt(Colors.DarkRed, msg, true) {_millisecondsToHide = 2500};
             _current = curtain;
             return curtain;
         }
@@ -213,7 +213,7 @@ namespace Audiotica.Core.Common
 
         private void slideDownAnimation_Completed(object sender, object e)
         {
-            _timer = new DispatcherTimer {Interval = TimeSpan.FromMilliseconds(MillisecondsToHide)};
+            _timer = new DispatcherTimer {Interval = TimeSpan.FromMilliseconds(_millisecondsToHide)};
             _timer.Tick += timer_Tick;
             _timer.Start();
         }
@@ -297,14 +297,7 @@ namespace Audiotica.Core.Common
 
         private void grid_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
         {
-            if (e.Velocities.Linear.Y <= 0 || _popup.VerticalOffset >= -PaddingPopup + 25)
-            {
-                CompleteCurtainAnimation();
-            }
-            else
-            {
-                ShowPopup();
-            }
+            CompleteCurtainAnimation();
         }
     }
 }

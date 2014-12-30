@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Windows.Graphics.Display;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -20,6 +19,8 @@ namespace Audiotica.View
 {
     public sealed partial class CollectionPage
     {
+        private bool _currentlyPreparing;
+
         public CollectionPage()
         {
             InitializeComponent();
@@ -40,20 +41,23 @@ namespace Audiotica.View
 
         private void LoadWallpaperArt()
         {
-            var vm = (CollectionViewModel)DataContext;
+            var vm = (CollectionViewModel) DataContext;
 
             if (vm.RandomizeAlbumList.Count != 0 || !AppSettingsHelper.Read("WallpaperArt", true)) return;
 
-            var albums = App.Locator.CollectionService.Albums.ToList().Where(p => p.Artwork != CollectionConstant.MissingArtworkImage).ToList();
+            var albums =
+                App.Locator.CollectionService.Albums.ToList()
+                    .Where(p => p.Artwork != CollectionConstant.MissingArtworkImage)
+                    .ToList();
 
             var albumCount = albums.Count;
 
             if (albumCount <= 0) return;
 
             var h = Window.Current.Bounds.Height;
-            var rows = (int)Math.Ceiling(h / vm.ArtworkSize);
+            var rows = (int) Math.Ceiling(h/vm.ArtworkSize);
 
-            var numImages = rows * vm.RowCount;
+            var numImages = rows*vm.RowCount;
             var imagesNeeded = numImages - albumCount;
 
             var shuffle = albums
@@ -63,7 +67,6 @@ namespace Audiotica.View
 
             if (imagesNeeded > 0)
             {
-
                 var repeatList = new List<Album>();
 
                 while (imagesNeeded > 0)
@@ -113,11 +116,11 @@ namespace Audiotica.View
                     await App.Locator.AudioPlayerHelper.ShutdownPlayerAsync();
 
                 await App.Locator.CollectionService.DeleteSongAsync(song);
-                CurtainToast.Show("SongDeletedToast".FromLanguageResource());
+                CurtainPrompt.Show("EntryDeletingSuccess".FromLanguageResource(), song.Name);
             }
             catch
             {
-                CurtainToast.ShowError("ErrorDeletingToast".FromLanguageResource());
+                CurtainPrompt.ShowError("EntryDeletingError".FromLanguageResource(), song.Name);
             }
         }
 
@@ -138,7 +141,7 @@ namespace Audiotica.View
             }
             else
             {
-                CurtainToast.ShowError("Try selecting some songs");
+                CurtainPrompt.ShowError("SongsNoneSelected".FromLanguageResource());
             }
         }
 
@@ -150,15 +153,15 @@ namespace Audiotica.View
 
         private void MenuFlyoutItem_Click(object sender, RoutedEventArgs e)
         {
-            var menu = (MenuFlyoutItem)sender;
-            var flyout = (ListPickerFlyout)FlyoutBase.GetAttachedFlyout(menu);
-            var song = (Song)menu.DataContext;
+            var menu = (MenuFlyoutItem) sender;
+            var flyout = (ListPickerFlyout) FlyoutBase.GetAttachedFlyout(menu);
+            var song = (Song) menu.DataContext;
 
             var list = new List<CollectionViewModel.AddableCollectionItem>
             {
                 new CollectionViewModel.AddableCollectionItem
                 {
-                    Name = "Now Playing"
+                    Name = "NowPlayingName.Text".FromLanguageResource()
                 }
             };
 
@@ -201,21 +204,19 @@ namespace Audiotica.View
 
         private async void DeleteMenuFlyoutItem_Click_1(object sender, RoutedEventArgs e)
         {
-            var playlist = (Playlist)((FrameworkElement)sender).DataContext;
+            var playlist = (Playlist) ((FrameworkElement) sender).DataContext;
 
             try
             {
-                //delete from the queue
                 await App.Locator.CollectionService.DeletePlaylistAsync(playlist);
-                CurtainToast.Show("Playlist deleted");
+                CurtainPrompt.Show("EntryDeletingSuccess".FromLanguageResource(), playlist.Name);
             }
             catch
             {
-                CurtainToast.ShowError("Problem deleting");
+                CurtainPrompt.ShowError("EntryDeletingError".FromLanguageResource(), playlist.Name);
             }
         }
 
-        private bool _currentlyPreparing ;
         private async void ArtistPlayAppBarButton_Click_1(object sender, RoutedEventArgs e)
         {
             if (_currentlyPreparing) return;

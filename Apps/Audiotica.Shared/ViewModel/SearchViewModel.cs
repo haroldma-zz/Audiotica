@@ -146,15 +146,11 @@ namespace Audiotica.ViewModel
 
 
                 //if (_tracksResponse.TotalItems == 0)
-                //CurtainToast.ShowError("NoSearchResultsToast".FromLanguageResource());
-            }
-            catch (LastException ex)
-            {
-                CurtainToast.ShowError(ex.Message);
+                //CurtainPrompt.ShowError("NoSearchResultsToast".FromLanguageResource());
             }
             catch
             {
-                CurtainToast.ShowError("NetworkIssueToast".FromLanguageResource());
+                CurtainPrompt.ShowError("AppNetworkIssue".FromLanguageResource());
             }
         }
 
@@ -235,7 +231,7 @@ namespace Audiotica.ViewModel
                     {
                         IsLoading = false;
                         setPageResponse(null);
-                        CurtainToast.ShowError("Problem loading more items.");
+                        CurtainPrompt.ShowError("GenericLoadingMoreError".FromLanguageResource());
                         return new LoadMoreItemsResult
                         {
                             Count = 0

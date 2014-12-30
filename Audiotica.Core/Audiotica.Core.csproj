@@ -42,7 +42,7 @@
   <ItemGroup>
     <Compile Include="Common\AlphaKeyGroup.cs" />
     <Compile Include="Common\AppVersion.cs" />
-    <Compile Include="Common\CurtainToast.cs" />
+    <Compile Include="Common\CurtainPrompt.cs" />
     <Compile Include="Common\IncrementalObservableCollection.cs" />
     <Compile Include="Common\BoolToOppositeConverter.cs" />
     <Compile Include="Common\NotEmptyToStringConverter.cs" />

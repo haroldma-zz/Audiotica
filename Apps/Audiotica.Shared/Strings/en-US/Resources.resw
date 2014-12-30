@@ -117,128 +117,116 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="AddToMenuItem.Text" xml:space="preserve">
-    <value>Add To... (Disabled)</value>
-    <comment>Text use for the add to item in a song's context menu.</comment>
+  <data name="AlbumMissingTracks" xml:space="preserve">
+    <value>Couldn't save {0} song(s) of "{1}".</value>
+    <comment>{0} is how many tracks are missing and {1} is an album name</comment>
   </data>
-  <data name="AlbumDetailCard.ActionButtonText" xml:space="preserve">
-    <value>Download All (Disabled)</value>
-    <comment>Download all button for album detail card.</comment>
+  <data name="AlbumNoTracks" xml:space="preserve">
+    <value>Album has no tracks.</value>
   </data>
-  <data name="AlbumDetailCard.HeaderText" xml:space="preserve">
-    <value>Details</value>
-    <comment>Header for the album detail card.</comment>
+  <data name="AppErrorBooting" xml:space="preserve">
+    <value>Problem booting some app services.</value>
   </data>
-  <data name="AlbumsCard.HeaderText" xml:space="preserve">
-    <value>Albums</value>
-    <comment>Header for the albums card. (use in various places)</comment>
+  <data name="AppErrorInitialPage" xml:space="preserve">
+    <value>Failed to create initial page.</value>
   </data>
-  <data name="AlreadySavedToast" xml:space="preserve">
-    <value>Already saved</value>
-    <comment>Toast shows when trying to save a song that is already in the collection.</comment>
+  <data name="AppNetworkIssue" xml:space="preserve">
+    <value>Problem with the connection.</value>
   </data>
-  <data name="ArtistBioCard.HeaderText" xml:space="preserve">
-    <value>Bio</value>
-    <comment>Header for the artist biography card.</comment>
+  <data name="AuthBadCredentials" xml:space="preserve">
+    <value>Problem with your {0} account, login again in the settings page.</value>
+    <comment>{0} internet account (last.fm, spotify, etc)</comment>
   </data>
-  <data name="ArtistDetailCard.HeaderText" xml:space="preserve">
-    <value>Details</value>
-    <comment>Header for the artist detail card.</comment>
+  <data name="AuthLoginError" xml:space="preserve">
+    <value>Problem logging you in.</value>
   </data>
-  <data name="ArtistTopAlbumsCard.ActionButtonText" xml:space="preserve">
-    <value>View More</value>
-    <comment>View more button for artist top albums card.</comment>
+  <data name="AuthLoginSuccess" xml:space="preserve">
+    <value>You have been logged in.</value>
   </data>
-  <data name="ArtistTopAlbumsCard.HeaderText" xml:space="preserve">
-    <value>Top Albums</value>
-    <comment>Header for the artist top albums card.</comment>
+  <data name="AuthLogoutError" xml:space="preserve">
+    <value>Problem logging you out.</value>
   </data>
-  <data name="ArtistTopTracksCard.ActionButtonText" xml:space="preserve">
-    <value>View More</value>
-    <comment>View more button for artist top tracks card.</comment>
+  <data name="AuthLogoutErrorForgot" xml:space="preserve">
+    <value>You forgot to enter your username/password.</value>
   </data>
-  <data name="ArtistTopTracksCard.HeaderText" xml:space="preserve">
-    <value>Top Songs</value>
-    <comment>Header for the artist top tracks card.</comment>
+  <data name="AuthLogoutSuccess" xml:space="preserve">
+    <value>You have been logged out.</value>
   </data>
-  <data name="CollectionAlbumsPivot.Header" xml:space="preserve">
-    <value>albums</value>
-    <comment>Header for the albums pivot (collection page, lowercase)</comment>
+  <data name="EntryAlreadySaved" xml:space="preserve">
+    <value>Already saved "{0}".</value>
+    <comment>{0} is a song or album name</comment>
   </data>
-  <data name="CollectionArtistsPivot.Header" xml:space="preserve">
-    <value>artists</value>
-    <comment>Header for the artists pivot (collection page, lowercase)</comment>
+  <data name="EntryAlreadySaving" xml:space="preserve">
+    <value>Already saving "{0}".</value>
+    <comment>{0} is a song or album name</comment>
   </data>
-  <data name="CollectionCard.HeaderText" xml:space="preserve">
-    <value>Collection</value>
-    <comment>Header for the collection card.</comment>
+  <data name="EntryDeletingError" xml:space="preserve">
+    <value>Problem deleting "{0}".</value>
+    <comment>{0} is a song or playlist name</comment>
   </data>
-  <data name="CollectionSongsPivot.Header" xml:space="preserve">
-    <value>songs</value>
-    <comment>Header for the songs pivot (collection page, lowercase)</comment>
+  <data name="EntryDeletingSuccess" xml:space="preserve">
+    <value>Deleted "{0}".</value>
+    <comment>{0} is a song or playlist name</comment>
   </data>
-  <data name="DeleteMenuItem.Text" xml:space="preserve">
-    <value>Delete</value>
-    <comment>Text use for the delete item in a song's context menu.</comment>
+  <data name="EntrySaved" xml:space="preserve">
+    <value>Saved "{0}".</value>
+    <comment>{0} is a song or album name</comment>
   </data>
-  <data name="ErrorBootingToast" xml:space="preserve">
-    <value>Problem booting app services</value>
-    <comment>Toast shows when the app fails to boot up app services.</comment>
+  <data name="EntrySaving" xml:space="preserve">
+    <value>Saving "{0}".</value>
+    <comment>{0} is a song or album name</comment>
   </data>
-  <data name="ErrorDeletingToast" xml:space="preserve">
-    <value>Problem deleting song</value>
-    <comment>Toast shows when the app can't delete a song.</comment>
+  <data name="EntrySavingError" xml:space="preserve">
+    <value>Problem saving "{0}".</value>
+    <comment>{0} is a song or album name</comment>
   </data>
-  <data name="MatchingSongToast" xml:space="preserve">
-    <value>Finding audio...</value>
-    <comment>Toast shows when the app is matching a track.</comment>
+  <data name="FeedbackDialogContent" xml:space="preserve">
+    <value>Your feedback helps you improve this app. If you like it, please take a minute to rate and review so it can continue improving with new features and updates.</value>
   </data>
-  <data name="MusicTextBlock.Text" xml:space="preserve">
-    <value>Music</value>
-    <comment>Text for search button text block in collection card.</comment>
+  <data name="FeedbackDialogNoButton" xml:space="preserve">
+    <value>No, Thanks!</value>
   </data>
-  <data name="NetworkIssueToast" xml:space="preserve">
-    <value>There was a network issue</value>
-    <comment>Toast shows when the app has a problem connecting to the internet.</comment>
+  <data name="FeedbackDialogRateButton" xml:space="preserve">
+    <value>Rate</value>
   </data>
-  <data name="NoMatchFoundToast" xml:space="preserve">
-    <value>No audio found</value>
-    <comment>Toast shows when no match is found for a track.</comment>
+  <data name="FeedbackDialogTitle" xml:space="preserve">
+    <value>Rate Audiotica!</value>
   </data>
-  <data name="NoSearchResultsToast" xml:space="preserve">
-    <value>No search results</value>
-    <comment>Toast shows when the aren't any search results.</comment>
+  <data name="GenericLoadingMore" xml:space="preserve">
+    <value>Loading more...</value>
   </data>
-  <data name="SearchCard.HeaderText" xml:space="preserve">
-    <value>Search</value>
-    <comment>Header for the search page card.</comment>
+  <data name="GenericLoadingMoreError" xml:space="preserve">
+    <value>Problem loading more items.</value>
   </data>
-  <data name="SearchTextBlock.Text" xml:space="preserve">
-    <value>Search</value>
-    <comment>Text for music button text block in collection card.</comment>
+  <data name="GenericWait" xml:space="preserve">
+    <value>Please wait...</value>
   </data>
-  <data name="ShareMenuItem.Text" xml:space="preserve">
-    <value>Share (Disabled)</value>
-    <comment>Text use for the share item in a song's context menu.</comment>
+  <data name="NowPlayingName.Text" xml:space="preserve">
+    <value>Now Playing</value>
   </data>
-  <data name="SongDeletedToast" xml:space="preserve">
-    <value>Song deleted</value>
-    <comment>Toast shows when the user deletes a song.</comment>
+  <data name="PlaylistCreateNameForgot" xml:space="preserve">
+    <value>You forgot to give the playlist a name.</value>
   </data>
-  <data name="SongSavedToast" xml:space="preserve">
-    <value>Song saved</value>
-    <comment>Toast shows when a song is saved.</comment>
+  <data name="PlaylistCreateNameTaken" xml:space="preserve">
+    <value>There is a playlist with that name already.</value>
   </data>
-  <data name="SpotlightCard.HeaderText" xml:space="preserve">
-    <value>Spotlight</value>
-    <comment>Header for the spotlight card.</comment>
+  <data name="PlaylistCreateSuccess" xml:space="preserve">
+    <value>Created playlist "{0}".</value>
+    <comment>{0} is a playlist name</comment>
   </data>
-  <data name="TopTracksCard.HeaderText" xml:space="preserve">
-    <value>Top Songs</value>
-    <comment>Header use for top tracks card.</comment>
+  <data name="SongSavingFindingMp3" xml:space="preserve">
+    <value>Finding mp3 for "{0}".</value>
+    <comment>{0} is a song name</comment>
   </data>
-  <data name="TracksCard.HeaderText" xml:space="preserve">
-    <value>Tracks</value>
-    <comment>Header for the tracks card. (use in various places)</comment>
+  <data name="SongSavingNetworkError" xml:space="preserve">
+    <value>Network error finding mp3 for "{0}".</value>
+    <comment>{0} is a song name</comment>
+  </data>
+  <data name="SongSavingNoMatch" xml:space="preserve">
+    <value>No mp3 found for "{0}".</value>
+    <comment>{0} is a song name</comment>
+  </data>
+  <data name="SongsNoneSelected" xml:space="preserve">
+    <value>Try selecting some songs first.</value>
   </data>
 </root>

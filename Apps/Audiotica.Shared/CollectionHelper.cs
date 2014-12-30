@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Audiotica.Core.Common;
+using Audiotica.Core.Utilities;
 using Audiotica.Data.Spotify.Models;
 using IF.Lastfm.Core.Objects;
 
@@ -20,7 +21,7 @@ namespace Audiotica
 
         public static async Task SaveTrackAsync(ChartTrack chartTrack)
         {
-            CurtainToast.Show("Finding mp3 for \"{0}\".", chartTrack.Name);
+            CurtainPrompt.Show("SongSavingFindingMp3".FromLanguageResource(), chartTrack.Name);
             var track = await App.Locator.Spotify.GetTrack(chartTrack.track_id);
             var album = await App.Locator.Spotify.GetAlbum(track.Album.Id);
 
@@ -30,7 +31,7 @@ namespace Audiotica
         public static async Task SaveTrackAsync(SimpleTrack track, FullAlbum album, bool showFindingMessage = true)
         {
             if (showFindingMessage)
-                CurtainToast.Show("Finding mp3 for \"{0}\".", track.Name);
+                CurtainPrompt.Show("SongSavingFindingMp3".FromLanguageResource(), track.Name);
 
             var result = await _SaveTrackAsync(track, album);
             ShowResults(result, track.Name);
@@ -39,7 +40,7 @@ namespace Audiotica
         public static async Task SaveTrackAsync(LastTrack track, bool showFindingMessage = true)
         {
             if (showFindingMessage)
-                CurtainToast.Show("Finding mp3 for \"{0}\".", track.Name);
+                CurtainPrompt.Show("SongSavingFindingMp3".FromLanguageResource(), track.Name);
 
             var result = await _SaveTrackAsync(track);
             ShowResults(result, track.Name);
@@ -49,7 +50,7 @@ namespace Audiotica
         {
             if (album.Tracks.Items.Count == 0)
             {
-                CurtainToast.ShowError("Album has no tracks.");
+                CurtainPrompt.ShowError("AlbumNoTracks".FromLanguageResource());
                 return;
             }
 
@@ -63,20 +64,20 @@ namespace Audiotica
                 var missingTracks = collAlbum.Songs.Count < album.Tracks.Items.Count;
                 if (!missingTracks)
                 {
-                    CurtainToast.ShowError("Already saved \"{0}\".", album.Name);
+                    CurtainPrompt.ShowError("EntryAlreadySaved".FromLanguageResource(), album.Name);
                     return;
                 }
             }
 
             if (alreadySaving)
             {
-                CurtainToast.ShowError("Already saving \"{0}\".", album.Name);
+                CurtainPrompt.ShowError("EntryAlreadySaving".FromLanguageResource(), album.Name);
                 return;
             }
 
             SpotifySavingAlbums.Add(album);
 
-            CurtainToast.Show("Saving \"{0}\".", album.Name);
+            CurtainPrompt.Show("EntrySaving".FromLanguageResource(), album.Name);
 
             var index = 0;
 
@@ -105,11 +106,11 @@ namespace Audiotica
             var missing = missingCount > 0;
 
             if (success)
-                CurtainToast.Show("Saved \"{0}\".", album.Name);
+                CurtainPrompt.Show("EntrySaved".FromLanguageResource(), album.Name);
             else if (missing)
-                CurtainToast.ShowError("Couldn't save {0} song(s) of \"{1}\".", missingCount, album.Name);
+                CurtainPrompt.ShowError("AlbumMissingTracks".FromLanguageResource(), missingCount, album.Name);
             else
-                CurtainToast.ShowError("Failed to save \"{0}\".", album.Name);
+                CurtainPrompt.ShowError("EntrySavingError".FromLanguageResource(), album.Name);
 
 
             SpotifySavingAlbums.Remove(album);
@@ -122,13 +123,13 @@ namespace Audiotica
             switch (result)
             {
                 case SavingError.AlreadySaving:
-                    CurtainToast.ShowError("Already saving \"{0}\".", trackName);
+                    CurtainPrompt.ShowError("EntryAlreadySaving".FromLanguageResource(), trackName);
                     break;
                 case SavingError.AlreadyExists:
-                    CurtainToast.ShowError("Already saved \"{0}\".", trackName);
+                    CurtainPrompt.ShowError("EntryAlreadySaved".FromLanguageResource(), trackName);
                     break;
                 case SavingError.None:
-                    CurtainToast.Show("Saved \"{0}\".", trackName);
+                    CurtainPrompt.Show("EntrySaved".FromLanguageResource(), trackName);
                     break;
             }
         }
@@ -146,18 +147,7 @@ namespace Audiotica
 
             var result = await SpotifyHelper.SaveTrackAsync(track, album);
 
-            switch (result)
-            {
-                case SavingError.Network:
-                    CurtainToast.Show("Network error finding mp3 for \"{0}\".", track.Name);
-                    break;
-                case SavingError.NoMatch:
-                    CurtainToast.ShowError("No mp3 found for \"{0}\".", track.Name);
-                    break;
-                case SavingError.Unknown:
-                    CurtainToast.ShowError("Problem saving \"{0}\"", track.Name);
-                    break;
-            }
+            ShowErrorResults(result, track.Name);
 
             SpotifySavingTracks.Remove(track);
 
@@ -177,22 +167,27 @@ namespace Audiotica
 
             var result = await ScrobblerHelper.SaveTrackAsync(track);
 
-            switch (result)
-            {
-                case SavingError.Network:
-                    CurtainToast.Show("Network error finding mp3 for \"{0}\".", track.Name);
-                    break;
-                case SavingError.NoMatch:
-                    CurtainToast.ShowError("No mp3 found for \"{0}\".", track.Name);
-                    break;
-                case SavingError.Unknown:
-                    CurtainToast.ShowError("Problem saving \"{0}\"", track.Name);
-                    break;
-            }
+            ShowErrorResults(result, track.Name);
 
             LastfmSavingTracks.Remove(track);
 
             return result;
+        }
+
+        private static void ShowErrorResults(SavingError result, string trackName)
+        {
+            switch (result)
+            {
+                case SavingError.Network:
+                    CurtainPrompt.Show("SongSavingNetworkError".FromLanguageResource(), trackName);
+                    break;
+                case SavingError.NoMatch:
+                    CurtainPrompt.ShowError("SongSavingNoMatch".FromLanguageResource(), trackName);
+                    break;
+                case SavingError.Unknown:
+                    CurtainPrompt.ShowError("EntrySavingError".FromLanguageResource(), trackName);
+                    break;
+            }
         }
 
         #endregion

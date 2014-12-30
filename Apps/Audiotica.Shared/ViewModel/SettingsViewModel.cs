@@ -6,7 +6,7 @@ using Audiotica.Data.Service.Interfaces;
 using Audiotica.PartialView;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
-using IF.Lastfm.Core.Api;
+using GoogleAnalytics;
 
 #endregion
 
@@ -14,12 +14,12 @@ namespace Audiotica.ViewModel
 {
     public class SettingsViewModel : ViewModelBase
     {
-        private readonly IScrobblerService _service;
         private readonly AdMediatorBar _adMediatorBar;
-        private string _password;
-        private string _username;
+        private readonly IScrobblerService _service;
         private RelayCommand _loginButtonRelay;
+        private string _password;
         private bool _scrobbleSwitch;
+        private string _username;
 
         public SettingsViewModel(IScrobblerService service, AdMediatorBar adMediatorBar)
         {
@@ -41,44 +41,15 @@ namespace Audiotica.ViewModel
             get { return BetaChangelogHelper.CurrentVersion.ToString(); }
         }
 
-        private async void LoginButtonClicked()
-        {
-            if (_service.IsAuthenticated)
-            {
-                _service.Logout();
-                CurtainToast.Show("Logged out");
-                LastFmUsername = null;
-                LastFmPassword = null;
-                IsLogin = false;
-                Scrobble = false;
-            }
-            else
-            {
-                CurtainToast.Show("Please wait...");
-                if (await _service.AuthenticaAsync(LastFmUsername, LastFmPassword))
-                {
-                    CurtainToast.Show("Login successful");
-                    IsLogin = true;
-                }
-                else
-                {
-                    CurtainToast.ShowError("Failed to login");
-                }
-            }
-        }
-
         public bool WallpaperArt
         {
-            get
-            {
-                return AppSettingsHelper.Read("WallpaperArt", true);
-            }
+            get { return AppSettingsHelper.Read("WallpaperArt", true); }
             set
             {
                 if (!value)
                     App.Locator.Collection.RandomizeAlbumList.Clear();
 
-                GoogleAnalytics.EasyTracker.GetTracker().SendEvent("Settings", "WallpaperArt", value ? "Enabled" : "Disabled", 0);
+                EasyTracker.GetTracker().SendEvent("Settings", "WallpaperArt", value ? "Enabled" : "Disabled", 0);
                 AppSettingsHelper.Write("WallpaperArt", value);
                 RaisePropertyChanged();
             }
@@ -86,10 +57,7 @@ namespace Audiotica.ViewModel
 
         public bool Advertisements
         {
-            get
-            {
-                return AppSettingsHelper.Read("Ads", true);
-            }
+            get { return AppSettingsHelper.Read("Ads", true); }
             set
             {
                 if (value)
@@ -100,7 +68,7 @@ namespace Audiotica.ViewModel
                 {
                     _adMediatorBar.Disable();
                 }
-                GoogleAnalytics.EasyTracker.GetTracker().SendEvent("Settings", "Ads", value ? "Enabled": "Disabled", 0);
+                EasyTracker.GetTracker().SendEvent("Settings", "Ads", value ? "Enabled" : "Disabled", 0);
                 AppSettingsHelper.Write("Ads", value);
                 RaisePropertyChanged();
             }
@@ -108,14 +76,11 @@ namespace Audiotica.ViewModel
 
         public bool Scrobble
         {
-            get
-            {
-                return AppSettingsHelper.Read<bool>("Scrobble");
-            }
+            get { return AppSettingsHelper.Read<bool>("Scrobble"); }
             set
             {
                 AppSettingsHelper.Write("Scrobble", value);
-                GoogleAnalytics.EasyTracker.GetTracker().SendEvent("Settings", "Scrobble", value ? "Enabled" : "Disabled", 0);
+                EasyTracker.GetTracker().SendEvent("Settings", "Scrobble", value ? "Enabled" : "Disabled", 0);
                 RaisePropertyChanged();
             }
         }
@@ -142,6 +107,41 @@ namespace Audiotica.ViewModel
         {
             get { return _loginButtonRelay; }
             set { Set(ref _loginButtonRelay, value); }
+        }
+
+        private async void LoginButtonClicked()
+        {
+            if (_service.IsAuthenticated)
+            {
+                _service.Logout();
+                CurtainPrompt.Show("AuthLogoutSuccess".FromLanguageResource());
+                LastFmUsername = null;
+                LastFmPassword = null;
+                IsLogin = false;
+                Scrobble = false;
+            }
+            else
+            {
+                if (string.IsNullOrEmpty(LastFmUsername)
+                    || string.IsNullOrEmpty(LastFmPassword))
+                {
+                    CurtainPrompt.ShowError("AuthLogoutErrorForgot".FromLanguageResource());
+                }
+
+                else
+                {
+                    CurtainPrompt.Show("GenericWait".FromLanguageResource());
+                    if (await _service.AuthenticaAsync(LastFmUsername, LastFmPassword))
+                    {
+                        CurtainPrompt.Show("AuthLoginSuccess".FromLanguageResource());
+                        IsLogin = true;
+                    }
+                    else
+                    {
+                        CurtainPrompt.ShowError("AuthLoginError".FromLanguageResource());
+                    }
+                }
+            }
         }
     }
 }

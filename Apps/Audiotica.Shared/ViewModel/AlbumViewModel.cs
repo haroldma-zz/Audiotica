@@ -4,6 +4,7 @@ using System;
 using System.Collections.ObjectModel;
 using Windows.UI.Xaml.Controls;
 using Audiotica.Core.Common;
+using Audiotica.Core.Utilities;
 using Audiotica.Data.Service.Interfaces;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
@@ -82,11 +83,11 @@ namespace Audiotica.ViewModel
                 if (Album.Tracks != null)
                     Tracks = new ObservableCollection<LastTrack>(Album.Tracks);
                 else
-                    CurtainToast.ShowError("No tracks for album");
+                    CurtainPrompt.ShowError("AlbumNoTracks".FromLanguageResource());
             }
             catch (Exception e)
             {
-                CurtainToast.ShowError(e.Message);
+                CurtainPrompt.ShowError("AppNetworkIssue".FromLanguageResource());
             }
             IsLoading = false;
         }

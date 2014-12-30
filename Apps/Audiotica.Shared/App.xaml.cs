@@ -90,7 +90,7 @@ namespace Audiotica
 
                 if (!RootFrame.Navigate(page, e.Arguments))
                 {
-                    CurtainToast.ShowError("Failed to create initial page");
+                    CurtainPrompt.ShowError("AppErrorInitialPage".FromLanguageResource());
                 }
             }
 
@@ -109,7 +109,7 @@ namespace Audiotica
                 catch (Exception ex)
                 {
                     EasyTracker.GetTracker().SendException(ex.Message + " " + ex.StackTrace, true);
-                    CurtainToast.ShowError("ErrorBootingToast".FromLanguageResource());
+                    CurtainPrompt.ShowError("AppErrorBooting".FromLanguageResource());
                 }
 
                 _init = true;
@@ -136,15 +136,17 @@ namespace Audiotica
             AppSettingsHelper.Write("LaunchCount", ++launchCount);
             if (launchCount != 5) return;
 
+            var rate = "FeedbackDialogRateButton".FromLanguageResource();
+
             var md = new MessageDialog(
-                "Your feedback helps you improve this app. If you like it, please take a minute and rate it with five stars so we can continue working on new features and updates.",
-                "Rate Audiotica!");
-            md.Commands.Add(new UICommand("rate"));
-            md.Commands.Add(new UICommand("no, thanks"));
+                "FeedbackDialogContent".FromLanguageResource(),
+                "FeedbackDialogTitle".FromLanguageResource());
+            md.Commands.Add(new UICommand(rate));
+            md.Commands.Add(new UICommand("FeedbackDialogNoButton".FromLanguageResource()));
 
             var result = await md.ShowAsync();
 
-            if (result.Label == "rate")
+            if (result.Label == rate)
             {
                 Launcher.LaunchUriAsync(new Uri("ms-windows-store:reviewapp?appid=" + CurrentApp.AppId));
             }

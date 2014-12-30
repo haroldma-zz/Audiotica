@@ -94,7 +94,7 @@ namespace Audiotica.ViewModel
             }
             catch (Exception e)
             {
-                CurtainToast.ShowError(e.Message);
+                CurtainPrompt.ShowError("AppNetworkIssue".FromLanguageResource());
             }
             try
             {
@@ -102,7 +102,7 @@ namespace Audiotica.ViewModel
             }
             catch (Exception e)
             {
-                CurtainToast.ShowError(e.Message);
+                CurtainPrompt.ShowError("AppNetworkIssue".FromLanguageResource());
             }
 
             try
@@ -111,7 +111,7 @@ namespace Audiotica.ViewModel
             }
             catch (Exception e)
             {
-                CurtainToast.ShowError(e.Message);
+                CurtainPrompt.ShowError("AppNetworkIssue".FromLanguageResource());
             }
 
             IsLoading = false;
@@ -121,8 +121,6 @@ namespace Audiotica.ViewModel
         {
             var track = (FullTrack)item.ClickedItem;
             var album = await _service.GetAlbumAsync(track.Album.Id);
-
-            CurtainToast.Show("MatchingSongToast".FromLanguageResource());
             await CollectionHelper.SaveTrackAsync(track, album);
         }
     }

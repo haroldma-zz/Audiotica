@@ -63,7 +63,7 @@ namespace Audiotica.View
             var songs = SongList.SelectedItems.ToList();
             if (songs.Count == 0)
             {
-                CurtainToast.ShowError("Try selecting some songs");
+                CurtainPrompt.ShowError("SongsNoneSelected".FromLanguageResource());
             }
             else
             {
