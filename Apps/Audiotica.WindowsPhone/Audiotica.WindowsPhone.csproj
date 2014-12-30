@@ -278,8 +278,9 @@
     <Reference Include="GoogleAnalytics.Core">
       <HintPath>..\..\packages\GoogleAnalyticsSDK.1.2.12\lib\wpa81\GoogleAnalytics.Core.winmd</HintPath>
     </Reference>
-    <Reference Include="IF.Lastfm.Core">
-      <HintPath>..\..\packages\IF.Lastfm.Zumicts.0.3.1.93\lib\portable-net45+win+wpa81+wp80\IF.Lastfm.Core.dll</HintPath>
+    <Reference Include="IF.Lastfm.Core, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\IF.Lastfm.Zumicts.0.3.2\lib\portable-net45+win+wpa81+wp80\IF.Lastfm.Core.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.AdMediator.WindowsPhone81.AdDuplex">
       <HintPath>..\..\packages\Microsoft.AdMediator.WindowsPhone81.AdDuplex.1.0.11\lib\wpa\Microsoft.AdMediator.WindowsPhone81.AdDuplex.dll</HintPath>

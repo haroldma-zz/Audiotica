@@ -45,7 +45,7 @@ namespace Audiotica.ViewModel
 
             await _service.ClearQueueAsync().ConfigureAwait(false);
 
-            foreach (var queueSong in _album.Songs)
+            foreach (var queueSong in _album.Songs.ToList())
             {
                 await _service.AddToQueueAsync(queueSong);
             }

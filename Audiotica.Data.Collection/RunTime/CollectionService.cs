@@ -40,6 +40,7 @@ namespace Audiotica.Data.Collection.RunTime
         }
 
 
+        public event EventHandler LibraryLoaded;
         public ObservableCollection<Song> Songs { get; set; }
         public ObservableCollection<Album> Albums { get; set; }
         public ObservableCollection<Artist> Artists { get; set; }
@@ -92,6 +93,14 @@ namespace Audiotica.Data.Collection.RunTime
                 Songs = new ObservableCollection<Song>(songs);
                 Artists = new ObservableCollection<Artist>(artists);
                 Albums = new ObservableCollection<Album>(albums);
+            }
+            else
+            {
+                _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                {
+                    if (LibraryLoaded != null)
+                        LibraryLoaded(this, null);
+                });
             }
 
             LoadQueue();

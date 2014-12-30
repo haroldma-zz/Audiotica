@@ -35,25 +35,7 @@
             </PivotItem>
             <PivotItem x:Name="SimilarPivot" Header="SIMILAR">
                 <ListView ItemsSource="{Binding LastArtist.Similar}" IsItemClickEnabled="True"
-                          ItemClick="ListView_ItemClick">
-                    <ListView.ItemTemplate>
-                        <DataTemplate>
-                            <Grid Height="150" Margin="0,0,0,10" Background="{StaticResource PhoneAccentBrush}">
-                                <Grid>
-                                    <Grid.Background>
-                                        <ImageBrush Stretch="UniformToFill" ImageSource="{Binding MainImage.Largest}"
-                                                    AlignmentY="Top" />
-                                    </Grid.Background>
-                                </Grid>
-                                <Grid Background="#BF000000" VerticalAlignment="Bottom">
-                                    <TextBlock TextTrimming="CharacterEllipsis" Margin="15,5" FontSize="22"
-                                               Text="{Binding Name}" HorizontalAlignment="Left"
-                                               VerticalAlignment="Bottom" />
-                                </Grid>
-                            </Grid>
-                        </DataTemplate>
-                    </ListView.ItemTemplate>
-                </ListView>
+                          ItemClick="ListView_ItemClick" ItemTemplate="{StaticResource SimilarLastArtistDataTemplate}"/>
             </PivotItem>
             <PivotItem x:Name="BioPivot" Header="BIO">
                 <ScrollViewer>

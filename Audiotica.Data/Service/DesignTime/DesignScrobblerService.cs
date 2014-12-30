@@ -14,6 +14,8 @@ namespace Audiotica.Data.Service.DesignTime
 {
     public class DesignScrobblerService : IScrobblerService
     {
+        public event EventHandler<bool> AuthStateChanged;
+        public bool HasCredentials { get; private set; }
         public bool IsAuthenticated { get; private set; }
 
         public void Logout()
@@ -28,6 +30,11 @@ namespace Audiotica.Data.Service.DesignTime
         }
 
         public Task<LastFmApiError> ScrobbleAsync(string name, string artist, DateTime played, TimeSpan duration, string album = "", string albumArtist = "")
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<PageResponse<LastArtist>> GetRecommendedArtistsAsync(int page = 1, int limit = 30)
         {
             throw new NotImplementedException();
         }
@@ -83,7 +90,7 @@ namespace Audiotica.Data.Service.DesignTime
             return Task.FromResult(pageResp);
         }
 
-        public Task<PageResponse<LastArtist>> SearchArtistAsync(string query, int page = 1, int limit = 30)
+        public Task<PageResponse<LastArtist>> SearchArtistsAsync(string query, int page = 1, int limit = 30)
         {
             var pageResp = PageResponse<LastArtist>.CreateSuccessResponse(CreateDesignArtists());
             return Task.FromResult(pageResp);

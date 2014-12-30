@@ -24,6 +24,7 @@ namespace Audiotica.Data.Service.RunTime
         private readonly ArtistApi _artistApi;
         private readonly ChartApi _chartApi;
         private readonly TrackApi _trackApi;
+        private readonly UserApi _userApi;
 
         public ScrobblerService()
         {
@@ -32,7 +33,16 @@ namespace Audiotica.Data.Service.RunTime
             _artistApi = new ArtistApi(_auth);
             _chartApi = new ChartApi(_auth);
             _trackApi = new TrackApi(_auth);
+            _userApi = new UserApi(_auth);
             GetSessionTokenAsync();
+        }
+
+        public event EventHandler<bool> AuthStateChanged;
+
+        protected virtual void OnAuthStateChanged()
+        {
+            EventHandler<bool> handler = AuthStateChanged;
+            if (handler != null) handler(this, IsAuthenticated);
         }
 
         private async Task<bool> GetSessionTokenAsync()
@@ -48,6 +58,8 @@ namespace Audiotica.Data.Service.RunTime
                 Logout();
                 CurtainPrompt.ShowError("AuthBadCredentials".FromLanguageResource(), "Last.FM");
             }
+            else 
+                OnAuthStateChanged();
 
             return result == LastFmApiError.None;
         }
@@ -55,6 +67,7 @@ namespace Audiotica.Data.Service.RunTime
         private async Task<bool> GetSessionTokenAsync(string username, string password)
         {
             var response = await _auth.GetSessionTokenAsync(username, password);
+            OnAuthStateChanged();
             return response.Success;
         }
 
@@ -64,12 +77,18 @@ namespace Audiotica.Data.Service.RunTime
             return response.Error;
         }
 
+        public bool HasCredentials
+        {
+            get { return CredentialHelper.GetCredentials("lastfm") != null; }
+        }
+
         public bool IsAuthenticated { get { return _auth.Authenticated; } }
 
         public void Logout()
         {
             CredentialHelper.DeleteCredentials("lastfm");
             _auth = new LastAuth(ApiKeys.LastFmId, ApiKeys.LastFmSecret);
+            OnAuthStateChanged();
         }
 
         public async Task<LastFmApiError> ScrobbleNowPlayingAsync(string name, string artist, DateTime played, TimeSpan duration, string album = "",
@@ -92,6 +111,13 @@ namespace Audiotica.Data.Service.RunTime
             
             var resp = await _trackApi.ScrobbleAsync(new Scrobble(artist, album, name, played, duration, albumArtist));
             return resp.Error;
+        }
+
+        public async Task<PageResponse<LastArtist>> GetRecommendedArtistsAsync(int page = 1, int limit = 30)
+        {
+            var resp = await _userApi.GetRecommendedArtistsAsync(page, limit);
+            ThrowIfError(resp);
+            return resp;
         }
 
         public async Task<LastAlbum> GetDetailAlbum(string name, string artist)
@@ -179,7 +205,7 @@ namespace Audiotica.Data.Service.RunTime
             return resp;
         }
 
-        public async Task<PageResponse<LastArtist>> SearchArtistAsync(string query, int page = 1, int limit = 30)
+        public async Task<PageResponse<LastArtist>> SearchArtistsAsync(string query, int page = 1, int limit = 30)
         {
             var resp = await _artistApi.SearchForArtistAsync(query, page, limit);
             ThrowIfError(resp);

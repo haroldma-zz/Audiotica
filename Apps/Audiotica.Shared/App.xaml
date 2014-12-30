@@ -10,6 +10,9 @@
         <vm:ViewModelLocator xmlns:vm="using:Audiotica.ViewModel"
                              x:Key="Locator" />
         <common:VisibilityConverter x:Key="VisibilityConverter" />
+        <common:VisibilityConverter x:Key="ReverseVisibilityConverter" Reverse="True" />
+        <common:EmptyListToVisibilityConverter x:Key="EmptyListToVisibilityConverter" />
+        <common:EmptyListToVisibilityConverter x:Key="ReverseEmptyListToVisibilityConverter" Reverse="True" />
         <common:NullToBooleanConverter x:Key="NullToBooleanConverter" />
         <common:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
         <common:BoolToOppositeConverter x:Key="BoolToOppositeConverter" />
@@ -108,6 +111,22 @@
             </Setter>
         </Style>
 
+            <DataTemplate x:Key="SimilarLastArtistDataTemplate">
+                <Grid Height="150" Margin="0,0,0,10" Background="{StaticResource PhoneAccentBrush}">
+                    <Grid>
+                        <Grid.Background>
+                            <ImageBrush Stretch="UniformToFill" ImageSource="{Binding MainImage.Largest}"
+                                                    AlignmentY="Top" />
+                        </Grid.Background>
+                    </Grid>
+                    <Grid Background="#BF000000" VerticalAlignment="Bottom">
+                        <TextBlock TextTrimming="CharacterEllipsis" Margin="15,5" FontSize="22"
+                                               Text="{Binding Name}" HorizontalAlignment="Left"
+                                               VerticalAlignment="Bottom" />
+                    </Grid>
+                </Grid>
+            </DataTemplate>
+
         <DataTemplate x:Key="SongDataTemplate">
             <StackPanel Margin="0,0,0,15">
                 <TextBlock Text="{Binding Name}" FontSize="30" FontFamily="Global User Interface" TextWrapping="Wrap"
@@ -128,7 +147,7 @@
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
                 <Grid VerticalAlignment="Top" Background="{StaticResource PhoneAccentBrush}">
-                    <Image Width="175" Height="175" Source="{Binding Artwork}" />
+                    <Image Stretch="UniformToFill" Width="175" Height="175" Source="{Binding Artwork}" />
                 </Grid>
                 <Grid Grid.Column="1" Margin="10">
                     <Grid.RowDefinitions>

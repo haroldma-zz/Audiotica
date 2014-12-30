@@ -135,6 +135,7 @@ namespace Audiotica.ViewModel
                     {
                         CurtainPrompt.Show("AuthLoginSuccess".FromLanguageResource());
                         IsLogin = true;
+                        Scrobble = true;
                     }
                     else
                     {

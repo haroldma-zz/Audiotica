@@ -4,121 +4,122 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:audiotica="using:Audiotica"
-    xmlns:Interactivity="using:Microsoft.Xaml.Interactivity" xmlns:Core="using:Microsoft.Xaml.Interactions.Core"
+    xmlns:interactivity="using:Microsoft.Xaml.Interactivity" xmlns:core="using:Microsoft.Xaml.Interactions.Core"
     x:Class="Audiotica.View.HomePage"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
     DataContext="{Binding Main, Source={StaticResource Locator}}">
     <audiotica:PageBase.Resources>
-        <Style x:Key="FlipViewStyle1" TargetType="FlipView">
-            <Setter Property="Background" Value="Transparent" />
-            <Setter Property="BorderThickness" Value="0" />
-            <Setter Property="TabNavigation" Value="Once" />
-            <Setter Property="IsTabStop" Value="False" />
-            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Hidden" />
-            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Hidden" />
-            <Setter Property="ScrollViewer.IsHorizontalRailEnabled" Value="False" />
-            <Setter Property="ScrollViewer.IsVerticalRailEnabled" Value="False" />
-            <Setter Property="ScrollViewer.IsHorizontalScrollChainingEnabled" Value="True" />
-            <Setter Property="ScrollViewer.IsVerticalScrollChainingEnabled" Value="True" />
-            <Setter Property="ScrollViewer.IsDeferredScrollingEnabled" Value="False" />
-            <Setter Property="ScrollViewer.BringIntoViewOnFocusChange" Value="True" />
-            <Setter Property="ItemsPanel">
-                <Setter.Value>
-                    <ItemsPanelTemplate>
-                        <VirtualizingStackPanel AreScrollSnapPointsRegular="True" Orientation="Vertical" />
-                    </ItemsPanelTemplate>
-                </Setter.Value>
-            </Setter>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="FlipView">
-                        <Grid Background="{TemplateBinding Background}">
-                            <ScrollViewer x:Name="ScrollingHost" AutomationProperties.AccessibilityView="Raw"
-                                          BringIntoViewOnFocusChange="{TemplateBinding ScrollViewer.BringIntoViewOnFocusChange}"
-                                          HorizontalScrollMode="{TemplateBinding ScrollViewer.HorizontalScrollMode}"
-                                          HorizontalSnapPointsType="MandatorySingle"
-                                          HorizontalScrollBarVisibility="{TemplateBinding ScrollViewer.HorizontalScrollBarVisibility}"
-                                          IsTabStop="False"
-                                          IsHorizontalRailEnabled="{TemplateBinding ScrollViewer.IsHorizontalRailEnabled}"
-                                          IsHorizontalScrollChainingEnabled="{TemplateBinding ScrollViewer.IsHorizontalScrollChainingEnabled}"
-                                          IsVerticalScrollChainingEnabled="{TemplateBinding ScrollViewer.IsVerticalScrollChainingEnabled}"
-                                          IsVerticalRailEnabled="{TemplateBinding ScrollViewer.IsVerticalRailEnabled}"
-                                          IsDeferredScrollingEnabled="{TemplateBinding ScrollViewer.IsDeferredScrollingEnabled}"
-                                          Padding="{TemplateBinding Padding}"
-                                          TabNavigation="{TemplateBinding TabNavigation}"
-                                          VerticalSnapPointsType="MandatorySingle"
-                                          VerticalScrollBarVisibility="{TemplateBinding ScrollViewer.VerticalScrollBarVisibility}"
-                                          VerticalScrollMode="{TemplateBinding ScrollViewer.VerticalScrollMode}"
-                                          ZoomMode="Disabled">
-                                <ItemsPresenter />
-                            </ScrollViewer>
-                        </Grid>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
         <DataTemplate x:Key="HubHeaderTemplate">
             <TextBlock Text="{Binding}" FontSize="20" FontFamily="Segoe WP" FontWeight="Normal" Margin="-1,0,0,0" />
         </DataTemplate>
     </audiotica:PageBase.Resources>
 
-    <Grid>
-        <Hub Header="AUDIOTICA">
-            <Hub.HeaderTemplate>
-                <DataTemplate>
-                    <TextBlock Text="{Binding}" FontWeight="Bold" FontSize="24" Margin="2,35,15,-8" />
-                </DataTemplate>
-            </Hub.HeaderTemplate>
-            <HubSection Header="MENU" HeaderTemplate="{StaticResource HubHeaderTemplate}">
-                <DataTemplate>
-                    <StackPanel>
-                        <Button Style="{StaticResource PlainButtonStyle}" Margin="0,-20,0,0">
-                            <TextBlock Text="songs" FontSize="40" />
-                            <Interactivity:Interaction.Behaviors>
-                                <Core:EventTriggerBehavior EventName="Click">
-                                    <Core:NavigateToPageAction TargetPage="Audiotica.View.CollectionPage" Parameter="0" />
-                                </Core:EventTriggerBehavior>
-                            </Interactivity:Interaction.Behaviors>
-                        </Button>
-                        <Button Style="{StaticResource PlainButtonStyle}">
-                            <TextBlock Text="artists" FontSize="40" />
-                            <Interactivity:Interaction.Behaviors>
-                                <Core:EventTriggerBehavior EventName="Click">
-                                    <Core:NavigateToPageAction TargetPage="Audiotica.View.CollectionPage" Parameter="1" />
-                                </Core:EventTriggerBehavior>
-                            </Interactivity:Interaction.Behaviors>
-                        </Button>
-                        <Button Style="{StaticResource PlainButtonStyle}">
-                            <TextBlock Text="albums" FontSize="40" />
-                            <Interactivity:Interaction.Behaviors>
-                                <Core:EventTriggerBehavior EventName="Click">
-                                    <Core:NavigateToPageAction TargetPage="Audiotica.View.CollectionPage" Parameter="2" />
-                                </Core:EventTriggerBehavior>
-                            </Interactivity:Interaction.Behaviors>
-                        </Button>
-                        <Button Style="{StaticResource PlainButtonStyle}">
-                            <TextBlock Text="playlists" FontSize="40" />
-                            <Interactivity:Interaction.Behaviors>
-                                <Core:EventTriggerBehavior EventName="Click">
-                                    <Core:NavigateToPageAction TargetPage="Audiotica.View.CollectionPage" Parameter="3" />
-                                </Core:EventTriggerBehavior>
-                            </Interactivity:Interaction.Behaviors>
-                        </Button>
-                        <Button Style="{StaticResource PlainButtonStyle}">
-                            <TextBlock Text="search" FontSize="40"/>
-                            <Interactivity:Interaction.Behaviors>
-                                <Core:EventTriggerBehavior EventName="Click">
-                                    <Core:NavigateToPageAction TargetPage="Audiotica.View.SearchPage" />
-                                </Core:EventTriggerBehavior>
-                            </Interactivity:Interaction.Behaviors>
-                        </Button>
-                    </StackPanel>
-                </DataTemplate>
-            </HubSection>
-            <HubSection Header="TOP SONGS" HeaderTemplate="{StaticResource HubHeaderTemplate}">
-                <DataTemplate>
-                    <GridView ItemsSource="{Binding TopTracks}" SelectionMode="None" IsItemClickEnabled="True" ItemClick="ListView_ItemClick" Padding="0,0,0,10">
+    <Hub Header="AUDIOTICA">
+        <Hub.HeaderTemplate>
+            <DataTemplate>
+                <TextBlock Text="{Binding}" FontWeight="Bold" FontSize="24" Margin="2,35,15,-8" />
+            </DataTemplate>
+        </Hub.HeaderTemplate>
+        <HubSection x:Uid="HubMenu" Header="MENU" HeaderTemplate="{StaticResource HubHeaderTemplate}">
+            <DataTemplate>
+                <StackPanel>
+                    <Button Style="{StaticResource PlainButtonStyle}" Margin="0,-20,0,0">
+                        <TextBlock x:Uid="MenuItemSongs" Text="songs" FontSize="40" />
+                        <interactivity:Interaction.Behaviors>
+                            <core:EventTriggerBehavior EventName="Click">
+                                <core:NavigateToPageAction TargetPage="Audiotica.View.CollectionPage" Parameter="0" />
+                            </core:EventTriggerBehavior>
+                        </interactivity:Interaction.Behaviors>
+                    </Button>
+                    <Button Style="{StaticResource PlainButtonStyle}">
+                        <TextBlock x:Uid="MenuItemArtists" Text="artists" FontSize="40" />
+                        <interactivity:Interaction.Behaviors>
+                            <core:EventTriggerBehavior EventName="Click">
+                                <core:NavigateToPageAction TargetPage="Audiotica.View.CollectionPage" Parameter="1" />
+                            </core:EventTriggerBehavior>
+                        </interactivity:Interaction.Behaviors>
+                    </Button>
+                    <Button Style="{StaticResource PlainButtonStyle}">
+                        <TextBlock x:Uid="MenuItemAlbums" Text="albums" FontSize="40" />
+                        <interactivity:Interaction.Behaviors>
+                            <core:EventTriggerBehavior EventName="Click">
+                                <core:NavigateToPageAction TargetPage="Audiotica.View.CollectionPage" Parameter="2" />
+                            </core:EventTriggerBehavior>
+                        </interactivity:Interaction.Behaviors>
+                    </Button>
+                    <Button Style="{StaticResource PlainButtonStyle}">
+                        <TextBlock x:Uid="MenuItemPlaylists" Text="playlists" FontSize="40" />
+                        <interactivity:Interaction.Behaviors>
+                            <core:EventTriggerBehavior EventName="Click">
+                                <core:NavigateToPageAction TargetPage="Audiotica.View.CollectionPage" Parameter="3" />
+                            </core:EventTriggerBehavior>
+                        </interactivity:Interaction.Behaviors>
+                    </Button>
+                    <Button Style="{StaticResource PlainButtonStyle}">
+                        <TextBlock x:Uid="MenuItemSearch" Text="search" FontSize="40" />
+                        <interactivity:Interaction.Behaviors>
+                            <core:EventTriggerBehavior EventName="Click">
+                                <core:NavigateToPageAction TargetPage="Audiotica.View.SearchPage" />
+                            </core:EventTriggerBehavior>
+                        </interactivity:Interaction.Behaviors>
+                    </Button>
+                </StackPanel>
+            </DataTemplate>
+        </HubSection>
+        <HubSection x:Uid="HubMostPlayed" Header="MOST PLAYED BY YOU"
+                    HeaderTemplate="{StaticResource HubHeaderTemplate}">
+            <DataTemplate>
+                <GridView ItemsSource="{Binding MostPlayed}" SelectionMode="None" IsItemClickEnabled="True"
+                          Padding="0,0,0,10" ItemClick="MostPlayedGridView_ItemClick">
+                    <GridView.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Margin="0,5,5,0" Width="150">
+                                <Grid Background="{StaticResource PhoneAccentBrush}">
+                                    <Image Source="{Binding Album.Artwork}" Height="150" Width="150" />
+                                </Grid>
+                                <TextBlock Text="{Binding Name}" FontSize="15" TextTrimming="CharacterEllipsis" />
+                                <TextBlock Text="{Binding ArtistName}" FontSize="12"
+                                           TextTrimming="CharacterEllipsis" Foreground="#89FFFFFF"
+                                           FontFamily="Global User Interface" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </GridView.ItemTemplate>
+                </GridView>
+            </DataTemplate>
+        </HubSection>
+        <HubSection x:Uid="HubRecommendations" Header="RECOMMENDATIONS"
+                    HeaderTemplate="{StaticResource HubHeaderTemplate}">
+            <DataTemplate>
+                <Grid>
+                    <TextBlock
+                        Visibility="{Binding IsLastfmEnabled, Converter={StaticResource ReverseVisibilityConverter}}"
+                        FontSize="25" TextWrapping="Wrap"
+                        Text="Login, on the settings page, and scrobble with last.fm to get recommendations."
+                        FontFamily="Segoe WP Light" Foreground="#89FFFFFF" />
+
+                    <TextBlock
+                        Visibility="{Binding RecommendedArtists, Converter={StaticResource EmptyListToVisibilityConverter}}"
+                        FontSize="25" TextWrapping="Wrap"
+                        Text="You don't have any recommendations at the moment." FontFamily="Segoe WP Light"
+                        Foreground="#89FFFFFF" />
+                    <Grid Visibility="{Binding IsLastfmEnabled, Converter={StaticResource VisibilityConverter}}">
+                        <ProgressBar VerticalAlignment="Top" IsIndeterminate="{Binding IsRecommendationLoading}"
+                                     Visibility="{Binding IsRecommendationLoading, Converter={StaticResource VisibilityConverter}}" />
+                        <ListView IsItemClickEnabled="True" ItemsSource="{Binding RecommendedArtists}"
+                                  ItemTemplate="{StaticResource SimilarLastArtistDataTemplate}" ItemClick="RecommendationListView_ItemClick" FontFamily="Global User Interface" />
+                    </Grid>
+                </Grid>
+            </DataTemplate>
+        </HubSection>
+        <HubSection x:Uid="HubTopSongs" Header="TOP SONGS" HeaderTemplate="{StaticResource HubHeaderTemplate}"
+                    Visibility="{Binding IsMostStreamedEnabled, Converter={StaticResource VisibilityConverter}}">
+            <DataTemplate>
+                <Grid>
+                    <ProgressBar VerticalAlignment="Top" IsIndeterminate="{Binding IsMostStreamedLoading}"
+                                 Visibility="{Binding IsMostStreamedLoading, Converter={StaticResource VisibilityConverter}}" />
+                    <GridView ItemsSource="{Binding TopTracks}" SelectionMode="None" IsItemClickEnabled="True"
+                              ItemClick="TopSongsGridView_ItemClick" Padding="0,0,0,10">
                         <GridView.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel Margin="0,5,5,0" Width="150">
@@ -126,47 +127,27 @@
                                         <Image Source="{Binding ArtworkUrl}" Height="150" Width="150" />
                                     </Grid>
                                     <TextBlock Text="{Binding Name}" FontSize="15" TextTrimming="CharacterEllipsis" />
-                                    <TextBlock Text="{Binding ArtistName}" FontSize="12" TextTrimming="CharacterEllipsis" Foreground="#89FFFFFF" FontFamily="Global User Interface" />
+                                    <TextBlock Text="{Binding ArtistName}" FontSize="12"
+                                               TextTrimming="CharacterEllipsis" Foreground="#89FFFFFF"
+                                               FontFamily="Global User Interface" />
                                 </StackPanel>
                             </DataTemplate>
                         </GridView.ItemTemplate>
                     </GridView>
-                </DataTemplate>
-            </HubSection>
-            <HubSection>
-                <DataTemplate>
-                    <FlipView HorizontalAlignment="Left" ItemsSource="{Binding SpotlightItems}" Margin="-20,-80,0,0"
-                                      Style="{StaticResource FlipViewStyle1}">
-                        <FlipView.ItemTemplate>
-                            <DataTemplate>
-                                <Grid Tapped="Grid_Tapped">
-                                    <Grid.Background>
-                                        <ImageBrush Stretch="UniformToFill" AlignmentY="Top"
-                                                            ImageSource="{Binding MainImage.Largest}" />
-                                    </Grid.Background>
-                                    <StackPanel Background="#66000000" VerticalAlignment="Bottom">
-                                        <TextBlock Text="{Binding Name}" FontSize="30" Margin="15,10,10,10"
-                                                           Foreground="White"
-                                                           TextTrimming="CharacterEllipsis" />
-                                    </StackPanel>
-                                </Grid>
-                            </DataTemplate>
-                        </FlipView.ItemTemplate>
-                    </FlipView>
-                </DataTemplate>
-            </HubSection>
-        </Hub>
-    </Grid>
+                </Grid>
+            </DataTemplate>
+        </HubSection>
+    </Hub>
     <Page.BottomAppBar>
         <CommandBar ClosedDisplayMode="Minimal">
             <CommandBar.SecondaryCommands>
-                <AppBarButton Label="rate+review" Click="AppBarButton_Click"/>
-                <AppBarButton Label="settings+more">
-                    <Interactivity:Interaction.Behaviors>
-                        <Core:EventTriggerBehavior EventName="Click">
-                            <Core:NavigateToPageAction TargetPage="Audiotica.View.SettingsPage" />
-                        </Core:EventTriggerBehavior>
-                    </Interactivity:Interaction.Behaviors>
+                <AppBarButton x:Uid="AppBarHubReview" Label="Rate+Review" Click="AppBarButton_Click" />
+                <AppBarButton x:Uid="AppBarHubSettings" Label="Settings+More">
+                    <interactivity:Interaction.Behaviors>
+                        <core:EventTriggerBehavior EventName="Click">
+                            <core:NavigateToPageAction TargetPage="Audiotica.View.SettingsPage" />
+                        </core:EventTriggerBehavior>
+                    </interactivity:Interaction.Behaviors>
                 </AppBarButton>
             </CommandBar.SecondaryCommands>
         </CommandBar>

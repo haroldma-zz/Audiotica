@@ -178,6 +178,7 @@ namespace Audiotica
 
         private void HelperOnTrackChanged(object sender, EventArgs eventArgs)
         {
+            Position = TimeSpan.Zero;
             Duration = BackgroundMediaPlayer.Current.NaturalDuration;
 
             if (BackgroundMediaPlayer.Current.CurrentState != MediaPlayerState.Closed &&

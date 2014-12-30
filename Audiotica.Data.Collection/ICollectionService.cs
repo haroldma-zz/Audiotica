@@ -1,5 +1,6 @@
 ﻿#region
 
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
@@ -11,6 +12,8 @@ namespace Audiotica.Data.Collection
 {
     public interface ICollectionService
     {
+        event EventHandler LibraryLoaded;
+
         ObservableCollection<Song> Songs { get; set; }
         ObservableCollection<Album> Albums { get; set; }
         ObservableCollection<Artist> Artists { get; set; }

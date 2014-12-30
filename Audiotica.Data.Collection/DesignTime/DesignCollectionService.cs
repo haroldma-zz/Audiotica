@@ -19,6 +19,7 @@ namespace Audiotica.Data.Collection.DesignTime
             LoadLibrary();
         }
 
+        public event EventHandler LibraryLoaded;
         public ObservableCollection<Song> Songs { get; set; }
         public ObservableCollection<Album> Albums { get; set; }
         public ObservableCollection<Artist> Artists { get; set; }

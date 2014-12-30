@@ -13,6 +13,8 @@ namespace Audiotica.Data.Service.Interfaces
 {
     public interface IScrobblerService
     {
+        event EventHandler<bool> AuthStateChanged;
+        bool HasCredentials { get; }
         bool IsAuthenticated { get; }
         void Logout();
 
@@ -21,6 +23,8 @@ namespace Audiotica.Data.Service.Interfaces
 
         Task<LastFmApiError> ScrobbleAsync(string name, string artist, DateTime played, TimeSpan duration, string album = "",
             string albumArtist = "");
+
+        Task<PageResponse<LastArtist>> GetRecommendedArtistsAsync(int page = 1, int limit = 30);
 
         Task<LastAlbum> GetDetailAlbum(string name, string artist);
         Task<LastAlbum> GetDetailAlbumByMbid(string mbid);
@@ -33,7 +37,7 @@ namespace Audiotica.Data.Service.Interfaces
         Task<PageResponse<LastAlbum>> GetArtistTopAlbums(string name);
 
         Task<PageResponse<LastTrack>> SearchTracksAsync(string query, int page = 1, int limit = 30);
-        Task<PageResponse<LastArtist>> SearchArtistAsync(string query, int page = 1, int limit = 30);
+        Task<PageResponse<LastArtist>> SearchArtistsAsync(string query, int page = 1, int limit = 30);
         Task<PageResponse<LastAlbum>> SearchAlbumsAsync(string query, int page = 1, int limit = 30);
 
         Task<PageResponse<LastTrack>> GetTopTracksAsync(int page = 1, int limit = 30);

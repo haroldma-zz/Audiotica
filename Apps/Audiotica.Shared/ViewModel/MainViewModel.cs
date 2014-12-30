@@ -2,15 +2,14 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Threading.Tasks;
-using Audiotica.Core.Common;
-using Audiotica.Core.Exceptions;
-using Audiotica.Core.Utilities;
+using Audiotica.Data.Collection;
+using Audiotica.Data.Collection.Model;
 using Audiotica.Data.Service.Interfaces;
 using Audiotica.Data.Spotify.Models;
 using GalaSoft.MvvmLight;
-using GoogleAnalytics;
 using IF.Lastfm.Core.Objects;
 
 #endregion
@@ -20,49 +19,57 @@ namespace Audiotica.ViewModel
     public class MainViewModel : ViewModelBase
     {
         private readonly AudioPlayerHelper _audioPlayer;
+        private readonly ICollectionService _collectionService;
         private readonly IScrobblerService _service;
         private readonly ISpotifyService _spotify;
-        private bool _isFeaturedLoading;
-        private bool _isNewLoading;
-        private bool _isSliderLoading;
-        private List<LastArtist> _spotlightItems;
+        private bool _isLastfmEnabled;
+        private bool _isMostStreamedEnabled;
+        private bool _isMostStreamedLoading;
+        private bool _isRecommendationLoading;
+        private List<Song> _mostPlayed;
+        private List<LastArtist> _recommendedArtists;
         private List<ChartTrack> _topTracks;
 
         /// <summary>
         ///     Initializes a new instance of the MainViewModel class.
         /// </summary>
-        public MainViewModel(IScrobblerService service, ISpotifyService spotify, AudioPlayerHelper audioPlayer)
+        public MainViewModel(ICollectionService collectionService, IScrobblerService service, ISpotifyService spotify,
+            AudioPlayerHelper audioPlayer)
         {
+            _collectionService = collectionService;
             _service = service;
             _spotify = spotify;
             _audioPlayer = audioPlayer;
+            _collectionService.LibraryLoaded += CollectionServiceOnLibraryLoaded;
+            _collectionService.Songs.CollectionChanged += SongsOnCollectionChanged;
+            _audioPlayer.TrackChanged += CollectionServiceOnLibraryLoaded;
 
             //Load data automatically
             LoadChartDataAsync();
         }
 
-        public bool IsFeaturedLoading
+        public bool IsMostStreamedLoading
         {
-            get { return _isFeaturedLoading; }
-            set { Set(ref _isFeaturedLoading, value); }
+            get { return _isMostStreamedLoading; }
+            set { Set(ref _isMostStreamedLoading, value); }
         }
 
-        public bool IsSliderLoading
+        public bool IsRecommendationLoading
         {
-            get { return _isSliderLoading; }
-            set { Set(ref _isSliderLoading, value); }
+            get { return _isRecommendationLoading; }
+            set { Set(ref _isRecommendationLoading, value); }
         }
 
-        public bool IsNewLoading
+        public List<Song> MostPlayed
         {
-            get { return _isNewLoading; }
-            set { Set(ref _isNewLoading, value); }
+            get { return _mostPlayed; }
+            set { Set(ref _mostPlayed, value); }
         }
 
-        public List<LastArtist> SpotlightItems
+        public List<LastArtist> RecommendedArtists
         {
-            get { return _spotlightItems; }
-            set { Set(ref _spotlightItems, value); }
+            get { return _recommendedArtists; }
+            set { Set(ref _recommendedArtists, value); }
         }
 
         public List<ChartTrack> TopTracks
@@ -71,52 +78,84 @@ namespace Audiotica.ViewModel
             set { Set(ref _topTracks, value); }
         }
 
+        public bool IsLastfmEnabled
+        {
+            get { return _isLastfmEnabled; }
+            set { Set(ref _isLastfmEnabled, value); }
+        }
+
+        public bool IsMostStreamedEnabled
+        {
+            get { return _isMostStreamedEnabled; }
+            set { Set(ref _isMostStreamedEnabled, value); }
+        }
+
+        private void SongsOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (e.Action == NotifyCollectionChangedAction.Remove)
+            {
+                CollectionServiceOnLibraryLoaded(null, null);
+            }
+        }
+
+        private void CollectionServiceOnLibraryLoaded(object sender, EventArgs eventArgs)
+        {
+            MostPlayed = _collectionService.Songs.ToList()
+                .Where(p => p.PlayCount != 0 && (DateTime.Now - p.LastPlayed).TotalDays <= 14)
+                .OrderByDescending(p => p.PlayCount)
+                .Take(10).ToList();
+        }
+
         public async Task LoadChartDataAsync()
         {
-            IsSliderLoading = true;
-            IsFeaturedLoading = true;
-            IsNewLoading = true;
+            IsMostStreamedEnabled = true;
 
             var rnd = new Random(DateTime.Now.Millisecond);
 
             try
             {
-                var page = rnd.Next(1, 9) * 10;
+                IsMostStreamedLoading = true;
+                var page = rnd.Next(0, 9)*10;
                 TopTracks = (await _spotify.GetMostStreamedTracksAsync())
                     .Where(p => p.percent_age_group_18_24 >= 30).Skip(page).Take(10).ToList();
             }
-            catch (Exception e)
+            catch
             {
+                IsMostStreamedEnabled = false;
             }
-            finally
+            IsMostStreamedLoading = false;
+
+            _service.AuthStateChanged += ServiceOnAuthStateChanged;
+            if (_service.HasCredentials)
+                ServiceOnAuthStateChanged(null, true);
+        }
+
+        private async void ServiceOnAuthStateChanged(object sender, bool b)
+        {
+            IsLastfmEnabled = b;
+            IsRecommendationLoading = b;
+            if (!b)
             {
-                IsFeaturedLoading = false;
+                RecommendedArtists = null;
+                return;
             }
 
             try
             {
-                var page = rnd.Next(1, 25);
-                SpotlightItems = (await _service.GetTopArtistsAsync(page, 10)).Content.ToList();
+                var rec = await _service.GetRecommendedArtistsAsync(limit: 10);
+                RecommendedArtists = rec.Content;
             }
-            catch (Exception e)
+            catch
             {
-            }
-            finally
-            {
-                IsSliderLoading = false;
             }
 
-            try
+            if (RecommendedArtists == null)
             {
-                // NewAlbums = (await _service.GetNewAlbums()).Items;
+                //this will show the "no recommendation" text block
+                RecommendedArtists = new List<LastArtist>();
             }
-            catch (Exception e)
-            {
-            }
-            finally
-            {
-                IsNewLoading = false;
-            }
+
+            IsRecommendationLoading = false;
         }
     }
 }

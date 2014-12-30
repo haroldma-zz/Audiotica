@@ -124,6 +124,12 @@
   <data name="AlbumNoTracks" xml:space="preserve">
     <value>Album has no tracks.</value>
   </data>
+  <data name="AppBarHubReview.Label" xml:space="preserve">
+    <value>Rate+Review</value>
+  </data>
+  <data name="AppBarHubSettings.Label" xml:space="preserve">
+    <value>Settings+More</value>
+  </data>
   <data name="AppErrorBooting" xml:space="preserve">
     <value>Problem booting some app services.</value>
   </data>
@@ -201,7 +207,43 @@
   <data name="GenericWait" xml:space="preserve">
     <value>Please wait...</value>
   </data>
-  <data name="NowPlayingName.Text" xml:space="preserve">
+  <data name="HubMenu.Header" xml:space="preserve">
+    <value>MENU</value>
+    <comment>uppercase on purpose</comment>
+  </data>
+  <data name="HubMostPlayed.Header" xml:space="preserve">
+    <value>MOST PLAYED BY YOU</value>
+    <comment>uppercase on purpose</comment>
+  </data>
+  <data name="HubRecommendations.Header" xml:space="preserve">
+    <value>RECOMMENDATIONS</value>
+    <comment>uppercase on purpose</comment>
+  </data>
+  <data name="HubTopSongs.Header" xml:space="preserve">
+    <value>TOP SONGS</value>
+    <comment>uppercase on purpose</comment>
+  </data>
+  <data name="MenuItemAlbums.Text" xml:space="preserve">
+    <value>albums</value>
+    <comment>lowercase on purpose</comment>
+  </data>
+  <data name="MenuItemArtists.Text" xml:space="preserve">
+    <value>artists</value>
+    <comment>lowercase on purpose</comment>
+  </data>
+  <data name="MenuItemPlaylists.Text" xml:space="preserve">
+    <value>playlists</value>
+    <comment>lowercase on purpose</comment>
+  </data>
+  <data name="MenuItemSearch.Text" xml:space="preserve">
+    <value>search</value>
+    <comment>lowercase on purpose</comment>
+  </data>
+  <data name="MenuItemSongs.Text" xml:space="preserve">
+    <value>songs</value>
+    <comment>lowercase on purpose</comment>
+  </data>
+  <data name="NowPlayingName" xml:space="preserve">
     <value>Now Playing</value>
   </data>
   <data name="PlaylistCreateNameForgot" xml:space="preserve">

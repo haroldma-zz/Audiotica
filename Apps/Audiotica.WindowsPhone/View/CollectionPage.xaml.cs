@@ -161,7 +161,7 @@ namespace Audiotica.View
             {
                 new CollectionViewModel.AddableCollectionItem
                 {
-                    Name = "NowPlayingName.Text".FromLanguageResource()
+                    Name = "NowPlayingName".FromLanguageResource()
                 }
             };
 
@@ -227,7 +227,7 @@ namespace Audiotica.View
 
             await App.Locator.CollectionService.ClearQueueAsync().ConfigureAwait(false);
 
-            foreach (var song in artist.Songs)
+            foreach (var song in artist.Songs.ToList().Shuffle())
             {
                 await App.Locator.CollectionService.AddToQueueAsync(song);
             }
@@ -246,7 +246,7 @@ namespace Audiotica.View
 
             await App.Locator.CollectionService.ClearQueueAsync().ConfigureAwait(false);
 
-            foreach (var song in album.Songs)
+            foreach (var song in album.Songs.ToList().Shuffle())
             {
                 await App.Locator.CollectionService.AddToQueueAsync(song);
             }
@@ -265,7 +265,7 @@ namespace Audiotica.View
 
             await App.Locator.CollectionService.ClearQueueAsync().ConfigureAwait(false);
 
-            foreach (var song in playlist.Songs)
+            foreach (var song in playlist.Songs.ToList())
             {
                 await App.Locator.CollectionService.AddToQueueAsync(song.Song);
             }
