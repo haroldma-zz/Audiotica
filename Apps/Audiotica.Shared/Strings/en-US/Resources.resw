@@ -160,6 +160,29 @@
   <data name="AuthLogoutSuccess" xml:space="preserve">
     <value>You have been logged out.</value>
   </data>
+  <data name="CollectionAlbums.Header" xml:space="preserve">
+    <value>ALBUMS</value>
+    <comment>uppercase on purpose</comment>
+  </data>
+  <data name="CollectionAppBarNewPlaylist.Label" xml:space="preserve">
+    <value>New Playlist</value>
+  </data>
+  <data name="CollectionArtists.Header" xml:space="preserve">
+    <value>ARTISTS</value>
+    <comment>uppercase on purpose</comment>
+  </data>
+  <data name="CollectionPivot.Title" xml:space="preserve">
+    <value>COLLECTION</value>
+    <comment>uppercase on purpose</comment>
+  </data>
+  <data name="CollectionPlaylists.Header" xml:space="preserve">
+    <value>PLAYLISTS</value>
+    <comment>uppercase on purpose</comment>
+  </data>
+  <data name="CollectionSongs.Header" xml:space="preserve">
+    <value>SONGS</value>
+    <comment>uppercase on purpose</comment>
+  </data>
   <data name="EntryAlreadySaved" xml:space="preserve">
     <value>Already saved "{0}".</value>
     <comment>{0} is a song or album name</comment>
@@ -225,6 +248,9 @@
     <value>TOP SONGS</value>
     <comment>uppercase on purpose</comment>
   </data>
+  <data name="MenuItemAddTo.Text" xml:space="preserve">
+    <value>Add To</value>
+  </data>
   <data name="MenuItemAlbums.Text" xml:space="preserve">
     <value>albums</value>
     <comment>lowercase on purpose</comment>
@@ -232,6 +258,9 @@
   <data name="MenuItemArtists.Text" xml:space="preserve">
     <value>artists</value>
     <comment>lowercase on purpose</comment>
+  </data>
+  <data name="MenuItemDelete.Text" xml:space="preserve">
+    <value>Delete</value>
   </data>
   <data name="MenuItemPlaylists.Text" xml:space="preserve">
     <value>playlists</value>
@@ -257,6 +286,10 @@
   <data name="PlaylistCreateSuccess" xml:space="preserve">
     <value>Created playlist "{0}".</value>
     <comment>{0} is a playlist name</comment>
+  </data>
+  <data name="PlaylistNewPicker.Title" xml:space="preserve">
+    <value>NEW PLAYLIST</value>
+    <comment>uppercase on purpose</comment>
   </data>
   <data name="SettingsAbout.Header" xml:space="preserve">
     <value>ABOUT</value>

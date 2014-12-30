@@ -58,9 +58,9 @@
             </GridView.ItemTemplate>
         </GridView>
 
-        <Pivot Name="CollectionPivot" Title="COLLECTION" HeaderTemplate="{StaticResource PivotHeaderTemplate}"
+        <Pivot Name="CollectionPivot" x:Uid="CollectionPivot" Title="COLLECTION" HeaderTemplate="{StaticResource PivotHeaderTemplate}"
                SelectionChanged="CollectionPivot_SelectionChanged">
-            <PivotItem Header="SONGS">
+            <PivotItem x:Uid="CollectionSongs" Header="SONGS">
                 <SemanticZoom>
                     <SemanticZoom.ZoomedInView>
                         <ListView IsItemClickEnabled="True" ItemsSource="{Binding Source={StaticResource SongGroups}}"
@@ -84,13 +84,13 @@
                                             </interactivity:Interaction.Behaviors>
                                             <FlyoutBase.AttachedFlyout>
                                                 <MenuFlyout>
-                                                    <MenuFlyoutItem Text="Add to" FontFamily="Global User Interface"
+                                                    <MenuFlyoutItem x:Uid="MenuItemAddTo" Text="Add to" FontFamily="Global User Interface"
                                                                     Click="MenuFlyoutItem_Click">
                                                         <FlyoutBase.AttachedFlyout>
                                                             <ListPickerFlyout DisplayMemberPath="Name" />
                                                         </FlyoutBase.AttachedFlyout>
                                                     </MenuFlyoutItem>
-                                                    <MenuFlyoutItem x:Uid="DeleteMenuItem" Text="Delete"
+                                                    <MenuFlyoutItem x:Uid="MenuItemDelete" Text="Delete"
                                                                     Foreground="Red"
                                                                     Click="DeleteSongMenuFlyoutItem_Click" />
                                                 </MenuFlyout>
@@ -145,7 +145,7 @@
                     </SemanticZoom.ZoomedOutView>
                 </SemanticZoom>
             </PivotItem>
-            <PivotItem Header="ARTISTS">
+            <PivotItem x:Uid="CollectionArtists" Header="ARTISTS">
                 <SemanticZoom>
                     <SemanticZoom.ZoomedInView>
                         <ListView IsItemClickEnabled="True"
@@ -179,7 +179,7 @@
                     </SemanticZoom.ZoomedOutView>
                 </SemanticZoom>
             </PivotItem>
-            <PivotItem Header="ALBUMS">
+            <PivotItem x:Uid="CollectionAlbums" Header="ALBUMS">
                 <SemanticZoom>
                     <SemanticZoom.ZoomedInView>
                         <ListView IsItemClickEnabled="True" ItemsSource="{Binding Source={StaticResource AlbumGroups}}"
@@ -297,7 +297,7 @@
                     </SemanticZoom.ZoomedOutView>
                 </SemanticZoom>
             </PivotItem>
-            <PivotItem Header="PLAYLIST">
+            <PivotItem x:Uid="CollectionPlaylists" Header="PLAYLIST">
                 <ListView IsItemClickEnabled="True" ItemsSource="{Binding Service.Playlists}" Padding="0,0,0,25"
                           Margin="0" ItemClick="PlaylistListView_ItemClick">
                     <ListView.ItemTemplate>
@@ -314,7 +314,7 @@
                                 </interactivity:Interaction.Behaviors>
                                 <FlyoutBase.AttachedFlyout>
                                     <MenuFlyout>
-                                        <MenuFlyoutItem x:Uid="DeleteMenuItem" Text="Delete" Foreground="Red"
+                                        <MenuFlyoutItem x:Uid="MenuItemDelete" Text="Delete" Foreground="Red"
                                                         Click="DeleteMenuFlyoutItem_Click_1" />
                                     </MenuFlyout>
                                 </FlyoutBase.AttachedFlyout>
@@ -330,9 +330,9 @@
     </Grid>
     <Page.BottomAppBar>
         <CommandBar ClosedDisplayMode="Minimal">
-            <AppBarButton Icon="Add" Label="New Playlist" FontFamily="Global User Interface">
+            <AppBarButton x:Uid="CollectionAppBarNewPlaylist" Icon="Add" Label="New Playlist" FontFamily="Global User Interface">
                 <AppBarButton.Flyout>
-                    <PickerFlyout Title="NEW PLAYLIST" ConfirmationButtonsVisible="True" Placement="Full"
+                    <PickerFlyout x:Uid="PlaylistNewPicker" Title="NEW PLAYLIST" ConfirmationButtonsVisible="True" Placement="Full"
                                   Confirmed="PickerFlyout_Confirmed" Closed="PickerFlyout_Closed">
                         <PickerFlyout.Content>
                             <ListView ItemsSource="{Binding Service.Songs}"
