@@ -9,7 +9,7 @@ using Newtonsoft.Json;
 
 namespace Audiotica.Data.Spotify
 {
-    public class SpotifyWebApi : IDisposable
+    public sealed class SpotifyWebApi : IDisposable
     {
         public String TokenType { get; set; }
         public String AccessToken { get; set; }
@@ -127,6 +127,7 @@ namespace Audiotica.Data.Spotify
         public void Dispose()
         {
             _webclient.Dispose();
+            GC.SuppressFinalize(this);
         }
     }
 }

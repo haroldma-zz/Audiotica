@@ -256,7 +256,7 @@
     <comment>Audiotica is the name of the app</comment>
   </data>
   <data name="FirstRunWelcomeTitle.Text" xml:space="preserve">
-    <value>HELLO AND ✌ WELCOME!</value>
+    <value>HELLO AND WELCOME!</value>
     <comment>contains an emoji, if inappropriate not necessary</comment>
   </data>
   <data name="GenericAccept" xml:space="preserve">

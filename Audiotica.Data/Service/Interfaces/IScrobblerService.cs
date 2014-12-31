@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Audiotica.Core.Common;
 using IF.Lastfm.Core.Api.Enums;
 using IF.Lastfm.Core.Api.Helpers;
 using IF.Lastfm.Core.Objects;
@@ -13,7 +14,7 @@ namespace Audiotica.Data.Service.Interfaces
 {
     public interface IScrobblerService
     {
-        event EventHandler<bool> AuthStateChanged;
+        event EventHandler<BoolEventArgs> AuthStateChanged;
         bool HasCredentials { get; }
         bool IsAuthenticated { get; }
         void Logout();

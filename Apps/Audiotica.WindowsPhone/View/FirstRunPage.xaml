@@ -51,7 +51,7 @@
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
-                <TextBlock x:Uid="FirstRunWelcomeTitle" Text="HELLO AND ✌ WELCOME!" FontSize="52" TextWrapping="Wrap" FontWeight="Bold" />
+                <TextBlock x:Uid="FirstRunWelcomeTitle" Text="HELLO AND WELCOME!" FontSize="52" TextWrapping="Wrap" FontWeight="Bold" />
                 <TextBlock x:Uid="FirstRunWelcomeSubtitle"
                            Grid.Row="1"
                            Text="With Audiotica you'll never have to break a sweat to get music!  It is the one stop place to find everything you'll ever need."

@@ -37,12 +37,12 @@ namespace Audiotica.Data.Service.RunTime
             GetSessionTokenAsync();
         }
 
-        public event EventHandler<bool> AuthStateChanged;
+        public event EventHandler<BoolEventArgs> AuthStateChanged;
 
         protected virtual void OnAuthStateChanged()
         {
-            EventHandler<bool> handler = AuthStateChanged;
-            if (handler != null) handler(this, IsAuthenticated);
+            EventHandler<BoolEventArgs> handler = AuthStateChanged;
+            if (handler != null) handler(this, new BoolEventArgs(IsAuthenticated));
         }
 
         private async Task<bool> GetSessionTokenAsync()

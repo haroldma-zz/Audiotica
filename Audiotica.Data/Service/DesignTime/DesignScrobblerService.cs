@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Audiotica.Core.Common;
 using Audiotica.Data.Service.Interfaces;
 using IF.Lastfm.Core.Api.Enums;
 using IF.Lastfm.Core.Api.Helpers;
@@ -14,7 +15,7 @@ namespace Audiotica.Data.Service.DesignTime
 {
     public class DesignScrobblerService : IScrobblerService
     {
-        public event EventHandler<bool> AuthStateChanged;
+        public event EventHandler<BoolEventArgs> AuthStateChanged;
         public bool HasCredentials { get; private set; }
         public bool IsAuthenticated { get; private set; }
 
