@@ -1,86 +1,198 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset='utf-8'>
-    <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
-    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen">
-    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
+﻿<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="description" content="The easiest way to listen and discover new music.">
+        <meta name="keywords" content="audiotica, wp81, winrt, winprt, universal, free, music, zumicts">
+        <meta name="author" content="Zumicts">
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <title>Audiotica</title>
+        <!-- Font-awesome and Custom Google Web Font -->
+        <link href="font-awesome/css/font-awesome.min.css" rel="stylesheet">
+        <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+        <!-- Bootstrap -->
+        <link href="css/bootstrap.min.css" rel="stylesheet">
+        <!-- Stylesheets -->
+        <link href="css/owl-carousel/owl.carousel.css" rel="stylesheet">
+        <link href="css/owl-carousel/owl.theme.css" rel="stylesheet">
+        <link href="css/owl-carousel/owl.transitions.css" rel="stylesheet">
+        <link href="css/nivo-lightbox.css" rel="stylesheet">
+        <link href="css/nivo_themes/default/default.css" rel="stylesheet">
+        <link href="css/animate.min.css" rel="stylesheet">
+        <!-- theme stylesheet -->
+        <link href="css/style.css" rel="stylesheet">
+        <!--[if lt IE 9]>
+                                <script src="js/html5shiv.js"></script>
+                                <script src="js/respond.min.js"></script>
+        <![endif]-->
+        <script src="js/modernizr.custom.min.js"></script>
+    </head>
+    <body  id="page-top" data-spy="scroll" data-target=".navbar-custom">
+        <!-- google analytic -->
+        <script type="text/javascript">
+            var _gaq = _gaq || [];
+            _gaq.push(['_setAccount', 'UA-39913052-11']);
+            _gaq.push(['_trackPageview']);
 
-    <!--[if lt IE 9]>
-    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
+            (function () {
+                var ga = document.createElement('script');
+                ga.type = 'text/javascript';
+                ga.async = true;
+                ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+                var s = document.getElementsByTagName('script')[0];
+                s.parentNode.insertBefore(ga, s);
+            })();
+        </script>
+        <!-- preloader -->
+        <div class="preloader">
+            <div class="status"></div>
+        </div>
 
-    <title>Audiotica by zumicts</title>
-  </head>
+        <!-- parallax intro -->
+        <section id="intro" class="parallax">
+            <div class="overlay">
+                <div class="container">
+                    <div class="row">
+                        <!-- left-intro -->
+                        <div class="col-md-6 left-intro wow fadeInLeft animated" data-wow-offset="10" data-wow-duration="1s">
+                            <h1 class="title"><img class="logo" alt="logo" src='images/logo.png' title="Audiotica" />udiotica</h1>
+                            <h1> A SLEEK AND <span><i class='fa fa-heart'></i> SEXY MUSIC APP. </span></h1>
+                            <p>Available exclusively on the Window store</p>
+                            <div>
+                                <a class="page-scroll btn-new btn-bold" href="#firstFeature">
+                                    Learn More
+                                </a>
+                                <a class="btn-new page-scroll" href="#download">
+                                    Get The App
+                                </a>
+                            </div>
+                        </div><!-- col-md-6 end -->
+                        <!-- right-intro = mobile image -->
+                        <div class="col-md-6">
+                            <div class="mobileBg pull-right wow fadeInRight animated" data-wow-offset="10" data-wow-duration="1s" >
+                                <img class="img-responsive" src="images/phones/mobile.png" alt="app"/>
+                            </div>
+                        </div><!-- col-md-6 end -->
+                    </div><!-- row end -->
+                </div><!-- container end -->
+            </div><!-- overlay end -->
+        </section><!-- #intro end -->
 
-  <body>
-    <header>
-      <div class="inner">
-        <h1>Audiotica</h1>
-        <h2>Development status</h2>
-        <a href="https://github.com/zumicts/Audiotica" class="button"><small>View project on</small> GitHub</a>
-      </div>
-    </header>
+        <!-- firstFeature -->
+        <section id="firstFeature">
+            <div class="container">
+                <div class="row">
+                    <!-- left firstFeature mobile  -->
+                    <div class="col-md-6 feature-mobile"  >
+                        <div class="phones">
+                            <div class="featureCircle">
+                                <div class="featureCircleInner">
+                                    <span><strong> INTEGRATED</strong> <br> SCROBBLING </span>
+                                </div>
+                            </div><!-- featureCircle end -->
+                            <!-- BACK PHONE -->
+                            <img   class="phone-back wow fadeInLeft animated" data-wow-offset="120" data-wow-duration="1s"  alt="img" 
+                                   src="images/phones/windows-red.png" />
+                            <!-- SHADOW -->
+                            <div class="shadow-left wow fadeInLeft animated" data-wow-offset="120" data-wow-duration="1s"  ></div>
+                            <!-- FRONT PHONE -->
+                            <img   class="phone-front wow fadeInLeft animated" data-wow-offset="120" data-wow-duration="1.5s"   alt="img" 
+                                 src="images/phones/android.png" />
+                        </div>
+                    </div><!-- feature-mobile end -->
+                    <!-- right firstFeature text -->
+                    <div class="col-md-6 welcomeText"  >
+                        <h2 >
+                            MADE BY AND FOR MUSIC LOVERS!
+                        </h2>
+                        <div class="colorTitles">
+                            <span class="pink wow bounceInRight animated" data-wow-offset="120" data-wow-duration="1s"   >
+                               SPOTIFY + LAST.FM
+                            </span>
+                            <br>
+                            <span class="yellow wow bounceInRight animated" data-wow-offset="120" data-wow-duration="1.5s"  >
+                                FREE STREAMING AND OFFLINE MODE
+                            </span>
+                        </div>
 
-    <div id="content-wrapper">
-      <div class="inner clearfix">
-        <section id="main-content">
-          <p><strong>Latest Version:</strong> Beta 5</p>
+                        <p>
+                            Either load your music collection or search Spotify and Last.FM for songs,
+                            thanks to the magic of Audiotica it can match any mp3 to any song.
+                            Then stream or download your music, while scrobbling!
+                        </p>
+                        <hr>
+                        <p class="bold">Packed with amazing features</p>
+                        <ul class="feature-list">
+                            <li><i class="fa fa-lastfm fa-fw"></i> Last.FM integration.</li>
+                            <li><i class="fa fa-spotify fa-fw"></i> Spotify integration.</li>
+                            <li><i class="fa fa-music fa-fw"></i> Full album saving.</li>
+                            <li><i class="fa fa-search fa-fw"></i> Find any mp3, if is on the web Audiotica can find it.</li>
+                        </ul>
+                        <div class="space20"></div>
+                        <a href="#secondFeature" class=" page-scroll btn-new">
+                            Download Now
+                        </a>
+                    </div><!-- welcomeText end -->
+                </div><!-- row end -->
+            </div><!-- container end -->
+        </section><!-- firstFeature end -->
 
-<p><strong>In-Development Version:</strong> Patch #1</p>
+        <!-- secondFeature -->
+        <section id="secondFeature">
+            <div class="container">
+                <div class="row">
+                    <!-- right secondFeature mobile -->
+                    <div class="secondFeatureRight">
+                        <img class="secondFeaturePhone" alt="img" src="images/phones/windows.png" />
+                    </div><!-- secondFeatureRight end -->
+                    <!-- left secondFeature text -->
+                    <div class="secondFeatureLeft">
+                        <h2 class="light">
+                            Available <span class="bold"> free </span> on <br> the Window store
+                        </h2>
+                        <p>
+                            Once Audiotica was made for iOS to explore different realms but it was way too much awesome for Apple to handle.
+                            That's one of the reasons Windows users get exclusive access to Audiotica!
+                        </p>
+                        <a class="btn btn-app-download" href="http://www.windowsphone.com/s?appid=c02aae72-99d3-480f-b6d2-3fac2fed08a7">
+                            <i class="fa fa-windows"></i>
+                            <strong>Download App</strong> <span>from windows Store</span>
+                        </a>
+                    </div><!-- secondFeatureLeft end -->
+                </div><!-- row end -->
+            </div><!-- container end -->
 
-<p><strong>Page Last Updated:</strong> November 29, 2014</p>
+        </section><!-- secondFeature end -->
 
-<h3>
-<a id="status" class="anchor" href="#status" aria-hidden="true"><span class="octicon octicon-link"></span></a>Status</h3>
+        <div class="clearfix secondFeatureClear"></div>
 
-<p>Working on better api for top artist (that has better resolution images).</p>
 
-<h3>
-<a id="features" class="anchor" href="#features" aria-hidden="true"><span class="octicon octicon-link"></span></a>Features</h3>
-
-<p>Patch will contain</p>
-
-<ol>
-<li>Artwork poster on collection page</li>
-<li>Smaller search bar</li>
-<li>Use of accent colors</li>
-<li>Small UI tweaks</li>
-</ol>
-
-<p>... TBC</p>
-        </section>
-
-        <aside id="sidebar">
-          <a href="https://github.com/zumicts/Audiotica/zipball/master" class="button">
-            <small>Download</small>
-            .zip file
-          </a>
-          <a href="https://github.com/zumicts/Audiotica/tarball/master" class="button">
-            <small>Download</small>
-            .tar.gz file
-          </a>
-
-          <p class="repo-owner"><a href="https://github.com/zumicts/Audiotica"></a> is maintained by <a href="https://github.com/zumicts">zumicts</a>.</p>
-
-          <p>This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the Architect theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.</p>
-        </aside>
-      </div>
-    </div>
-
-            <script type="text/javascript">
-            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
-            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
-          </script>
-          <script type="text/javascript">
-            try {
-              var pageTracker = _gat._getTracker("UA-39913052-11");
-            pageTracker._trackPageview();
-            } catch(err) {}
-          </script>
-
-  </body>
+        <footer>
+            <div class="container">
+                <div class="col-md-12">
+                    <p>&copy; Audiotica by <a target="_blank" href="http://zumicts.com">Zumicts Studio</a></p>
+                    <div class="space20"></div>
+                    <ul  class="circleSocial">
+                        <li><a href="http://twitter.com/zumicts"><i class="fa fa-twitter"></i></a></li>
+                        <li><a href="http://reddit.com/r/audioticawp"><i class="fa fa-reddit"></i></a></li>
+                        <li><a href="http://github.com/zumicts/audiotica"><i class="fa fa-github"></i></a></li>
+                    </ul>
+                </div><!-- col-md-12 end -->
+            </div><!-- container end -->
+        </footer>
+        <div class="clearfix"></div>
+        <!-- javascript Placed at the end of the document so the pages load faster -->
+        <script type="text/javascript" src="js/jquery-1.11.2.min.js"></script>
+        <script src="js/bootstrap.min.js"></script>
+        <script src="js/jquery.easing.min.js"></script>
+        <script src="js/owl.carousel.min.js"></script>
+        <script src="js/nivo-lightbox.min.js"></script>
+        <script src="js/jquery.appear.js"></script>
+        <script src="js/jquery.inview.js"></script>
+        <script src="js/jquery.animateNumber.min.js"></script>
+        <script src="js/wow.min.js"></script>
+        <script src="js/matchMedia.js"></script>
+        <script src="js/jquery.backgroundvideo.min.js"></script>
+        <script src="js/script.js"></script>
+    </body>
 </html>
