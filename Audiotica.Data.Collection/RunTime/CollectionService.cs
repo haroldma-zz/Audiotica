@@ -235,12 +235,12 @@ namespace Audiotica.Data.Collection.RunTime
                     song.Album.HasArtwork = true;
                 await _sqlService.UpdateItemAsync(song.Album);
             }
-
-            await _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => 
-                song.Album.Artwork = 
-                song.Album.HasArtwork 
-                ? new BitmapImage(new Uri(CollectionConstant.LocalStorageAppPath + filePath)) 
-                : CollectionConstant.MissingArtworkImage);
+            if (song.Album.Artwork == null)
+                await _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                    song.Album.Artwork =
+                        song.Album.HasArtwork
+                            ? new BitmapImage(new Uri(CollectionConstant.LocalStorageAppPath + filePath))
+                            : CollectionConstant.MissingArtworkImage);
 
             #endregion
 
