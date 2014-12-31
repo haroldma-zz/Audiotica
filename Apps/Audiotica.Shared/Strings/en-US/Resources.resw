@@ -160,6 +160,10 @@
   <data name="AppNetworkIssue" xml:space="preserve">
     <value>Problem with the connection.</value>
   </data>
+  <data name="AppUpdated" xml:space="preserve">
+    <value>Audiotica has been updated to v{0}</value>
+    <comment>{0} is the version number ex. 1412.6.2.0</comment>
+  </data>
   <data name="AuthBadCredentials" xml:space="preserve">
     <value>Problem with your {0} account, login again in the settings page.</value>
     <comment>{0} internet account (last.fm, spotify, etc)</comment>

@@ -13,16 +13,16 @@ namespace Audiotica.Core.Common
         {
         }
 
-        public AppVersion(int release, int beta, int patch, int revision)
+        public AppVersion(int release, int month, int patch, int revision)
         {
             ReleaseNumber = release;
-            BetaNumber = beta;
+            MonthNumber = month;
             PatchNumber = patch;
             RevisionNumber = revision;
         }
 
         public int ReleaseNumber { get; set; }
-        public int BetaNumber { get; set; }
+        public int MonthNumber { get; set; }
         public int PatchNumber { get; set; }
         public int RevisionNumber { get; set; }
 
@@ -31,7 +31,7 @@ namespace Audiotica.Core.Common
             // check if less than
             if (ReleaseNumber < other.ReleaseNumber)
                 return -1;
-            if (BetaNumber < other.BetaNumber)
+            if (MonthNumber < other.MonthNumber)
                 return -1;
             if (PatchNumber < other.PatchNumber)
                 return -1;
@@ -40,7 +40,7 @@ namespace Audiotica.Core.Common
 
             // check if equal
             if (ReleaseNumber == other.ReleaseNumber
-                && BetaNumber == other.BetaNumber
+                && MonthNumber == other.MonthNumber
                 && PatchNumber == other.PatchNumber
                 && RevisionNumber == other.RevisionNumber)
                 return 0;
@@ -56,7 +56,7 @@ namespace Audiotica.Core.Common
 
         public override string ToString()
         {
-            return ReleaseNumber + "." + BetaNumber + "." + PatchNumber + "." + RevisionNumber;
+            return ReleaseNumber + "." + MonthNumber + "." + PatchNumber + "." + RevisionNumber;
         }
     }
 }

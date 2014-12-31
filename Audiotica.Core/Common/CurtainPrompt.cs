@@ -85,6 +85,11 @@ namespace Audiotica.Core.Common
 
         public static CurtainPrompt Show(string msg, params object[] args)
         {
+            return Show(1500, msg, args);
+        }
+
+        public static CurtainPrompt Show(int milliToHide, string msg, params object[] args)
+        {
             if (args != null)
             {
                 msg = string.Format(msg, args);
@@ -93,7 +98,7 @@ namespace Audiotica.Core.Common
             if (_current != null)
                 _current.Dismiss();
 
-            var curtain = new CurtainPrompt(Colors.DarkGreen ,msg) {_millisecondsToHide = 1500};
+            var curtain = new CurtainPrompt(Colors.DarkGreen ,msg) {_millisecondsToHide = milliToHide};
             _current = curtain;
             return curtain;
         }
@@ -102,7 +107,13 @@ namespace Audiotica.Core.Common
         {
             return ShowError(msg, null);
         }
+
         public static CurtainPrompt ShowError(string msg, params object[] args)
+        {
+            return ShowError(2500, msg, args);
+        }
+
+        public static CurtainPrompt ShowError(int milliToHide, string msg, params object[] args)
         {
             if (args != null)
             {
@@ -112,7 +123,7 @@ namespace Audiotica.Core.Common
             if (_current != null)
                 _current.Dismiss();
 
-            var curtain = new CurtainPrompt(Colors.DarkRed, msg, true) {_millisecondsToHide = 2500};
+            var curtain = new CurtainPrompt(Colors.DarkRed, msg, true) {_millisecondsToHide = milliToHide};
             _current = curtain;
             return curtain;
         }

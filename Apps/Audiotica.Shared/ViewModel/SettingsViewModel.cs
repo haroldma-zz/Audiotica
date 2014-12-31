@@ -38,7 +38,7 @@ namespace Audiotica.ViewModel
 
         public string Version
         {
-            get { return BetaChangelogHelper.CurrentVersion.ToString(); }
+            get { return AppVersionHelper.CurrentVersion.ToString(); }
         }
 
         public bool WallpaperArt

@@ -2,6 +2,7 @@
 
 // The Blank Application template is documented at http://go.microsoft.com/fwlink/?LinkId=234227
 using System;
+using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.ApplicationModel.Store;
@@ -46,7 +47,7 @@ namespace Audiotica
         private bool _init;
         private static ViewModelLocator _locator;
 
-        protected override async void OnLaunched(LaunchActivatedEventArgs e)
+        protected override void OnLaunched(LaunchActivatedEventArgs e)
         {
             RootFrame = Window.Current.Content as Frame;
 
@@ -59,9 +60,7 @@ namespace Audiotica
 
                 Window.Current.Content = RootFrame;
                 DispatcherHelper.Initialize();
-#if BETA
-                await BetaChangelogHelper.OnLaunchedAsync();
-#endif
+                AppVersionHelper.OnLaunched();
             }
 
             // ReSharper disable once CSharpWarnings::CS4014
@@ -85,7 +84,7 @@ namespace Audiotica
 #endif
                 var page = typeof (HomePage);
 
-                if (BetaChangelogHelper.IsFirstRun)
+                if (AppVersionHelper.IsFirstRun)
                     page = typeof (FirstRunPage);
 
                 if (!RootFrame.Navigate(page, e.Arguments))
@@ -118,7 +117,7 @@ namespace Audiotica
         }
 
 #if WINDOWS_PHONE_APP
-        private void RootFrame_FirstNavigated(object sender, NavigationEventArgs e)
+        private async void RootFrame_FirstNavigated(object sender, NavigationEventArgs e)
         {
             RootFrame.ContentTransitions = _transitions ?? new TransitionCollection {new NavigationThemeTransition()};
             RootFrame.Navigated -= RootFrame_FirstNavigated;
@@ -127,10 +126,15 @@ namespace Audiotica
             ApplicationView.GetForCurrentView().VisibleBoundsChanged += OnVisibleBoundsChanged;
             OnVisibleBoundsChanged(null, null);
 
-            ReviewReminder();
+            await ReviewReminderAsync();
+
+            if (AppVersionHelper.JustUpdated)
+            {
+                CurtainPrompt.Show(2500, "AppUpdated".FromLanguageResource(), AppVersionHelper.CurrentVersion);
+            }
         }
 
-        private async void ReviewReminder()
+        private async Task ReviewReminderAsync()
         {
             var launchCount = AppSettingsHelper.Read<int>("LaunchCount");
             AppSettingsHelper.Write("LaunchCount", ++launchCount);
