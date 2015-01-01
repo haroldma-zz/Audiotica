@@ -257,7 +257,7 @@ namespace Audiotica.WindowsPhone.Player
             if (CurrentTrack == null)
             {
                 //reset the incrementable Id of the table
-                if (history.Count == 0)
+                if (history.Count(p => p.CanScrobble) == 0)
                     _bgSql.DeleteTableAsync<HistoryEntry>().Wait();
                 return;
             }
