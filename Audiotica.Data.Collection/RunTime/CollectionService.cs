@@ -152,14 +152,15 @@ namespace Audiotica.Data.Collection.RunTime
                 {
                     //get it
                     song.Artist.HasArtwork = await GetArtworkAsync(artistFilePath, artistArtwork);
-
-                    //set it
-                    await _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-                        song.Artist.Artwork =
-                            song.Artist.HasArtwork
-                                ? new BitmapImage(new Uri(CollectionConstant.LocalStorageAppPath + artistFilePath))
-                                : null);
+                    await _sqlService.UpdateItemAsync(primaryArtist);
                 }
+
+                //set it
+                await _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                    song.Artist.Artwork =
+                        song.Artist.HasArtwork
+                            ? new BitmapImage(new Uri(CollectionConstant.LocalStorageAppPath + artistFilePath))
+                            : null);
 
                 #endregion
 
@@ -217,14 +218,14 @@ namespace Audiotica.Data.Collection.RunTime
                     //get it
                     song.Album.HasArtwork = await GetArtworkAsync(albumFilePath, artworkUrl);
                     await _sqlService.UpdateItemAsync(song.Album);
-
-                    //set it
-                    await _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-                        song.Album.Artwork =
-                            song.Album.HasArtwork
-                                ? new BitmapImage(new Uri(CollectionConstant.LocalStorageAppPath + albumFilePath))
-                                : CollectionConstant.MissingArtworkImage);
                 }
+
+                //set it
+                await _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                    song.Album.Artwork =
+                        song.Album.HasArtwork
+                            ? new BitmapImage(new Uri(CollectionConstant.LocalStorageAppPath + albumFilePath))
+                            : CollectionConstant.MissingArtworkImage);
 
                 #endregion
             }
@@ -310,6 +311,7 @@ namespace Audiotica.Data.Collection.RunTime
                 {
                     await _sqlService.DeleteItemAsync(album);
                     Albums.Remove(album);
+                    artist.Albums.Remove(album);
                 }
             }
 

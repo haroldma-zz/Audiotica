@@ -277,7 +277,7 @@
     </Reference>
     <Reference Include="IF.Lastfm.Core, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\IF.Lastfm.Zumicts.0.3.2\lib\portable-net45+win+wpa81+wp80\IF.Lastfm.Core.dll</HintPath>
+      <HintPath>..\..\packages\IF.Lastfm.Zumicts.0.3.2.1\lib\portable-net45+win+wpa81+wp80\IF.Lastfm.Core.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.AdMediator.WindowsPhone81.AdDuplex">
       <HintPath>..\..\packages\Microsoft.AdMediator.WindowsPhone81.AdDuplex.1.0.11\lib\wpa\Microsoft.AdMediator.WindowsPhone81.AdDuplex.dll</HintPath>
