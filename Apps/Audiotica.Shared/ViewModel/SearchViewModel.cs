@@ -173,9 +173,15 @@ namespace Audiotica.ViewModel
                 var artist = term.Substring(0, term.IndexOf("/_/"));
                 var title = WebUtility.UrlDecode(term.Replace(artist + "/_/", ""));
                 artist = WebUtility.UrlDecode(artist);
-
-                var track = await _service.GetDetailTrack(title, artist);
-                await CollectionHelper.SaveTrackAsync(track);
+                try
+                {
+                    var track = await _service.GetDetailTrack(title, artist);
+                    await CollectionHelper.SaveTrackAsync(track);
+                }
+                catch
+                {
+                    CurtainPrompt.ShowError("AppNetworkIssue".FromLanguageResource());
+                }
             }
             else
             {

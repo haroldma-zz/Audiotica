@@ -5,6 +5,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:audiotica="using:Audiotica"
     xmlns:interactivity="using:Microsoft.Xaml.Interactivity" xmlns:core="using:Microsoft.Xaml.Interactions.Core"
+    xmlns:common="using:Audiotica.Core.Common"
     x:Class="Audiotica.View.CollectionPage"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
@@ -270,6 +271,9 @@
             </PivotItem>
             <PivotItem x:Uid="PivotArtists" Header="ARTISTS">
                 <Grid>
+                    <Grid.Resources>
+                        <common:CountToPluralConverter x:Key="AlbumToPluralConverter" SingularText="album" PluralText="albums"/>
+                    </Grid.Resources>
                     <TextBlock
                         x:Uid="CollectionEmpty"
                         Visibility="{Binding Service.Artists.Count, Converter={StaticResource EmptyListToVisibilityConverter}}"
@@ -295,7 +299,7 @@
                                             <TextBlock FontSize="14"
                                                TextTrimming="CharacterEllipsis" Foreground="#89FFFFFF" FontFamily="Global User Interface">
                                                 <Run Text="{Binding Albums.Count}" />
-                                                <Run Text="albums" />
+                                                <Run Text="{Binding Albums.Count, Converter={StaticResource AlbumToPluralConverter}}" />
                                             </TextBlock>
                                         </StackPanel>
                                     </DataTemplate>

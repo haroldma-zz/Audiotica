@@ -47,6 +47,7 @@
     <Compile Include="Common\IncrementalObservableCollection.cs" />
     <Compile Include="Common\BoolToOppositeConverter.cs" />
     <Compile Include="Common\BoolToStringConverter.cs" />
+    <Compile Include="Common\CountToPluralConverter.cs" />
     <Compile Include="Common\NotEmptyToStringConverter.cs" />
     <Compile Include="Common\EmptyListToVisibilityConverter.cs" />
     <Compile Include="Common\UpperCaseConverter.cs" />
