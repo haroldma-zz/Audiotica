@@ -51,7 +51,7 @@ namespace Audiotica.WindowsPhone.Player
             var config = new SqlServiceConfig
             {
                 Tables = dbTypes,
-                CurrentVersion = 5,
+                CurrentVersion = 6,
                 Path = "collection.sqldb"
             };
 

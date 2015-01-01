@@ -14,7 +14,7 @@
 
     <Grid>
         <Grid.Background>
-            <ImageBrush Opacity=".25" Stretch="UniformToFill" ImageSource="{Binding LastArtist.MainImage.Largest}" />
+            <ImageBrush Opacity=".25" Stretch="UniformToFill" ImageSource="{Binding Artist.Artwork}" />
         </Grid.Background>
         <Pivot x:Name="ArtistPivot" Title="{Binding Artist.Name, Converter={StaticResource UpperCaseConverter}}" HeaderTemplate="{StaticResource PivotHeaderTemplate}">
             <PivotItem x:Uid="PivotSongs" Header="SONGS">

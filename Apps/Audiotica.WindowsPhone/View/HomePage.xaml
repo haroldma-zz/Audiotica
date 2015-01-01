@@ -80,11 +80,11 @@
                         <GridView.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel Margin="0,5,5,0" Width="150">
-                                    <Grid Background="{StaticResource PhoneAccentBrush}">
-                                        <Image Source="{Binding Album.Artwork}" Height="150" Width="150" />
+                                    <Grid Background="{StaticResource PhoneAccentBrush}" Margin="0,0,0,5">
+                                        <Image Source="{Binding Album.Artwork}" Height="150" Width="150" Stretch="UniformToFill" />
                                     </Grid>
                                     <TextBlock Text="{Binding Name}" FontSize="15" TextTrimming="CharacterEllipsis" />
-                                    <TextBlock Text="{Binding ArtistName}" FontSize="12"
+                                    <TextBlock Text="{Binding ArtistName}" FontSize="14"
                                                TextTrimming="CharacterEllipsis" Foreground="#89FFFFFF"
                                                FontFamily="Global User Interface" />
                                 </StackPanel>
@@ -131,11 +131,11 @@
                         <GridView.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel Margin="0,5,5,0" Width="150">
-                                    <Grid Background="{StaticResource PhoneAccentBrush}">
-                                        <Image Source="{Binding ArtworkUrl}" Height="150" Width="150" />
+                                    <Grid Background="{StaticResource PhoneAccentBrush}" Margin="0,0,0,5">
+                                        <Image Source="{Binding ArtworkUrl}" Height="150" Width="150" Stretch="UniformToFill" />
                                     </Grid>
                                     <TextBlock Text="{Binding Name}" FontSize="15" TextTrimming="CharacterEllipsis" />
-                                    <TextBlock Text="{Binding ArtistName}" FontSize="12"
+                                    <TextBlock Text="{Binding ArtistName}" FontSize="14"
                                                TextTrimming="CharacterEllipsis" Foreground="#89FFFFFF"
                                                FontFamily="Global User Interface" />
                                 </StackPanel>

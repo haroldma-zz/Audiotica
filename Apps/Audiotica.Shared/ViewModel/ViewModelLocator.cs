@@ -83,8 +83,18 @@ namespace Audiotica.ViewModel
             return new SqlServiceConfig()
             {
                 Tables = dbTypes,
-                CurrentVersion = 5,
-                Path = "collection.sqldb"
+                CurrentVersion = 6,
+                Path = "collection.sqldb",
+                OnUpdate = (connection, d) =>
+                {
+                    if (d == 5)
+                    {
+                        using (var statement = connection.Prepare("ALTER TABLE Artist ADD COLUMN HasArtwork INTEGER"))
+                        {
+                            statement.Step();
+                        }
+                    }
+                }
             };
         }
         private SqlServiceConfig GetBackgroundConfig()

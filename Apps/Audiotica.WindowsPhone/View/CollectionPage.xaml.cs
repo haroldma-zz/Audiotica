@@ -52,7 +52,7 @@ namespace Audiotica.View
 
             var albumCount = albums.Count;
 
-            if (albumCount <= 0) return;
+            if (albumCount <= 10) return;
 
             var h = Window.Current.Bounds.Height;
             var rows = (int) Math.Ceiling(h/vm.ArtworkSize);

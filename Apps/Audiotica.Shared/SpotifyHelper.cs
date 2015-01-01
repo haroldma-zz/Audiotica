@@ -68,6 +68,7 @@ namespace Audiotica
             }
 
             var artist = track is FullTrack ? (track as FullTrack).Artist : track.Artist;
+
             string url;
 
             try
@@ -82,6 +83,17 @@ namespace Audiotica
             if (string.IsNullOrEmpty(url))
                 return SavingError.NoMatch;
 
+            string artistArtwork = null;
+
+            try
+            {
+                var lastArtist = await App.Locator.ScrobblerService.GetDetailArtist(artist.Name);
+                artistArtwork = lastArtist.MainImage != null && lastArtist.MainImage.Largest != null 
+                    ? lastArtist.MainImage.Largest.AbsoluteUri 
+                    : null;
+            }
+            catch { }
+
             preparedSong.ArtistName = artist.Name;
             preparedSong.Album = album.ToAlbum();
             preparedSong.Artist = album.Artist.ToArtist();
@@ -91,7 +103,9 @@ namespace Audiotica
             try
             {
                 await
-                    App.Locator.CollectionService.AddSongAsync(preparedSong, album.Images[0].Url).ConfigureAwait(false);
+                    App.Locator.CollectionService.AddSongAsync(preparedSong, 
+                    album.Images[0].Url, 
+                    artistArtwork).ConfigureAwait(false);
                 return SavingError.None;
             }
             catch (NetworkException)

@@ -11,34 +11,39 @@
     xmlns:core="using:Microsoft.Xaml.Interactions.Core"
     DataContext="{Binding Source={StaticResource Locator}, Path=CollectionAlbum}">
 
-    <ListView Padding="0,40,0,0" Margin="20,0" ItemContainerStyle="{StaticResource NoFeedbackListViewItem}">
-        <Grid>
-            <Grid Margin="0,0,0,10">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
-                <Image Height="100" Width="100"
-                       Source="{Binding Album.Artwork}" />
-                <StackPanel Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="5,0,0,0">
-                    <TextBlock Text="{Binding Album.Name}" FontSize="22" TextAlignment="Right"
-                               TextTrimming="CharacterEllipsis" FontWeight="Bold" />
-                    <HyperlinkButton Content="{Binding Album.PrimaryArtist.Name}" FontSize="16"
-                                     HorizontalAlignment="Right" Foreground="#89FFFFFF" />
-                    <TextBlock Text="{Binding Album.Genre}" FontSize="16" TextAlignment="Right" Foreground="#89FFFFFF"
-                               TextTrimming="CharacterEllipsis" />
-                </StackPanel>
+    <Grid>
+        <Grid.Background>
+        <ImageBrush Opacity=".25" ImageSource="{Binding Album.PrimaryArtist.Artwork}" Stretch="UniformToFill" />
+        </Grid.Background>
+        <ListView Padding="0,40,0,0" Margin="20,0" ItemContainerStyle="{StaticResource NoFeedbackListViewItem}">
+            <Grid>
+                <Grid Margin="0,0,0,10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Image Height="100" Width="100"
+                           Source="{Binding Album.Artwork}" />
+                    <StackPanel Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="5,0,0,0">
+                        <TextBlock Text="{Binding Album.Name}" FontSize="22" TextAlignment="Right"
+                                   TextTrimming="CharacterEllipsis" FontWeight="Bold" />
+                        <HyperlinkButton Content="{Binding Album.PrimaryArtist.Name}" FontSize="16"
+                                         HorizontalAlignment="Right" Foreground="#89FFFFFF" />
+                        <TextBlock Text="{Binding Album.Genre}" FontSize="16" TextAlignment="Right"
+                                   Foreground="#89FFFFFF"
+                                   TextTrimming="CharacterEllipsis" />
+                    </StackPanel>
+                </Grid>
             </Grid>
-        </Grid>
-        <Grid Margin="0,20,0,0">
-            <ListView IsItemClickEnabled="True" ItemsSource="{Binding Album.Songs}" Margin="0,5,0,0"
-                      ItemTemplate="{StaticResource SongDataTemplate}">
-                <interactivity:Interaction.Behaviors>
-                    <core:EventTriggerBehavior EventName="ItemClick">
-                        <core:InvokeCommandAction Command="{Binding SongClickRelayCommand}" />
-                    </core:EventTriggerBehavior>
-                </interactivity:Interaction.Behaviors>
-            </ListView>
-        </Grid>
-    </ListView>
+            <Grid Margin="0,20,0,0">
+                <ListView IsItemClickEnabled="True" ItemsSource="{Binding Album.Songs}" Margin="0,5,0,0"
+                          ItemTemplate="{StaticResource SongDataTemplate}">
+                    <interactivity:Interaction.Behaviors>
+                        <core:EventTriggerBehavior EventName="ItemClick">
+                            <core:InvokeCommandAction Command="{Binding SongClickRelayCommand}" />
+                        </core:EventTriggerBehavior>
+                    </interactivity:Interaction.Behaviors>
+                </ListView>
+            </Grid>
+        </ListView></Grid>
 </audiotica:PageBase>

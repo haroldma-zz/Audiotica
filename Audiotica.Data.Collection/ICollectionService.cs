@@ -30,7 +30,7 @@ namespace Audiotica.Data.Collection
         /// <summary>
         ///     Adds the song to the database and collection.
         /// </summary>
-        Task AddSongAsync(Song song, string artworkUrl);
+        Task AddSongAsync(Song song, string artworkUrl, string artistArtwork);
 
         /// <summary>
         ///     Deletes the song from the database and collection.  Also all related files.
