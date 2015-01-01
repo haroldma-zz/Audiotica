@@ -12,6 +12,7 @@ namespace Audiotica.Data.Collection
 {
     public interface ICollectionService
     {
+        bool IsLibraryLoaded { get; }
         event EventHandler LibraryLoaded;
 
         ObservableCollection<Song> Songs { get; set; }
@@ -38,7 +39,7 @@ namespace Audiotica.Data.Collection
         Task DeleteSongAsync(Song song);
 
         Task<List<HistoryEntry>> FetchHistoryAsync();
-        bool SongAlreadyExists(string providerId, string name, string album, string artist); 
+        bool SongAlreadyExists(string providerId, string name, string album, string artist);
 
         #region Playback Queue
 

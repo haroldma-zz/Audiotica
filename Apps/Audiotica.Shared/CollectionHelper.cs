@@ -1,11 +1,17 @@
 ﻿#region
 
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
+using Windows.Storage;
+using Windows.UI.Xaml.Media.Imaging;
 using Audiotica.Core.Common;
 using Audiotica.Core.Utilities;
 using Audiotica.Data.Spotify.Models;
+using GalaSoft.MvvmLight.Threading;
 using IF.Lastfm.Core.Objects;
 
 #endregion
@@ -116,6 +122,53 @@ namespace Audiotica
             SpotifySavingAlbums.Remove(album);
         }
 
+        public static async Task DownloadArtistsArtworkAsync(bool missingOnly = true)
+        {
+            var artists = App.Locator.CollectionService.Artists.ToList();
+
+            if (missingOnly)
+                artists = artists.Where(p => !p.HasArtwork).ToList();
+
+            var tasks = artists.Select(artist => Task.Factory.StartNew(async () =>
+            {
+                var lastArtist = await App.Locator.ScrobblerService.GetDetailArtist(artist.Name);
+
+                if (lastArtist.MainImage == null || lastArtist.MainImage.Largest == null) return;
+
+                var artistFilePath = string.Format(CollectionConstant.ArtistsArtworkPath, artist.Id);
+                var file = await StorageHelper.CreateFileAsync(artistFilePath, option: CreationCollisionOption.ReplaceExisting);
+
+                try
+                {
+                    using (var client = new HttpClient())
+                    {
+                        using (var stream = await client.GetStreamAsync(lastArtist.MainImage.Largest))
+                        {
+                            using (var fileStream = await file.OpenStreamForWriteAsync())
+                            {
+                                await stream.CopyToAsync(fileStream);
+                            }
+                        }
+                    }
+
+                    if (!artist.HasArtwork)
+                    {
+                        artist.HasArtwork = true;
+                        await App.Locator.SqlService.UpdateItemAsync(artist);
+                    }
+
+                    await DispatcherHelper.RunAsync(() =>
+                        artist.Artwork =
+                            new BitmapImage(new Uri(CollectionConstant.LocalStorageAppPath + artistFilePath)));
+                }
+                catch
+                {
+                }
+            })).Cast<Task>().ToList();
+
+            await Task.WhenAll(tasks);
+        }
+
         #region Heper methods
 
         private static void ShowResults(SavingError result, string trackName)
@@ -191,6 +244,5 @@ namespace Audiotica
         }
 
         #endregion
-
     }
 }

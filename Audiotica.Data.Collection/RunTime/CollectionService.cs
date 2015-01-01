@@ -40,6 +40,7 @@ namespace Audiotica.Data.Collection.RunTime
         }
 
 
+        public bool IsLibraryLoaded { get; private set; }
         public event EventHandler LibraryLoaded;
         public ObservableCollection<Song> Songs { get; set; }
         public ObservableCollection<Album> Albums { get; set; }
@@ -86,7 +87,7 @@ namespace Audiotica.Data.Collection.RunTime
                 if (isForeground)
                     _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                     {
-                        var artworkPath = string.Format(CollectionConstant.ArtworkPath, artist.ProviderId);
+                        var artworkPath = string.Format(CollectionConstant.ArtistsArtworkPath, artist.Id);
                         artist.Artwork = artist.HasArtwork
                             ? new BitmapImage(new Uri(CollectionConstant.LocalStorageAppPath + artworkPath))
                             : null;
@@ -109,6 +110,8 @@ namespace Audiotica.Data.Collection.RunTime
                         LibraryLoaded(this, null);
                 });
             }
+
+            IsLibraryLoaded = true;
 
             LoadQueue();
             LoadPlaylists();
@@ -139,9 +142,11 @@ namespace Audiotica.Data.Collection.RunTime
                                                          || entry.Name == primaryArtist.Name);
             if (artist == null)
             {
+                await _sqlService.InsertAsync(primaryArtist);
+
                 #region Download artwork
 
-                var artistFilePath = string.Format(CollectionConstant.ArtworkPath, song.Artist.ProviderId);
+                var artistFilePath = string.Format(CollectionConstant.ArtistsArtworkPath, song.Artist.Id);
 
                 if (!string.IsNullOrEmpty(artistArtwork))
                 {
@@ -157,8 +162,6 @@ namespace Audiotica.Data.Collection.RunTime
                 }
 
                 #endregion
-
-                await _sqlService.InsertAsync(primaryArtist);
 
                 song.Artist = primaryArtist;
                 song.ArtistId = primaryArtist.Id;
