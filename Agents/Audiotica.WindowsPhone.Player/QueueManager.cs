@@ -265,7 +265,17 @@ namespace Audiotica.WindowsPhone.Player
             var historyItem = history.FirstOrDefault(p => p.SongId == CurrentTrack.SongId);
             if (historyItem != null)
             {
-                if (_mediaPlayer.Position.TotalSeconds >= 30)
+                var playbackTime = _mediaPlayer.Position.TotalSeconds;
+                var duration = _mediaPlayer.NaturalDuration.TotalSeconds;
+
+                /* When is a scrobble a scrobble?
+                 * A track should only be scrobbled when the following conditions have been met:
+                 * 1. The track must be longer than 30 seconds.
+                 * 2. And the track has been played for at least half its duration, or for 4 minutes (whichever occurs earlier.)
+                 */
+
+                if (duration >= 30 
+                    && (playbackTime >= duration/2 || playbackTime >= 60*4))
                 {
                     CurrentTrack.Song.PlayCount++;
                     CurrentTrack.Song.LastPlayed = historyItem.DatePlayed;
@@ -280,6 +290,7 @@ namespace Audiotica.WindowsPhone.Player
                 }
                 else
                 {
+                    //not a scrobble
                     _bgSql.DeleteItemAsync(historyItem);
                 }
             }
