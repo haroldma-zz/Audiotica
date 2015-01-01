@@ -173,12 +173,20 @@ namespace Audiotica.WindowsPhone.Player
             UpdateMediaEnded();
 
             var track = tracks[id];
-            var source = track.Song.IsStreaming
-                ? track.Song.AudioUrl
-                : string.Format("ms-appdata:///local/songs/{0}.mp3", track.SongId);
             _currentTrackIndex = id;
             _mediaPlayer.AutoPlay = false;
-            _mediaPlayer.SetUriSource(new Uri(source));
+
+            if (track.Song.IsStreaming)
+            {
+                _mediaPlayer.SetUriSource(new Uri(track.Song.AudioUrl));
+            }
+            else
+            {
+                var file =
+                    StorageHelper.GetFileAsync(string.Format("songs/{0}.mp3", track.SongId)).Result;
+                var stream = file.OpenReadAsync().AsTask().Result;
+                _mediaPlayer.SetStreamSource(stream);
+            }
         }
 
         /// <summary>
@@ -189,12 +197,20 @@ namespace Audiotica.WindowsPhone.Player
             RefreshTracks();
             UpdateMediaEnded();
 
-            var source = track.Song.IsStreaming
-                ? track.Song.AudioUrl
-                : string.Format("ms-appdata:///local/songs/{0}.mp3", track.SongId);
             _currentTrackIndex = tracks.FindIndex(p => p.SongId == track.SongId);
             _mediaPlayer.AutoPlay = false;
-            _mediaPlayer.SetUriSource(new Uri(source));
+
+            if (track.Song.IsStreaming)
+            {
+                _mediaPlayer.SetUriSource(new Uri(track.Song.AudioUrl));
+            }
+            else
+            {
+                var file =
+                    StorageHelper.GetFileAsync(string.Format("songs/{0}.mp3", track.SongId)).Result;
+                var stream = file.OpenReadAsync().AsTask().Result;
+                _mediaPlayer.SetStreamSource(stream);
+            }
         }
 
         public void StartTrack(long id)
