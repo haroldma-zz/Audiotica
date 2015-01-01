@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Threading.Tasks;
+using Audiotica.Core.Common;
 using Audiotica.Data.Collection;
 using Audiotica.Data.Collection.Model;
 using Audiotica.Data.Service.Interfaces;
@@ -125,15 +126,15 @@ namespace Audiotica.ViewModel
 
             _service.AuthStateChanged += ServiceOnAuthStateChanged;
             if (_service.HasCredentials)
-                ServiceOnAuthStateChanged(null, true);
+                ServiceOnAuthStateChanged(null, new BoolEventArgs(true));
         }
 
-        private async void ServiceOnAuthStateChanged(object sender, bool b)
+        private async void ServiceOnAuthStateChanged(object sender, BoolEventArgs b)
         {
-            IsLastfmEnabled = b;
-            IsRecommendationLoading = b;
+            IsLastfmEnabled = b.Content;
+            IsRecommendationLoading = b.Content;
             RecommendedArtists = null;
-            if (!b)
+            if (!b.Content)
                 return;
 
             try

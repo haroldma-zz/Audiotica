@@ -138,12 +138,9 @@ namespace Audiotica.WindowsPhone.Player
 
             _bgSql.Insert(historyItem);
 
-            CurrentTrack.Song.PlayCount++;
-            CurrentTrack.Song.LastPlayed = played;
+            if (CurrentTrack.Song.Duration.Ticks == _mediaPlayer.NaturalDuration.Ticks) return;
 
-            if (CurrentTrack.Song.Duration.Ticks != _mediaPlayer.NaturalDuration.Ticks)
-                CurrentTrack.Song.Duration = _mediaPlayer.NaturalDuration;
-
+            CurrentTrack.Song.Duration = _mediaPlayer.NaturalDuration;
             _sql.UpdateItem(CurrentTrack.Song);
         }
 
@@ -254,18 +251,37 @@ namespace Audiotica.WindowsPhone.Player
 
         private void UpdateMediaEnded()
         {
+            var history = _bgSql.SelectAll<HistoryEntry>();
+
+            //if null then the player has just been launched
             if (CurrentTrack == null)
             {
-                _bgSql.DeleteTableAsync<HistoryEntry>().Wait();
+                //reset the incrementable Id of the table
+                if (history.Count == 0)
+                    _bgSql.DeleteTableAsync<HistoryEntry>().Wait();
                 return;
             }
 
-            var historyItem = _bgSql.SelectAll<HistoryEntry>().FirstOrDefault(p => p.SongId == CurrentTrack.SongId);
+            var historyItem = history.FirstOrDefault(p => p.SongId == CurrentTrack.SongId);
             if (historyItem != null)
             {
-                historyItem.DateEnded = DateTime.Now;
-                historyItem.CanScrobble = true;
-                _bgSql.UpdateItem(historyItem);
+                if (_mediaPlayer.Position.TotalSeconds >= 30)
+                {
+                    CurrentTrack.Song.PlayCount++;
+                    CurrentTrack.Song.LastPlayed = historyItem.DatePlayed;
+
+                    if (CurrentTrack.Song.Duration.Ticks != _mediaPlayer.NaturalDuration.Ticks)
+                        CurrentTrack.Song.Duration = _mediaPlayer.NaturalDuration;
+
+                    _sql.UpdateItem(CurrentTrack.Song);
+
+                    historyItem.CanScrobble = true;
+                    _bgSql.UpdateItem(historyItem);
+                }
+                else
+                {
+                    _bgSql.DeleteItemAsync(historyItem);
+                }
             }
 
             _currentTrack = null;
