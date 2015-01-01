@@ -223,7 +223,9 @@ namespace Audiotica.View
             _currentlyPreparing = true;
 
             var artist = (sender as AppBarButton).DataContext as Artist;
-            var index = new Random().Next(0, artist.Songs.Count - 1);
+            if (artist.Songs.Count == 0) return;
+
+            var index = artist.Songs.Count == 1 ? 0 : new Random().Next(0, artist.Songs.Count - 1);
 
             await App.Locator.CollectionService.ClearQueueAsync().ConfigureAwait(false);
 
@@ -242,7 +244,9 @@ namespace Audiotica.View
             _currentlyPreparing = true;
 
             var album = (sender as AppBarButton).DataContext as Album;
-            var index = new Random().Next(0, album.Songs.Count - 1);
+            if (album.Songs.Count == 0) return;
+
+            var index = album.Songs.Count == 1 ? 0 : new Random().Next(0, album.Songs.Count - 1);
 
             await App.Locator.CollectionService.ClearQueueAsync().ConfigureAwait(false);
 
@@ -261,7 +265,9 @@ namespace Audiotica.View
             _currentlyPreparing = true;
 
             var playlist = (sender as AppBarButton).DataContext as Playlist;
-            var index = new Random().Next(0, playlist.Songs.Count - 1);
+            if (playlist.Songs.Count == 0) return;
+
+            var index = playlist.Songs.Count == 1 ? 0 : new Random().Next(0, playlist.Songs.Count - 1);
 
             await App.Locator.CollectionService.ClearQueueAsync().ConfigureAwait(false);
 
