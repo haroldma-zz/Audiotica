@@ -231,6 +231,8 @@ namespace Audiotica.Core.Common
 
         private void timer_Tick(object sender, object e)
         {
+            if (_timer == null) return;
+
             _timer.Stop();
             _timer = null;
             StartCurtainAnimation();
