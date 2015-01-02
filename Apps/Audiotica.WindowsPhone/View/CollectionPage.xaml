@@ -271,9 +271,6 @@
             </PivotItem>
             <PivotItem x:Uid="PivotArtists" Header="ARTISTS">
                 <Grid>
-                    <Grid.Resources>
-                        <common:CountToPluralConverter x:Key="AlbumToPluralConverter" SingularText="album" PluralText="albums"/>
-                    </Grid.Resources>
                     <TextBlock
                         x:Uid="CollectionEmpty"
                         Visibility="{Binding Service.Artists.Count, Converter={StaticResource EmptyListToVisibilityConverter}}"
@@ -322,45 +319,32 @@
                         Text="It seems you haven't saved any music yet." Style="{StaticResource SubtleTextBlockStyle}" />
                     <SemanticZoom>
                         <SemanticZoom.ZoomedInView>
-                            <ListView IsItemClickEnabled="True"
+                            <GridView IsItemClickEnabled="True"
                                       ItemsSource="{Binding Source={StaticResource AlbumGroups}}"
                                       Padding="0,0,0,25" ItemClick="AlbumListView_ItemClick">
-                                <ListView.ItemTemplate>
+                                <GridView.ItemTemplate>
                                     <DataTemplate>
-                                        <Grid Margin="0,0,0,10">
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="Auto" />
-                                                    <ColumnDefinition Width="*" />
-                                                </Grid.ColumnDefinitions>
-                                                <Grid VerticalAlignment="Top"
-                                                      Background="{StaticResource PhoneAccentBrush}">
-                                                    <Image Width="175" Height="175" Source="{Binding Artwork}" Stretch="UniformToFill" />
-                                                </Grid>
-                                                <Grid Grid.Column="1" Margin="10">
-                                                    <Grid.RowDefinitions>
-                                                        <RowDefinition Height="Auto" />
-                                                        <RowDefinition Height="Auto" />
-                                                    </Grid.RowDefinitions>
-                                                    <TextBlock Margin="0,5,0,0" Text="{Binding Name}" FontSize="30"
-                                                               FontFamily="Global User Interface" TextWrapping="Wrap"
-                                                               TextTrimming="CharacterEllipsis" FontWeight="Bold" />
-                                                    <TextBlock Grid.Row="1" Text="{Binding PrimaryArtist.Name}"
-                                                               FontSize="22" FontWeight="Thin"
-                                                               Foreground="#89FFFFFF" TextTrimming="CharacterEllipsis"
-                                                               TextWrapping="Wrap" FontFamily="Global User Interface" />
-                                                </Grid>
+                                        <StackPanel Margin="0,0,5,5" Width="115">
+                                            <Grid Background="{StaticResource PhoneAccentBrush}" Margin="0,0,0,5">
+                                                <Image Source="{Binding Artwork}" Height="115" Width="115" Stretch="UniformToFill" />
+                                                <AppBarButton Icon="Play" IsCompact="True" Margin="0,-10,10,0"
+                                                    Click="AlbumPlayAppBarButton_Click_1" Style="{StaticResource AppBarButtonStyle1}" />
                                             </Grid>
-                                            <AppBarButton Icon="Play" IsCompact="True"
-                                                          Margin="5,-5,10,0" Click="AlbumPlayAppBarButton_Click_1" 
-                                                          Style="{StaticResource AppBarButtonStyle1}"/>
-                                        </Grid>
+                                            <TextBlock Text="{Binding Name}" FontSize="15" TextTrimming="CharacterEllipsis" FontFamily="Global User Interface" />
+                                            <TextBlock FontSize="14" Text="{Binding PrimaryArtist.Name}"
+                                               TextTrimming="CharacterEllipsis" Foreground="#89FFFFFF" FontFamily="Global User Interface"/>
+                                            <TextBlock FontSize="14"
+                                               TextTrimming="CharacterEllipsis" Foreground="#89FFFFFF" FontFamily="Global User Interface">
+                                                <Run Text="{Binding Songs.Count}" />
+                                                <Run Text="{Binding Songs.Count, Converter={StaticResource SongToPluralConverter}}" />
+                                            </TextBlock>
+                                        </StackPanel>
                                     </DataTemplate>
-                                </ListView.ItemTemplate>
-                                <ListView.GroupStyle>
+                                </GridView.ItemTemplate>
+                                <GridView.GroupStyle>
                                     <GroupStyle HidesIfEmpty="True" HeaderTemplate="{StaticResource GroupHeaderTemplate}" />
-                                </ListView.GroupStyle>
-                            </ListView>
+                                </GridView.GroupStyle>
+                            </GridView>
                         </SemanticZoom.ZoomedInView>
                         <SemanticZoom.ZoomedOutView>
                             <GridView Background="#BF000000" Padding="15,10,0,0"

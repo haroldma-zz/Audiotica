@@ -21,6 +21,8 @@
         <common:NotEmptyToStringConverter x:Key="DashNotEmptyToStringConverter" NotEmptyText="-" />
         <local:SongStateConverter x:Key="DownloadingSongStateConverter" SongState="Downloading" />
         <local:SongStateConverter x:Key="NoneSongStateConverter" SongState="None" />
+        <common:CountToPluralConverter x:Key="SongToPluralConverter" x:Uid="CountSong" SingularText="song" PluralText="songs"/>
+        <common:CountToPluralConverter x:Key="AlbumToPluralConverter" x:Uid="CountAlbum" SingularText="album" PluralText="albums"/>
 
         <Style x:Key="SubtleTextBlockStyle" TargetType="TextBlock">
             <Setter Property="FontSize" Value="25" />
@@ -160,12 +162,18 @@
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
                     <TextBlock Margin="0,5,0,0" Text="{Binding Name}" FontSize="30"
                                FontFamily="Global User Interface" TextWrapping="Wrap"
                                TextTrimming="CharacterEllipsis" FontWeight="Bold" />
                     <TextBlock Grid.Row="1" Text="{Binding PrimaryArtist.Name}" FontSize="22" FontWeight="Thin"
                                Foreground="#89FFFFFF" TextTrimming="CharacterEllipsis" TextWrapping="Wrap" />
+                    <TextBlock Grid.Row="2" FontSize="22" FontWeight="Thin"
+                               Foreground="#89FFFFFF" TextTrimming="CharacterEllipsis" TextWrapping="Wrap">
+                        <Run Text="{Binding Songs.Count}" />
+                        <Run Text="{Binding Songs.Count, Converter={StaticResource SongToPluralConverter}}" />
+                    </TextBlock>
                 </Grid>
             </Grid>
         </DataTemplate>

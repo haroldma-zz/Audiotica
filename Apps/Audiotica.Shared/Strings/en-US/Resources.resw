@@ -196,6 +196,22 @@
     <value>COLLECTION</value>
     <comment>uppercase on purpose</comment>
   </data>
+  <data name="CountAlbum.PluralText" xml:space="preserve">
+    <value>albums</value>
+    <comment>lowercase on purpose</comment>
+  </data>
+  <data name="CountAlbum.SingularText" xml:space="preserve">
+    <value>album</value>
+    <comment>lowercase on purpose</comment>
+  </data>
+  <data name="CountSong.PluralText" xml:space="preserve">
+    <value>songs</value>
+    <comment>lowercase on purpose</comment>
+  </data>
+  <data name="CountSong.SingularText" xml:space="preserve">
+    <value>song</value>
+    <comment>lowercase on purpose</comment>
+  </data>
   <data name="EntryAlreadySaved" xml:space="preserve">
     <value>Already saved "{0}".</value>
     <comment>{0} is a song or album name</comment>
