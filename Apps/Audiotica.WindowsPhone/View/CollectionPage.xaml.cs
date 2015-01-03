@@ -19,8 +19,6 @@ namespace Audiotica.View
 {
     public sealed partial class CollectionPage
     {
-        private bool _currentlyPreparing;
-
         public CollectionPage()
         {
             InitializeComponent();
@@ -219,65 +217,23 @@ namespace Audiotica.View
 
         private async void ArtistPlayAppBarButton_Click_1(object sender, RoutedEventArgs e)
         {
-            if (_currentlyPreparing) return;
-            _currentlyPreparing = true;
-
             var artist = (sender as AppBarButton).DataContext as Artist;
-            if (artist.Songs.Count == 0) return;
-
-            var index = artist.Songs.Count == 1 ? 0 : new Random().Next(0, artist.Songs.Count - 1);
-
-            await App.Locator.CollectionService.ClearQueueAsync().ConfigureAwait(false);
-
-            foreach (var song in artist.Songs.ToList().Shuffle())
-            {
-                await App.Locator.CollectionService.AddToQueueAsync(song);
-            }
-
-            App.Locator.AudioPlayerHelper.PlaySong(App.Locator.CollectionService.PlaybackQueue[index]);
-            _currentlyPreparing = false;
+            var queueSong = artist.Songs.ToList().Shuffle().ToList();
+            await CollectionHelper.PlaySongsAsync(queueSong);
         }
 
         private async void AlbumPlayAppBarButton_Click_1(object sender, RoutedEventArgs e)
         {
-            if (_currentlyPreparing) return;
-            _currentlyPreparing = true;
-
             var album = (sender as AppBarButton).DataContext as Album;
-            if (album.Songs.Count == 0) return;
-
-            var index = album.Songs.Count == 1 ? 0 : new Random().Next(0, album.Songs.Count - 1);
-
-            await App.Locator.CollectionService.ClearQueueAsync().ConfigureAwait(false);
-
-            foreach (var song in album.Songs.ToList().Shuffle())
-            {
-                await App.Locator.CollectionService.AddToQueueAsync(song);
-            }
-
-            App.Locator.AudioPlayerHelper.PlaySong(App.Locator.CollectionService.PlaybackQueue[index]);
-            _currentlyPreparing = false;
+            var queueSong = album.Songs.ToList().Shuffle().ToList();
+            await CollectionHelper.PlaySongsAsync(queueSong);
         }
 
         private async void AppBarButton_Click_1(object sender, RoutedEventArgs e)
         {
-            if (_currentlyPreparing) return;
-            _currentlyPreparing = true;
-
             var playlist = (sender as AppBarButton).DataContext as Playlist;
-            if (playlist.Songs.Count == 0) return;
-
-            var index = playlist.Songs.Count == 1 ? 0 : new Random().Next(0, playlist.Songs.Count - 1);
-
-            await App.Locator.CollectionService.ClearQueueAsync().ConfigureAwait(false);
-
-            foreach (var song in playlist.Songs.ToList())
-            {
-                await App.Locator.CollectionService.AddToQueueAsync(song.Song);
-            }
-
-            App.Locator.AudioPlayerHelper.PlaySong(App.Locator.CollectionService.PlaybackQueue[index]);
-            _currentlyPreparing = false;
+            var queueSong = playlist.Songs.Select(p => p.Song).ToList();
+            await CollectionHelper.PlaySongsAsync(queueSong);
         }
     }
 }

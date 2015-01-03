@@ -28,7 +28,7 @@ namespace Audiotica.Data.Collection.DesignTime
 
         public ObservableCollection<QueueSong> PlaybackQueue { get; private set; }
 
-        public void LoadLibrary()
+        public void LoadLibrary(bool loadEssentials = true)
         {
             Songs = new ObservableCollection<Song>
             {
@@ -107,7 +107,7 @@ namespace Audiotica.Data.Collection.DesignTime
             PlaybackQueue = new ObservableCollection<QueueSong>(pSongs);
         }
 
-        public Task LoadLibraryAsync()
+        public Task LoadLibraryAsync(bool loadEssentials = true)
         {
             throw new NotImplementedException();
         }

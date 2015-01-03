@@ -6,10 +6,14 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Windows.Foundation.Collections;
+using Windows.Media.Playback;
 using Windows.Storage;
 using Windows.UI.Xaml.Media.Imaging;
+using Audiotica.Core;
 using Audiotica.Core.Common;
 using Audiotica.Core.Utilities;
+using Audiotica.Data.Collection.Model;
 using Audiotica.Data.Spotify.Models;
 using GalaSoft.MvvmLight.Threading;
 using IF.Lastfm.Core.Objects;
@@ -24,6 +28,9 @@ namespace Audiotica
         public static List<LastTrack> LastfmSavingTracks = new List<LastTrack>();
         public static List<FullAlbum> SpotifySavingAlbums = new List<FullAlbum>();
         public static List<LastAlbum> LastfmSavingAlbums = new List<LastAlbum>();
+        private static bool _currentlyPreparing;
+
+        #region Saving
 
         public static async Task SaveTrackAsync(ChartTrack chartTrack)
         {
@@ -136,7 +143,8 @@ namespace Audiotica
                 if (lastArtist.MainImage == null || lastArtist.MainImage.Largest == null) return;
 
                 var artistFilePath = string.Format(CollectionConstant.ArtistsArtworkPath, artist.Id);
-                var file = await StorageHelper.CreateFileAsync(artistFilePath, option: CreationCollisionOption.ReplaceExisting);
+                var file =
+                    await StorageHelper.CreateFileAsync(artistFilePath, option: CreationCollisionOption.ReplaceExisting);
 
                 try
                 {
@@ -168,6 +176,70 @@ namespace Audiotica
 
             await Task.WhenAll(tasks);
         }
+
+        #endregion
+
+        #region Playing
+
+        public static async Task PlaySongsAsync(List<Song> songs)
+        {
+            if (songs.Count == 0) return;
+
+            var index = songs.Count == 1 ? 0 : new Random().Next(0, songs.Count - 1);
+            var song = songs[index];
+
+            await PlaySongsAsync(song, songs);
+        }
+
+        public static async Task PlaySongsAsync(Song song, List<Song> songs)
+        {
+            if (songs.Count == 0) return;
+
+            var createQueue = songs.Count != App.Locator.CollectionService.PlaybackQueue.Count
+                              || App.Locator.CollectionService.PlaybackQueue.FirstOrDefault(p => p.SongId == song.Id) == null;
+
+            if (_currentlyPreparing && createQueue) return;
+
+            if (_currentlyPreparing && !createQueue)
+            {
+                App.Locator.AudioPlayerHelper.PlaySong(App.Locator.CollectionService.PlaybackQueue.First(p => p.SongId == song.Id));
+            }
+
+            else
+            {
+                _currentlyPreparing = true;
+
+                if (createQueue)
+                {
+                    await App.Locator.CollectionService.ClearQueueAsync().ConfigureAwait(false);
+                    await App.Locator.CollectionService.AddToQueueAsync(song).ConfigureAwait(false);
+                    var index = songs.IndexOf(song);
+
+                    App.Locator.AudioPlayerHelper.PlaySong(App.Locator.CollectionService.PlaybackQueue[0]);
+                    await Task.Delay(500).ConfigureAwait(false);
+
+                    for (var i = index + 1; i < songs.Count; i++)
+                    {
+                        await App.Locator.CollectionService.AddToQueueAsync(songs[i]).ConfigureAwait(false);
+                    }
+
+                    for (var i = 0; i < index; i++)
+                    {
+                        await App.Locator.CollectionService.AddToQueueAsync(songs[i]).ConfigureAwait(false);
+                    }
+
+                    //refresh tracks on bg player
+                    var message = new ValueSet { { PlayerConstants.RefreshTracks, null } };
+                    BackgroundMediaPlayer.SendMessageToBackground(message);
+                }
+                else
+                    App.Locator.AudioPlayerHelper.PlaySong(App.Locator.CollectionService.PlaybackQueue.First(p => p.SongId == song.Id));
+
+                _currentlyPreparing = false;
+            }
+        }
+
+        #endregion
 
         #region Heper methods
 

@@ -128,16 +128,15 @@ namespace Audiotica
 
             await ReviewReminderAsync();
 
-            if (!AppVersionHelper.JustUpdated) return;
-
-            CurtainPrompt.Show(2500, "AppUpdated".FromLanguageResource(), AppVersionHelper.CurrentVersion);
-
-            //download artwork for artist
+            //download missing artwork for artist
             if (Locator.CollectionService.IsLibraryLoaded)
                 await CollectionHelper.DownloadArtistsArtworkAsync();
             else
                 Locator.CollectionService.LibraryLoaded +=
                     async (o, args) => await CollectionHelper.DownloadArtistsArtworkAsync();
+
+            if (!AppVersionHelper.JustUpdated) return;
+            CurtainPrompt.Show(2500, "AppUpdated".FromLanguageResource(), AppVersionHelper.CurrentVersion);
         }
 
         private async Task ReviewReminderAsync()

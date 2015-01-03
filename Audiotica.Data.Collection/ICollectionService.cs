@@ -24,9 +24,9 @@ namespace Audiotica.Data.Collection
         /// <summary>
         ///     Loads all songs, albums, artist and playlists/queue.
         /// </summary>
-        void LoadLibrary();
+        void LoadLibrary(bool loadEssentials = false);
 
-        Task LoadLibraryAsync();
+        Task LoadLibraryAsync(bool loadEssentials = false);
 
         /// <summary>
         ///     Adds the song to the database and collection.

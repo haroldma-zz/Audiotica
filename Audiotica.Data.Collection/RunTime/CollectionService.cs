@@ -49,11 +49,14 @@ namespace Audiotica.Data.Collection.RunTime
 
         public ObservableCollection<QueueSong> PlaybackQueue { get; private set; }
 
-        public void LoadLibrary()
+        public void LoadLibrary(bool loadEssentials = false)
         {
-            var songs = _sqlService.SelectAll<Song>().OrderByDescending(p => p.Id);
-            var albums = _sqlService.SelectAll<Album>().OrderByDescending(p => p.Id);
-            var artists = _sqlService.SelectAll<Artist>().OrderByDescending(p => p.Id);
+            var songs = _sqlService.SelectAll<Song>().OrderByDescending(p => p.Id).ToList();
+            var artists = _sqlService.SelectAll<Artist>().OrderByDescending(p => p.Id).ToList();
+            var albums = new List<Album>();
+            if (!loadEssentials)
+                albums = _sqlService.SelectAll<Album>().OrderByDescending(p => p.Id).ToList();
+
             var isForeground = _dispatcher != null;
 
             foreach (var song in songs)
@@ -100,7 +103,9 @@ namespace Audiotica.Data.Collection.RunTime
             {
                 Songs = new ObservableCollection<Song>(songs);
                 Artists = new ObservableCollection<Artist>(artists);
-                Albums = new ObservableCollection<Album>(albums);
+
+                if (!loadEssentials)
+                    Albums = new ObservableCollection<Album>(albums);
             }
             else
             {
@@ -114,16 +119,18 @@ namespace Audiotica.Data.Collection.RunTime
             IsLibraryLoaded = true;
 
             LoadQueue();
-            LoadPlaylists();
+
+            if (!loadEssentials)
+                LoadPlaylists();
 
             if (_dispatcher != null)
                 CleanupFiles();
         }
 
-        public Task LoadLibraryAsync()
+        public Task LoadLibraryAsync(bool loadEssentials = false)
         {
             //just return non async as a task
-            return Task.Factory.StartNew(LoadLibrary);
+            return Task.Factory.StartNew(() => LoadLibrary(loadEssentials));
         }
 
         public bool SongAlreadyExists(string providerId, string name, string album, string artist)

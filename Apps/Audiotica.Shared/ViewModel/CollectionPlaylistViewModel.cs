@@ -76,20 +76,9 @@ namespace Audiotica.ViewModel
         private bool _currentlyPreparing;
         private async void SongClickExecute(ItemClickEventArgs e)
         {
-            if (_currentlyPreparing) return;
-            _currentlyPreparing = true;
-
             var song = (PlaylistSong) (e.ClickedItem);
-
-            await _service.ClearQueueAsync();
-
-            foreach (var playlistSong in _playlist.Songs)
-            {
-                await _service.AddToQueueAsync(playlistSong.Song);
-            }
-
-            _audioPlayer.PlaySong(_service.PlaybackQueue[_playlist.Songs.IndexOf(song)]);
-            _currentlyPreparing = false;
+            var queueSong = _playlist.Songs.Select(p => p.Song).ToList();
+            await CollectionHelper.PlaySongsAsync(song.Song, queueSong);
         }
     }
 }

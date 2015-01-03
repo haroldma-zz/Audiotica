@@ -1,6 +1,7 @@
 ﻿#region
 
 using System.Linq;
+using System.Threading.Tasks;
 using Windows.UI.Xaml.Controls;
 using Audiotica.Data.Collection;
 using Audiotica.Data.Collection.Model;
@@ -62,23 +63,11 @@ namespace Audiotica.ViewModel
             SetArtist(id);
         }
 
-        private bool _currentlyPreparing;
         private async void SongClickExecute(ItemClickEventArgs e)
         {
-            if (_currentlyPreparing) return;
-            _currentlyPreparing = true;
-
             var song = e.ClickedItem as Song;
-
-            await _service.ClearQueueAsync().ConfigureAwait(false);
-
-            foreach (var queueSong in _artist.Songs.ToList())
-            {
-                await _service.AddToQueueAsync(queueSong);
-            }
-
-            _audioPlayer.PlaySong(_service.PlaybackQueue[_artist.Songs.IndexOf(song)]);
-            _currentlyPreparing = false;
+            var queueSong = _artist.Songs.ToList();
+            await CollectionHelper.PlaySongsAsync(song, queueSong);
         }
 
         private async void SetArtist(long id)

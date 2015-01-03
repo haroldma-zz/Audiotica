@@ -166,7 +166,9 @@ namespace Audiotica.WindowsPhone.Player
         /// </summary>
         private void StartTrackAt(int id)
         {
-            RefreshTracks();
+            if (tracks == null)
+                RefreshTracks();
+
             UpdateMediaEnded();
 
             var track = tracks[id];
@@ -181,8 +183,7 @@ namespace Audiotica.WindowsPhone.Player
             {
                 var file =
                     StorageHelper.GetFileAsync(string.Format("songs/{0}.mp3", track.SongId)).Result;
-                var stream = file.OpenReadAsync().AsTask().Result;
-                _mediaPlayer.SetStreamSource(stream);
+                _mediaPlayer.SetFileSource(file);
             }
         }
 
@@ -191,7 +192,9 @@ namespace Audiotica.WindowsPhone.Player
         /// </summary>
         public void StartTrack(QueueSong track)
         {
-            RefreshTracks();
+            if (tracks == null)
+                RefreshTracks();
+
             UpdateMediaEnded();
 
             _currentTrackIndex = tracks.FindIndex(p => p.SongId == track.SongId);
@@ -205,14 +208,15 @@ namespace Audiotica.WindowsPhone.Player
             {
                 var file =
                     StorageHelper.GetFileAsync(string.Format("songs/{0}.mp3", track.SongId)).Result;
-                var stream = file.OpenReadAsync().AsTask().Result;
-                _mediaPlayer.SetStreamSource(stream);
+                _mediaPlayer.SetFileSource(file);
             }
         }
 
         public void StartTrack(long id)
         {
-            RefreshTracks();
+            if (tracks == null)
+                RefreshTracks();
+
             UpdateMediaEnded();
 
             var track = tracks.FirstOrDefault(p => p.Id == id);
@@ -227,8 +231,7 @@ namespace Audiotica.WindowsPhone.Player
             {
                 var file =
                     StorageHelper.GetFileAsync(string.Format("songs/{0}.mp3", track.SongId)).Result;
-                var stream = file.OpenReadAsync().AsTask().Result;
-                _mediaPlayer.SetStreamSource(stream);
+                _mediaPlayer.SetFileSource(file);
             }
         }
 
@@ -245,7 +248,6 @@ namespace Audiotica.WindowsPhone.Player
         /// </summary>
         public void SkipToNext()
         {
-            RefreshTracks();
             StartTrackAt((_currentTrackIndex + 1)%tracks.Count);
         }
 
@@ -303,7 +305,6 @@ namespace Audiotica.WindowsPhone.Player
         /// </summary>
         public void SkipToPrevious()
         {
-            RefreshTracks();
             if (_currentTrackIndex == 0)
             {
                 StartTrackAt(tracks.Count - 1);
@@ -322,10 +323,10 @@ namespace Audiotica.WindowsPhone.Player
             _sql.Dispose();
         }
 
-        private void RefreshTracks()
+        public void RefreshTracks()
         {
             var collectionService = new CollectionService(_sql, _bgSql, null);
-            collectionService.LoadLibrary();
+            collectionService.LoadLibrary(true);
             tracks = collectionService.PlaybackQueue.ToList();
         }
     }
