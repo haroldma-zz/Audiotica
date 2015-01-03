@@ -57,6 +57,7 @@ namespace Audiotica.ViewModel
 
             SimpleIoc.Default.Register<SpotifyWebApi>();
             SimpleIoc.Default.Register<AudioPlayerHelper>();
+            SimpleIoc.Default.Register<CollectionViewModel>(true);
             SimpleIoc.Default.Register(() => new PlayerViewModel(AudioPlayerHelper, CollectionService, BgSqlService, ScrobblerService));
             SimpleIoc.Default.Register<MainViewModel>();
             SimpleIoc.Default.Register<AlbumViewModel>();
@@ -66,7 +67,6 @@ namespace Audiotica.ViewModel
             SimpleIoc.Default.Register<ArtistViewModel>();
             SimpleIoc.Default.Register<SearchViewModel>();
             SimpleIoc.Default.Register<SettingsViewModel>();
-            SimpleIoc.Default.Register<CollectionViewModel>(true);
             SimpleIoc.Default.Register<SpotifyAlbumViewModel>();
             SimpleIoc.Default.Register<SpotifyArtistViewModel>();
         }

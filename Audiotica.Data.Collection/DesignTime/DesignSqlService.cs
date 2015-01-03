@@ -12,6 +12,16 @@ namespace Audiotica.Data.Collection.DesignTime
 {
     public class DesignSqlService : ISqlService
     {
+        public void Initialize()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task InitializeAsync()
+        {
+            throw new NotImplementedException();
+        }
+
         public void ResetData()
         {
             throw new NotImplementedException();

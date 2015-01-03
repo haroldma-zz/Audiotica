@@ -44,7 +44,7 @@ namespace Audiotica.Data.Service.RunTime
 
         public async Task<Paging<SimpleAlbum>> GetArtistAlbumsAsync(string id)
         {
-            var albumPaging = await _spotify.GetArtistsAlbums(id, AlbumType.ALBUM, limit: 50, market: "US");
+            var albumPaging = await _spotify.GetArtistsAlbums(id, AlbumType.ALBUM | AlbumType.COMPILATION | AlbumType.SINGLE, limit: 50, market: "US");
             RemoveDuplicates(albumPaging.Items);
             return albumPaging;
         }

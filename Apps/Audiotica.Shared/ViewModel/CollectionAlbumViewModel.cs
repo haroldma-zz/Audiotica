@@ -15,14 +15,12 @@ namespace Audiotica.ViewModel
     public class CollectionAlbumViewModel : ViewModelBase
     {
         private readonly ICollectionService _service;
-        private readonly AudioPlayerHelper _audioPlayer;
         private Album _album;
         private readonly RelayCommand<ItemClickEventArgs> _songClickCommand;
 
-        public CollectionAlbumViewModel(ICollectionService service, AudioPlayerHelper audioPlayer)
+        public CollectionAlbumViewModel(ICollectionService service)
         {
             _service = service;
-            _audioPlayer = audioPlayer;
             _songClickCommand = new RelayCommand<ItemClickEventArgs>(SongClickExecute);
             MessengerInstance.Register<GenericMessage<long>>(this, "album-coll-detail-id", ReceivedId);
 

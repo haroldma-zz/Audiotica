@@ -190,18 +190,18 @@ namespace Audiotica.Data.Service.RunTime
             backgroundDownload.CancellationTokenSrc.Cancel();
         }
 
-        public async void StartDownload(Song song)
+        public async Task StartDownloadAsync(Song song)
         {
-            var destinationFile = await StorageHelper.CreateFileAsync(string.Format("songs/{0}.mp3", song.Id));
+            song.SongState = SongState.Downloading;
+            await _sqlService.UpdateItemAsync(song).ConfigureAwait(false);
+
+            var destinationFile = await StorageHelper.CreateFileAsync(string.Format("songs/{0}.mp3", song.Id)).ConfigureAwait(false);
 
             var downloader = new BackgroundDownloader();
             var download = downloader.CreateDownload(new Uri(song.AudioUrl), destinationFile);
             download.Priority = BackgroundTransferPriority.Default;
 
-            HandleDownload(song, download, true);
-
-            song.SongState = SongState.Downloading;
-            await _sqlService.UpdateItemAsync(song);
+            _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => HandleDownload(song, download, true));
         }
 
         #endregion

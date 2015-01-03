@@ -106,14 +106,17 @@ namespace Audiotica.ViewModel
                 if (Tracks != null)
                 {
                     Tracks.Clear();
+                    _tracksResponse = null;
                 }
                 if (Artists != null)
                 {
                     Artists.Clear();
+                    _artistsResponse = null;
                 }
                 if (Albums != null)
                 {
                     Albums.Clear();
+                    _albumsResponse = null;
                 }
 
                 _tracksResponse = await _spotify.SearchTracksAsync(term);

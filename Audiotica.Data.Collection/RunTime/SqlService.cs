@@ -21,7 +21,6 @@ namespace Audiotica.Data.Collection.RunTime
         {
             _config = config;
             DbConnection = new SQLiteConnection(config.Path);
-            Initialize();
         }
 
         public SQLiteConnection DbConnection { get; set; }
@@ -46,6 +45,11 @@ namespace Audiotica.Data.Collection.RunTime
             if (_config.OnUpdate != null)
                 _config.OnUpdate(DbConnection, sqlVersion);
             CreateTablesIfNotExists();
+        }
+
+        public async Task InitializeAsync()
+        {
+            await Task.Run(() => Initialize()).ConfigureAwait(false);
         }
 
         public void ResetData()
@@ -108,9 +112,9 @@ namespace Audiotica.Data.Collection.RunTime
             return res;
         }
 
-        public Task<SQLiteResult> InsertAsync(BaseEntry entry)
+        public async Task<SQLiteResult> InsertAsync(BaseEntry entry)
         {
-            return Task.FromResult(Insert(entry));
+            return await Task.FromResult(Insert(entry)).ConfigureAwait(false);
         }
 
         public SQLiteResult DeleteItem(BaseEntry item)
@@ -137,9 +141,9 @@ namespace Audiotica.Data.Collection.RunTime
             }
         }
 
-        public Task<SQLiteResult> DeleteItemAsync(BaseEntry item)
+        public async Task<SQLiteResult> DeleteItemAsync(BaseEntry item)
         {
-            return Task.FromResult(DeleteItem(item));
+            return await Task.FromResult(DeleteItem(item)).ConfigureAwait(false);
         }
 
         public SQLiteResult UpdateItem(BaseEntry item)
@@ -166,9 +170,9 @@ namespace Audiotica.Data.Collection.RunTime
             }
         }
 
-        public Task<SQLiteResult> UpdateItemAsync(BaseEntry item)
+        public async Task<SQLiteResult> UpdateItemAsync(BaseEntry item)
         {
-            return Task.FromResult(UpdateItem(item));
+            return await Task.FromResult(UpdateItem(item)).ConfigureAwait(false);
         }
 
         public List<T> SelectAll<T>() where T : new()
@@ -232,9 +236,9 @@ namespace Audiotica.Data.Collection.RunTime
             return items;
         }
 
-        public Task<List<T>> SelectAllAsync<T>() where T : new()
+        public async Task<List<T>> SelectAllAsync<T>() where T : new()
         {
-            return Task.FromResult(SelectAll<T>());
+            return await Task.FromResult(SelectAll<T>()).ConfigureAwait(false);
         }
 
         public Task DeleteTableAsync<T>()

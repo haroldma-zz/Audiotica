@@ -191,7 +191,7 @@ namespace Audiotica.View
         private void DownloadAppBarButton_Click(object sender, RoutedEventArgs e)
         {
             var song = (sender as AppBarButton).DataContext as Song;
-            App.Locator.Download.StartDownload(song);
+            App.Locator.Download.StartDownloadAsync(song);
         }
 
         private void AppBarButton_Click(object sender, RoutedEventArgs e)

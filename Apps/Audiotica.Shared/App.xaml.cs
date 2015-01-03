@@ -99,8 +99,10 @@ namespace Audiotica
             {
                 try
                 {
-                    await Locator.CollectionService.LoadLibraryAsync();
-                    Locator.Download.LoadDownloads();
+                    await Locator.SqlService.InitializeAsync().ConfigureAwait(false);
+                    await Locator.BgSqlService.InitializeAsync().ConfigureAwait(false);
+                    await Locator.CollectionService.LoadLibraryAsync().ConfigureAwait(false);
+                    DispatcherHelper.RunAsync(() =>Locator.Download.LoadDownloads());
                 }
                 catch (Exception ex)
                 {

@@ -76,7 +76,7 @@ namespace Audiotica.WindowsPhone.Player
         public void Run(IBackgroundTaskInstance taskInstance)
         {
             Debug.WriteLine("Background Audio Task " + taskInstance.Task.Name + " starting...");
-            // Initialize SMTC object to talk with UVC. 
+            // InitializeAsync SMTC object to talk with UVC. 
             //Note that, this is intended to run after app is paused and 
             //hence all the logic must be written to run in background process
             _systemmediatransportcontrol = SystemMediaTransportControls.GetForCurrentView();
@@ -98,7 +98,7 @@ namespace Audiotica.WindowsPhone.Player
             //Add handlers for playlist trackchanged
             QueueManager.TrackChanged += playList_TrackChanged;
 
-            //Initialize message channel 
+            //InitializeAsync message channel 
             BackgroundMediaPlayer.MessageReceivedFromForeground += BackgroundMediaPlayer_MessageReceivedFromForeground;
 
             //Send information to foreground that background task has been started if app is active

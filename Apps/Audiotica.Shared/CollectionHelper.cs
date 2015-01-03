@@ -27,10 +27,10 @@ namespace Audiotica
 {
     public static class CollectionHelper
     {
-        public static List<SimpleTrack> SpotifySavingTracks = new List<SimpleTrack>();
-        public static List<LastTrack> LastfmSavingTracks = new List<LastTrack>();
-        public static List<FullAlbum> SpotifySavingAlbums = new List<FullAlbum>();
-        public static List<LastAlbum> LastfmSavingAlbums = new List<LastAlbum>();
+        public static List<string> SpotifySavingTracks = new List<string>();
+        public static List<string> LastfmSavingTracks = new List<string>();
+        public static List<string> SpotifySavingAlbums = new List<string>();
+        public static List<long> LastfmSavingAlbums = new List<long>();
         private static bool _currentlyPreparing;
 
         #region Saving
@@ -73,7 +73,7 @@ namespace Audiotica
             var collAlbum = App.Locator.CollectionService.Albums.FirstOrDefault(p => p.ProviderId.Contains(album.Id));
 
             var alreadySaved = collAlbum != null;
-            var alreadySaving = SpotifySavingAlbums.FirstOrDefault(p => p.Id == album.Id) != null;
+            var alreadySaving = SpotifySavingAlbums.FirstOrDefault(p => p == album.Id) != null;
 
             if (alreadySaved)
             {
@@ -91,7 +91,7 @@ namespace Audiotica
                 return;
             }
 
-            SpotifySavingAlbums.Add(album);
+            SpotifySavingAlbums.Add(album.Id);
 
             CurtainPrompt.Show("EntrySaving".FromLanguageResource(), album.Name);
 
@@ -138,7 +138,7 @@ namespace Audiotica
                 CurtainPrompt.ShowError("EntrySavingError".FromLanguageResource(), album.Name);
 
 
-            SpotifySavingAlbums.Remove(album);
+            SpotifySavingAlbums.Remove(album.Id);
         }
 
         public static async Task DownloadArtistsArtworkAsync(bool missingOnly = true)
@@ -321,40 +321,40 @@ namespace Audiotica
 
         private static async Task<SavingError> _SaveTrackAsync(SimpleTrack track, FullAlbum album)
         {
-            var alreadySaving = SpotifySavingTracks.FirstOrDefault(p => p.Id == track.Id) != null;
+            var alreadySaving = SpotifySavingTracks.FirstOrDefault(p => p == track.Id) != null;
 
             if (alreadySaving)
             {
                 return SavingError.AlreadySaving;
             }
 
-            SpotifySavingTracks.Add(track);
+            SpotifySavingTracks.Add(track.Id);
 
             var result = await SpotifyHelper.SaveTrackAsync(track, album);
 
             ShowErrorResults(result, track.Name);
 
-            SpotifySavingTracks.Remove(track);
+            SpotifySavingTracks.Remove(track.Id);
 
             return result;
         }
 
         private static async Task<SavingError> _SaveTrackAsync(LastTrack track)
         {
-            var alreadySaving = LastfmSavingTracks.FirstOrDefault(p => p.Id == track.Id) != null;
+            var alreadySaving = LastfmSavingTracks.FirstOrDefault(p => p == track.Id) != null;
 
             if (alreadySaving)
             {
                 return SavingError.AlreadySaving;
             }
 
-            LastfmSavingTracks.Add(track);
+            LastfmSavingTracks.Add(track.Id);
 
             var result = await ScrobblerHelper.SaveTrackAsync(track);
 
             ShowErrorResults(result, track.Name);
 
-            LastfmSavingTracks.Remove(track);
+            LastfmSavingTracks.Remove(track.Id);
 
             return result;
         }

@@ -37,7 +37,7 @@
             <Button x:Uid="AlbumSaveAllButton" Content="Save All" HorizontalAlignment="Stretch" Click="Button_Click" />
             <Grid Margin="0,20,0,0">
                 <ListView IsItemClickEnabled="True" ItemsSource="{Binding Tracks}" Margin="0,5,0,0"
-                          ItemTemplate="{StaticResource SpotifyTrackDataTemplate}">
+                          ItemTemplate="{StaticResource SpotifyTrackNoAlbumDataTemplate}">
                     <interactivity:Interaction.Behaviors>
                         <core:EventTriggerBehavior EventName="ItemClick">
                             <core:InvokeCommandAction Command="{Binding SongClickRelayCommand}" />

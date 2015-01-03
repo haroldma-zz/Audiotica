@@ -40,7 +40,7 @@ namespace Audiotica.WindowsPhone.Player
                 Path = "player.sqldb"
             };
             _bgSql = new SqlService(bgConfig);
-
+            _bgSql.Initialize();
             var dbTypes = new List<Type>
             {
                 typeof (Artist),
@@ -57,6 +57,7 @@ namespace Audiotica.WindowsPhone.Player
             };
 
             _sql = new SqlService(config);
+            _sql.Initialize();
 
             _mediaPlayer = BackgroundMediaPlayer.Current;
             _mediaPlayer.MediaOpened += MediaPlayer_MediaOpened;
@@ -65,7 +66,7 @@ namespace Audiotica.WindowsPhone.Player
             _mediaPlayer.MediaFailed += mediaPlayer_MediaFailed;
         }
 
-        private List<QueueSong> tracks { get; set; }
+        private List<QueueSong> Tracks { get; set; }
 
         #endregion
 
@@ -84,7 +85,7 @@ namespace Audiotica.WindowsPhone.Player
                 if (_currentTrack != null)
                     return _currentTrack;
 
-                _currentTrack = _currentTrackIndex < tracks.Count ? tracks[_currentTrackIndex] : null;
+                _currentTrack = _currentTrackIndex < Tracks.Count ? Tracks[_currentTrackIndex] : null;
                 return _currentTrack;
             }
         }
@@ -169,7 +170,7 @@ namespace Audiotica.WindowsPhone.Player
         {
             UpdateMediaEnded();
 
-            var track = tracks[id];
+            var track = Tracks[id];
             _currentTrackIndex = id;
             _mediaPlayer.AutoPlay = false;
 
@@ -187,12 +188,16 @@ namespace Audiotica.WindowsPhone.Player
 
         public void StartTrack(long id)
         {
-            RefreshTracks();
+            QueueSong track;
+            do
+            {
+                RefreshTracks();
+                track = Tracks != null ? Tracks.FirstOrDefault(p => p.Id == id) : null;
+            } while (track == null);
 
             UpdateMediaEnded();
-
-            var track = tracks.FirstOrDefault(p => p.Id == id);
-            _currentTrackIndex = tracks.IndexOf(track);
+                
+            _currentTrackIndex = Tracks.IndexOf(track);
             _mediaPlayer.AutoPlay = false;
 
             if (track.Song.IsStreaming)
@@ -222,7 +227,7 @@ namespace Audiotica.WindowsPhone.Player
         public void SkipToNext()
         {
             RefreshTracks();
-            StartTrackAt((_currentTrackIndex + 1)%tracks.Count);
+            StartTrackAt((_currentTrackIndex + 1)%Tracks.Count);
         }
 
         private void UpdateMediaEnded()
@@ -282,7 +287,7 @@ namespace Audiotica.WindowsPhone.Player
             RefreshTracks();
             if (_currentTrackIndex == 0)
             {
-                StartTrackAt(tracks.Count - 1);
+                StartTrackAt(Tracks.Count - 1);
             }
             else
             {
@@ -311,11 +316,15 @@ namespace Audiotica.WindowsPhone.Player
                     _currentQueueDate == queueDate) return;
 
             var collectionService = new CollectionService(_sql, _bgSql, null);
-            collectionService.LoadLibrary(true);
-            tracks = collectionService.PlaybackQueue.ToList();
+            try
+            {
+                collectionService.LoadLibrary(true);
+                Tracks = collectionService.PlaybackQueue.ToList();
 
-            _currentQueueDate = queueDate;
-            _currentQueueCount = tracks.Count;
+                _currentQueueDate = queueDate;
+                _currentQueueCount = Tracks.Count;
+            }
+            catch { }
         }
     }
 }

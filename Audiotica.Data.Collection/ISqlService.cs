@@ -14,6 +14,8 @@ namespace Audiotica.Data.Collection
 {
     public interface ISqlService : IDisposable
     {
+        void Initialize();
+        Task InitializeAsync();
         void ResetData();
 
         SQLiteResult Insert(BaseEntry entry);

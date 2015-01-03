@@ -32,6 +32,6 @@ namespace Audiotica.Data.Service.Interfaces
         /// <summary>
         ///     Starts a BackgroundDownload.
         /// </summary>
-        void StartDownload(Song song);
+        Task StartDownloadAsync(Song song);
     }
 }

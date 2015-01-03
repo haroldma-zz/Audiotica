@@ -20,7 +20,7 @@ namespace Audiotica.Data.Spotify
 
             var list = new List<String>();
             attributes.ToObservable().Subscribe(x => list.Add(x.Text));
-            return string.Join(" ", list);
+            return string.Join(separator, list);
         }
         public static string GetAlbumValue(this AlbumType en, String separator)
         {
@@ -34,7 +34,7 @@ namespace Audiotica.Data.Spotify
 
             var list = new List<String>();
             attributes.ToObservable().Subscribe((element) => list.Add(element.Text));
-            return string.Join(" ", list);
+            return string.Join(separator, list);
         }
     }
 }
