@@ -108,24 +108,33 @@ namespace Audiotica
                 } while (result != SavingError.None && index < album.Tracks.Items.Count);
             }
 
-            //save the rest at the rest time
-            var songs = album.Tracks.Items.Skip(index).Select(track => _SaveTrackAsync(track, album));
-            var results = await Task.WhenAll(songs);
+            bool success;
+            var missing = false;
 
-            //now wait a split second before showing success message
-            await Task.Delay(1000);
+            if (album.Tracks.Items.Count > 1)
+            {
+                //save the rest at the rest time
+                var songs = album.Tracks.Items.Skip(index).Select(track => _SaveTrackAsync(track, album));
+                var results = await Task.WhenAll(songs);
 
-            var successCount = results.Count(p => p == SavingError.None || p == SavingError.AlreadyExists
-                                                  || p == SavingError.AlreadySaving);
-            var missingCount = successCount == 0 ? -1 : album.Tracks.Items.Count - (successCount + index);
-            var success = missingCount == 0;
-            var missing = missingCount > 0;
+                //now wait a split second before showing success message
+                await Task.Delay(1000);
+
+                var successCount = results.Count(p => p == SavingError.None || p == SavingError.AlreadyExists
+                                                      || p == SavingError.AlreadySaving);
+                var missingCount = successCount == 0 ? -1 : album.Tracks.Items.Count - (successCount + index);
+                success = missingCount == 0;
+                missing = missingCount > 0;
+
+                if (missing)
+                    CurtainPrompt.ShowError("AlbumMissingTracks".FromLanguageResource(), missingCount, album.Name);
+            }
+            else
+                success = App.Locator.CollectionService.Albums.FirstOrDefault(p => p.ProviderId.Contains(album.Id)) != null;
 
             if (success)
                 CurtainPrompt.Show("EntrySaved".FromLanguageResource(), album.Name);
-            else if (missing)
-                CurtainPrompt.ShowError("AlbumMissingTracks".FromLanguageResource(), missingCount, album.Name);
-            else
+            else if (!missing)
                 CurtainPrompt.ShowError("EntrySavingError".FromLanguageResource(), album.Name);
 
 

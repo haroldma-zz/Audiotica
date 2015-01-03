@@ -15,6 +15,7 @@ using Audiotica.Data.Spotify;
 using Audiotica.PartialView;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Ioc;
+using GalaSoft.MvvmLight.Threading;
 using IF.Lastfm.Core.Api;
 using Microsoft.Practices.ServiceLocation;
 
@@ -50,8 +51,8 @@ namespace Audiotica.ViewModel
                 SimpleIoc.Default.Register<ISpotifyService, SpotifyService>();
                 SimpleIoc.Default.Register<ISqlService>(() => new SqlService(config));
                 SimpleIoc.Default.Register<ISqlService>(() => new SqlService(bgConfig), "BackgroundSql");
-                SimpleIoc.Default.Register<ICollectionService>(() => new CollectionService(SqlService, BgSqlService, Window.Current.Dispatcher));
-                SimpleIoc.Default.Register<ISongDownloadService>(() => new SongDownloadService(CollectionService, SqlService, Window.Current.Dispatcher));
+                SimpleIoc.Default.Register<ICollectionService>(() => new CollectionService(SqlService, BgSqlService, DispatcherHelper.UIDispatcher));
+                SimpleIoc.Default.Register<ISongDownloadService>(() => new SongDownloadService(CollectionService, SqlService, DispatcherHelper.UIDispatcher));
             }
 
             SimpleIoc.Default.Register<SpotifyWebApi>();

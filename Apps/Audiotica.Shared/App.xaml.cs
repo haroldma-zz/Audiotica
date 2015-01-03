@@ -51,11 +51,8 @@ namespace Audiotica
         {
             RootFrame = Window.Current.Content as Frame;
 
-            // Do not repeat app initialization when the Window already has content,
-            // just ensure that the window is active
             if (RootFrame == null)
             {
-                // Create a Frame to act as the navigation context and navigate to the first page
                 RootFrame = new Frame {Style = (Style) Resources["AppFrame"]};
 
                 Window.Current.Content = RootFrame;
@@ -64,7 +61,7 @@ namespace Audiotica
             }
 
             // ReSharper disable once CSharpWarnings::CS4014
-            BootAppServices();
+            BootAppServicesAsync();
 
             if (RootFrame != null && RootFrame.Content == null)
             {
@@ -96,7 +93,7 @@ namespace Audiotica
             Window.Current.Activate();
         }
 
-        private async void BootAppServices()
+        private async Task BootAppServicesAsync()
         {
             if (!_init)
             {
@@ -108,7 +105,7 @@ namespace Audiotica
                 catch (Exception ex)
                 {
                     EasyTracker.GetTracker().SendException(ex.Message + " " + ex.StackTrace, true);
-                    CurtainPrompt.ShowError("AppErrorBooting".FromLanguageResource());
+                    DispatcherHelper.RunAsync(() => CurtainPrompt.ShowError("AppErrorBooting".FromLanguageResource()));
                 }
 
                 _init = true;
@@ -128,15 +125,15 @@ namespace Audiotica
 
             await ReviewReminderAsync();
 
+            if (!AppVersionHelper.JustUpdated) return;
+            CurtainPrompt.Show(2500, "AppUpdated".FromLanguageResource(), AppVersionHelper.CurrentVersion);
+
             //download missing artwork for artist
             if (Locator.CollectionService.IsLibraryLoaded)
                 await CollectionHelper.DownloadArtistsArtworkAsync();
             else
                 Locator.CollectionService.LibraryLoaded +=
                     async (o, args) => await CollectionHelper.DownloadArtistsArtworkAsync();
-
-            if (!AppVersionHelper.JustUpdated) return;
-            CurtainPrompt.Show(2500, "AppUpdated".FromLanguageResource(), AppVersionHelper.CurrentVersion);
         }
 
         private async Task ReviewReminderAsync()
