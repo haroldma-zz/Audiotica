@@ -58,8 +58,8 @@ namespace Audiotica.ViewModel
             SimpleIoc.Default.Register<SpotifyWebApi>();
             SimpleIoc.Default.Register<AudioPlayerHelper>();
             SimpleIoc.Default.Register<CollectionViewModel>(true);
-            SimpleIoc.Default.Register(() => new PlayerViewModel(AudioPlayerHelper, CollectionService, BgSqlService, ScrobblerService));
             SimpleIoc.Default.Register<MainViewModel>();
+            SimpleIoc.Default.Register(() => new PlayerViewModel(AudioPlayerHelper, CollectionService, BgSqlService, ScrobblerService));
             SimpleIoc.Default.Register<AlbumViewModel>();
             SimpleIoc.Default.Register<CollectionAlbumViewModel>();
             SimpleIoc.Default.Register<CollectionArtistViewModel>();

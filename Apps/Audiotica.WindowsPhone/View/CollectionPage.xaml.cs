@@ -22,19 +22,18 @@ namespace Audiotica.View
         public CollectionPage()
         {
             InitializeComponent();
+
+            Loaded += (sender, args) => LoadWallpaperArt();
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
 
-            if (e.NavigationMode != NavigationMode.Back)
-            {
-                var pivotIndex = int.Parse(e.Parameter.ToString());
-                CollectionPivot.SelectedIndex = pivotIndex;
-            }
+            if (e.NavigationMode == NavigationMode.Back) return;
 
-            LoadWallpaperArt();
+            var pivotIndex = int.Parse(e.Parameter.ToString());
+            CollectionPivot.SelectedIndex = pivotIndex;
         }
 
         private void LoadWallpaperArt()
