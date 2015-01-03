@@ -287,6 +287,9 @@
   <data name="GenericRemove" xml:space="preserve">
     <value>Remove</value>
   </data>
+  <data name="GenericTryAgain" xml:space="preserve">
+    <value>Please try doing that again.</value>
+  </data>
   <data name="GenericWait" xml:space="preserve">
     <value>Please wait...</value>
   </data>

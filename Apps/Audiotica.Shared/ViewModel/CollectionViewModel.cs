@@ -99,6 +99,9 @@ namespace Audiotica.ViewModel
         private void UpdateSortedCollection<T>(T item, bool removed, string key,
             Func<ObservableCollection<AlphaKeyGroup<T>>> getSorted)
         {
+            if (string.IsNullOrEmpty(key))
+                return;
+
             bool zero;
             var sortedGroups = getSorted();
             var group = sortedGroups.First(a => a.Key == new CharacterGroupings().Lookup(key));

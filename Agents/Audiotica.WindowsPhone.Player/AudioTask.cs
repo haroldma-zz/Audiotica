@@ -260,7 +260,6 @@ namespace Audiotica.WindowsPhone.Player
         {
             try
             {
-                QueueManager.RefreshTracks();
                 var currenttrack = AppSettingsHelper.Read<long>(PlayerConstants.CurrentTrack);
                 QueueManager.StartTrack(currenttrack);
             }
@@ -354,9 +353,6 @@ namespace Audiotica.WindowsPhone.Player
                     case PlayerConstants.SkipPrevious: // User has chosen to skip track from app context.
                         Debug.WriteLine("Skipping to previous");
                         SkipToPrevious();
-                        break;
-                    case PlayerConstants.RefreshTracks:
-                        QueueManager.RefreshTracks();
                         break;
                 }
             }

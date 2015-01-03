@@ -6,5 +6,10 @@ namespace Audiotica.Data.Collection.SqlHelper
     {
         [SqlProperty(IsPrimaryKey = true)]
         public long Id { get; set; }
+
+        public override int GetHashCode()
+        {
+            return Id.GetHashCode();
+        }
     }
 }

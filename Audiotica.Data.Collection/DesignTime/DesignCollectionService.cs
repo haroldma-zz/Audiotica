@@ -137,7 +137,7 @@ namespace Audiotica.Data.Collection.DesignTime
             throw new NotImplementedException();
         }
 
-        public Task AddToQueueAsync(Song song)
+        public Task<QueueSong> AddToQueueAsync(Song song, int position = -1)
         {
             throw new NotImplementedException();
         }

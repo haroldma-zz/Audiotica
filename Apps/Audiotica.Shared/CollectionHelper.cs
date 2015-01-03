@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using Windows.Foundation.Collections;
 using Windows.Media.Playback;
@@ -13,7 +14,9 @@ using Windows.UI.Xaml.Media.Imaging;
 using Audiotica.Core;
 using Audiotica.Core.Common;
 using Audiotica.Core.Utilities;
+using Audiotica.Data.Collection;
 using Audiotica.Data.Collection.Model;
+using Audiotica.Data.Collection.SqlHelper;
 using Audiotica.Data.Spotify.Models;
 using GalaSoft.MvvmLight.Threading;
 using IF.Lastfm.Core.Objects;
@@ -191,18 +194,39 @@ namespace Audiotica
             await PlaySongsAsync(song, songs);
         }
 
+        private const int MaxPlayQueueCount = 1000;
+
         public static async Task PlaySongsAsync(Song song, List<Song> songs)
         {
             if (songs.Count == 0) return;
 
-            var createQueue = songs.Count != App.Locator.CollectionService.PlaybackQueue.Count
-                              || App.Locator.CollectionService.PlaybackQueue.FirstOrDefault(p => p.SongId == song.Id) == null;
+            var skip = songs.IndexOf(song);
+            var ordered = songs.Skip(skip).ToList();
+            ordered.AddRange(songs.Take(skip));
+
+            var overflow = songs.Count - MaxPlayQueueCount;
+            if (overflow > 0)
+                for (var i = 0; i < overflow; i++)
+                    ordered.Remove(ordered.LastOrDefault());
+
+            var playbackQueue = App.Locator.CollectionService.PlaybackQueue.ToList();
+
+            var sameLength = _currentlyPreparing || songs.Count == playbackQueue.Count || playbackQueue.Count == MaxPlayQueueCount;
+            var containsSong = playbackQueue.FirstOrDefault(p => p.SongId == song.Id) != null;
+            var createQueue = !sameLength
+                              || !containsSong;
 
             if (_currentlyPreparing && createQueue) return;
 
+            if (createQueue)
+            {
+                AppSettingsHelper.Write(PlayerConstants.QueueCount, ordered.Count);
+                AppSettingsHelper.WriteAsJson(PlayerConstants.QueueDateCreated, DateTime.Now);
+            }
+
             if (_currentlyPreparing && !createQueue)
             {
-                App.Locator.AudioPlayerHelper.PlaySong(App.Locator.CollectionService.PlaybackQueue.First(p => p.SongId == song.Id));
+                App.Locator.AudioPlayerHelper.PlaySong(playbackQueue.First(p => p.SongId == song.Id));
             }
 
             else
@@ -212,31 +236,58 @@ namespace Audiotica
                 if (createQueue)
                 {
                     await App.Locator.CollectionService.ClearQueueAsync().ConfigureAwait(false);
-                    await App.Locator.CollectionService.AddToQueueAsync(song).ConfigureAwait(false);
-                    var index = songs.IndexOf(song);
+                    var queueSong = await App.Locator.CollectionService.AddToQueueAsync(song).ConfigureAwait(false);
+                    App.Locator.AudioPlayerHelper.PlaySong(queueSong);
 
-                    App.Locator.AudioPlayerHelper.PlaySong(App.Locator.CollectionService.PlaybackQueue[0]);
                     await Task.Delay(500).ConfigureAwait(false);
 
-                    for (var i = index + 1; i < songs.Count; i++)
+                    for (var index = 1; index < ordered.Count; index++)
                     {
-                        await App.Locator.CollectionService.AddToQueueAsync(songs[i]).ConfigureAwait(false);
+                        var s = ordered[index];
+                        await App.Locator.CollectionService.AddToQueueAsync(s).ConfigureAwait(false);
                     }
-
-                    for (var i = 0; i < index; i++)
-                    {
-                        await App.Locator.CollectionService.AddToQueueAsync(songs[i]).ConfigureAwait(false);
-                    }
-
-                    //refresh tracks on bg player
-                    var message = new ValueSet { { PlayerConstants.RefreshTracks, null } };
-                    BackgroundMediaPlayer.SendMessageToBackground(message);
                 }
                 else
                     App.Locator.AudioPlayerHelper.PlaySong(App.Locator.CollectionService.PlaybackQueue.First(p => p.SongId == song.Id));
 
                 _currentlyPreparing = false;
             }
+        }
+
+        public static async Task AddToQueueAsync(Song song)
+        {
+            if (_currentlyPreparing)
+            {
+                CurtainPrompt.ShowError("GenericTryAgain".FromLanguageResource());
+                return;
+            }
+
+            if (!App.Locator.Player.IsPlayerActive)
+                await App.Locator.CollectionService.ClearQueueAsync();
+
+            var overflow = App.Locator.CollectionService.PlaybackQueue.Count - MaxPlayQueueCount;
+            if (overflow > 0)
+                for (var i = 0; i < overflow; i++)
+                {
+                    var queueToRemove = App.Locator.CollectionService.PlaybackQueue.LastOrDefault();
+                    if (queueToRemove == App.Locator.Player.CurrentQueue)
+                        queueToRemove =
+                            App.Locator.CollectionService.PlaybackQueue[
+                                App.Locator.CollectionService.PlaybackQueue.Count - 2];
+
+                    await App.Locator.CollectionService.DeleteFromQueueAsync(queueToRemove.Song);
+                }
+
+            var position = App.Locator.CollectionService.PlaybackQueue.IndexOf(App.Locator.Player.CurrentQueue) + 1;
+            var queueSong = await App.Locator.CollectionService.AddToQueueAsync(song, position);
+
+            //update queue count
+            var count = App.Locator.CollectionService.PlaybackQueue.Count;
+            AppSettingsHelper.Write(PlayerConstants.QueueCount, count);
+            AppSettingsHelper.Write(PlayerConstants.QueueDateCreated, DateTime.Now);
+
+            if (!App.Locator.Player.IsPlayerActive)
+                App.Locator.AudioPlayerHelper.PlaySong(queueSong);
         }
 
         #endregion

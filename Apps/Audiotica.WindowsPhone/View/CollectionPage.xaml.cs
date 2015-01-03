@@ -180,7 +180,7 @@ namespace Audiotica.View
                 }
                 else
                 {
-                    App.Locator.CollectionService.AddToQueueAsync(song);
+                    CollectionHelper.AddToQueueAsync(song);
                 }
             };
             flyout.ItemsSource = list;

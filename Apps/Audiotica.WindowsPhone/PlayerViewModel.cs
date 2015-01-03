@@ -38,6 +38,7 @@ namespace Audiotica
         private double _npbHeight = double.NaN;
         private IconElement _playPauseIcon;
         private TimeSpan _position;
+        private bool _isPlayerActive;
 
         public PlayerViewModel(AudioPlayerHelper helper, ICollectionService service, ISqlService bgSqlService,
             IScrobblerService scrobblerService)
@@ -66,6 +67,12 @@ namespace Audiotica
                 CurrentQueue = service.PlaybackQueue.FirstOrDefault();
                 PlayPauseIcon = new SymbolIcon(Symbol.Play);
             }
+        }
+
+        public bool IsPlayerActive
+        {
+            get { return _isPlayerActive; }
+            set { Set(ref _isPlayerActive, value); }
         }
 
         public TimeSpan Duration
@@ -191,9 +198,12 @@ namespace Audiotica
                     && CurrentQueue.Song != null
                     && CurrentQueue.Song.Duration.Ticks != Duration.Ticks)
                     CurrentQueue.Song.Duration = Duration;
+                
+                IsPlayerActive = true;
             }
             else
             {
+                IsPlayerActive = false;
                 CurrentQueue = null;
             }
 

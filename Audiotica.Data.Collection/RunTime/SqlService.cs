@@ -178,46 +178,54 @@ namespace Audiotica.Data.Collection.RunTime
 
             using (var statement = DbConnection.Prepare("SELECT * FROM " + type.Name))
             {
-                while (statement.Step() == SQLiteResult.ROW)
+                var result = statement.Step();
+    
+                while (result == SQLiteResult.ROW || result == SQLiteResult.BUSY)
                 {
-                    var item = new T();
-                    var props =
-                        type.GetRuntimeProperties()
-                            .Where(
-                                p =>
-                                    p.GetCustomAttribute<SqlIgnore>() == null &&
-                                    (EasySql.NetToSqlKepMap.ContainsKey(p.PropertyType) || p.PropertyType.GetTypeInfo().IsEnum));
-
-                    foreach (var propertyInfo in props)
+                    if (result != SQLiteResult.BUSY)
                     {
-                        var value = statement[propertyInfo.Name];
+                        var item = new T();
+                        var props =
+                            type.GetRuntimeProperties()
+                                .Where(
+                                    p =>
+                                        p.GetCustomAttribute<SqlIgnore>() == null &&
+                                        (EasySql.NetToSqlKepMap.ContainsKey(p.PropertyType) ||
+                                         p.PropertyType.GetTypeInfo().IsEnum));
 
-                        //cast enums from long
-                        if (propertyInfo.GetMethod.ReturnType.GetTypeInfo().IsEnum)
+                        foreach (var propertyInfo in props)
                         {
-                            value = Enum.ToObject(propertyInfo.PropertyType, value ?? 0);
-                        }
+                            var value = statement[propertyInfo.Name];
 
-                            //cast dates from string
-                        else if (propertyInfo.PropertyType == typeof (DateTime))
-                        {
-                            value = value == null ? DateTime.MinValue : DateTime.Parse(value.ToString());
-                        }
+                            //cast enums from long
+                            if (propertyInfo.GetMethod.ReturnType.GetTypeInfo().IsEnum)
+                            {
+                                value = Enum.ToObject(propertyInfo.PropertyType, value ?? 0);
+                            }
 
-                            //cast timespan from ticks (int64)
-                        else if (propertyInfo.PropertyType == typeof (TimeSpan))
-                        {
-                            value = value == null ? TimeSpan.MinValue : TimeSpan.FromTicks((Int64) value);
-                        }
+                                //cast dates from string
+                            else if (propertyInfo.PropertyType == typeof (DateTime))
+                            {
+                                value = value == null ? DateTime.MinValue : DateTime.Parse(value.ToString());
+                            }
 
-                        else if (propertyInfo.PropertyType == typeof (bool))
-                        {
-                            value = value != null && (long) value == 1;
-                        }
+                                //cast timespan from ticks (int64)
+                            else if (propertyInfo.PropertyType == typeof (TimeSpan))
+                            {
+                                value = value == null ? TimeSpan.MinValue : TimeSpan.FromTicks((Int64) value);
+                            }
 
-                        propertyInfo.SetValue(item, value);
+                            else if (propertyInfo.PropertyType == typeof (bool))
+                            {
+                                value = value != null && (long) value == 1;
+                            }
+
+                            propertyInfo.SetValue(item, value);
+                        }
+                        items.Add(item);
                     }
-                    items.Add(item);
+
+                    result = statement.Step();
                 }
             }
 

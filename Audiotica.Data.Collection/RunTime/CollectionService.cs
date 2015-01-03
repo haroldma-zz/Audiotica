@@ -409,32 +409,56 @@ namespace Audiotica.Data.Collection.RunTime
             PlaybackQueue.Clear();
         }
 
-        public async Task AddToQueueAsync(Song song)
+        public async Task<QueueSong> AddToQueueAsync(Song song, int position = -1)
         {
-            var tail = PlaybackQueue.LastOrDefault();
+            QueueSong prev;
+            QueueSong next = null;
+
+            var insert = position != -1 && position < PlaybackQueue.Count;
+
+            if (insert)
+            {
+                next = PlaybackQueue[position];
+                prev = _lookupMap[next.PrevId];
+            }
+            else
+                prev = PlaybackQueue.LastOrDefault();
+
 
             //Create the new queue entry
             var newQueue = new QueueSong
             {
                 SongId = song.Id,
-                NextId = 0,
-                PrevId = tail == null ? 0 : tail.Id,
+                NextId = next == null ? 0 : next.Id,
+                PrevId = prev == null ? 0 : prev.Id,
                 Song = song
             };
 
             //Add it to the database
             await _bgSqlService.InsertAsync(newQueue);
 
-            if (tail != null)
+            if (next != null)
+            {
+                //Update the prev id of the queue that was replaced
+                next.PrevId = newQueue.Id;
+                await _bgSqlService.UpdateItemAsync(next);
+            }
+
+            if (prev != null)
             {
                 //Update the next id of the previous tail
-                tail.NextId = newQueue.Id;
-                await _bgSqlService.UpdateItemAsync(tail);
+                prev.NextId = newQueue.Id;
+                await _bgSqlService.UpdateItemAsync(prev);
             }
 
             //Add the new queue entry to the collection and map
-            PlaybackQueue.Add(newQueue);
+            if (insert)
+                PlaybackQueue.Insert(position, newQueue);
+            else
+                PlaybackQueue.Add(newQueue);
             _lookupMap.Add(newQueue.Id, newQueue);
+
+            return newQueue;
         }
 
         public Task MoveQueueFromToAsync(int oldIndex, int newIndex)
