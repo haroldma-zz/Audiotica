@@ -100,28 +100,10 @@ namespace Audiotica
                 return SavingError.AlreadyExists;
             }
 
-            string artistArtwork = null;
-
-            if (!string.IsNullOrEmpty(song.ArtistName) 
-                && App.Locator.CollectionService.Artists.FirstOrDefault(p =>
-                String.Equals(p.Name, song.ArtistName, StringComparison.CurrentCultureIgnoreCase)) == null)
-            {
-                try
-                {
-                    var lastArtist = await App.Locator.ScrobblerService.GetDetailArtist(song.ArtistName);
-                    artistArtwork = lastArtist.MainImage != null && lastArtist.MainImage.Largest != null
-                        ? lastArtist.MainImage.Largest.AbsoluteUri
-                        : null;
-                }
-                catch
-                {
-                }
-            }
-
             try
             {
                 await
-                    App.Locator.CollectionService.AddSongAsync(song, file, artistArtwork)
+                    App.Locator.CollectionService.AddSongAsync(song, file, null)
                         .ConfigureAwait(false);
                 return SavingError.None;
             }

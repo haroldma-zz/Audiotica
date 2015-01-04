@@ -246,6 +246,10 @@ namespace Audiotica.View
                 await LocalMusicHelper.SaveTrackAsync(localMusic[i]);
             }
 
+            StatusBarHelper.ShowStatus("Downloading artist info...");
+
+            await CollectionHelper.DownloadArtistsArtworkAsync();
+
             StatusBarHelper.HideStatus();
         }
     }
