@@ -143,7 +143,7 @@
   </data>
   <data name="AppBarPin.Label" xml:space="preserve">
     <value>Pin</value>
-    <comment>to create a tile in the start screen of the phone</comment>
+    <comment>to create a tile in the payload_start screen of the phone</comment>
   </data>
   <data name="AppBarReorder.Label" xml:space="preserve">
     <value>Reorder</value>

@@ -30,6 +30,15 @@
             <Task Type="audio" />
           </BackgroundTasks>
         </Extension>
+        <Extension Category="windows.fileTypeAssociation">
+          <FileTypeAssociation Name="autcp">
+            <DisplayName>Audiotica Backup</DisplayName>
+            <InfoTip>Open in Audiotica to restore the app.</InfoTip>
+            <SupportedFileTypes>
+              <FileType ContentType="application/audiotica-zip">.autcp</FileType>
+            </SupportedFileTypes>
+          </FileTypeAssociation>
+        </Extension>
       </Extensions>
     </Application>
   </Applications>

@@ -241,7 +241,7 @@ namespace Audiotica.Data.Collection.RunTime
                 {
                     Stream artwork = null;
 
-                    var fileStream = await songFile.OpenStreamForWriteAsync();
+                    var fileStream = await songFile.OpenStreamForReadAsync();
                     var tagFile = File.Create(new StreamFileAbstraction(songFile.Name, fileStream, fileStream));
 
                     var tags = tagFile.GetTag(TagTypes.Id3v2);

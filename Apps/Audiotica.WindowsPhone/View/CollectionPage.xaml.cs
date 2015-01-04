@@ -3,6 +3,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using Windows.Storage;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -246,11 +248,8 @@ namespace Audiotica.View
                 await LocalMusicHelper.SaveTrackAsync(localMusic[i]);
             }
 
-            StatusBarHelper.ShowStatus("Downloading artist info...");
-
-            await CollectionHelper.DownloadArtistsArtworkAsync();
-
             StatusBarHelper.HideStatus();
+            await CollectionHelper.DownloadArtistsArtworkAsync();
         }
     }
 }

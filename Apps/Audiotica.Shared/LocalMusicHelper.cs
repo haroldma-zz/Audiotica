@@ -23,7 +23,7 @@ namespace Audiotica
             list.AddRange((await parent.GetFilesAsync()).Where(p => p.FileType == ".wma" || p.FileType == ".mp3"));
 
             //avoiding DRM folder of xbox music
-            foreach (var item in (await parent.GetFoldersAsync()).Where(item => !item.Path.Contains("Xbox Music")))
+            foreach (var item in (await parent.GetFoldersAsync()).Where(item => !item.Path.Contains(@"\Music\Xbox Music")))
             {
                 await RetriveFilesInFolder(list, item);
             }
@@ -31,9 +31,11 @@ namespace Audiotica
 
         public static async Task<List<StorageFile>> GetFilesInMusic()
         {
-            var folder = KnownFolders.MusicLibrary;
             var audioFiles = new List<StorageFile>();
-            await RetriveFilesInFolder(audioFiles, folder);
+
+            //scan music folder
+            await RetriveFilesInFolder(audioFiles, KnownFolders.MusicLibrary);
+
             return audioFiles;
         }
 
@@ -80,7 +82,11 @@ namespace Audiotica
 
         public static async Task<SavingError> SaveTrackAsync(StorageFile file)
         {
-            var audioPath = file.Path.Replace(@"C:\Data\Users\Public\Music", "").Replace("\\", "/");
+            var audioPath = file.Path.Substring(3).
+                //external path
+                Replace(@"Music", "")
+                //local path
+                .Replace(@"Data\Users\Public\Music", "").Replace("\\", "/");
             
             if (App.Locator.CollectionService.SongAlreadyExists(audioPath))
             {
