@@ -9,6 +9,7 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.Storage;
+using Audiotica.Core.Utilities;
 
 #endregion
 
@@ -19,6 +20,30 @@ namespace Audiotica
         public const int FormatVersion = 1;
 
         private const int FileHeaderSize = 37;
+
+
+        public static async Task UnpackBackup(StorageFolder folder, Stream backupStream)
+        {
+            using (var zip = new ZipArchive(backupStream))
+            {
+                foreach (var entry in zip.Entries)
+                {
+                    try
+                    {
+                        var file =
+                            await
+                                StorageHelper.CreateFileAsync(entry.FullName,
+                                    option: CreationCollisionOption.ReplaceExisting);
+                        using (var stream = await file.OpenStreamForWriteAsync())
+                        {
+                            var original = entry.Open();
+                            await original.CopyToAsync(stream);
+                        }
+                    }
+                    catch { }
+                }
+            }
+        }
 
         public static async Task<byte[]> CreateBackup(StorageFolder folder)
         {
@@ -39,22 +64,31 @@ namespace Audiotica
 
                     if (item.IsOfType(StorageItemTypes.File))
                     {
-                        files.Add(item as StorageFile);
+                        var file = (item as StorageFile);
+                        if (file.FileType == ".autcp"
+                            || file.FileType == ".sqldb"
+                            || file.Name.StartsWith("_"))
+                            continue;
+                        files.Add(file);
                     }
                     else if (item.IsOfType(StorageItemTypes.Folder))
                     {
+                        var name = (item as StorageFolder).Name;
+                        if (name == "SOMA" || name == "Logs" || name == "AdMediator")
+                            continue;
+
                         files.AddRange(await (item as StorageFolder).GetFilesAsync());
                     }
 
                     foreach (var file in files)
                     {
-                        var buffer = (await FileIO.ReadBufferAsync(file)).ToArray();
+                        var stream = (await file.OpenStreamForReadAsync());
                         var path = file.Path.Replace(folder.Path + "\\", "").Replace("\\", "/");
 
                         var entry = zipArchive.CreateEntry(path, CompressionLevel.Optimal);
                         using (var entryStream = entry.Open())
                         {
-                            await entryStream.WriteAsync(buffer, 0, buffer.Length);
+                            await stream.CopyToAsync(entryStream);
                         }
                     }
                 }
@@ -99,9 +133,7 @@ namespace Audiotica
                 gch.Free();
 
                 stream.Seek(0, SeekOrigin.Begin);
-                var writer = new BinaryWriter(stream);
-                writer.Write(buffer);
-                //stream.Write(buffer, 0, FileHeaderSize);
+                stream.Write(buffer, 0, FileHeaderSize);
 
                 return true;
             }

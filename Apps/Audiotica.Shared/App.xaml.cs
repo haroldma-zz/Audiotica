@@ -27,8 +27,11 @@ namespace Audiotica
     public sealed partial class App
     {
 #if WINDOWS_PHONE_APP
-        private TransitionCollection _transitions;
+        private readonly ContinuationManager _continuationManager;
 #endif
+
+        private bool _init;
+        private static ViewModelLocator _locator;
 
         public static ViewModelLocator Locator
         {
@@ -40,14 +43,90 @@ namespace Audiotica
         public App()
         {
             InitializeComponent();
+            _continuationManager = new ContinuationManager();
             Suspending += OnSuspending;
             Resuming += OnResuming;
+            AppVersionHelper.OnLaunched();
+            EasyTracker.GetTracker().AppVersion =
+                AppVersionHelper.CurrentVersion + "-beta";
         }
 
-        private bool _init;
-        private static ViewModelLocator _locator;
+        #region overriding
 
-        protected override void OnLaunched(LaunchActivatedEventArgs e)
+        protected override async void OnActivated(IActivatedEventArgs e)
+        {
+            base.OnActivated(e);
+
+            CreateRootFrame();
+            await RestoreStatusAsync(e.PreviousExecutionState);
+
+            if (RootFrame.Content == null)
+            {
+                RootFrame.Navigated += RootFrame_FirstNavigated;
+                RootFrame.Navigate(typeof(HomePage));
+            }
+
+            var continuationEventArgs = e as IContinuationActivatedEventArgs;
+
+            if (continuationEventArgs != null)
+            {
+                _continuationManager.Continue(continuationEventArgs, RootFrame);
+            }
+
+            Window.Current.Activate();
+        }
+
+        protected override async void OnLaunched(LaunchActivatedEventArgs e)
+        {
+            CreateRootFrame();
+
+            var restore = await StorageHelper.FileExistsAsync("_current_restore.autcp");
+
+            var page = typeof(HomePage);
+
+            if (AppVersionHelper.IsFirstRun)
+                page = typeof(FirstRunPage);
+            else if (restore)
+                page = typeof (RestorePage);
+
+            if (RootFrame.Content == null)
+            {
+                RootFrame.Navigated += RootFrame_FirstNavigated;
+
+                //MainPage is always in rootFrame so we don't have to worry about restoring the navigation state on resume
+                RootFrame.Navigate(page, e.Arguments);
+            }
+
+            // Ensure the current window is active
+            Window.Current.Activate();
+
+            // ReSharper disable once CSharpWarnings::CS4014
+            if (!restore)
+                BootAppServicesAsync();
+        }
+
+        #endregion
+
+        private async Task RestoreStatusAsync(ApplicationExecutionState previousExecutionState)
+        {
+            // Do not repeat app initialization when the Window already has content,
+            // just ensure that the window is active
+            if (previousExecutionState == ApplicationExecutionState.Terminated)
+            {
+                // Restore the saved session state only when appropriate
+                try
+                {
+                    await SuspensionManager.RestoreAsync();
+                }
+                catch (SuspensionManagerException)
+                {
+                    //Something went wrong restoring state.
+                    //Assume there is no state and continue
+                }
+            }
+        }
+
+        private void CreateRootFrame()
         {
             RootFrame = Window.Current.Content as Frame;
 
@@ -55,45 +134,15 @@ namespace Audiotica
             {
                 RootFrame = new Frame {Style = (Style) Resources["AppFrame"]};
 
+                //Associate the frame with a SuspensionManager key                                
+                SuspensionManager.RegisterFrame(RootFrame, "AppFrame");
+
                 Window.Current.Content = RootFrame;
                 DispatcherHelper.Initialize();
-                AppVersionHelper.OnLaunched();
             }
-
-            // ReSharper disable once CSharpWarnings::CS4014
-            BootAppServicesAsync();
-
-            if (RootFrame != null && RootFrame.Content == null)
-            {
-#if WINDOWS_PHONE_APP
-                // Removes the turnstile navigation for startup.
-                if (RootFrame.ContentTransitions != null)
-                {
-                    _transitions = new TransitionCollection();
-                    foreach (var c in RootFrame.ContentTransitions)
-                    {
-                        _transitions.Add(c);
-                    }
-                }
-
-                RootFrame.ContentTransitions = null;
-                RootFrame.Navigated += RootFrame_FirstNavigated;
-#endif
-                var page = typeof (HomePage);
-
-                if (AppVersionHelper.IsFirstRun)
-                    page = typeof (FirstRunPage);
-
-                if (!RootFrame.Navigate(page, e.Arguments))
-                {
-                    CurtainPrompt.ShowError("AppErrorInitialPage".FromLanguageResource());
-                }
-            }
-
-            Window.Current.Activate();
         }
 
-        private async Task BootAppServicesAsync()
+        public async Task BootAppServicesAsync()
         {
             if (!_init)
             {
@@ -115,19 +164,19 @@ namespace Audiotica
             Locator.AudioPlayerHelper.OnAppActive();
         }
 
-#if WINDOWS_PHONE_APP
         private async void RootFrame_FirstNavigated(object sender, NavigationEventArgs e)
         {
-            RootFrame.ContentTransitions = _transitions ?? new TransitionCollection {new NavigationThemeTransition()};
             RootFrame.Navigated -= RootFrame_FirstNavigated;
             ApplicationView.GetForCurrentView().SetDesiredBoundsMode(ApplicationViewBoundsMode.UseCoreWindow);
-
             ApplicationView.GetForCurrentView().VisibleBoundsChanged += OnVisibleBoundsChanged;
             OnVisibleBoundsChanged(null, null);
 
             await ReviewReminderAsync();
 
+            #region On update
+
             if (!AppVersionHelper.JustUpdated) return;
+
             CurtainPrompt.Show(2500, "AppUpdated".FromLanguageResource(), AppVersionHelper.CurrentVersion);
 
             //download missing artwork for artist
@@ -136,6 +185,8 @@ namespace Audiotica
             else
                 Locator.CollectionService.LibraryLoaded +=
                     async (o, args) => await CollectionHelper.DownloadArtistsArtworkAsync();
+
+            #endregion
         }
 
         private async Task ReviewReminderAsync()
@@ -168,19 +219,19 @@ namespace Audiotica
             var diff = Math.Ceiling(h - bounds.Bottom);
             RootFrame.Margin = new Thickness(0, 0, 0, diff);
         }
-#endif
 
         private void OnResuming(object sender, object o)
         {
             Locator.AudioPlayerHelper.OnAppActive();
         }
 
-        private void OnSuspending(object sender, SuspendingEventArgs e)
+        private async void OnSuspending(object sender, SuspendingEventArgs e)
         {
             var deferral = e.SuspendingOperation.GetDeferral();
 
             Locator.AudioPlayerHelper.OnAppSuspended();
 
+            await SuspensionManager.SaveAsync();
             deferral.Complete();
         }
     }

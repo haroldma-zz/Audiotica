@@ -273,7 +273,9 @@
                 </AppBarButton.Flyout>
             </AppBarButton>
             <CommandBar.SecondaryCommands>
-                <AppBarButton Label="import music from phone" Click="AppBarButton_Click_2" />
+                <AppBarButton Label="import music from phone" Click="ImportAppBarButton_Click_2" />
+                <AppBarButton Label="backup collection" Click="AppBarButton_Click_3" />
+                <AppBarButton Label="restore collection" Click="AppBarButton_Click_2" />
             </CommandBar.SecondaryCommands>
         </CommandBar>
     </Page.BottomAppBar>

@@ -82,11 +82,13 @@ namespace Audiotica
 
         public static async Task<SavingError> SaveTrackAsync(StorageFile file)
         {
-            var audioPath = file.Path.Substring(3).
-                //external path
-                Replace(@"Music", "")
+            var audioPath = file.Path.Substring(3)
                 //local path
-                .Replace(@"Data\Users\Public\Music", "").Replace("\\", "/");
+                .Replace(@"Data\Users\Public\Music\", "")
+                //external path
+                .Replace(@"Music\", "")
+                //using forward slashes
+                .Replace("\\", "/");
             
             if (App.Locator.CollectionService.SongAlreadyExists(audioPath))
             {

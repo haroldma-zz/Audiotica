@@ -239,22 +239,27 @@ namespace Audiotica.Data.Collection.RunTime
 
                 if (songFile != null)
                 {
-                    Stream artwork = null;
-
-                    var fileStream = await songFile.OpenStreamForReadAsync();
-                    var tagFile = File.Create(new StreamFileAbstraction(songFile.Name, fileStream, fileStream));
-
-                    var tags = tagFile.GetTag(TagTypes.Id3v2);
-                    var image = tags.Pictures.FirstOrDefault();
-                    if (image != null)
+                    using (var fileStream = await songFile.OpenStreamForReadAsync())
                     {
-                        artwork = new MemoryStream(image.Data.Data);
-                    }
+                        using (
+                            var tagFile = File.Create(new StreamFileAbstraction(songFile.Name, fileStream, fileStream)))
+                        {
+                            Stream artwork = null;
+                            
+                            var tags = tagFile.GetTag(TagTypes.Id3v2);
+                            var image = tags.Pictures.FirstOrDefault();
+                            if (image != null)
+                            {
+                                artwork = new MemoryStream(image.Data.Data);
+                            }
 
-                    if (artwork != null)
-                    {
-                        song.Album.HasArtwork = await GetArtworkAsync(albumFilePath, artwork);
-                        await _sqlService.UpdateItemAsync(song.Album);
+                            if (artwork != null)
+                            {
+                                song.Album.HasArtwork = await GetArtworkAsync(albumFilePath, artwork);
+                                await _sqlService.UpdateItemAsync(song.Album);
+                                artwork.Dispose();
+                            }
+                        }
                     }
                 }
                 if (!string.IsNullOrEmpty(artworkUrl))

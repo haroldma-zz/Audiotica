@@ -120,6 +120,13 @@ namespace Audiotica
             BackgroundMediaPlayer.SendMessageToBackground(value);
         }
 
+        public void FullShutdown()
+        {
+            RemoveMediaPlayerEventHandlers();
+            BackgroundMediaPlayer.Shutdown();
+            AppSettingsHelper.Write(PlayerConstants.CurrentTrack, null);
+        }
+
         public async Task ShutdownPlayerAsync()
         {
             RemoveMediaPlayerEventHandlers();
