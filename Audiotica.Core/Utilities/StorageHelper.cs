@@ -221,6 +221,12 @@ namespace Audiotica.Core.Utilities
         {
             return await CreateFileAsync(path, GetFolderFromStrategy(location));
         }
+        
+        public static async Task<StorageFile> GetFileAsync(string path,
+            StorageFolder folder)
+        {
+            return await CreateFileAsync(path, folder);
+        }
 
         #endregion
 

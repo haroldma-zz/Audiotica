@@ -8,7 +8,7 @@ namespace Audiotica.Data.Spotify.Models
     public class FullTrack : SimpleTrack
     {
         /// <summary>
-        /// Simple-Album object of the track @<see cref="Paging"/>
+        /// Simple-AlbumName object of the track @<see cref="Paging"/>
         /// </summary>
         [JsonProperty("album")]
         public SimpleAlbum Album { get; set; }

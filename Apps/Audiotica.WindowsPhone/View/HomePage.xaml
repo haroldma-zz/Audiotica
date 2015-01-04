@@ -33,7 +33,7 @@
                         </interactivity:Interaction.Behaviors>
                     </Button>
                     <Button Style="{StaticResource PlainButtonStyle}">
-                        <TextBlock x:Uid="MenuItemArtists" Text="artists" FontSize="40" />
+                        <TextBlock x:Uid="MenuItemArtistNames" Text="artists" FontSize="40" />
                         <interactivity:Interaction.Behaviors>
                             <core:EventTriggerBehavior EventName="Click">
                                 <core:NavigateToPageAction TargetPage="Audiotica.View.CollectionPage" Parameter="1" />
@@ -41,7 +41,7 @@
                         </interactivity:Interaction.Behaviors>
                     </Button>
                     <Button Style="{StaticResource PlainButtonStyle}">
-                        <TextBlock x:Uid="MenuItemAlbums" Text="albums" FontSize="40" />
+                        <TextBlock x:Uid="MenuItemAlbumNames" Text="albums" FontSize="40" />
                         <interactivity:Interaction.Behaviors>
                             <core:EventTriggerBehavior EventName="Click">
                                 <core:NavigateToPageAction TargetPage="Audiotica.View.CollectionPage" Parameter="2" />

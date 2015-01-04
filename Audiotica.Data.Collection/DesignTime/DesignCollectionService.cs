@@ -3,8 +3,10 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Windows.Storage;
 using Windows.UI.Xaml.Media.Imaging;
 using Audiotica.Data.Collection.Model;
 
@@ -117,6 +119,11 @@ namespace Audiotica.Data.Collection.DesignTime
             throw new NotImplementedException();
         }
 
+        public Task AddSongAsync(Song song, StorageFile songFile, string artistArtwork)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task DeleteSongAsync(Song song)
         {
             throw new NotImplementedException();
@@ -128,6 +135,11 @@ namespace Audiotica.Data.Collection.DesignTime
         }
 
         public bool SongAlreadyExists(string providerId, string name, string album, string artist)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool SongAlreadyExists(string localSongPath)
         {
             throw new NotImplementedException();
         }

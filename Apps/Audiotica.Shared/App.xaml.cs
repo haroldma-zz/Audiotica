@@ -111,6 +111,13 @@ namespace Audiotica
                 }
 
                 _init = true;
+
+                var localMusic = await LocalMusicHelper.GetFilesInMusic();
+
+                foreach (var song in localMusic)
+                {
+                    await LocalMusicHelper.SaveTrackAsync(song);
+                }
             }
             Locator.AudioPlayerHelper.OnAppActive();
         }

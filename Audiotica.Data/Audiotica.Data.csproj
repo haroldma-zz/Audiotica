@@ -47,6 +47,7 @@
     <Compile Include="Model\EchoNest\EchoBiographyRoot.cs" />
     <Compile Include="Model\EchoNest\EchoResponse.cs" />
     <Compile Include="Model\EchoNest\EchoSong.cs" />
+    <Compile Include="Model\LocalSong.cs" />
     <Compile Include="Model\Mp3ClanRoot.cs" />
     <Compile Include="Spotify\AlbumType.cs" />
     <Compile Include="Spotify\Models\BasicModel.cs" />

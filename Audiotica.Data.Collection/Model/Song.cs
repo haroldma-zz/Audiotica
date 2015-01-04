@@ -47,7 +47,11 @@ namespace Audiotica.Data.Collection.Model
         [SqlIgnore]
         public bool IsStreaming
         {
-            get { return new Uri(AudioUrl).IsAbsoluteUri && SongState != SongState.Downloaded; }
+            get
+            {
+                return SongState != SongState.Downloaded
+                       && SongState != SongState.Local;
+            }
         }
 
         public Artist Artist { get; set; }
@@ -73,7 +77,8 @@ namespace Audiotica.Data.Collection.Model
         None,
         Downloading,
         Downloaded,
-        Uploading
+        Local,
+        Temp
         //still playing with different states
     }
 }

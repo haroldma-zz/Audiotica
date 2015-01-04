@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Linq;
 using Windows.Foundation;
 using Windows.Media.Playback;
+using Windows.Storage;
 using Audiotica.Core;
 using Audiotica.Core.Utilities;
 using Audiotica.Data.Collection;
@@ -180,8 +181,12 @@ namespace Audiotica.WindowsPhone.Player
             }
             else
             {
-                var file =
-                    StorageHelper.GetFileAsync(string.Format("songs/{0}.mp3", track.SongId)).Result;
+                var isLocal = track.Song.SongState == SongState.Local;
+
+                var file = isLocal
+                    ? StorageHelper.GetFileAsync(track.Song.AudioUrl, KnownFolders.MusicLibrary).Result
+                    : StorageHelper.GetFileAsync(string.Format("songs/{0}.mp3", track.SongId)).Result;
+
                 _mediaPlayer.SetFileSource(file);
             }
         }
@@ -206,8 +211,12 @@ namespace Audiotica.WindowsPhone.Player
             }
             else
             {
-                var file =
-                    StorageHelper.GetFileAsync(string.Format("songs/{0}.mp3", track.SongId)).Result;
+                var isLocal = track.Song.SongState == SongState.Local;
+
+                var file = isLocal
+                    ? StorageHelper.GetFileAsync(track.Song.AudioUrl, KnownFolders.MusicLibrary).Result 
+                    : StorageHelper.GetFileAsync(string.Format("songs/{0}.mp3", track.SongId)).Result;
+
                 _mediaPlayer.SetFileSource(file);
             }
         }

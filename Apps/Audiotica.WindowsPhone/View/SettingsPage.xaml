@@ -15,7 +15,7 @@
             <PivotItem x:Uid="SettingsApp" Header="APP">
                 <StackPanel>
                     <ToggleSwitch x:Uid="SettingsToggleAds" Header="Ads" IsEnabled="False" IsOn="{Binding Advertisements, Mode=TwoWay}" />
-                    <ToggleSwitch x:Uid="SettingsToggleWallpaper" Header="Album Art Wallpaper" IsOn="{Binding WallpaperArt, Mode=TwoWay}" />
+                    <ToggleSwitch x:Uid="SettingsToggleWallpaper" Header="AlbumName Art Wallpaper" IsOn="{Binding WallpaperArt, Mode=TwoWay}" />
                 </StackPanel>
             </PivotItem>
             <PivotItem x:Uid="SettingsLastFM" Header="LAST.FM">

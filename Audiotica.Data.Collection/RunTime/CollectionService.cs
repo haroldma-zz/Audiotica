@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Windows.Storage;
 using Windows.UI.Core;
 using Windows.UI.Xaml.Media.Imaging;
 using Audiotica.Core.Utilities;
@@ -15,6 +16,7 @@ using Audiotica.Data.Collection.Model;
 using GalaSoft.MvvmLight;
 using Microsoft.Practices.ServiceLocation;
 using SQLitePCL;
+using TagLib;
 
 #endregion
 
@@ -133,13 +135,28 @@ namespace Audiotica.Data.Collection.RunTime
             return Task.Factory.StartNew(() => LoadLibrary(loadEssentials));
         }
 
+        public bool SongAlreadyExists(string localSongPath)
+        {
+            return Songs.FirstOrDefault(p => p.SongState == SongState.Local && p.AudioUrl == localSongPath) != null;
+        }
+
         public bool SongAlreadyExists(string providerId, string name, string album, string artist)
         {
             return Songs.FirstOrDefault(p => p.ProviderId == providerId 
                 || (p.Name == name && p.Album.Name == album && p.ArtistName == artist)) != null;
         }
 
-        public async Task AddSongAsync(Song song, string artworkUrl, string artistArtwork)
+        public Task AddSongAsync(Song song, string artworkUrl, string artistArtwork)
+        {
+            return AddSongAsync(song, null, artworkUrl, artistArtwork);
+        }
+
+        public Task AddSongAsync(Song song, StorageFile songFile, string artistArtwork)
+        {
+            return AddSongAsync(song, songFile, null, artistArtwork);
+        }
+
+        private async Task AddSongAsync(Song song, StorageFile songFile, string artworkUrl, string artistArtwork)
         {
             #region create artist
 
@@ -220,9 +237,28 @@ namespace Audiotica.Data.Collection.RunTime
 
                 var albumFilePath = string.Format(CollectionConstant.ArtworkPath, song.Album.Id);
 
+                if (songFile != null)
+                {
+                    Stream artwork = null;
+
+                    var fileStream = await songFile.OpenStreamForWriteAsync();
+                    var tagFile = File.Create(new StreamFileAbstraction(songFile.Name, fileStream, fileStream));
+
+                    var tags = tagFile.GetTag(TagTypes.Id3v2);
+                    var image = tags.Pictures.FirstOrDefault();
+                    if (image != null)
+                    {
+                        artwork = new MemoryStream(image.Data.Data);
+                    }
+
+                    if (artwork != null)
+                    {
+                        song.Album.HasArtwork = await GetArtworkAsync(albumFilePath, artwork);
+                        await _sqlService.UpdateItemAsync(song.Album);
+                    }
+                }
                 if (!string.IsNullOrEmpty(artworkUrl))
                 {
-                    //get it
                     song.Album.HasArtwork = await GetArtworkAsync(albumFilePath, artworkUrl);
                     await _sqlService.UpdateItemAsync(song.Album);
                 }
@@ -263,6 +299,19 @@ namespace Audiotica.Data.Collection.RunTime
             });
         }
 
+        private async Task<bool> GetArtworkAsync(string filePath, Stream stream)
+        {
+            using (
+                var fileStream =
+                    await
+                        (await StorageHelper.CreateFileAsync(filePath)).OpenStreamForWriteAsync()
+                )
+            {
+                await stream.CopyToAsync(fileStream);
+                return true;
+            }
+        }
+
         private async Task<bool> GetArtworkAsync(string filePath, string artworkUrl)
         {
             try
@@ -271,15 +320,7 @@ namespace Audiotica.Data.Collection.RunTime
                 {
                     using (var stream = await client.GetStreamAsync(artworkUrl))
                     {
-                        using (
-                            var fileStream =
-                                await
-                                    (await StorageHelper.CreateFileAsync(filePath)).OpenStreamForWriteAsync()
-                            )
-                        {
-                            await stream.CopyToAsync(fileStream);
-                            return true;
-                        }
+                        return await GetArtworkAsync(filePath, stream);
                     }
                 }
             }

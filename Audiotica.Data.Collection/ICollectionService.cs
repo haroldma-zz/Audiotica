@@ -3,7 +3,9 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Threading.Tasks;
+using Windows.Storage;
 using Audiotica.Data.Collection.Model;
 
 #endregion
@@ -32,6 +34,7 @@ namespace Audiotica.Data.Collection
         ///     Adds the song to the database and collection.
         /// </summary>
         Task AddSongAsync(Song song, string artworkUrl, string artistArtwork);
+        Task AddSongAsync(Song song, StorageFile songFile, string artistArtwork);
 
         /// <summary>
         ///     Deletes the song from the database and collection.  Also all related files.
@@ -40,6 +43,7 @@ namespace Audiotica.Data.Collection
 
         Task<List<HistoryEntry>> FetchHistoryAsync();
         bool SongAlreadyExists(string providerId, string name, string album, string artist);
+        bool SongAlreadyExists(string localSongPath);
 
         #region Playback Queue
 

@@ -90,7 +90,7 @@ namespace Audiotica.ViewModel
                 {
                     if (d == 5)
                     {
-                        using (var statement = connection.Prepare("ALTER TABLE Artist ADD COLUMN HasArtwork INTEGER"))
+                        using (var statement = connection.Prepare("ALTER TABLE ArtistName ADD COLUMN HasArtwork INTEGER"))
                         {
                             statement.Step();
                         }

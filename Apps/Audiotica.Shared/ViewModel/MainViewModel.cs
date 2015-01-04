@@ -6,11 +6,14 @@ using System.Collections.Specialized;
 using System.Linq;
 using System.Threading.Tasks;
 using Audiotica.Core.Common;
+using Audiotica.Core.Utilities;
 using Audiotica.Data.Collection;
 using Audiotica.Data.Collection.Model;
+using Audiotica.Data.Model;
 using Audiotica.Data.Service.Interfaces;
 using Audiotica.Data.Spotify.Models;
 using GalaSoft.MvvmLight;
+using GalaSoft.MvvmLight.Threading;
 using IF.Lastfm.Core.Objects;
 
 #endregion
@@ -99,8 +102,8 @@ namespace Audiotica.ViewModel
             }
         }
 
-        private void CollectionServiceOnLibraryLoaded(object sender, EventArgs eventArgs)
-        {
+        private async void CollectionServiceOnLibraryLoaded(object sender, EventArgs eventArgs)
+        {          
             MostPlayed = _collectionService.Songs.ToList()
                 .Where(p => p.PlayCount != 0 && (DateTime.Now - p.LastPlayed).TotalDays <= 14)
                 .OrderByDescending(p => p.PlayCount)

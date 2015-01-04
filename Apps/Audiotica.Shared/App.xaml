@@ -23,7 +23,7 @@
         <local:SongStateConverter x:Key="NoneSongStateConverter" SongState="None" />
         <common:CountToPluralConverter x:Key="SongToPluralConverter" x:Uid="CountSong" SingularText="song"
                                        PluralText="songs" />
-        <common:CountToPluralConverter x:Key="AlbumToPluralConverter" x:Uid="CountAlbum" SingularText="album"
+        <common:CountToPluralConverter x:Key="AlbumToPluralConverter" x:Uid="CountAlbumName" SingularText="album"
                                        PluralText="albums" />
 
         <Style x:Key="SubtleTextBlockStyle" TargetType="TextBlock">

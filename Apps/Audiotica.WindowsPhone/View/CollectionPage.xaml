@@ -127,7 +127,7 @@
                     </SemanticZoom>
                 </Grid>
             </PivotItem>
-            <PivotItem x:Uid="PivotArtists" Header="ARTISTS">
+            <PivotItem x:Uid="PivotArtistNames" Header="ARTISTS">
                 <Grid>
                     <TextBlock
                         x:Uid="CollectionEmpty"
@@ -169,7 +169,7 @@
                     </SemanticZoom>
                 </Grid>
             </PivotItem>
-            <PivotItem x:Uid="PivotAlbums" Header="ALBUMS">
+            <PivotItem x:Uid="PivotAlbumNames" Header="ALBUMS">
                 <Grid>
                     <TextBlock
                         x:Uid="CollectionEmpty"
