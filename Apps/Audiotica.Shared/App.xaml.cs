@@ -113,20 +113,6 @@ namespace Audiotica
                 _init = true;
             }
             Locator.AudioPlayerHelper.OnAppActive();
-
-            DispatcherHelper.RunAsync(async () =>
-            {
-                StatusBarHelper.ShowStatus("Scanning...");
-                var localMusic = await LocalMusicHelper.GetFilesInMusic();
-
-                for (var i = 0; i < localMusic.Count; i++)
-                {
-                    StatusBarHelper.ShowStatus(string.Format("{0} of {1} items added", i + 1, localMusic.Count));
-                    await LocalMusicHelper.SaveTrackAsync(localMusic[i]);
-                }
-
-                StatusBarHelper.HideStatus();
-            });
         }
 
 #if WINDOWS_PHONE_APP

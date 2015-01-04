@@ -85,14 +85,21 @@ namespace Audiotica
 
             string artistArtwork = null;
 
-            try
+            if (!string.IsNullOrEmpty(artist.Name)
+                && App.Locator.CollectionService.Artists.FirstOrDefault(p =>
+                    String.Equals(p.Name, artist.Name, StringComparison.CurrentCultureIgnoreCase)) == null)
             {
-                var lastArtist = await App.Locator.ScrobblerService.GetDetailArtist(artist.Name);
-                artistArtwork = lastArtist.MainImage != null && lastArtist.MainImage.Largest != null 
-                    ? lastArtist.MainImage.Largest.AbsoluteUri 
-                    : null;
+                try
+                {
+                    var lastArtist = await App.Locator.ScrobblerService.GetDetailArtist(artist.Name);
+                    artistArtwork = lastArtist.MainImage != null && lastArtist.MainImage.Largest != null
+                        ? lastArtist.MainImage.Largest.AbsoluteUri
+                        : null;
+                }
+                catch
+                {
+                }
             }
-            catch { }
 
             preparedSong.ArtistName = artist.Name;
             preparedSong.Album = album.ToAlbum();

@@ -163,7 +163,7 @@ namespace Audiotica.Data.Collection.RunTime
             var primaryArtist = song.Album == null ? song.Artist : song.Album.PrimaryArtist;
 
             var artist = Artists.FirstOrDefault(entry => entry.ProviderId == primaryArtist.ProviderId
-                                                         || entry.Name == primaryArtist.Name);
+                                                         || String.Equals(entry.Name, primaryArtist.Name, StringComparison.CurrentCultureIgnoreCase));
             if (artist == null)
             {
                 await _sqlService.InsertAsync(primaryArtist);

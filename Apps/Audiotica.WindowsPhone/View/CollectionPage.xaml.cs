@@ -234,5 +234,19 @@ namespace Audiotica.View
             var queueSong = playlist.Songs.Select(p => p.Song).ToList();
             await CollectionHelper.PlaySongsAsync(queueSong);
         }
+
+        private async void AppBarButton_Click_2(object sender, RoutedEventArgs e)
+        {
+            StatusBarHelper.ShowStatus("Scanning...");
+            var localMusic = await LocalMusicHelper.GetFilesInMusic();
+
+            for (var i = 0; i < localMusic.Count; i++)
+            {
+                StatusBarHelper.ShowStatus(string.Format("{0} of {1} items added", i + 1, localMusic.Count));
+                await LocalMusicHelper.SaveTrackAsync(localMusic[i]);
+            }
+
+            StatusBarHelper.HideStatus();
+        }
     }
 }
