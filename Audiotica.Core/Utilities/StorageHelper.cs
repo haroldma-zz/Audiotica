@@ -201,6 +201,8 @@ namespace Audiotica.Core.Utilities
         public static async Task<StorageFile> CreateFileAsync(string path, StorageFolder folder,
             CreationCollisionOption option = CreationCollisionOption.OpenIfExists)
         {
+            if (path.StartsWith("/"))
+                path = path.Substring(1);
             var parts = path.Split('/');
 
             var fileName = parts.Last();
