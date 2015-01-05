@@ -17,6 +17,7 @@ using Audiotica.Core.Common;
 using Audiotica.Core.Utilities;
 using Audiotica.Data.Collection.Model;
 using Audiotica.ViewModel;
+using MyToolkit.Utilities;
 
 #endregion
 
@@ -111,46 +112,6 @@ namespace Audiotica.View
         {
             var listView = (ListView) ((PickerFlyout) sender).Content;
             listView.SelectedIndex = -1;
-        }
-
-
-        private async void ImportAppBarButton_Click_2(object sender, RoutedEventArgs e)
-        {
-            StatusBarHelper.ShowStatus("Scanning...");
-            var localMusic = await LocalMusicHelper.GetFilesInMusic();
-
-            for (var i = 0; i < localMusic.Count; i++)
-            {
-                StatusBarHelper.ShowStatus(string.Format("{0} of {1} items added", i + 1, localMusic.Count), (double)i / localMusic.Count);
-                await LocalMusicHelper.SaveTrackAsync(localMusic[i]);
-            }
-
-            StatusBarHelper.HideStatus();
-            await CollectionHelper.DownloadArtistsArtworkAsync();
-        }
-
-        private void AppBarButton_Click_3(object sender, RoutedEventArgs e)
-        {
-            var savePicker = new FileSavePicker
-            {
-                SuggestedStartLocation = PickerLocationId.DocumentsLibrary
-            };
-            // Dropdown of file types the user can save the file as
-            savePicker.FileTypeChoices.Add("Audiotica Backup", new List<string>() { ".autcp" });
-            // Default file name if the user does not type one in or select a file to replace
-            savePicker.SuggestedFileName = string.Format("{0}-WP81", DateTime.Now.ToString("yy-MM-dd"));
-
-            savePicker.PickSaveFileAndContinue();
-        }
-
-        private async void AppBarButton_Click_2(object sender, RoutedEventArgs e)
-        {
-            if (await MessageBox.ShowAsync("This will delete all your pre-existing data.", "Continue with Restore?", 
-                MessageBoxButton.YesNo) != MessageBoxResult.Yes) return;
-
-            var fileOpenPicker = new FileOpenPicker {SuggestedStartLocation = PickerLocationId.DocumentsLibrary};
-            fileOpenPicker.FileTypeFilter.Add(".autcp");
-            fileOpenPicker.PickSingleFileAndContinue();
         }
 
         public async void ContinueFileSavePicker(FileSavePickerContinuationEventArgs args)
