@@ -206,6 +206,7 @@ namespace Audiotica
             await PlaySongsAsync(song, songs);
         }
 
+        //haven't tested with more than this
         private const int MaxPlayQueueCount = 1000;
 
         public static async Task PlaySongsAsync(Song song, List<Song> songs)
@@ -228,7 +229,14 @@ namespace Audiotica
             var createQueue = !sameLength
                               || !containsSong;
 
-            if (_currentlyPreparing && createQueue) return;
+            if (_currentlyPreparing && createQueue)
+            {
+                //cancel the previous
+                _currentlyPreparing = false;
+
+                //split second for it to stop
+                await Task.Delay(500);
+            }
 
             if (createQueue)
             {
@@ -236,7 +244,7 @@ namespace Audiotica
                 AppSettingsHelper.WriteAsJson(PlayerConstants.QueueDateCreated, DateTime.Now);
             }
 
-            if (_currentlyPreparing && !createQueue)
+            if (!createQueue)
             {
                 App.Locator.AudioPlayerHelper.PlaySong(playbackQueue.First(p => p.SongId == song.Id));
             }
@@ -245,22 +253,20 @@ namespace Audiotica
             {
                 _currentlyPreparing = true;
 
-                if (createQueue)
+                await App.Locator.CollectionService.ClearQueueAsync().ConfigureAwait(false);
+                var queueSong = await App.Locator.CollectionService.AddToQueueAsync(song).ConfigureAwait(false);
+                App.Locator.AudioPlayerHelper.PlaySong(queueSong);
+
+                await Task.Delay(500).ConfigureAwait(false);
+
+                for (var index = 1; index < ordered.Count; index++)
                 {
-                    await App.Locator.CollectionService.ClearQueueAsync().ConfigureAwait(false);
-                    var queueSong = await App.Locator.CollectionService.AddToQueueAsync(song).ConfigureAwait(false);
-                    App.Locator.AudioPlayerHelper.PlaySong(queueSong);
-
-                    await Task.Delay(500).ConfigureAwait(false);
-
-                    for (var index = 1; index < ordered.Count; index++)
-                    {
-                        var s = ordered[index];
-                        await App.Locator.CollectionService.AddToQueueAsync(s).ConfigureAwait(false);
-                    }
+                    if (!_currentlyPreparing)
+                        break;
+                    var s = ordered[index];
+                    await App.Locator.CollectionService.AddToQueueAsync(s).ConfigureAwait(false);
                 }
-                else
-                    App.Locator.AudioPlayerHelper.PlaySong(App.Locator.CollectionService.PlaybackQueue.First(p => p.SongId == song.Id));
+
 
                 _currentlyPreparing = false;
             }
@@ -296,7 +302,7 @@ namespace Audiotica
             //update queue count
             var count = App.Locator.CollectionService.PlaybackQueue.Count;
             AppSettingsHelper.Write(PlayerConstants.QueueCount, count);
-            AppSettingsHelper.Write(PlayerConstants.QueueDateCreated, DateTime.Now);
+            AppSettingsHelper.WriteAsJson(PlayerConstants.QueueDateCreated, DateTime.Now);
 
             if (!App.Locator.Player.IsPlayerActive)
                 App.Locator.AudioPlayerHelper.PlaySong(queueSong);

@@ -11,7 +11,9 @@ using Windows.Globalization.Collation;
 using Windows.Graphics.Display;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Media;
+using Audiotica.Core;
 using Audiotica.Core.Common;
 using Audiotica.Core.Utilities;
 using Audiotica.Data.Collection;
@@ -29,7 +31,6 @@ namespace Audiotica.ViewModel
     {
         private readonly AudioPlayerHelper _audioPlayer;
         private readonly ICollectionService _service;
-        private readonly RelayCommand<ItemClickEventArgs> _songClickCommand;
         private ObservableCollection<AlphaKeyGroup<Album>> _sortedAlbums;
         private ObservableCollection<AlphaKeyGroup<Artist>> _sortedArtists;
         private ObservableCollection<AlphaKeyGroup<Song>> _sortedSongs;
@@ -39,7 +40,7 @@ namespace Audiotica.ViewModel
             _service = service;
             _audioPlayer = audioPlayer;
 
-            _songClickCommand = new RelayCommand<ItemClickEventArgs>(SongClickExecute);
+            CreateCommand();
 
             if (IsInDesignModeStatic)
                 _service.LoadLibrary();
@@ -58,7 +59,16 @@ namespace Audiotica.ViewModel
             RandomizeAlbumList = new ObservableCollection<Album>();
         }
 
+
         #region Private Helpers 
+
+        private void CreateCommand()
+        {
+            SongClickCommand = new RelayCommand<ItemClickEventArgs>(SongClickExecute);
+            AddToClickCommand = new RelayCommand<Song>(AddToClickExecute);
+            DeleteClickCommand = new RelayCommand<Song>(DeleteClickExecute);
+            ItemPickedCommand = new RelayCommand<AddableCollectionItem>(ItemPickedExecute);
+        }
 
         private void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs arg)
         {
@@ -102,45 +112,102 @@ namespace Audiotica.ViewModel
             if (string.IsNullOrEmpty(key))
                 return;
 
-            bool zero;
             var sortedGroups = getSorted();
-            var group = sortedGroups.First(a => a.Key == new CharacterGroupings().Lookup(key));
-
-            if (removed)
+            try
             {
-                group.Remove(item);
-                zero = group.Count == 0;
-            }
+                var charKey = new CharacterGroupings().Lookup(key);
+                var group = sortedGroups.First(a => a.Key == charKey);
 
-            else
-            {
-                zero = group.Count == 0;
-                var index = 0;
-
-                //if the group is not empty, then insert acording to sort
-                if (!zero)
+                bool zero;
+                if (removed)
                 {
-                    var list = group.ToList();
-                    list.Add(item);
-                    list.Sort((x, y) => String.Compare(group.OrderKey(x), group.OrderKey(y), StringComparison.Ordinal));
-                    index = list.IndexOf(item);
+                    group.Remove(item);
+                    zero = group.Count == 0;
                 }
-                group.Insert(index, item);
+
+                else
+                {
+                    zero = group.Count == 0;
+                    var index = 0;
+
+                    //if the group is not empty, then insert acording to sort
+                    if (!zero)
+                    {
+                        var list = group.ToList();
+                        list.Add(item);
+                        list.Sort(
+                            (x, y) => String.Compare(group.OrderKey(x), group.OrderKey(y), StringComparison.Ordinal));
+                        index = list.IndexOf(item);
+                    }
+                    group.Insert(index, item);
+                }
+
+                if (!zero) return;
+
+                //removing and readding to update the groups collection in the listview
+                var groupIndex = sortedGroups.IndexOf(group);
+                sortedGroups.Remove(group);
+                sortedGroups.Insert(groupIndex, group);
             }
-
-            if (!zero) return;
-
-            //removing and readding to update the groups collection in the listview
-            var groupIndex = sortedGroups.IndexOf(group);
-            sortedGroups.Remove(group);
-            sortedGroups.Insert(groupIndex, group);
+            catch { }
         }
+
+
+        #endregion
+
+        #region Commands (Execute)
 
         private async void SongClickExecute(ItemClickEventArgs e)
         {
             var song = e.ClickedItem as Song;
             var queueSong = _service.Songs.OrderBy(p => p.Name).ToList();
             await CollectionHelper.PlaySongsAsync(song, queueSong);
+        }
+
+        private void AddToClickExecute(Song song)
+        {
+            song.AddableTo.Clear();
+            song.AddableTo.Add(new AddableCollectionItem
+            {
+                Name = "NowPlayingName".FromLanguageResource()
+            });
+            song.AddableTo.AddRange(Service
+                .Playlists.Where(p => p.Songs.Count(pp => pp.SongId == song.Id) == 0)
+                .Select(p => new AddableCollectionItem
+                {
+                    Playlist = p,
+                    Name = p.Name
+                }));
+            _addableSong = song;
+        }
+
+        private Song _addableSong;
+        private async void ItemPickedExecute(AddableCollectionItem item)
+        {
+            if (item.Playlist != null)
+            {
+                await Service.AddToPlaylistAsync(item.Playlist, _addableSong);
+            }
+            else
+            {
+                await CollectionHelper.AddToQueueAsync(_addableSong);
+            }
+        }
+
+        private async void DeleteClickExecute(Song song)
+        {
+            try
+            {
+                //delete from the queue
+                await App.Locator.CollectionService.DeleteFromQueueAsync(song);
+
+                await App.Locator.CollectionService.DeleteSongAsync(song);
+                CurtainPrompt.Show("EntryDeletingSuccess".FromLanguageResource(), song.Name);
+            }
+            catch
+            {
+                CurtainPrompt.ShowError("EntryDeletingError".FromLanguageResource(), song.Name);
+            }
         }
 
         #endregion
@@ -192,17 +259,14 @@ namespace Audiotica.ViewModel
             get { return _service; }
         }
 
-        public RelayCommand<ItemClickEventArgs> SongClickCommand
-        {
-            get { return _songClickCommand; }
-        }
+        public RelayCommand<ItemClickEventArgs> SongClickCommand { get; set; }
+
+        public RelayCommand<Song> AddToClickCommand { get; set; }
+
+        public RelayCommand<Song> DeleteClickCommand { get; set; }
+
+        public RelayCommand<AddableCollectionItem> ItemPickedCommand { get; set; }
 
         #endregion
-
-        public class AddableCollectionItem
-        {
-            public string Name { get; set; }
-            public Playlist Playlist { get; set; }
-        }
     }
 }

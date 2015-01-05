@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Windows.Storage;
 using Audiotica.Core.Exceptions;
@@ -64,7 +65,7 @@ namespace Audiotica
             var song = new Song
             {
                 ProviderId = "local." + track.Id,
-                Name = track.Title.Trim(),
+                Name = track.Title,
                 ArtistName = track.ArtistName,
                 Duration = track.Duration,
                 AudioUrl = track.FilePath,
@@ -111,6 +112,7 @@ namespace Audiotica
             if (string.IsNullOrEmpty(song.Name))
             {
                 song.Name = file.DisplayName;
+                song.ProviderId += Convert.ToBase64String(Encoding.UTF8.GetBytes(file.DisplayName.ToLower()));
             }
 
             if (App.Locator.CollectionService.SongAlreadyExists(song.ProviderId, 

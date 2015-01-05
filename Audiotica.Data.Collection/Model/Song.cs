@@ -1,6 +1,7 @@
 ﻿#region
 
 using System;
+using System.Collections.ObjectModel;
 using Audiotica.Data.Collection.SqlHelper;
 
 #endregion
@@ -9,6 +10,11 @@ namespace Audiotica.Data.Collection.Model
 {
     public class Song : BaseEntry
     {
+        public Song()
+        {
+            AddableTo = new ObservableCollection<AddableCollectionItem>();
+        }
+
         private BackgroundDownload _download;
         private SongState _songState;
         public string ProviderId { get; set; }
@@ -63,6 +69,14 @@ namespace Audiotica.Data.Collection.Model
             get { return _download; }
             set { Set(ref _download, value); }
         }
+
+        public ObservableCollection<AddableCollectionItem> AddableTo { get; set; }
+    }
+
+    public class AddableCollectionItem
+    {
+        public string Name { get; set; }
+        public Playlist Playlist { get; set; }
     }
 
     public enum HeartState

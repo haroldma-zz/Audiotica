@@ -24,7 +24,8 @@ namespace Audiotica.Data.Model
             Genre = musicProps.Genre.FirstOrDefault();
             TrackNumber = (int)musicProps.TrackNumber;
 
-            Id = Convert.ToBase64String(Encoding.UTF8.GetBytes(Title.ToLower()));
+            if (!string.IsNullOrEmpty(Title))
+                Id = Convert.ToBase64String(Encoding.UTF8.GetBytes(Title.ToLower()));
 
             if (!string.IsNullOrEmpty(ArtistName) || !string.IsNullOrEmpty(AlbumArtist))
                 ArtistId = Convert.ToBase64String(Encoding.UTF8.GetBytes((AlbumArtist ?? ArtistName).ToLower()));

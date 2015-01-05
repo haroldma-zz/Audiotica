@@ -5,11 +5,11 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:audiotica="using:Audiotica"
     xmlns:interactivity="using:Microsoft.Xaml.Interactivity" xmlns:core="using:Microsoft.Xaml.Interactions.Core"
-    xmlns:common="using:Audiotica.Core.Common"
+    Name="Page"
     x:Class="Audiotica.View.CollectionPage"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
-    DataContext="{Binding Collection, Source={StaticResource Locator}}" FontFamily="Global User Interface">
+    DataContext="{Binding Collection, Source={StaticResource Locator}}">
     <Grid>
         <Grid.Resources>
             <CollectionViewSource x:Key="SongGroups"
@@ -19,13 +19,13 @@
             <CollectionViewSource x:Key="AlbumGroups"
                                   IsSourceGrouped="True" Source="{Binding SortedAlbums}" />
         </Grid.Resources>
-        <Grid Name="ArtworkSizeWorkaround" Tag="{Binding ArtworkSize}" />
+        
         <GridView ItemsSource="{Binding RandomizeAlbumList}">
             <GridView.ItemTemplate>
                 <DataTemplate>
                     <Image
-                        Width="{Binding Tag, ElementName=ArtworkSizeWorkaround}"
-                        Height="{Binding Tag, ElementName=ArtworkSizeWorkaround}"
+                        Width="{Binding DataContext.ArtworkSize, ElementName=Page}"
+                        Height="{Binding DataContext.ArtworkSize, ElementName=Page}"
                         Opacity=".2"
                         Source="{Binding Artwork}" />
                 </DataTemplate>
@@ -65,15 +65,29 @@
                                                 <FlyoutBase.AttachedFlyout>
                                                     <MenuFlyout>
                                                         <MenuFlyoutItem x:Uid="MenuItemAddTo" Text="Add to"
-                                                                        FontFamily="Global User Interface"
-                                                                        Click="MenuFlyoutItem_Click">
+                                                                        CommandParameter="{Binding}"
+                                                                        Command="{Binding DataContext.AddToClickCommand, ElementName=Page}">
+                                                            <interactivity:Interaction.Behaviors>
+                                                                <core:EventTriggerBehavior EventName="Click">
+                                                                    <audiotica:ShowFlyoutAction />
+                                                                </core:EventTriggerBehavior>
+                                                            </interactivity:Interaction.Behaviors>
                                                             <FlyoutBase.AttachedFlyout>
-                                                                <ListPickerFlyout DisplayMemberPath="Name" />
+                                                                <ListPickerFlyout x:Name="Picker" DisplayMemberPath="Name" ItemsSource="{Binding AddableTo}">
+                                                                    <interactivity:Interaction.Behaviors>
+                                                                        <core:EventTriggerBehavior EventName="ItemsPicked">
+                                                                            <core:InvokeCommandAction 
+                                                                                Command="{Binding DataContext.ItemPickedCommand, ElementName=Page}"
+                                                                                CommandParameter="{Binding SelectedItem, ElementName=Picker}"/>
+                                                                        </core:EventTriggerBehavior>
+                                                                    </interactivity:Interaction.Behaviors>
+                                                                </ListPickerFlyout>
                                                             </FlyoutBase.AttachedFlyout>
                                                         </MenuFlyoutItem>
                                                         <MenuFlyoutItem x:Uid="MenuItemDelete" Text="Delete"
                                                                         Foreground="Red"
-                                                                        Click="DeleteSongMenuFlyoutItem_Click" />
+                                                                        CommandParameter="{Binding}"
+                                                                        Command="{Binding DataContext.DeleteClickCommand, ElementName=Page}"/>
                                                     </MenuFlyout>
                                                 </FlyoutBase.AttachedFlyout>
                                                 <StackPanel>

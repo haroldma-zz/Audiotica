@@ -90,7 +90,8 @@ namespace Audiotica.Data.Collection.RunTime
             {
                 artist.Songs.AddRange(songs.Where(p => p.ArtistId == artist.Id));
                 artist.Albums.AddRange(albums.Where(p => p.PrimaryArtistId == artist.Id));
-                artist.Albums.AddRange(artist.Songs.Select(p => p.Album));
+                var songsAlbums = artist.Songs.Select(p => p.Album);
+                artist.Albums.AddRange(songsAlbums.Where(p => !artist.Albums.Contains(p)));
                 if (isForeground)
                     _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                     {
@@ -509,14 +510,21 @@ namespace Audiotica.Data.Collection.RunTime
                 await _bgSqlService.UpdateItemAsync(prev);
             }
 
-            //Add the new queue entry to the collection and map
-            if (insert)
-                PlaybackQueue.Insert(position, newQueue);
-            else
-                PlaybackQueue.Add(newQueue);
-            _lookupMap.Add(newQueue.Id, newQueue);
+            try
+            {
+                //Add the new queue entry to the collection and map
+                if (insert)
+                    PlaybackQueue.Insert(position, newQueue);
+                else
+                    PlaybackQueue.Add(newQueue);
+                _lookupMap.Add(newQueue.Id, newQueue);
 
-            return newQueue;
+                return newQueue;
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         public Task MoveQueueFromToAsync(int oldIndex, int newIndex)

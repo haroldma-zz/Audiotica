@@ -104,28 +104,6 @@ namespace Audiotica.View
             Frame.Navigate(typeof (CollectionPlaylistPage), playlist.Id);
         }
 
-        private async void DeleteSongMenuFlyoutItem_Click(object sender, RoutedEventArgs e)
-        {
-            var song = (Song) ((FrameworkElement) sender).DataContext;
-
-            try
-            {
-                //delete from the queue
-                await App.Locator.CollectionService.DeleteFromQueueAsync(song);
-
-                //stop playback
-                if (song.Id == AppSettingsHelper.Read<long>(PlayerConstants.CurrentTrack))
-                    await App.Locator.AudioPlayerHelper.ShutdownPlayerAsync();
-
-                await App.Locator.CollectionService.DeleteSongAsync(song);
-                CurtainPrompt.Show("EntryDeletingSuccess".FromLanguageResource(), song.Name);
-            }
-            catch
-            {
-                CurtainPrompt.ShowError("EntryDeletingError".FromLanguageResource(), song.Name);
-            }
-        }
-
         private void CollectionPivot_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             (BottomAppBar as CommandBar).ClosedDisplayMode =
@@ -151,45 +129,6 @@ namespace Audiotica.View
         {
             var listView = (ListView) ((PickerFlyout) sender).Content;
             listView.SelectedIndex = -1;
-        }
-
-        private void MenuFlyoutItem_Click(object sender, RoutedEventArgs e)
-        {
-            var menu = (MenuFlyoutItem) sender;
-            var flyout = (ListPickerFlyout) FlyoutBase.GetAttachedFlyout(menu);
-            var song = (Song) menu.DataContext;
-
-            var list = new List<CollectionViewModel.AddableCollectionItem>
-            {
-                new CollectionViewModel.AddableCollectionItem
-                {
-                    Name = "NowPlayingName".FromLanguageResource()
-                }
-            };
-
-            list.AddRange(App.Locator.CollectionService
-                .Playlists.Where(p => p.Songs.Count(pp => pp.SongId == song.Id) == 0)
-                .Select(p => new CollectionViewModel.AddableCollectionItem
-                {
-                    Playlist = p,
-                    Name = p.Name
-                }));
-            flyout.ItemsPicked += (pickerFlyout, args) =>
-            {
-                var item = args.AddedItems[0] as CollectionViewModel.AddableCollectionItem;
-
-                if (item.Playlist != null)
-                {
-                    App.Locator.CollectionService.AddToPlaylistAsync(item.Playlist, song);
-                }
-                else
-                {
-                    CollectionHelper.AddToQueueAsync(song);
-                }
-            };
-            flyout.ItemsSource = list;
-
-            FlyoutBase.ShowAttachedFlyout(menu);
         }
 
         private void DownloadAppBarButton_Click(object sender, RoutedEventArgs e)
