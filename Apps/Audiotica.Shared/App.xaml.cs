@@ -11,7 +11,6 @@ using Windows.UI.Popups;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Navigation;
 using Audiotica.Core.Common;
 using Audiotica.Core.Utilities;
@@ -26,12 +25,17 @@ namespace Audiotica
 {
     public sealed partial class App
     {
+        #region Fields
+
 #if WINDOWS_PHONE_APP
         private readonly ContinuationManager _continuationManager;
 #endif
-
         private bool _init;
         private static ViewModelLocator _locator;
+
+        #endregion
+
+        #region Properties
 
         public static ViewModelLocator Locator
         {
@@ -39,6 +43,10 @@ namespace Audiotica
         }
 
         public static Frame RootFrame { get; private set; }
+
+        #endregion
+
+        #region Constructor
 
         public App()
         {
@@ -51,19 +59,20 @@ namespace Audiotica
                 AppVersionHelper.CurrentVersion + "-beta";
         }
 
-        #region overriding
+        #endregion
+
+        #region Overriding
 
         protected override async void OnActivated(IActivatedEventArgs e)
         {
             base.OnActivated(e);
 
             CreateRootFrame();
-            await RestoreStatusAsync(e.PreviousExecutionState);
 
             if (RootFrame.Content == null)
             {
                 RootFrame.Navigated += RootFrame_FirstNavigated;
-                RootFrame.Navigate(typeof(HomePage));
+                RootFrame.Navigate(typeof (HomePage));
             }
 
             var continuationEventArgs = e as IContinuationActivatedEventArgs;
@@ -82,10 +91,10 @@ namespace Audiotica
 
             var restore = await StorageHelper.FileExistsAsync("_current_restore.autcp");
 
-            var page = typeof(HomePage);
+            var page = typeof (HomePage);
 
             if (AppVersionHelper.IsFirstRun)
-                page = typeof(FirstRunPage);
+                page = typeof (FirstRunPage);
             else if (restore)
                 page = typeof (RestorePage);
 
@@ -103,6 +112,56 @@ namespace Audiotica
             // ReSharper disable once CSharpWarnings::CS4014
             if (!restore)
                 BootAppServicesAsync();
+        }
+
+        #endregion
+
+        #region Events
+
+        private async void RootFrame_FirstNavigated(object sender, NavigationEventArgs e)
+        {
+            RootFrame.Navigated -= RootFrame_FirstNavigated;
+            ApplicationView.GetForCurrentView().SetDesiredBoundsMode(ApplicationViewBoundsMode.UseCoreWindow);
+            ApplicationView.GetForCurrentView().VisibleBoundsChanged += OnVisibleBoundsChanged;
+            OnVisibleBoundsChanged(null, null);
+
+            await ReviewReminderAsync();
+
+            #region On update
+
+            if (!AppVersionHelper.JustUpdated) return;
+
+            CurtainPrompt.Show(2500, "AppUpdated".FromLanguageResource(), AppVersionHelper.CurrentVersion);
+
+            //download missing artwork for artist
+            if (Locator.CollectionService.IsLibraryLoaded)
+                await CollectionHelper.DownloadArtistsArtworkAsync();
+            else
+                Locator.CollectionService.LibraryLoaded +=
+                    async (o, args) => await CollectionHelper.DownloadArtistsArtworkAsync();
+
+            #endregion
+        }
+
+        private void OnVisibleBoundsChanged(ApplicationView sender, object args)
+        {
+            var bounds = ApplicationView.GetForCurrentView().VisibleBounds;
+            var h = Window.Current.Bounds.Height;
+
+            var diff = Math.Ceiling(h - bounds.Bottom);
+            RootFrame.Margin = new Thickness(0, 0, 0, diff);
+        }
+
+        private void OnResuming(object sender, object o)
+        {
+            Locator.AudioPlayerHelper.OnAppActive();
+        }
+
+        private void OnSuspending(object sender, SuspendingEventArgs e)
+        {
+            var deferral = e.SuspendingOperation.GetDeferral();
+            Locator.AudioPlayerHelper.OnAppSuspended();
+            deferral.Complete();
         }
 
         #endregion
@@ -134,9 +193,6 @@ namespace Audiotica
             {
                 RootFrame = new Frame {Style = (Style) Resources["AppFrame"]};
 
-                //Associate the frame with a SuspensionManager key                                
-                SuspensionManager.RegisterFrame(RootFrame, "AppFrame");
-
                 Window.Current.Content = RootFrame;
                 DispatcherHelper.Initialize();
             }
@@ -164,31 +220,6 @@ namespace Audiotica
             Locator.AudioPlayerHelper.OnAppActive();
         }
 
-        private async void RootFrame_FirstNavigated(object sender, NavigationEventArgs e)
-        {
-            RootFrame.Navigated -= RootFrame_FirstNavigated;
-            ApplicationView.GetForCurrentView().SetDesiredBoundsMode(ApplicationViewBoundsMode.UseCoreWindow);
-            ApplicationView.GetForCurrentView().VisibleBoundsChanged += OnVisibleBoundsChanged;
-            OnVisibleBoundsChanged(null, null);
-
-            await ReviewReminderAsync();
-
-            #region On update
-
-            if (!AppVersionHelper.JustUpdated) return;
-
-            CurtainPrompt.Show(2500, "AppUpdated".FromLanguageResource(), AppVersionHelper.CurrentVersion);
-
-            //download missing artwork for artist
-            if (Locator.CollectionService.IsLibraryLoaded)
-                await CollectionHelper.DownloadArtistsArtworkAsync();
-            else
-                Locator.CollectionService.LibraryLoaded +=
-                    async (o, args) => await CollectionHelper.DownloadArtistsArtworkAsync();
-
-            #endregion
-        }
-
         private async Task ReviewReminderAsync()
         {
             var launchCount = AppSettingsHelper.Read<int>("LaunchCount");
@@ -209,30 +240,6 @@ namespace Audiotica
             {
                 Launcher.LaunchUriAsync(new Uri("ms-windows-store:reviewapp?appid=" + CurrentApp.AppId));
             }
-        }
-
-        private void OnVisibleBoundsChanged(ApplicationView sender, object args)
-        {
-            var bounds = ApplicationView.GetForCurrentView().VisibleBounds;
-            var h = Window.Current.Bounds.Height;
-
-            var diff = Math.Ceiling(h - bounds.Bottom);
-            RootFrame.Margin = new Thickness(0, 0, 0, diff);
-        }
-
-        private void OnResuming(object sender, object o)
-        {
-            Locator.AudioPlayerHelper.OnAppActive();
-        }
-
-        private async void OnSuspending(object sender, SuspendingEventArgs e)
-        {
-            var deferral = e.SuspendingOperation.GetDeferral();
-
-            Locator.AudioPlayerHelper.OnAppSuspended();
-
-            await SuspensionManager.SaveAsync();
-            deferral.Complete();
         }
     }
 }

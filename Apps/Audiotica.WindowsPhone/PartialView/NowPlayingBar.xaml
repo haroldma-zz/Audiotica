@@ -92,7 +92,7 @@
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
-                <Image Source="{Binding CurrentQueue.Song.Album.Artwork}" Width="50" Height="50" Margin="10" />
+                <Image Stretch="UniformToFill" Source="{Binding CurrentQueue.Song.Album.Artwork}" Width="80" Margin="0,0,10,0" Height="80" />
                 <StackPanel VerticalAlignment="Center" Grid.Column="1">
                     <TextBlock Text="{Binding CurrentQueue.Song.Name}" FontSize="20"
                            TextTrimming="CharacterEllipsis" FontWeight="Bold" />

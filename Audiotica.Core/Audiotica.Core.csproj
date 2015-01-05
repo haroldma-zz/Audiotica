@@ -50,6 +50,7 @@
     <Compile Include="Common\CountToPluralConverter.cs" />
     <Compile Include="Common\NotEmptyToStringConverter.cs" />
     <Compile Include="Common\EmptyListToVisibilityConverter.cs" />
+    <Compile Include="Common\OptimizedObservabledCollection.cs" />
     <Compile Include="Common\UpperCaseConverter.cs" />
     <Compile Include="Common\TimespanToDoubleConverter.cs" />
     <Compile Include="Common\NullToVisibilityConverter.cs" />

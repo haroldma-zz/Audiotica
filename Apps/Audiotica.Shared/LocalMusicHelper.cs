@@ -53,7 +53,7 @@ namespace Audiotica
             return new Artist
             {
                 ProviderId = "local." + track.ArtistId,
-                Name = track.ArtistName.Trim().Replace("  ", " ")
+                Name = (track.AlbumArtist ?? track.ArtistName).Trim().Replace("  ", " ")
             };
         }
 
@@ -68,9 +68,13 @@ namespace Audiotica
                 AudioUrl = track.FilePath,
                 SongState = SongState.Local,
                 TrackNumber = track.TrackNumber,
-                HeartState = track.HeartState,
-                Artist = track.ToArtist(),
+                HeartState = track.HeartState
             };
+
+            if (!string.IsNullOrEmpty(track.ArtistId))
+            {
+                song.Artist = track.ToArtist();
+            }
 
             if (!string.IsNullOrEmpty(track.AlbumId))
             {
@@ -95,7 +99,7 @@ namespace Audiotica
                 return SavingError.AlreadyExists;
             }
 
-            var prop = await file.Properties.GetMusicPropertiesAsync();
+            var prop = await file.Properties.GetMusicPropertiesAsync().AsTask().ConfigureAwait(false);
             var track = new LocalSong(prop)
             {
                 FilePath = audioPath

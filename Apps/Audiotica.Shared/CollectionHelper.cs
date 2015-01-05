@@ -150,6 +150,9 @@ namespace Audiotica
 
             var tasks = artists.Select(artist => Task.Factory.StartNew(async () =>
             {
+                if (artist.ProviderId == "autc.unknown")
+                    return;
+
                 var lastArtist = await App.Locator.ScrobblerService.GetDetailArtist(artist.Name);
 
                 if (lastArtist.MainImage == null || lastArtist.MainImage.Largest == null) return;

@@ -8,6 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Windows.Storage;
 using Windows.UI.Xaml.Media.Imaging;
+using Audiotica.Core.Common;
 using Audiotica.Data.Collection.Model;
 
 #endregion
@@ -70,7 +71,7 @@ namespace Audiotica.Data.Collection.DesignTime
                                     new BitmapImage(new Uri("http://static.musictoday.com/store/bands/93/product_medium/IXDDM501.JPG")),
                             PrimaryArtist = new Artist { Name = "Maroon 5"},
                             Genre = "Pop",
-                            Songs = Songs
+                            Songs = new OptimizedObservableCollection<Song>(Songs)
                         }
             };
 

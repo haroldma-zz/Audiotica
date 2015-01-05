@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using Windows.Storage;
 using Windows.UI.Core;
 using Windows.UI.Xaml.Media.Imaging;
+using Audiotica.Core.Common;
 using Audiotica.Core.Utilities;
 using Audiotica.Data.Collection.Model;
 using GalaSoft.MvvmLight;
@@ -89,6 +90,7 @@ namespace Audiotica.Data.Collection.RunTime
             {
                 artist.Songs.AddRange(songs.Where(p => p.ArtistId == artist.Id));
                 artist.Albums.AddRange(albums.Where(p => p.PrimaryArtistId == artist.Id));
+                artist.Albums.AddRange(artist.Songs.Select(p => p.Album));
                 if (isForeground)
                     _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                     {
@@ -160,17 +162,23 @@ namespace Audiotica.Data.Collection.RunTime
         {
             #region create artist
 
-            var primaryArtist = song.Album == null ? song.Artist : song.Album.PrimaryArtist;
+            var primaryArtist = (song.Album == null ? song.Artist : song.Album.PrimaryArtist) ?? new Artist
+            {
+                Name = "Unknown Artist",
+                ProviderId = "autc.unknown"
+            };
 
             var artist = Artists.FirstOrDefault(entry => entry.ProviderId == primaryArtist.ProviderId
-                                                         || String.Equals(entry.Name, primaryArtist.Name, StringComparison.CurrentCultureIgnoreCase));
+                                                         ||
+                                                         String.Equals(entry.Name, primaryArtist.Name,
+                                                             StringComparison.CurrentCultureIgnoreCase));
             if (artist == null)
             {
                 await _sqlService.InsertAsync(primaryArtist);
 
                 #region Download artwork
 
-                var artistFilePath = string.Format(CollectionConstant.ArtistsArtworkPath, song.Artist.Id);
+                var artistFilePath = string.Format(CollectionConstant.ArtistsArtworkPath, primaryArtist.Id);
 
                 if (!string.IsNullOrEmpty(artistArtwork))
                 {
@@ -181,8 +189,8 @@ namespace Audiotica.Data.Collection.RunTime
 
                 //set it
                 await _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-                    song.Artist.Artwork =
-                        song.Artist.HasArtwork
+                    primaryArtist.Artwork =
+                        primaryArtist.HasArtwork
                             ? new BitmapImage(new Uri(CollectionConstant.LocalStorageAppPath + artistFilePath))
                             : null);
 
@@ -242,10 +250,11 @@ namespace Audiotica.Data.Collection.RunTime
                     using (var fileStream = await songFile.OpenStreamForReadAsync())
                     {
                         using (
-                            var tagFile = File.Create(new StreamFileAbstraction(songFile.Name, fileStream, fileStream)))
+                            var tagFile =
+                                File.Create(new StreamFileAbstraction(songFile.Name, fileStream, fileStream)))
                         {
                             Stream artwork = null;
-                            
+
                             var tags = tagFile.GetTag(TagTypes.Id3v2);
                             var image = tags.Pictures.FirstOrDefault();
                             if (image != null)
@@ -289,7 +298,6 @@ namespace Audiotica.Data.Collection.RunTime
                 if (album == null)
                 {
                     Albums.Insert(0, song.Album);
-                    song.Artist.Albums.Insert(0, song.Album);
                 }
 
                 if (artist == null)
@@ -297,20 +305,24 @@ namespace Audiotica.Data.Collection.RunTime
                     Artists.Insert(0, song.Artist);
                 }
 
+                if (!song.Artist.Albums.Contains(song.Album))
+                    song.Artist.Albums.Insert(0, song.Album);
+
                 song.Artist.Songs.Insert(0, song);
-                song.Album.Songs.Add(song);
-                song.Album.Songs.Sort((p, m) => p.TrackNumber.CompareTo(m.TrackNumber));
+
+                var list = song.Album.Songs.ToList();
+                list.Add(song);
+                list.Sort((p, m) => p.TrackNumber.CompareTo(m.TrackNumber));
+                song.Album.Songs.ReplaceWith(list);
+
                 Songs.Insert(0, song);
             });
         }
 
         private async Task<bool> GetArtworkAsync(string filePath, Stream stream)
         {
-            using (
-                var fileStream =
-                    await
-                        (await StorageHelper.CreateFileAsync(filePath)).OpenStreamForWriteAsync()
-                )
+            using (var fileStream = await
+                        (await StorageHelper.CreateFileAsync(filePath, option: CreationCollisionOption.ReplaceExisting)).OpenStreamForWriteAsync())
             {
                 await stream.CopyToAsync(fileStream);
                 return true;
@@ -394,10 +406,6 @@ namespace Audiotica.Data.Collection.RunTime
             return list;
         }
 
-        /// <summary>
-        ///     Deleting unused files.
-        ///     Artworks, since deleting them when an album is delete can cause problems.
-        /// </summary>
         private async void CleanupFiles()
         {
             var artworkFolder = await StorageHelper.GetFolderAsync("artworks");
@@ -562,7 +570,9 @@ namespace Audiotica.Data.Collection.RunTime
             for (var i = 0; i < queue.Count; i++)
             {
                 if (_dispatcher != null)
-                    _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => PlaybackQueue.Add(head)).AsTask().Wait();
+                    _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => PlaybackQueue.Add(head))
+                        .AsTask()
+                        .Wait();
                 else
                     PlaybackQueue.Add(head);
 
@@ -629,8 +639,8 @@ namespace Audiotica.Data.Collection.RunTime
         public async Task MovePlaylistFromToAsync(Playlist playlist, int oldIndex, int newIndex)
         {
             var song = playlist.Songs[newIndex];
-            var originalSong = newIndex < oldIndex 
-                ? playlist.Songs[newIndex + 1] 
+            var originalSong = newIndex < oldIndex
+                ? playlist.Songs[newIndex + 1]
                 : playlist.Songs[newIndex - 1];
 
             #region Update next and prev ids

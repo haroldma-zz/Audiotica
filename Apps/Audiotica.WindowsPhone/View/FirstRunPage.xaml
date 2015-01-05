@@ -68,7 +68,7 @@
                            Text="Did you know that over a hundred music lovers, like you, help morph Audiotica into what it is."
                            FontSize="22" TextWrapping="Wrap" />
             </Grid>
-            <Grid Margin="20,50,125,0">
+            <Grid Margin="20,50,100,0">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />

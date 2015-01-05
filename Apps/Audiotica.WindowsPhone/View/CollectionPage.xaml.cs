@@ -247,7 +247,7 @@ namespace Audiotica.View
 
             for (var i = 0; i < localMusic.Count; i++)
             {
-                StatusBarHelper.ShowStatus(string.Format("{0} of {1} items added", i + 1, localMusic.Count));
+                StatusBarHelper.ShowStatus(string.Format("{0} of {1} items added", i + 1, localMusic.Count), (double)i / localMusic.Count);
                 await LocalMusicHelper.SaveTrackAsync(localMusic[i]);
             }
 
