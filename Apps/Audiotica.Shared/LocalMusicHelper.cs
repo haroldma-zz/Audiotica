@@ -106,6 +106,11 @@ namespace Audiotica
             };
             var song = track.ToSong();
 
+            if (string.IsNullOrEmpty(song.Name))
+            {
+                song.Name = file.DisplayName;
+            }
+
             if (App.Locator.CollectionService.SongAlreadyExists(song.ProviderId, 
                 track.Title, track.AlbumName, track.ArtistName))
             {

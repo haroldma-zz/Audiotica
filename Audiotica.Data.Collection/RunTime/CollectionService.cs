@@ -249,26 +249,30 @@ namespace Audiotica.Data.Collection.RunTime
                 {
                     using (var fileStream = await songFile.OpenStreamForReadAsync())
                     {
-                        using (
-                            var tagFile =
-                                File.Create(new StreamFileAbstraction(songFile.Name, fileStream, fileStream)))
+                        try
                         {
-                            Stream artwork = null;
-
-                            var tags = tagFile.GetTag(TagTypes.Id3v2);
-                            var image = tags.Pictures.FirstOrDefault();
-                            if (image != null)
+                            using (
+                                var tagFile =
+                                    File.Create(new StreamFileAbstraction(songFile.Name, fileStream, fileStream)))
                             {
-                                artwork = new MemoryStream(image.Data.Data);
-                            }
+                                Stream artwork = null;
 
-                            if (artwork != null)
-                            {
-                                song.Album.HasArtwork = await GetArtworkAsync(albumFilePath, artwork);
-                                await _sqlService.UpdateItemAsync(song.Album);
-                                artwork.Dispose();
+                                var tags = tagFile.GetTag(TagTypes.Id3v2);
+                                var image = tags.Pictures.FirstOrDefault();
+                                if (image != null)
+                                {
+                                    artwork = new MemoryStream(image.Data.Data);
+                                }
+
+                                if (artwork != null)
+                                {
+                                    song.Album.HasArtwork = await GetArtworkAsync(albumFilePath, artwork);
+                                    await _sqlService.UpdateItemAsync(song.Album);
+                                    artwork.Dispose();
+                                }
                             }
                         }
+                        catch { }
                     }
                 }
                 if (!string.IsNullOrEmpty(artworkUrl))
