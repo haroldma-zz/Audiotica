@@ -77,6 +77,8 @@ namespace Audiotica.ViewModel
             DownloadClickCommand = new RelayCommand<Song>(DownloadClickExecute);
             CancelClickCommand = new RelayCommand<Song>(CancelClickExecute);
 
+            EntryPlayClickCommand = new RelayCommand<BaseEntry>(EntryPlayClickExecute);
+
             ItemPickedCommand = new RelayCommand<AddableCollectionItem>(ItemPickedExecute);
         }
 
@@ -210,6 +212,32 @@ namespace Audiotica.ViewModel
 
         #endregion
 
+        private async void EntryPlayClickExecute(BaseEntry item)
+        {
+            List<Song> queueSongs = null;
+
+            if (item is Artist)
+            {
+                var artist = item as Artist;
+                queueSongs = artist.Songs.ToList().Shuffle().ToList();
+            }
+
+            else if (item is Album)
+            {
+                var album = item as Album;
+                queueSongs = album.Songs.ToList().Shuffle().ToList();
+            }
+
+            else if (item is Playlist)
+            {
+                var playlist = item as Playlist;
+                queueSongs = playlist.Songs.Select(p => p.Song).ToList();
+            }
+
+            if (queueSongs != null)
+                await CollectionHelper.PlaySongsAsync(queueSongs);
+        }
+
         private void AddToClickExecute(Song song)
         {
             song.AddableTo.Clear();
@@ -251,7 +279,6 @@ namespace Audiotica.ViewModel
                     var song = item as Song;
                     name = song.Name;
 
-                    await Service.DeleteFromQueueAsync(song);
                     await Service.DeleteSongAsync(song);
                 }
 
@@ -272,7 +299,6 @@ namespace Audiotica.ViewModel
 
                     await Task.WhenAll(artist.Songs.ToList().Select(song => Task.WhenAll(new List<Task>
                     {
-                        Service.DeleteFromQueueAsync(song),
                         Service.DeleteSongAsync(song)
                     })));
                 }
@@ -356,6 +382,8 @@ namespace Audiotica.ViewModel
         public RelayCommand<BaseEntry> DeleteClickCommand { get; set; }
 
         public RelayCommand<AddableCollectionItem> ItemPickedCommand { get; set; }
+
+        public RelayCommand<BaseEntry> EntryPlayClickCommand { get; set; }
 
         #endregion
     }

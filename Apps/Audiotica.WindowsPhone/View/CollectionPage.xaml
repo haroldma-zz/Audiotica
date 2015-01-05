@@ -188,7 +188,8 @@
                                                 <Image Source="{Binding Artwork}" Height="115" Width="115"
                                                        Stretch="UniformToFill" />
                                                 <AppBarButton Icon="Play" IsCompact="True" Margin="0,-10,10,0"
-                                                              Click="ArtistPlayAppBarButton_Click_1"
+                                                              Command="{Binding DataContext.EntryPlayClickCommand, ElementName=Page}"
+                                                              CommandParameter="{Binding}"
                                                               Style="{StaticResource AppBarButtonWithShadowStyle}" />
                                             </Grid>
                                             <TextBlock Text="{Binding Name}" FontSize="15"
@@ -250,7 +251,8 @@
                                                 <Image Source="{Binding Artwork}" Height="115" Width="115"
                                                        Stretch="UniformToFill" />
                                                 <AppBarButton Icon="Play" IsCompact="True" Margin="0,-10,10,0"
-                                                              Click="AlbumPlayAppBarButton_Click_1"
+                                                              Command="{Binding DataContext.EntryPlayClickCommand, ElementName=Page}"
+                                                              CommandParameter="{Binding}"
                                                               Style="{StaticResource AppBarButtonWithShadowStyle}" />
                                             </Grid>
                                             <TextBlock Text="{Binding Name}" FontSize="15"
@@ -316,7 +318,8 @@
                                         </MenuFlyout>
                                     </FlyoutBase.AttachedFlyout>
                                     <AppBarButton Icon="Play" IsCompact="True" Margin="0,-10,10,0"
-                                                  Click="AppBarButton_Click_1" FontFamily="Global User Interface" />
+                                                  Command="{Binding DataContext.EntryPlayClickCommand, ElementName=Page}"
+                                                  CommandParameter="{Binding}"/>
                                     <TextBlock VerticalAlignment="Center" Grid.Column="1" Text="{Binding Name}"
                                                FontSize="30" FontFamily="Global User Interface"
                                                TextTrimming="CharacterEllipsis" FontWeight="Bold" />

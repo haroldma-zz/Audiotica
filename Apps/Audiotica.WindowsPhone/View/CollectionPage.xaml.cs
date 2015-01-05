@@ -113,26 +113,6 @@ namespace Audiotica.View
             listView.SelectedIndex = -1;
         }
 
-        private async void ArtistPlayAppBarButton_Click_1(object sender, RoutedEventArgs e)
-        {
-            var artist = (sender as AppBarButton).DataContext as Artist;
-            var queueSong = artist.Songs.ToList().Shuffle().ToList();
-            await CollectionHelper.PlaySongsAsync(queueSong);
-        }
-
-        private async void AlbumPlayAppBarButton_Click_1(object sender, RoutedEventArgs e)
-        {
-            var album = (sender as AppBarButton).DataContext as Album;
-            var queueSong = album.Songs.ToList().Shuffle().ToList();
-            await CollectionHelper.PlaySongsAsync(queueSong);
-        }
-
-        private async void AppBarButton_Click_1(object sender, RoutedEventArgs e)
-        {
-            var playlist = (sender as AppBarButton).DataContext as Playlist;
-            var queueSong = playlist.Songs.Select(p => p.Song).ToList();
-            await CollectionHelper.PlaySongsAsync(queueSong);
-        }
 
         private async void ImportAppBarButton_Click_2(object sender, RoutedEventArgs e)
         {
