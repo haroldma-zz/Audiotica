@@ -19,7 +19,7 @@
             <CollectionViewSource x:Key="AlbumGroups"
                                   IsSourceGrouped="True" Source="{Binding SortedAlbums}" />
         </Grid.Resources>
-        
+
         <GridView ItemsSource="{Binding RandomizeAlbumList}">
             <GridView.ItemTemplate>
                 <DataTemplate>
@@ -32,7 +32,8 @@
             </GridView.ItemTemplate>
         </GridView>
 
-        <Pivot Name="CollectionPivot" x:Uid="CollectionPivot" Title="COLLECTION" HeaderTemplate="{StaticResource PivotHeaderTemplate}"
+        <Pivot Name="CollectionPivot" x:Uid="CollectionPivot" Title="COLLECTION"
+               HeaderTemplate="{StaticResource PivotHeaderTemplate}"
                SelectionChanged="CollectionPivot_SelectionChanged">
             <PivotItem x:Uid="PivotSongs" Header="SONGS">
                 <Grid>
@@ -73,12 +74,15 @@
                                                                 </core:EventTriggerBehavior>
                                                             </interactivity:Interaction.Behaviors>
                                                             <FlyoutBase.AttachedFlyout>
-                                                                <ListPickerFlyout x:Name="Picker" DisplayMemberPath="Name" ItemsSource="{Binding AddableTo}">
+                                                                <ListPickerFlyout x:Name="Picker"
+                                                                                  DisplayMemberPath="Name"
+                                                                                  ItemsSource="{Binding AddableTo}">
                                                                     <interactivity:Interaction.Behaviors>
-                                                                        <core:EventTriggerBehavior EventName="ItemsPicked">
-                                                                            <core:InvokeCommandAction 
+                                                                        <core:EventTriggerBehavior
+                                                                            EventName="ItemsPicked">
+                                                                            <core:InvokeCommandAction
                                                                                 Command="{Binding DataContext.ItemPickedCommand, ElementName=Page}"
-                                                                                CommandParameter="{Binding SelectedItem, ElementName=Picker}"/>
+                                                                                CommandParameter="{Binding SelectedItem, ElementName=Picker}" />
                                                                         </core:EventTriggerBehavior>
                                                                     </interactivity:Interaction.Behaviors>
                                                                 </ListPickerFlyout>
@@ -87,7 +91,7 @@
                                                         <MenuFlyoutItem x:Uid="MenuItemDelete" Text="Delete"
                                                                         Foreground="Red"
                                                                         CommandParameter="{Binding}"
-                                                                        Command="{Binding DataContext.DeleteClickCommand, ElementName=Page}"/>
+                                                                        Command="{Binding DataContext.DeleteClickCommand, ElementName=Page}" />
                                                     </MenuFlyout>
                                                 </FlyoutBase.AttachedFlyout>
                                                 <StackPanel>
@@ -105,13 +109,14 @@
                                                 <Grid Grid.Column="1"
                                                       Visibility="{Binding SongState, Converter={StaticResource NoneSongStateConverter}}">
                                                     <AppBarButton Icon="Download" IsCompact="True" Margin="0,-5,0,0"
-                                                                  Click="DownloadAppBarButton_Click"
-                                                                  FontFamily="Global User Interface" />
+                                                                  Command="{Binding DataContext.DownloadClickCommand ,ElementName=Page}"
+                                                                  CommandParameter="{Binding}" />
                                                 </Grid>
                                                 <Grid Grid.Column="1"
                                                       Visibility="{Binding SongState, Converter={StaticResource DownloadingSongStateConverter}}">
                                                     <AppBarButton Icon="Cancel" IsCompact="True" Margin="0,-5,0,0"
-                                                                  Click="AppBarButton_Click" />
+                                                                  Command="{Binding DataContext.CancelClickCommand ,ElementName=Page}"
+                                                                  CommandParameter="{Binding}" />
                                                 </Grid>
                                             </Grid>
                                             <Grid Grid.Row="1"
@@ -124,7 +129,8 @@
                                     </DataTemplate>
                                 </ListView.ItemTemplate>
                                 <ListView.GroupStyle>
-                                    <GroupStyle HidesIfEmpty="True" HeaderTemplate="{StaticResource GroupHeaderTemplate}" />
+                                    <GroupStyle HidesIfEmpty="True"
+                                                HeaderTemplate="{StaticResource GroupHeaderTemplate}" />
                                 </ListView.GroupStyle>
                                 <interactivity:Interaction.Behaviors>
                                     <core:EventTriggerBehavior EventName="ItemClick">
@@ -141,7 +147,7 @@
                     </SemanticZoom>
                 </Grid>
             </PivotItem>
-            <PivotItem x:Uid="PivotArtistNames" Header="ARTISTS">
+            <PivotItem x:Uid="PivotArtists" Header="ARTISTS">
                 <Grid>
                     <TextBlock
                         x:Uid="CollectionEmpty"
@@ -149,9 +155,15 @@
                         Text="It seems you haven't saved any music yet." Style="{StaticResource SubtleTextBlockStyle}" />
                     <SemanticZoom>
                         <SemanticZoom.ZoomedInView>
-                            <GridView IsItemClickEnabled="True"
-                                      ItemsSource="{Binding Source={StaticResource ArtistGroups}}"
-                                      Padding="0,0,0,25" ItemClick="ArtistListView_ItemClick">
+                            <GridView
+                                IsItemClickEnabled="True"
+                                ItemsSource="{Binding Source={StaticResource ArtistGroups}}"
+                                Padding="0,0,0,25">
+                                <interactivity:Interaction.Behaviors>
+                                    <core:EventTriggerBehavior EventName="ItemClick">
+                                        <core:InvokeCommandAction Command="{Binding ArtistClickCommand}" />
+                                    </core:EventTriggerBehavior>
+                                </interactivity:Interaction.Behaviors>
                                 <GridView.GroupStyle>
                                     <GroupStyle HidesIfEmpty="True"
                                                 HeaderTemplate="{StaticResource GroupHeaderTemplate}" />
@@ -159,16 +171,35 @@
                                 <GridView.ItemTemplate>
                                     <DataTemplate>
                                         <StackPanel Margin="0,0,5,5" Width="115">
+                                            <interactivity:Interaction.Behaviors>
+                                                <core:EventTriggerBehavior EventName="Holding">
+                                                    <audiotica:ShowFlyoutAction />
+                                                </core:EventTriggerBehavior>
+                                            </interactivity:Interaction.Behaviors>
+                                            <FlyoutBase.AttachedFlyout>
+                                                <MenuFlyout>
+                                                    <MenuFlyoutItem x:Uid="MenuItemDelete" Text="Delete"
+                                                                    Foreground="Red"
+                                                                    Command="{Binding DataContext.DeleteClickCommand, ElementName=Page}"
+                                                                    CommandParameter="{Binding}" />
+                                                </MenuFlyout>
+                                            </FlyoutBase.AttachedFlyout>
                                             <Grid Background="{StaticResource PhoneAccentBrush}" Margin="0,0,0,5">
-                                                <Image Source="{Binding Artwork}" Height="115" Width="115" Stretch="UniformToFill" />
+                                                <Image Source="{Binding Artwork}" Height="115" Width="115"
+                                                       Stretch="UniformToFill" />
                                                 <AppBarButton Icon="Play" IsCompact="True" Margin="0,-10,10,0"
-                                                    Click="ArtistPlayAppBarButton_Click_1" Style="{StaticResource AppBarButtonWithShadowStyle}" />
+                                                              Click="ArtistPlayAppBarButton_Click_1"
+                                                              Style="{StaticResource AppBarButtonWithShadowStyle}" />
                                             </Grid>
-                                            <TextBlock Text="{Binding Name}" FontSize="15" TextTrimming="CharacterEllipsis" FontFamily="Global User Interface" />
+                                            <TextBlock Text="{Binding Name}" FontSize="15"
+                                                       TextTrimming="CharacterEllipsis"
+                                                       FontFamily="Global User Interface" />
                                             <TextBlock FontSize="14"
-                                               TextTrimming="CharacterEllipsis" Foreground="#89FFFFFF" FontFamily="Global User Interface">
+                                                       TextTrimming="CharacterEllipsis" Foreground="#89FFFFFF"
+                                                       FontFamily="Global User Interface">
                                                 <Run Text="{Binding Albums.Count}" />
-                                                <Run Text="{Binding Albums.Count, Converter={StaticResource AlbumToPluralConverter}}" />
+                                                <Run
+                                                    Text="{Binding Albums.Count, Converter={StaticResource AlbumToPluralConverter}}" />
                                             </TextBlock>
                                         </StackPanel>
                                     </DataTemplate>
@@ -183,7 +214,7 @@
                     </SemanticZoom>
                 </Grid>
             </PivotItem>
-            <PivotItem x:Uid="PivotAlbumNames" Header="ALBUMS">
+            <PivotItem x:Uid="PivotAlbums" Header="ALBUMS">
                 <Grid>
                     <TextBlock
                         x:Uid="CollectionEmpty"
@@ -191,30 +222,56 @@
                         Text="It seems you haven't saved any music yet." Style="{StaticResource SubtleTextBlockStyle}" />
                     <SemanticZoom>
                         <SemanticZoom.ZoomedInView>
-                            <GridView IsItemClickEnabled="True"
-                                      ItemsSource="{Binding Source={StaticResource AlbumGroups}}"
-                                      Padding="0,0,0,25" ItemClick="AlbumListView_ItemClick">
+                            <GridView
+                                IsItemClickEnabled="True"
+                                ItemsSource="{Binding Source={StaticResource AlbumGroups}}"
+                                Padding="0,0,0,25">
+                                <interactivity:Interaction.Behaviors>
+                                    <core:EventTriggerBehavior EventName="ItemClick">
+                                        <core:InvokeCommandAction Command="{Binding AlbumClickCommand}" />
+                                    </core:EventTriggerBehavior>
+                                </interactivity:Interaction.Behaviors>
                                 <GridView.ItemTemplate>
                                     <DataTemplate>
                                         <StackPanel Margin="0,0,5,5" Width="115">
+                                            <interactivity:Interaction.Behaviors>
+                                                <core:EventTriggerBehavior EventName="Holding">
+                                                    <audiotica:ShowFlyoutAction />
+                                                </core:EventTriggerBehavior>
+                                            </interactivity:Interaction.Behaviors>
+                                            <FlyoutBase.AttachedFlyout>
+                                                <MenuFlyout>
+                                                    <MenuFlyoutItem x:Uid="MenuItemDelete" Text="Delete" Foreground="Red"
+                                                        Command="{Binding DataContext.DeleteClickCommand, ElementName=Page}"
+                                                        CommandParameter="{Binding}" />
+                                                </MenuFlyout>
+                                            </FlyoutBase.AttachedFlyout>
                                             <Grid Background="{StaticResource PhoneAccentBrush}" Margin="0,0,0,5">
-                                                <Image Source="{Binding Artwork}" Height="115" Width="115" Stretch="UniformToFill" />
+                                                <Image Source="{Binding Artwork}" Height="115" Width="115"
+                                                       Stretch="UniformToFill" />
                                                 <AppBarButton Icon="Play" IsCompact="True" Margin="0,-10,10,0"
-                                                    Click="AlbumPlayAppBarButton_Click_1" Style="{StaticResource AppBarButtonWithShadowStyle}" />
+                                                              Click="AlbumPlayAppBarButton_Click_1"
+                                                              Style="{StaticResource AppBarButtonWithShadowStyle}" />
                                             </Grid>
-                                            <TextBlock Text="{Binding Name}" FontSize="15" TextTrimming="CharacterEllipsis" FontFamily="Global User Interface" />
+                                            <TextBlock Text="{Binding Name}" FontSize="15"
+                                                       TextTrimming="CharacterEllipsis"
+                                                       FontFamily="Global User Interface" />
                                             <TextBlock FontSize="14" Text="{Binding PrimaryArtist.Name}"
-                                               TextTrimming="CharacterEllipsis" Foreground="#89FFFFFF" FontFamily="Global User Interface"/>
+                                                       TextTrimming="CharacterEllipsis" Foreground="#89FFFFFF"
+                                                       FontFamily="Global User Interface" />
                                             <TextBlock FontSize="14"
-                                               TextTrimming="CharacterEllipsis" Foreground="#89FFFFFF" FontFamily="Global User Interface">
+                                                       TextTrimming="CharacterEllipsis" Foreground="#89FFFFFF"
+                                                       FontFamily="Global User Interface">
                                                 <Run Text="{Binding Songs.Count}" />
-                                                <Run Text="{Binding Songs.Count, Converter={StaticResource SongToPluralConverter}}" />
+                                                <Run
+                                                    Text="{Binding Songs.Count, Converter={StaticResource SongToPluralConverter}}" />
                                             </TextBlock>
                                         </StackPanel>
                                     </DataTemplate>
                                 </GridView.ItemTemplate>
                                 <GridView.GroupStyle>
-                                    <GroupStyle HidesIfEmpty="True" HeaderTemplate="{StaticResource GroupHeaderTemplate}" />
+                                    <GroupStyle HidesIfEmpty="True"
+                                                HeaderTemplate="{StaticResource GroupHeaderTemplate}" />
                                 </GridView.GroupStyle>
                             </GridView>
                         </SemanticZoom.ZoomedInView>
@@ -231,9 +288,14 @@
                     <TextBlock
                         x:Uid="CollectionNoPlaylist"
                         Visibility="{Binding Service.Playlists.Count, Converter={StaticResource EmptyListToVisibilityConverter}}"
-                        Text="You haven't made any playlist yet. Try pressing the new button below." Style="{StaticResource SubtleTextBlockStyle}" />
-                    <ListView IsItemClickEnabled="True" ItemsSource="{Binding Service.Playlists}" Padding="0,0,0,25"
-                              Margin="0" ItemClick="PlaylistListView_ItemClick">
+                        Text="You haven't made any playlist yet. Try pressing the new button below."
+                        Style="{StaticResource SubtleTextBlockStyle}" />
+                    <ListView IsItemClickEnabled="True" ItemsSource="{Binding Service.Playlists}" Padding="0,0,0,25">
+                        <interactivity:Interaction.Behaviors>
+                            <core:EventTriggerBehavior EventName="ItemClick">
+                                <core:InvokeCommandAction Command="{Binding PlaylistClickCommand}" />
+                            </core:EventTriggerBehavior>
+                        </interactivity:Interaction.Behaviors>
                         <ListView.ItemTemplate>
                             <DataTemplate>
                                 <Grid Margin="0,0,0,15">
@@ -249,7 +311,8 @@
                                     <FlyoutBase.AttachedFlyout>
                                         <MenuFlyout>
                                             <MenuFlyoutItem x:Uid="MenuItemDelete" Text="Delete" Foreground="Red"
-                                                            Click="DeleteMenuFlyoutItem_Click_1" />
+                                                            Command="{Binding DataContext.DeleteClickCommand, ElementName=Page}"
+                                                            CommandParameter="{Binding}" />
                                         </MenuFlyout>
                                     </FlyoutBase.AttachedFlyout>
                                     <AppBarButton Icon="Play" IsCompact="True" Margin="0,-10,10,0"
@@ -267,9 +330,11 @@
     </Grid>
     <Page.BottomAppBar>
         <CommandBar ClosedDisplayMode="Minimal">
-            <AppBarButton x:Uid="CollectionAppBarNewPlaylist" Icon="Add" Label="New Playlist" FontFamily="Global User Interface">
+            <AppBarButton x:Uid="CollectionAppBarNewPlaylist" Icon="Add" Label="New Playlist"
+                          FontFamily="Global User Interface">
                 <AppBarButton.Flyout>
-                    <PickerFlyout x:Uid="PlaylistNewPicker" Title="NEW PLAYLIST" ConfirmationButtonsVisible="True" Placement="Full"
+                    <PickerFlyout x:Uid="PlaylistNewPicker" Title="NEW PLAYLIST" ConfirmationButtonsVisible="True"
+                                  Placement="Full"
                                   Confirmed="PickerFlyout_Confirmed" Closed="PickerFlyout_Closed">
                         <PickerFlyout.Content>
                             <ListView ItemsSource="{Binding Service.Songs}"

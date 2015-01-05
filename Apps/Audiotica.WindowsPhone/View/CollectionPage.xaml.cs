@@ -59,7 +59,7 @@ namespace Audiotica.View
             var h = Window.Current.Bounds.Height;
             var rows = (int) Math.Ceiling(h/vm.ArtworkSize);
 
-            var numImages = rows*vm.RowCount;
+            var numImages = rows*5;
             var imagesNeeded = numImages - albumCount;
 
             var shuffle = albums
@@ -84,24 +84,6 @@ namespace Audiotica.View
             }
 
             vm.RandomizeAlbumList.AddRange(shuffle);
-        }
-
-        private void AlbumListView_ItemClick(object sender, ItemClickEventArgs e)
-        {
-            var album = e.ClickedItem as Album;
-            Frame.Navigate(typeof (CollectionAlbumPage), album.Id);
-        }
-
-        private void ArtistListView_ItemClick(object sender, ItemClickEventArgs e)
-        {
-            var artist = e.ClickedItem as Artist;
-            Frame.Navigate(typeof (CollectionArtistPage), artist.Id);
-        }
-
-        private void PlaylistListView_ItemClick(object sender, ItemClickEventArgs e)
-        {
-            var playlist = e.ClickedItem as Playlist;
-            Frame.Navigate(typeof (CollectionPlaylistPage), playlist.Id);
         }
 
         private void CollectionPivot_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -129,33 +111,6 @@ namespace Audiotica.View
         {
             var listView = (ListView) ((PickerFlyout) sender).Content;
             listView.SelectedIndex = -1;
-        }
-
-        private void DownloadAppBarButton_Click(object sender, RoutedEventArgs e)
-        {
-            var song = (sender as AppBarButton).DataContext as Song;
-            App.Locator.Download.StartDownloadAsync(song);
-        }
-
-        private void AppBarButton_Click(object sender, RoutedEventArgs e)
-        {
-            var song = (sender as AppBarButton).DataContext as Song;
-            App.Locator.Download.Cancel(song.Download);
-        }
-
-        private async void DeleteMenuFlyoutItem_Click_1(object sender, RoutedEventArgs e)
-        {
-            var playlist = (Playlist) ((FrameworkElement) sender).DataContext;
-
-            try
-            {
-                await App.Locator.CollectionService.DeletePlaylistAsync(playlist);
-                CurtainPrompt.Show("EntryDeletingSuccess".FromLanguageResource(), playlist.Name);
-            }
-            catch
-            {
-                CurtainPrompt.ShowError("EntryDeletingError".FromLanguageResource(), playlist.Name);
-            }
         }
 
         private async void ArtistPlayAppBarButton_Click_1(object sender, RoutedEventArgs e)

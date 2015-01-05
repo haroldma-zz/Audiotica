@@ -19,6 +19,8 @@ using Audiotica.Core.Utilities;
 using Audiotica.Data.Collection;
 using Audiotica.Data.Collection.Model;
 using Audiotica.Data.Collection.SqlHelper;
+using Audiotica.Data.Service.Interfaces;
+using Audiotica.View;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Threading;
@@ -31,13 +33,15 @@ namespace Audiotica.ViewModel
     {
         private readonly AudioPlayerHelper _audioPlayer;
         private readonly ICollectionService _service;
+        private readonly ISongDownloadService _downloadService;
         private ObservableCollection<AlphaKeyGroup<Album>> _sortedAlbums;
         private ObservableCollection<AlphaKeyGroup<Artist>> _sortedArtists;
         private ObservableCollection<AlphaKeyGroup<Song>> _sortedSongs;
 
-        public CollectionViewModel(ICollectionService service, AudioPlayerHelper audioPlayer)
+        public CollectionViewModel(ICollectionService service, ISongDownloadService downloadService, AudioPlayerHelper audioPlayer)
         {
             _service = service;
+            _downloadService = downloadService;
             _audioPlayer = audioPlayer;
 
             CreateCommand();
@@ -59,14 +63,20 @@ namespace Audiotica.ViewModel
             RandomizeAlbumList = new ObservableCollection<Album>();
         }
 
-
         #region Private Helpers 
 
         private void CreateCommand()
         {
             SongClickCommand = new RelayCommand<ItemClickEventArgs>(SongClickExecute);
+            ArtistClickCommand = new RelayCommand<ItemClickEventArgs>(ArtistClickExecute);
+            AlbumClickCommand = new RelayCommand<ItemClickEventArgs>(AlbumClickExecute);
+            PlaylistClickCommand = new RelayCommand<ItemClickEventArgs>(PlaylistClickExecute);
+
             AddToClickCommand = new RelayCommand<Song>(AddToClickExecute);
-            DeleteClickCommand = new RelayCommand<Song>(DeleteClickExecute);
+            DeleteClickCommand = new RelayCommand<BaseEntry>(DeleteClickExecute);
+            DownloadClickCommand = new RelayCommand<Song>(DownloadClickExecute);
+            CancelClickCommand = new RelayCommand<Song>(CancelClickExecute);
+
             ItemPickedCommand = new RelayCommand<AddableCollectionItem>(ItemPickedExecute);
         }
 
@@ -157,12 +167,48 @@ namespace Audiotica.ViewModel
 
         #region Commands (Execute)
 
+        #region Collection item clicked
+
         private async void SongClickExecute(ItemClickEventArgs e)
         {
             var song = e.ClickedItem as Song;
             var queueSong = _service.Songs.OrderBy(p => p.Name).ToList();
             await CollectionHelper.PlaySongsAsync(song, queueSong);
         }
+
+        private void AlbumClickExecute(ItemClickEventArgs obj)
+        {
+            var album = obj.ClickedItem as Album;
+            App.RootFrame.Navigate(typeof (CollectionAlbumPage), album.Id);
+        }
+
+        private void ArtistClickExecute(ItemClickEventArgs obj)
+        {
+            var artist = obj.ClickedItem as Artist;
+            App.RootFrame.Navigate(typeof (CollectionArtistPage), artist.Id);
+        }
+
+        private void PlaylistClickExecute(ItemClickEventArgs obj)
+        {
+            var playlist = obj.ClickedItem as Playlist;
+            App.RootFrame.Navigate(typeof (CollectionPlaylistPage), playlist.Id);
+        }
+
+        #endregion
+
+        #region Downloading
+
+        private void CancelClickExecute(Song song)
+        {
+            _downloadService.Cancel(song.Download);
+        }
+
+        private void DownloadClickExecute(Song song)
+        {
+            _downloadService.StartDownloadAsync(song);
+        }
+
+        #endregion
 
         private void AddToClickExecute(Song song)
         {
@@ -194,19 +240,62 @@ namespace Audiotica.ViewModel
             }
         }
 
-        private async void DeleteClickExecute(Song song)
+        private async void DeleteClickExecute(BaseEntry item)
         {
+            var name = "unknown";
+
             try
             {
-                //delete from the queue
-                await App.Locator.CollectionService.DeleteFromQueueAsync(song);
+                if (item is Song)
+                {
+                    var song = item as Song;
+                    name = song.Name;
 
-                await App.Locator.CollectionService.DeleteSongAsync(song);
-                CurtainPrompt.Show("EntryDeletingSuccess".FromLanguageResource(), song.Name);
+                    await Service.DeleteFromQueueAsync(song);
+                    await Service.DeleteSongAsync(song);
+                }
+
+                else if (item is Playlist)
+                {
+                    var playlist = item as Playlist;
+                    name = playlist.Name;
+
+                    await Service.DeletePlaylistAsync(playlist);
+                }
+
+                else if (item is Artist)
+                {
+                    var artist = item as Artist;
+                    name = artist.Name;
+
+                    Service.Artists.Remove(artist);
+
+                    await Task.WhenAll(artist.Songs.ToList().Select(song => Task.WhenAll(new List<Task>
+                    {
+                        Service.DeleteFromQueueAsync(song),
+                        Service.DeleteSongAsync(song)
+                    })));
+                }
+
+                else if (item is Album)
+                {
+                    var album = item as Album;
+                    name = album.Name;
+
+                    Service.Albums.Remove(album);
+
+                    await Task.WhenAll(album.Songs.ToList().Select(song => Task.WhenAll(new List<Task>
+                    {
+                        Service.DeleteFromQueueAsync(song),
+                        Service.DeleteSongAsync(song)
+                    })));
+                }
+
+                CurtainPrompt.Show("EntryDeletingSuccess".FromLanguageResource(), name);
             }
             catch
             {
-                CurtainPrompt.ShowError("EntryDeletingError".FromLanguageResource(), song.Name);
+                CurtainPrompt.ShowError("EntryDeletingError".FromLanguageResource(), name);
             }
         }
 
@@ -239,18 +328,7 @@ namespace Audiotica.ViewModel
             get
             {
                 var w = IsInDesignMode ? 480 : Window.Current.Bounds.Width;
-                return w/RowCount;
-            }
-        }
-
-        public int RowCount
-        {
-            get
-            {
-                //extra column if running on hd device (720 and 1080)
-                var scaleFactor = DisplayInformation.GetForCurrentView().RawPixelsPerViewPixel;
-                var actualWidth = Window.Current.Bounds.Width * scaleFactor;
-                return actualWidth == 720 || actualWidth == 1080 ? 5 : 4;
+                return w/5;
             }
         }
 
@@ -261,9 +339,21 @@ namespace Audiotica.ViewModel
 
         public RelayCommand<ItemClickEventArgs> SongClickCommand { get; set; }
 
+        public RelayCommand<ItemClickEventArgs> PlaylistClickCommand { get; set; }
+
+        public RelayCommand<ItemClickEventArgs> AlbumClickCommand { get; set; }
+
+        public RelayCommand<ItemClickEventArgs> ArtistClickCommand { get; set; }
+
+
+        public RelayCommand<Song> CancelClickCommand { get; set; }
+
+        public RelayCommand<Song> DownloadClickCommand { get; set; }
+
+
         public RelayCommand<Song> AddToClickCommand { get; set; }
 
-        public RelayCommand<Song> DeleteClickCommand { get; set; }
+        public RelayCommand<BaseEntry> DeleteClickCommand { get; set; }
 
         public RelayCommand<AddableCollectionItem> ItemPickedCommand { get; set; }
 

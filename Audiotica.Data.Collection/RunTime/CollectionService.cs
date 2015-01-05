@@ -356,8 +356,6 @@ namespace Audiotica.Data.Collection.RunTime
         public async Task DeleteSongAsync(Song song)
         {
             // remove it from artist, albums and playlists songs
-            var artist = Artists.FirstOrDefault(p => p.Songs.Contains(song));
-            var album = Albums.FirstOrDefault(p => p.Songs.Contains(song));
             var playlists = Playlists.Where(p => p.Songs.Count(pp => pp.SongId == song.Id) > 0).ToList();
 
             foreach (var playlist in playlists)
@@ -374,25 +372,20 @@ namespace Audiotica.Data.Collection.RunTime
                 }
             }
 
-            if (album != null)
+            song.Album.Songs.Remove(song);
+            if (song.Album.Songs.Count == 0)
             {
-                album.Songs.Remove(song);
-                if (album.Songs.Count == 0)
-                {
-                    await _sqlService.DeleteItemAsync(album);
-                    Albums.Remove(album);
-                    artist.Albums.Remove(album);
-                }
+                await _sqlService.DeleteItemAsync(song.Album);
+                Albums.Remove(song.Album);
+                song.Artist.Albums.Remove(song.Album);
             }
 
-            if (artist != null)
+
+            song.Artist.Songs.Remove(song);
+            if (song.Artist.Songs.Count == 0)
             {
-                artist.Songs.Remove(song);
-                if (artist.Songs.Count == 0)
-                {
-                    await _sqlService.DeleteItemAsync(artist);
-                    Artists.Remove(artist);
-                }
+                await _sqlService.DeleteItemAsync(song.Artist);
+                Artists.Remove(song.Artist);
             }
 
             //good, now lets delete it from the db
