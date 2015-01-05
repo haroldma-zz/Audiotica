@@ -26,8 +26,8 @@ namespace Audiotica.Data.Model
 
             Id = Convert.ToBase64String(Encoding.UTF8.GetBytes(Title.ToLower()));
 
-            if (!string.IsNullOrEmpty(ArtistName))
-                ArtistId = Convert.ToBase64String(Encoding.UTF8.GetBytes(ArtistName.ToLower()));
+            if (!string.IsNullOrEmpty(ArtistName) || !string.IsNullOrEmpty(AlbumArtist))
+                ArtistId = Convert.ToBase64String(Encoding.UTF8.GetBytes((AlbumArtist ?? ArtistName).ToLower()));
             if (!string.IsNullOrEmpty(AlbumName))
                 AlbumId = Convert.ToBase64String(Encoding.UTF8.GetBytes(AlbumName.ToLower()));
 
@@ -37,8 +37,10 @@ namespace Audiotica.Data.Model
 
         private string CleanText(string text)
         {
+            if (string.IsNullOrEmpty(text))
+                return null;
             //[^0-9a-zA-Z]+
-            return Regex.Replace(text, @"[^a-zA-Z0-9\s,)]*$", "");
+            return Regex.Replace(Regex.Replace(text, "[\\~%{}/:;|]", ""), @"\s+", " ");
         }
 
         public string Id { get; set; }

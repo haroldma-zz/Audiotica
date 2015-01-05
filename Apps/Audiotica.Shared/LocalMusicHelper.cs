@@ -44,7 +44,7 @@ namespace Audiotica
             return new Album
             {
                 ProviderId = "local." + track.AlbumId,
-                Name = track.AlbumName.Trim().Replace("  ", " ")
+                Name = track.AlbumName.Trim()
             };
         }
 
@@ -53,7 +53,9 @@ namespace Audiotica
             return new Artist
             {
                 ProviderId = "local." + track.ArtistId,
-                Name = (track.AlbumArtist ?? track.ArtistName).Trim().Replace("  ", " ")
+                Name = (string.IsNullOrEmpty(track.AlbumArtist) 
+                ? track.ArtistName
+                : track.AlbumArtist).Trim()
             };
         }
 
@@ -62,7 +64,7 @@ namespace Audiotica
             var song = new Song
             {
                 ProviderId = "local." + track.Id,
-                Name = track.Title.Trim().Replace("  ", " "),
+                Name = track.Title.Trim(),
                 ArtistName = track.ArtistName,
                 Duration = track.Duration,
                 AudioUrl = track.FilePath,
