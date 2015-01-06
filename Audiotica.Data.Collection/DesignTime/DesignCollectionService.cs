@@ -10,6 +10,7 @@ using Windows.Storage;
 using Windows.UI.Xaml.Media.Imaging;
 using Audiotica.Core.Common;
 using Audiotica.Data.Collection.Model;
+using TagLib;
 
 #endregion
 
@@ -120,7 +121,7 @@ namespace Audiotica.Data.Collection.DesignTime
             throw new NotImplementedException();
         }
 
-        public Task AddSongAsync(Song song, StorageFile songFile, string artistArtwork)
+        public Task AddSongAsync(Song song, Tag tags, string artistArtwork)
         {
             throw new NotImplementedException();
         }

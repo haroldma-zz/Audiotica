@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.Storage;
 using Audiotica.Core.Exceptions;
+using Audiotica.Core.Utilities;
 using Audiotica.Data.Collection.Model;
 using Audiotica.Data.Model;
 using TagLib;
@@ -102,18 +103,66 @@ namespace Audiotica
                 return SavingError.AlreadyExists;
             }
 
-            var prop = await file.Properties.GetMusicPropertiesAsync().AsTask().ConfigureAwait(false);
-            var track = new LocalSong(prop)
+            #region Getting metadata
+
+            #region id3 tags
+
+            File tagFile;
+            var fileStream = await file.OpenStreamForReadAsync();
+            try
             {
-                FilePath = audioPath
-            };
+                tagFile = File.Create(new StreamFileAbstraction(file.Name, fileStream, fileStream));
+            }
+            catch
+            {
+                tagFile = null;
+            }
+
+            if (tagFile == null)
+            {
+                //need to reopen (when it fails to open it disposes of the stream
+                fileStream = await file.OpenStreamForReadAsync();
+                tagFile = File.Create(new StreamFileAbstraction(
+                    file.Name.Replace(".mp3", ".m4a"), fileStream, fileStream));
+            }
+
+            var tags = tagFile.Tag;
+            using (fileStream) { }
+            using (tagFile) { }
+
+            #endregion
+
+            LocalSong track;
+            if (tags == null)
+            {
+                //if there aren't any id3tags, try using the properties from the file
+                var prop = await file.Properties.GetMusicPropertiesAsync().AsTask().ConfigureAwait(false);
+                track = new LocalSong(prop)
+                {
+                    FilePath = audioPath
+                };
+            }
+            else
+            {
+                track = new LocalSong(tags.Title, tags.JoinedPerformers, tags.Album, tags.FirstAlbumArtist)
+                {
+                    FilePath = audioPath,
+                    Genre = tags.FirstGenre,
+                    TrackNumber = (int)tags.Track,
+                };
+            }
+
             var song = track.ToSong();
 
+            #endregion
+
+            //if no metadata was obtain, then result to using the filename
             if (string.IsNullOrEmpty(song.Name))
             {
                 song.Name = file.DisplayName;
-                song.ProviderId += Convert.ToBase64String(Encoding.UTF8.GetBytes(file.DisplayName.ToLower()));
+                song.ProviderId += Convert.ToBase64String(Encoding.UTF8.GetBytes(song.Name.ToLower()));
             }
+
 
             if (App.Locator.CollectionService.SongAlreadyExists(song.ProviderId, 
                 track.Title, track.AlbumName, track.ArtistName))
@@ -124,7 +173,7 @@ namespace Audiotica
             try
             {
                 await
-                    App.Locator.CollectionService.AddSongAsync(song, file, null)
+                    App.Locator.CollectionService.AddSongAsync(song, tags, null)
                         .ConfigureAwait(false);
                 return SavingError.None;
             }

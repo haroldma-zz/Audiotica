@@ -7,6 +7,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Windows.Storage;
 using Audiotica.Data.Collection.Model;
+using TagLib;
 
 #endregion
 
@@ -34,7 +35,7 @@ namespace Audiotica.Data.Collection
         ///     Adds the song to the database and collection.
         /// </summary>
         Task AddSongAsync(Song song, string artworkUrl, string artistArtwork);
-        Task AddSongAsync(Song song, StorageFile songFile, string artistArtwork);
+        Task AddSongAsync(Song song, Tag tags, string artistArtwork);
 
         /// <summary>
         ///     Deletes the song from the database and collection.  Also all related files.

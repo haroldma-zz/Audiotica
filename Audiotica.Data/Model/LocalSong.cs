@@ -6,12 +6,28 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Windows.Storage;
 using Windows.Storage.FileProperties;
+using Windows.UI.Xaml.Controls;
 using Audiotica.Data.Collection.Model;
 
 namespace Audiotica.Data.Model
 {
     public class LocalSong
     {
+        public LocalSong(string title, string artist, string album, string albumArtist)
+        {
+            Title = CleanText(title);
+            ArtistName = CleanText(artist);
+            AlbumName = CleanText(album);
+            AlbumArtist = CleanText(albumArtist);
+
+            if (!string.IsNullOrEmpty(Title))
+                Id = Convert.ToBase64String(Encoding.UTF8.GetBytes(Title.ToLower()));
+            if (!string.IsNullOrEmpty(ArtistName) || !string.IsNullOrEmpty(AlbumArtist))
+                ArtistId = Convert.ToBase64String(Encoding.UTF8.GetBytes((AlbumArtist ?? ArtistName).ToLower()));
+            if (!string.IsNullOrEmpty(AlbumName))
+                AlbumId = Convert.ToBase64String(Encoding.UTF8.GetBytes(AlbumName.ToLower()));
+        }
+
         public LocalSong(MusicProperties musicProps)
         {
             Title = CleanText(musicProps.Title);
@@ -26,7 +42,6 @@ namespace Audiotica.Data.Model
 
             if (!string.IsNullOrEmpty(Title))
                 Id = Convert.ToBase64String(Encoding.UTF8.GetBytes(Title.ToLower()));
-
             if (!string.IsNullOrEmpty(ArtistName) || !string.IsNullOrEmpty(AlbumArtist))
                 ArtistId = Convert.ToBase64String(Encoding.UTF8.GetBytes((AlbumArtist ?? ArtistName).ToLower()));
             if (!string.IsNullOrEmpty(AlbumName))
@@ -41,7 +56,7 @@ namespace Audiotica.Data.Model
             if (string.IsNullOrEmpty(text))
                 return null;
             //[^0-9a-zA-Z]+
-            return Regex.Replace(Regex.Replace(text, "[\\~%{}/:;|]", ""), @"\s+", " ");
+            return Regex.Replace(text, @"\s+", " ");
         }
 
         public string Id { get; set; }

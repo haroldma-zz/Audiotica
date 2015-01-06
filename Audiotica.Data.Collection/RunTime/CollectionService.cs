@@ -154,12 +154,12 @@ namespace Audiotica.Data.Collection.RunTime
             return AddSongAsync(song, null, artworkUrl, artistArtwork);
         }
 
-        public Task AddSongAsync(Song song, StorageFile songFile, string artistArtwork)
+        public Task AddSongAsync(Song song, Tag tags, string artistArtwork)
         {
-            return AddSongAsync(song, songFile, null, artistArtwork);
+            return AddSongAsync(song, tags, null, artistArtwork);
         }
 
-        private async Task AddSongAsync(Song song, StorageFile songFile, string artworkUrl, string artistArtwork)
+        private async Task AddSongAsync(Song song, Tag tags, string artworkUrl, string artistArtwork)
         {
             #region create artist
 
@@ -246,34 +246,21 @@ namespace Audiotica.Data.Collection.RunTime
 
                 var albumFilePath = string.Format(CollectionConstant.ArtworkPath, song.Album.Id);
 
-                if (songFile != null)
+                if (tags != null && tags.Pictures != null)
                 {
-                    using (var fileStream = await songFile.OpenStreamForReadAsync())
+                    Stream artwork = null;
+
+                    var image = tags.Pictures.FirstOrDefault();
+                    if (image != null)
                     {
-                        try
-                        {
-                            using (
-                                var tagFile =
-                                    File.Create(new StreamFileAbstraction(songFile.Name, fileStream, fileStream)))
-                            {
-                                Stream artwork = null;
+                        artwork = new MemoryStream(image.Data.Data);
+                    }
 
-                                var tags = tagFile.GetTag(TagTypes.Id3v2);
-                                var image = tags.Pictures.FirstOrDefault();
-                                if (image != null)
-                                {
-                                    artwork = new MemoryStream(image.Data.Data);
-                                }
-
-                                if (artwork != null)
-                                {
-                                    song.Album.HasArtwork = await GetArtworkAsync(albumFilePath, artwork);
-                                    await _sqlService.UpdateItemAsync(song.Album);
-                                    artwork.Dispose();
-                                }
-                            }
-                        }
-                        catch { }
+                    if (artwork != null)
+                    {
+                        song.Album.HasArtwork = await GetArtworkAsync(albumFilePath, artwork);
+                        await _sqlService.UpdateItemAsync(song.Album);
+                        artwork.Dispose();
                     }
                 }
                 if (!string.IsNullOrEmpty(artworkUrl))
