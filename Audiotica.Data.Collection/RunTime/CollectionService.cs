@@ -455,10 +455,9 @@ namespace Audiotica.Data.Collection.RunTime
         public async Task ClearQueueAsync()
         {
             if (PlaybackQueue.Count == 0) return;
-
             await _bgSqlService.DeleteTableAsync<QueueSong>();
             _lookupMap.Clear();
-            PlaybackQueue.Clear();
+            await _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => PlaybackQueue.Clear());
         }
 
         public async Task<QueueSong> AddToQueueAsync(Song song, int position = -1)
@@ -506,12 +505,14 @@ namespace Audiotica.Data.Collection.RunTime
             try
             {
                 //Add the new queue entry to the collection and map
-                if (insert)
-                    PlaybackQueue.Insert(position, newQueue);
+                await _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                {
+                    if (insert)
+                        PlaybackQueue.Insert(position, newQueue);
                 else
                     PlaybackQueue.Add(newQueue);
-                _lookupMap.Add(newQueue.Id, newQueue);
-
+                    _lookupMap.Add(newQueue.Id, newQueue);
+                });
                 return newQueue;
             }
             catch
@@ -548,7 +549,7 @@ namespace Audiotica.Data.Collection.RunTime
                 await _bgSqlService.UpdateItemAsync(nextModel);
             }
 
-            PlaybackQueue.Remove(queueSongToRemove);
+            await _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => PlaybackQueue.Remove(queueSongToRemove));
             _lookupMap.Remove(queueSongToRemove.Id);
 
             //Delete from database

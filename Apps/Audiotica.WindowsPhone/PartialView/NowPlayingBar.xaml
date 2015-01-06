@@ -12,7 +12,7 @@
     DataContext="{Binding Player, Source={StaticResource Locator}}"
     Height="{Binding NowPlayingBarHeight}">
 
-    <Grid x:Name="grid" VerticalAlignment="Bottom" Height="80" Visibility="Collapsed">
+    <Grid x:Name="grid" VerticalAlignment="Bottom" Height="80" Visibility="Visible">
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroup x:Name="VisualStateGroup">
                 <VisualStateGroup.Transitions>
@@ -82,27 +82,31 @@
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
-            <Grid>
-<!--                <interactivity:Interaction.Behaviors>-->
-<!--                    <core:EventTriggerBehavior EventName="Tapped">-->
-<!--                        <core:InvokeCommandAction Command="{Binding NpBarTappedRelayCommand}" />-->
-<!--                    </core:EventTriggerBehavior>-->
-<!--                </interactivity:Interaction.Behaviors>-->
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
-                <Image Stretch="UniformToFill" Source="{Binding CurrentQueue.Song.Album.Artwork}" Width="80" Margin="0,0,10,0" Height="80" />
-                <StackPanel VerticalAlignment="Center" Grid.Column="1">
-                    <TextBlock Text="{Binding CurrentQueue.Song.Name}" FontSize="20"
-                           TextTrimming="CharacterEllipsis" FontWeight="Bold" />
-                    <TextBlock Text="{Binding CurrentQueue.Song.Artist.Name}" FontSize="15" FontWeight="Thin"
+           <FlipView Name="FlipView" ItemsSource="{Binding CollectionService.PlaybackQueue}" SelectionChanged="FlipView_SelectionChanged">
+               <FlipView.ItemTemplate>
+                   <DataTemplate>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Image Stretch="UniformToFill" Source="{Binding Song.Album.Artwork}" Width="80" Margin="0,0,10,0" Height="80" />
+                            <StackPanel VerticalAlignment="Center" Grid.Column="1">
+                                <TextBlock Text="{Binding Song.Name}" FontSize="20"
+                           TextTrimming="CharacterEllipsis" FontWeight="Bold" FontFamily="Global User Interface" />
+                                <TextBlock Text="{Binding Song.Artist.Name}" FontSize="15" FontWeight="Thin"
                            Foreground="#89FFFFFF"
                            TextTrimming="CharacterEllipsis" />
-                </StackPanel>
-            </Grid>
-            <AppBarButton Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center" IsCompact="True"
-                          Icon="{Binding PlayPauseIcon}" Command="{Binding PlayPauseRelayCommand}" Margin="0,0,10,10" />
+                            </StackPanel>
+                        </Grid>
+                    </DataTemplate>
+               </FlipView.ItemTemplate>
+           </FlipView>
+            <Button Grid.Column="1" Style="{StaticResource PlainButtonStyle}" Command="{Binding PlayPauseRelayCommand}" Margin="0" VerticalAlignment="Stretch" Width="60" VerticalContentAlignment="Stretch">
+                <Grid Background="#333">
+                    <SymbolIcon Symbol="{Binding PlayPauseIcon}" />
+                </Grid>
+            </Button>
         </Grid>
         <ProgressBar Grid.Row="1"
                      Value="{Binding Position, Converter={StaticResource TimespanToDoubleConverter}, Mode=TwoWay}" Maximum="{Binding Duration, Converter={StaticResource TimespanToDoubleConverter}, Mode=TwoWay}" IsIndeterminate="{Binding IsLoading}" />
