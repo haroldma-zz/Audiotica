@@ -243,7 +243,7 @@ namespace Audiotica.WindowsPhone.Player
 
             var index = _currentTrackIndex + 1;
 
-            if (Tracks.Count > 1 && AppSettingsHelper.Read<bool>("Shuffle"))
+            if (Tracks.Count > 2 && AppSettingsHelper.Read<bool>("Shuffle"))
             {
                 var rnd = new Random();
                 var shuffle = rnd.Next(0, Tracks.Count);

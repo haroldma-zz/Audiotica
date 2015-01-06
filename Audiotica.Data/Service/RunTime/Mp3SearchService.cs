@@ -131,7 +131,11 @@ namespace Audiotica.Data.Service.RunTime
 
         public async Task<List<WebSong>> SearchMp3Clan(string title, string artist, string album = null, int limit = 5)
         {
-            var url = string.Format(Mp3ClanSearchUrl, CreateQuery(title, artist, album), limit);
+            //mp3clan search doesn't work that well with the pound key (even encoded)
+            var url = string.Format(Mp3ClanSearchUrl, 
+                CreateQuery(
+                title.Contains("#") ? title.Replace("#", "") : title, 
+                artist, album), limit);
 
             using (var client = new HttpClient())
             {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -47,7 +48,7 @@ namespace Audiotica.Data.Spotify
         {
             limit = Math.Min(50, limit);
             var builder = new StringBuilder("https://api.spotify.com/v1/search");
-            builder.Append("?q=" + q);
+            builder.Append("?q=" + WebUtility.UrlEncode(q));
             builder.Append("&type=" + type.GetSearchValue(","));
             builder.Append("&limit=" + limit);
             builder.Append("&offset=" + offset);
