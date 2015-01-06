@@ -36,7 +36,7 @@ namespace Audiotica
         private RelayCommand _npBarTappedRelayCommand;
         private double _npHeight;
         private double _npbHeight = double.NaN;
-        private IconElement _playPauseIcon;
+        private Symbol _playPauseIcon;
         private TimeSpan _position;
         private bool _isPlayerActive;
 
@@ -65,7 +65,7 @@ namespace Audiotica
             else
             {
                 CurrentQueue = service.PlaybackQueue.FirstOrDefault();
-                PlayPauseIcon = new SymbolIcon(Symbol.Play);
+                PlayPauseIcon = Symbol.Play;
             }
         }
 
@@ -93,7 +93,7 @@ namespace Audiotica
             set { Set(ref _currentQueue, value); }
         }
 
-        public IconElement PlayPauseIcon
+        public Symbol PlayPauseIcon
         {
             get { return _playPauseIcon; }
             set { Set(ref _playPauseIcon, value); }
@@ -169,12 +169,12 @@ namespace Audiotica
             switch (playbackStateEventArgs.State)
             {
                 default:
-                    PlayPauseIcon = new SymbolIcon(Symbol.Play);
+                    PlayPauseIcon = Symbol.Play;
                     _timer.Stop();
                     break;
                 case MediaPlayerState.Playing:
                     _timer.Start();
-                    PlayPauseIcon = new SymbolIcon(Symbol.Pause);
+                    PlayPauseIcon = Symbol.Pause;
                     break;
                 case MediaPlayerState.Buffering:
                 case MediaPlayerState.Opening:
