@@ -2,10 +2,16 @@
 
 using System;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
+using Windows.Foundation;
+using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Data;
+using Windows.UI.Xaml.Input;
+using Windows.UI.Xaml.Media;
 using Audiotica.Core;
 using Audiotica.Core.Utilities;
 using Audiotica.Data.Collection.Model;
@@ -50,9 +56,11 @@ namespace Audiotica.PartialView
                 while (containsSong)
                 {
                     containsSong = !App.Locator.CollectionService.PlaybackQueue.Contains(e.NewValue);
-                    
-                    if(!containsSong)
-                        nowPlayingBar.FlipView.SelectedItem = e.NewValue;
+
+                    if (!containsSong)
+                    {
+                        nowPlayingBar.SongFlipView.SelectedItem = e.NewValue;
+                    }
                 }
             }
 
@@ -61,7 +69,7 @@ namespace Audiotica.PartialView
 
         private void FlipView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            var song = FlipView.SelectedItem as QueueSong;
+            var song = SongFlipView.SelectedItem as QueueSong;
 
             if (song == null) return;
 
@@ -71,6 +79,43 @@ namespace Audiotica.PartialView
             {
                 App.Locator.AudioPlayerHelper.PlaySong(song);
             }
+        }
+
+        private void Grid_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
+        {
+            var transform = Grid.RenderTransform as CompositeTransform;
+            transform.TranslateY += e.Delta.Translation.Y;
+
+            if (transform.TranslateY < -200)
+            {
+                transform.TranslateY = -200;
+            }
+            else if (transform.TranslateY > 0)
+            {
+                transform.TranslateY = 0;
+            }
+        }
+
+        private void Grid_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
+        {
+            if (e.Velocities.Linear.Y < 0)
+            {
+                SlideUp.Begin();
+            }
+            else
+            {
+                SlideDown.Begin();
+            }
+        }
+
+        private void SongFlipView_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            var transform = Grid.RenderTransform as CompositeTransform;
+
+            if (transform.TranslateY == 0)
+                SlideUp.Begin();
+            else
+                SlideDown.Begin();
         }
     }
 }

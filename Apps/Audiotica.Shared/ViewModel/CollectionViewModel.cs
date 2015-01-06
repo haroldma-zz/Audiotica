@@ -225,13 +225,13 @@ namespace Audiotica.ViewModel
             if (item is Artist)
             {
                 var artist = item as Artist;
-                queueSongs = artist.Songs.ToList().Shuffle().ToList();
+                queueSongs = artist.Songs.ToList();
             }
 
             else if (item is Album)
             {
                 var album = item as Album;
-                queueSongs = album.Songs.ToList().Shuffle().ToList();
+                queueSongs = album.Songs.ToList();
             }
 
             else if (item is Playlist)

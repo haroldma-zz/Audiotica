@@ -4,15 +4,26 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
-    xmlns:core="using:Microsoft.Xaml.Interactions.Core"
+    xmlns:partialView="using:Audiotica.PartialView"
+    xmlns:audiotica="using:Audiotica"
     mc:Ignorable="d"
     d:DesignHeight="800"
     d:DesignWidth="480"
     DataContext="{Binding Player, Source={StaticResource Locator}}"
     Height="{Binding NowPlayingBarHeight}">
+	<UserControl.Resources>
+		<Storyboard x:Name="SlideUp">
+            <DoubleAnimation Duration="0:0:0.1" To="-200" Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateY)" Storyboard.TargetName="Grid" d:IsOptimized="True"/>
+		</Storyboard>
+        <Storyboard x:Name="SlideDown">
+            <DoubleAnimation Duration="0:0:0.1" To="0" Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateY)" Storyboard.TargetName="Grid" d:IsOptimized="True"/>
+        </Storyboard>
+	</UserControl.Resources>
 
-    <Grid x:Name="grid" VerticalAlignment="Bottom" Height="80" Visibility="Collapsed">
+    <Grid x:Name="Grid" Visibility="Visible" VerticalAlignment="Bottom" Height="280" RenderTransformOrigin="0,0" 
+          Background="Black"
+          ManipulationMode="TranslateY" ManipulationDelta="Grid_ManipulationDelta" Margin="0,0,0,-200" 
+          ManipulationCompleted="Grid_ManipulationCompleted">
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroup x:Name="VisualStateGroup">
                 <VisualStateGroup.Transitions>
@@ -20,15 +31,15 @@
                         <Storyboard>
                             <DoubleAnimationUsingKeyFrames EnableDependentAnimation="True"
                                                            Storyboard.TargetProperty="(FrameworkElement.Height)"
-                                                           Storyboard.TargetName="grid">
-                                <EasingDoubleKeyFrame KeyTime="0" Value="0" />
-                                <EasingDoubleKeyFrame KeyTime="0:0:0.03" Value="50" />
-                                <EasingDoubleKeyFrame KeyTime="0:0:0.1" Value="100" />
-                                <EasingDoubleKeyFrame KeyTime="0:0:0.15" Value="100" />
-                                <EasingDoubleKeyFrame KeyTime="0:0:0.2" Value="80" />
+                                                           Storyboard.TargetName="Grid">
+                                <EasingDoubleKeyFrame KeyTime="0" Value="200" />
+                                <EasingDoubleKeyFrame KeyTime="0:0:0.03" Value="250" />
+                                <EasingDoubleKeyFrame KeyTime="0:0:0.1" Value="250" />
+                                <EasingDoubleKeyFrame KeyTime="0:0:0.15" Value="300" />
+                                <EasingDoubleKeyFrame KeyTime="0:0:0.2" Value="280" />
                             </DoubleAnimationUsingKeyFrames>
                             <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)"
-                                                           Storyboard.TargetName="grid">
+                                                           Storyboard.TargetName="Grid">
                                 <DiscreteObjectKeyFrame KeyTime="0">
                                     <DiscreteObjectKeyFrame.Value>
                                         <Visibility>Visible</Visibility>
@@ -45,7 +56,7 @@
                     <VisualTransition GeneratedDuration="0" To="Collapsed">
                         <Storyboard>
                             <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)"
-                                                           Storyboard.TargetName="grid">
+                                                           Storyboard.TargetName="Grid">
                                 <DiscreteObjectKeyFrame KeyTime="0">
                                     <DiscreteObjectKeyFrame.Value>
                                         <Visibility>Visible</Visibility>
@@ -54,10 +65,10 @@
                             </ObjectAnimationUsingKeyFrames>
                             <DoubleAnimationUsingKeyFrames EnableDependentAnimation="True"
                                                            Storyboard.TargetProperty="(FrameworkElement.Height)"
-                                                           Storyboard.TargetName="grid">
-                                <EasingDoubleKeyFrame KeyTime="0" Value="80" />
-                                <EasingDoubleKeyFrame KeyTime="0:0:0.02" Value="100" />
-                                <EasingDoubleKeyFrame KeyTime="0:0:0.05" Value="0" />
+                                                           Storyboard.TargetName="Grid">
+                                <EasingDoubleKeyFrame KeyTime="0" Value="160" />
+                                <EasingDoubleKeyFrame KeyTime="0:0:0.02" Value="280" />
+                                <EasingDoubleKeyFrame KeyTime="0:0:0.05" Value="200" />
                             </DoubleAnimationUsingKeyFrames>
                         </Storyboard>
                     </VisualTransition>
@@ -65,7 +76,7 @@
                 <VisualState x:Name="Visible">
                     <Storyboard>
                         <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)"
-                                                       Storyboard.TargetName="grid">
+                                                       Storyboard.TargetName="Grid">
                             <DiscreteObjectKeyFrame KeyTime="0">
                                 <DiscreteObjectKeyFrame.Value>
                                     <Visibility>Visible</Visibility>
@@ -77,49 +88,73 @@
                 <VisualState x:Name="Collapsed" />
             </VisualStateGroup>
         </VisualStateManager.VisualStateGroups>
+        <Grid.RenderTransform>
+            <CompositeTransform />
+        </Grid.RenderTransform>
         <Grid.RowDefinitions>
-            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <Grid Background="#1F1F1F">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
-            <FlipView Name="FlipView" ItemsSource="{Binding CollectionService.PlaybackQueue}"
-                      SelectionChanged="FlipView_SelectionChanged">
-                <FlipView.ItemTemplate>
-                    <DataTemplate>
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition Width="*" />
-                            </Grid.ColumnDefinitions>
-                            <Image Stretch="UniformToFill" Source="{Binding Song.Album.Artwork}" Width="80"
+        <Grid Background="#1F1F1F" Height="80" VerticalAlignment="Top">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <FlipView Name="SongFlipView" ItemsSource="{Binding CollectionService.PlaybackQueue}"
+                      SelectionChanged="FlipView_SelectionChanged" Tapped="SongFlipView_Tapped">
+                    <FlipView.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Horizontal" />
+                        </ItemsPanelTemplate>
+                    </FlipView.ItemsPanel>
+                    <FlipView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Image Stretch="UniformToFill" Source="{Binding Song.Album.Artwork}" Width="80"
                                    Margin="0,0,10,0" Height="80" />
-                            <StackPanel VerticalAlignment="Center" Grid.Column="1">
-                                <TextBlock Text="{Binding Song.Name}" FontSize="20"
+                                <StackPanel VerticalAlignment="Center" Grid.Column="1">
+                                    <TextBlock Text="{Binding Song.Name}" FontSize="20"
                                            TextTrimming="CharacterEllipsis" FontWeight="Bold"
                                            FontFamily="Global User Interface" />
-                                <TextBlock Text="{Binding Song.Artist.Name}" FontSize="15" FontWeight="Thin"
+                                    <TextBlock Text="{Binding Song.Artist.Name}" FontSize="15" FontWeight="Thin"
                                            Foreground="#89FFFFFF"
                                            TextTrimming="CharacterEllipsis" />
-                            </StackPanel>
-                        </Grid>
-                    </DataTemplate>
-                </FlipView.ItemTemplate>
-            </FlipView>
-            <Grid Grid.Column="1" Background="#333">
-                <Button Style="{StaticResource PlainButtonStyle}"
+                                </StackPanel>
+                            </Grid>
+                        </DataTemplate>
+                    </FlipView.ItemTemplate>
+                </FlipView>
+                <Grid Grid.Column="1" Background="#333">
+                    <Button Style="{StaticResource PlainButtonStyle}"
                         Command="{Binding PlayPauseRelayCommand}" Margin="0" VerticalAlignment="Stretch" Width="75"
                         VerticalContentAlignment="Stretch">
-                    <SymbolIcon Symbol="{Binding PlayPauseIcon}" />
-                </Button>
+                        <SymbolIcon Symbol="{Binding PlayPauseIcon}" />
+                    </Button>
+                </Grid>
             </Grid>
-        </Grid>
-        <ProgressBar Grid.Row="1"
+            <ProgressBar Grid.Row="1"
                      Value="{Binding Position, Converter={StaticResource TimespanToDoubleConverter}, Mode=TwoWay}"
                      Maximum="{Binding Duration, Converter={StaticResource TimespanToDoubleConverter}, Mode=TwoWay}"
                      IsIndeterminate="{Binding IsLoading}" />
+        </Grid>
+        <Grid Grid.Row="1" Height="200">
+            <Grid.Background>
+                <ImageBrush AlignmentY="Top" Opacity=".5" ImageSource="{Binding CurrentQueue.Song.Artist.Artwork}" Stretch="UniformToFill" />
+            </Grid.Background>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="5">
+                <AppBarToggleButton IsChecked="{Binding IsShuffle, Mode=TwoWay}" Icon="Shuffle" IsCompact="True" />
+                <AppBarToggleButton IsChecked="{Binding IsRepeat, Mode=TwoWay}" Icon="RepeatAll" IsCompact="True" />
+                <AppBarButton Icon="FullScreen" IsCompact="True" />
+            </StackPanel>
+        </Grid>
     </Grid>
 </UserControl>

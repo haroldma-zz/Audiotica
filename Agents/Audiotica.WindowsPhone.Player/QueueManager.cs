@@ -152,7 +152,11 @@ namespace Audiotica.WindowsPhone.Player
         /// </summary>
         private void MediaPlayer_MediaEnded(MediaPlayer sender, object args)
         {
-            SkipToNext();
+            if (AppSettingsHelper.Read<bool>("Repeat"))
+                StartTrackAt(_currentTrackIndex);
+
+            else
+                SkipToNext();
         }
 
         private void mediaPlayer_MediaFailed(MediaPlayer sender, MediaPlayerFailedEventArgs args)
@@ -236,7 +240,21 @@ namespace Audiotica.WindowsPhone.Player
         public void SkipToNext()
         {
             RefreshTracks();
-            StartTrackAt((_currentTrackIndex + 1)%Tracks.Count);
+
+            var index = _currentTrackIndex + 1;
+
+            if (Tracks.Count > 1 && AppSettingsHelper.Read<bool>("Shuffle"))
+            {
+                var rnd = new Random();
+                var shuffle = rnd.Next(0, Tracks.Count);
+                while (shuffle == index)
+                {
+                    shuffle = rnd.Next(0, Tracks.Count);    
+                }
+                index = shuffle;
+            }
+
+            StartTrackAt(index%Tracks.Count);
         }
 
         private void UpdateMediaEnded()

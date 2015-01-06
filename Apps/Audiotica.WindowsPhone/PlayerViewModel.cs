@@ -33,7 +33,6 @@ namespace Audiotica
         private TimeSpan _duration;
         private bool _isLoading;
         private bool _isUpdating;
-        private RelayCommand _npBarTappedRelayCommand;
         private double _npHeight;
         private double _npbHeight = double.NaN;
         private Symbol _playPauseIcon;
@@ -57,15 +56,34 @@ namespace Audiotica
                 _nextRelayCommand = new RelayCommand(NextSong);
                 _prevRelayCommand = new RelayCommand(PrevSong);
                 _playPauseRelayCommand = new RelayCommand(PlayPauseToggle);
-                _npBarTappedRelayCommand = new RelayCommand(NowPlayingBarTapped);
 
-                _timer = new DispatcherTimer {Interval = TimeSpan.FromSeconds(2)};
+                _timer = new DispatcherTimer {Interval = TimeSpan.FromSeconds(1)};
                 _timer.Tick += TimerOnTick;
             }
             else
             {
                 CurrentQueue = service.PlaybackQueue.FirstOrDefault();
                 PlayPauseIcon = Symbol.Play;
+            }
+        }
+
+        public bool IsRepeat
+        {
+            get { return AppSettingsHelper.Read<bool>("Repeat"); }
+            set
+            {
+                AppSettingsHelper.Write("Repeat", value);
+                RaisePropertyChanged();
+            }
+        }
+
+        public bool IsShuffle
+        {
+            get { return AppSettingsHelper.Read<bool>("Shuffle"); }
+            set
+            {
+                AppSettingsHelper.Write("Shuffle", value);
+                RaisePropertyChanged();
             }
         }
 
@@ -140,17 +158,6 @@ namespace Audiotica
         public AudioPlayerHelper AudioPlayerHelper
         {
             get { return _helper; }
-        }
-
-        public RelayCommand NpBarTappedRelayCommand
-        {
-            get { return _npBarTappedRelayCommand; }
-            set { Set(ref _npBarTappedRelayCommand, value); }
-        }
-
-        private void NowPlayingBarTapped()
-        {
-            App.RootFrame.Navigate(typeof (NowPlayingPage));
         }
 
         private void TimerOnTick(object sender, object o)

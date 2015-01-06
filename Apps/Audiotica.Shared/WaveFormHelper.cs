@@ -23,25 +23,32 @@ namespace Audiotica
             bmp.Clear(backColor);
 
             float size = data.Count;
+
+
             for (var iPixel = 0; iPixel < width; iPixel += 1)
             {
-                // determine start and end points within WAV
-                var start = (int) (iPixel*(size/width));
-                var end = (int) ((iPixel + 1)*(size/width));
-                if (end > data.Count)
-                    end = data.Count;
+                int yMax = 0;
+                int yMin = 0;
+                await Task.Run(() =>
+                {
+                    // determine start and end points within WAV
+                    var start = (int) (iPixel*(size/width));
+                    var end = (int) ((iPixel + 1)*(size/width));
+                    if (end > data.Count)
+                        end = data.Count;
 
-                float posAvg, negAvg;
-                Averages(data, start, end, out posAvg, out negAvg);
+                    float posAvg, negAvg;
+                    Averages(data, start, end, out posAvg, out negAvg);
 
-                var yMax = (int)(borderWidth + height - ((posAvg + 1)*.5f*height));
-                var yMin = (int)(borderWidth + height - ((negAvg + 1)*.5f*height));
+                    yMax = (int) (borderWidth + height - ((posAvg + 1)*.5f*height));
+                    yMin = (int) (borderWidth + height - ((negAvg + 1)*.5f*height));
+                });
 
                 bmp.DrawLine(iPixel + borderWidth, yMax, iPixel + borderWidth, yMin, foreColor);
             }
 
             var rnd = new InMemoryRandomAccessStream();
-            await bmp.ToStream(rnd, BitmapEncoder.JpegEncoderId);
+            await bmp.ToStream(rnd, BitmapEncoder.PngEncoderId);
 
             var artwork = new BitmapImage();
             await artwork.SetSourceAsync(rnd);
@@ -62,8 +69,8 @@ namespace Audiotica
                 if (float.IsNaN(data[i]) 
                     || float.IsPositiveInfinity(data[i]) 
                     || float.IsNegativeInfinity(data[i])
-                    || data[i] < -10
-                    || data[i] > 10)
+                    || data[i] < -50
+                    || data[i] > 50)
                     continue;
 
                 if (data[i] > 0)
