@@ -357,6 +357,9 @@
     <Reference Include="TagLib.Portable">
       <HintPath>..\..\packages\TagLib.Portable.1.0.2-pre\lib\portable-net45+win8+wpa81\TagLib.Portable.dll</HintPath>
     </Reference>
+    <Reference Include="WriteableBitmapEx.WinRT">
+      <HintPath>..\..\packages\WriteableBitmapEx.1.0.14.0\lib\wpa81\WriteableBitmapEx.WinRT.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="AdMediator.config" />
