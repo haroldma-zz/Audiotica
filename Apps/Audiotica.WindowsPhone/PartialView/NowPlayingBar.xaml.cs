@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.Foundation;
+using Windows.Media.Playback;
 using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -102,7 +103,7 @@ namespace Audiotica.PartialView
             {
                 SlideUp.Begin();
             }
-            else
+            else if(e.Velocities.Linear.Y > 1)
             {
                 SlideDown.Begin();
             }
@@ -116,6 +117,17 @@ namespace Audiotica.PartialView
                 SlideUp.Begin();
             else
                 SlideDown.Begin();
+        }
+
+        private void Slider_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
+        {
+            BackgroundMediaPlayer.Current.Pause();
+        }
+
+        private void Slider_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
+        {
+            BackgroundMediaPlayer.Current.Position = App.Locator.Player.Position;
+            BackgroundMediaPlayer.Current.Play();
         }
     }
 }
