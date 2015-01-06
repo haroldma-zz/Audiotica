@@ -1,5 +1,6 @@
 ﻿#region
 
+using Windows.UI.Xaml;
 using Audiotica.Core.Common;
 using Audiotica.Core.Utilities;
 using Audiotica.Data.Service.Interfaces;
@@ -16,7 +17,6 @@ namespace Audiotica.ViewModel
     {
         private readonly AdMediatorBar _adMediatorBar;
         private readonly IScrobblerService _service;
-        private RelayCommand _loginButtonRelay;
         private string _password;
         private bool _scrobbleSwitch;
         private string _username;
@@ -25,7 +25,8 @@ namespace Audiotica.ViewModel
         {
             _service = service;
             _adMediatorBar = adMediatorBar;
-            _loginButtonRelay = new RelayCommand(LoginButtonClicked);
+            LoginClickRelay = new RelayCommand(LoginButtonClicked);
+            DeveloperModeClickRelay = new RelayCommand(DeveloperModeExecute);
 
             var creds = CredentialHelper.GetCredentials("lastfm");
             if (creds == null) return;
@@ -35,6 +36,99 @@ namespace Audiotica.ViewModel
             LastFmPassword = creds.Password;
             IsLoggedIn = true;
         }
+
+        private int _devCount;
+        private const int DevModeCount = 7;
+        private void DeveloperModeExecute()
+        {
+            if (DevMode)
+                return;
+
+            _devCount++;
+
+            if (_devCount >= DevModeCount)
+            {
+                CurtainPrompt.Show("Challenge Completed: Dev Mode Unlock ");
+                DevMode = true;
+            }
+
+            else if (_devCount > 3)
+            {
+                CurtainPrompt.Show("{0} click(s) more to...???", DevModeCount - _devCount);
+            }
+        }
+
+        #region Dev mode
+
+        public bool DevMode
+        {
+            get { return AppSettingsHelper.Read<bool>("DevMode"); }
+            set
+            {
+                AppSettingsHelper.Write("DevMode", value);
+                EasyTracker.GetTracker().SendEvent("Settings", "DevMode", value ? "Enabled" : "Disabled", 0);
+                RaisePropertyChanged();
+            }
+        }
+
+        public bool Crashing
+        {
+            get { return AppSettingsHelper.Read("Crashing", true); }
+            set
+            {
+                AppSettingsHelper.Write("Crashing", value);
+                EasyTracker.GetTracker().SendEvent("Settings", "Crashing", value ? "Enabled" : "Disabled", 0);
+                RaisePropertyChanged();
+            }
+        }
+
+        public bool SimulateFirstRun
+        {
+            get { return AppSettingsHelper.Read<bool>("SimulateFirstRun"); }
+            set
+            {
+                AppSettingsHelper.Write("SimulateFirstRun", value);
+                EasyTracker.GetTracker().SendEvent("Settings", "SimulateFirstRun", value ? "Enabled" : "Disabled", 0);
+                RaisePropertyChanged();
+            }
+        }
+
+        public bool SimulateUpdate
+        {
+            get { return AppSettingsHelper.Read<bool>("SimulateUpdate"); }
+            set
+            {
+                AppSettingsHelper.Write("SimulateUpdate", value);
+                EasyTracker.GetTracker().SendEvent("Settings", "SimulateUpdate", value ? "Enabled" : "Disabled", 0);
+                RaisePropertyChanged();
+            }
+        }
+
+        public bool FrameRateCounter
+        {
+            get { return AppSettingsHelper.Read<bool>("FrameRateCounter"); }
+            set
+            {
+                Application.Current.DebugSettings.EnableFrameRateCounter = value;
+                AppSettingsHelper.Write("FrameRateCounter", value);
+                EasyTracker.GetTracker().SendEvent("Settings", "FrameRateCounter", value ? "Enabled" : "Disabled", 0);
+                RaisePropertyChanged();
+            }
+        }
+
+        public bool RedrawRegions
+        {
+            get { return AppSettingsHelper.Read<bool>("RedrawRegions"); }
+            set
+            {
+                Application.Current.DebugSettings.EnableRedrawRegions = value;
+                AppSettingsHelper.Write("RedrawRegions", value);
+                EasyTracker.GetTracker().SendEvent("Settings", "RedrawRegions", value ? "Enabled" : "Disabled", 0);
+                RaisePropertyChanged();
+            }
+        }
+
+        #endregion
 
         public string Version
         {
@@ -103,11 +197,8 @@ namespace Audiotica.ViewModel
             set { Set(ref _password, value); }
         }
 
-        public RelayCommand LoginButtonRelay
-        {
-            get { return _loginButtonRelay; }
-            set { Set(ref _loginButtonRelay, value); }
-        }
+        public RelayCommand LoginClickRelay { get; set; }
+        public RelayCommand DeveloperModeClickRelay { get; set; }
 
         private async void LoginButtonClicked()
         {

@@ -54,9 +54,13 @@ namespace Audiotica
             _continuationManager = new ContinuationManager();
             Suspending += OnSuspending;
             Resuming += OnResuming;
+            UnhandledException += OnUnhandledException;
             AppVersionHelper.OnLaunched();
             EasyTracker.GetTracker().AppVersion =
                 AppVersionHelper.CurrentVersion + "-beta";
+
+            Current.DebugSettings.EnableFrameRateCounter = AppSettingsHelper.Read<bool>("FrameRateCounter");
+            Current.DebugSettings.EnableRedrawRegions = AppSettingsHelper.Read<bool>("RedrawRegions");
         }
 
         #endregion
@@ -162,6 +166,14 @@ namespace Audiotica
             var deferral = e.SuspendingOperation.GetDeferral();
             Locator.AudioPlayerHelper.OnAppSuspended();
             deferral.Complete();
+        }
+
+        private void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            if (AppSettingsHelper.Read("Crashing", true)) return;
+
+            e.Handled = true;
+            CurtainPrompt.ShowError("[DEV-MODE] {0}", e.Message);
         }
 
         #endregion

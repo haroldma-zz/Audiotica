@@ -13,10 +13,24 @@
     <Grid>
         <Pivot x:Uid="SettingsPivot" Title="SETTINGS+MORE" HeaderTemplate="{StaticResource PivotHeaderTemplate}">
             <PivotItem x:Uid="SettingsApp" Header="APP">
-                <StackPanel>
-                    <ToggleSwitch x:Uid="SettingsToggleAds" Header="Ads" IsEnabled="False" IsOn="{Binding Advertisements, Mode=TwoWay}" />
-                    <ToggleSwitch x:Uid="SettingsToggleWallpaper" Header="AlbumName Art Wallpaper" IsOn="{Binding WallpaperArt, Mode=TwoWay}" />
-                </StackPanel>
+                <ScrollViewer>
+                    <StackPanel>
+                        <StackPanel>
+                            <ToggleSwitch x:Uid="SettingsToggleAds" Header="Ads" IsEnabled="False"
+                                      IsOn="{Binding Advertisements, Mode=TwoWay}" />
+                            <ToggleSwitch x:Uid="SettingsToggleWallpaper" Header="Album Art Wallpaper"
+                                      IsOn="{Binding WallpaperArt, Mode=TwoWay}" />
+                        </StackPanel>
+                        <StackPanel Visibility="{Binding DevMode, Converter={StaticResource VisibilityConverter}}" VerticalAlignment="Top" Margin="0,50,0,0">
+                            <TextBlock Text="Developer Options" Style="{StaticResource TitleTextBlockStyle}" Margin="0,0,0,10" FontSize="24" />
+                            <ToggleSwitch Header="Crashing (BE CAREFUL DISABLING)" IsOn="{Binding Crashing, Mode=TwoWay}" />
+                            <ToggleSwitch Header="Simulate First Run" IsOn="{Binding SimulateFirstRun, Mode=TwoWay}" />
+                            <ToggleSwitch Header="Simulate Update" IsOn="{Binding SimulateUpdate, Mode=TwoWay}" />
+                            <ToggleSwitch Header="Frame Rate Counter" IsOn="{Binding FrameRateCounter, Mode=TwoWay}" />
+                            <ToggleSwitch Header="Redraw Regions" IsOn="{Binding RedrawRegions, Mode=TwoWay}" />
+                        </StackPanel>
+                    </StackPanel>
+                </ScrollViewer>
             </PivotItem>
             <PivotItem x:Uid="SettingsLastFM" Header="LAST.FM">
                 <StackPanel>
@@ -26,7 +40,7 @@
                     </StackPanel.Resources>
                     <TextBox x:Uid="SettingsLastFMUsername" Header="Username" IsEnabled="{Binding IsLoggedIn,Converter={StaticResource BoolToOppositeConverter}}" Text="{Binding LastFmUsername, Mode=TwoWay}" />
                     <PasswordBox x:Uid="SettingsLastFMPassword" Header="Password" IsEnabled="{Binding IsLoggedIn, Converter={StaticResource BoolToOppositeConverter}}" Password="{Binding LastFmPassword, Mode=TwoWay}" />
-                    <Button Content="{Binding IsLoggedIn, Converter={StaticResource IsLoggedInConverter}}" Command="{Binding LoginButtonRelay}" HorizontalAlignment="Stretch" Margin="0,0,0,20" />
+                    <Button Content="{Binding IsLoggedIn, Converter={StaticResource IsLoggedInConverter}}" Command="{Binding LoginClickRelay}" HorizontalAlignment="Stretch" Margin="0,0,0,20" />
                     <ToggleSwitch x:Uid="SettingsLastFMScrobble" Header="Scrobble" IsOn="{Binding Scrobble, Mode=TwoWay}" IsEnabled="{Binding IsLoggedIn}" />
                 </StackPanel>
             </PivotItem>
@@ -41,7 +55,7 @@
                         <HyperlinkButton Content="/r/audioticawp" NavigateUri="http://reddit.com/r/AudioticaWP" FontSize="25" Foreground="{StaticResource PhoneAccentBrush}" />
                         <HyperlinkButton x:Uid="SettingsAboutGithub" Content="Source code at Github" NavigateUri="http://github.com/zumicts/Audiotica" FontSize="25" Foreground="{StaticResource PhoneAccentBrush}" />
                     </StackPanel>
-                    <TextBlock Text="{Binding Version}" TextAlignment="Right" FontSize="20" VerticalAlignment="Bottom" Margin="0,0,0,5" />
+                    <HyperlinkButton Command="{Binding DeveloperModeClickRelay}" Content="{Binding Version}" HorizontalAlignment="Right" FontSize="20" VerticalAlignment="Bottom" Margin="0,0,0,5"/>
                 </Grid>
             </PivotItem>
         </Pivot>
