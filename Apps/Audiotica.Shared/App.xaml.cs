@@ -173,7 +173,7 @@ namespace Audiotica
             if (AppSettingsHelper.Read("Crashing", true)) return;
 
             e.Handled = true;
-            CurtainPrompt.ShowError("[DEV-MODE] {0}", e.Message);
+            MessageBox.Show(e.Message + "\n" + e.Exception.StackTrace, "[DEV-MODE] Crashing Error");
         }
 
         #endregion
