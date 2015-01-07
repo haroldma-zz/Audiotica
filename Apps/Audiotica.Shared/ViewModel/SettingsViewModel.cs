@@ -221,7 +221,7 @@ namespace Audiotica.ViewModel
 
                 else
                 {
-                    CurtainPrompt.Show("GenericWait".FromLanguageResource());
+                    UiBlockerUtility.Block("GenericWait".FromLanguageResource());
                     if (await _service.AuthenticaAsync(LastFmUsername, LastFmPassword))
                     {
                         CurtainPrompt.Show("AuthLoginSuccess".FromLanguageResource());
@@ -232,6 +232,7 @@ namespace Audiotica.ViewModel
                     {
                         CurtainPrompt.ShowError("AuthLoginError".FromLanguageResource());
                     }
+                    UiBlockerUtility.Unblock();
                 }
             }
         }
