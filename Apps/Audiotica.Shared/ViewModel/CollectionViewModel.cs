@@ -398,7 +398,7 @@ namespace Audiotica.ViewModel
         {
             get
             {
-                var w = IsInDesignMode ? 480 : App.RootFrame.Width;
+                var w = IsInDesignMode ? 480 : App.RootFrame.ActualWidth;
                 return w/5;
             }
         }
