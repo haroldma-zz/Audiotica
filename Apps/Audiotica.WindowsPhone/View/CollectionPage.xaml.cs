@@ -124,7 +124,7 @@ namespace Audiotica.View
                 return;
             }
 
-            StatusBarHelper.ShowStatus("Backing up (this may take a bit)...");
+            UiBlockerUtility.Block("Backing up (this may take a bit)...");
 
             await StorageHelper.DeleteFileAsync("collection.bksqldb");
             await StorageHelper.DeleteFileAsync("player.bksqldb");
@@ -139,7 +139,7 @@ namespace Audiotica.View
             {
                 await stream.WriteAsync(data, 0, data.Length);
             }
-            StatusBarHelper.HideStatus();
+            UiBlockerUtility.Unblock();
 
             CurtainPrompt.Show("Backup completed.");
         }

@@ -357,7 +357,7 @@ namespace Audiotica.ViewModel
 
         private async void ImportExecute()
         {
-            StatusBarHelper.ShowStatus("Scanning...");
+            UiBlockerUtility.Block("Scanning...");
             var localMusic = await LocalMusicHelper.GetFilesInMusic();
 
             for (var i = 0; i < localMusic.Count; i++)
@@ -366,7 +366,7 @@ namespace Audiotica.ViewModel
                 await LocalMusicHelper.SaveTrackAsync(localMusic[i]);
             }
 
-            StatusBarHelper.HideStatus();
+            UiBlockerUtility.Unblock();
             await CollectionHelper.DownloadArtistsArtworkAsync();
         }
 
