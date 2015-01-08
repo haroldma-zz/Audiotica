@@ -23,8 +23,15 @@
         </Hub.HeaderTemplate>
         <HubSection x:Uid="HubMenu" Header="MENU" HeaderTemplate="{StaticResource HubHeaderTemplate}">
             <DataTemplate>
-                <StackPanel>
-                    <Button Style="{StaticResource PlainButtonStyle}" Margin="0,-20,0,0">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Button Style="{StaticResource PlainButtonStyle}" Margin="0,-15,0,0" FontFamily="Segoe UI Light" FontWeight="Light">
                         <TextBlock x:Uid="MenuItemSongs" Text="songs" FontSize="40" />
                         <interactivity:Interaction.Behaviors>
                             <core:EventTriggerBehavior EventName="Click">
@@ -32,7 +39,7 @@
                             </core:EventTriggerBehavior>
                         </interactivity:Interaction.Behaviors>
                     </Button>
-                    <Button Style="{StaticResource PlainButtonStyle}">
+                    <Button Grid.Row="1" Style="{StaticResource PlainButtonStyle}" FontFamily="Segoe UI Light" FontWeight="Light" Margin="0,10,0,0">
                         <TextBlock x:Uid="MenuItemArtistNames" Text="artists" FontSize="40" />
                         <interactivity:Interaction.Behaviors>
                             <core:EventTriggerBehavior EventName="Click">
@@ -40,7 +47,7 @@
                             </core:EventTriggerBehavior>
                         </interactivity:Interaction.Behaviors>
                     </Button>
-                    <Button Style="{StaticResource PlainButtonStyle}">
+                    <Button Grid.Row="2" Style="{StaticResource PlainButtonStyle}" FontFamily="Segoe UI Light" FontWeight="Light" Margin="0,10,0,0">
                         <TextBlock x:Uid="MenuItemAlbumNames" Text="albums" FontSize="40" />
                         <interactivity:Interaction.Behaviors>
                             <core:EventTriggerBehavior EventName="Click">
@@ -48,7 +55,7 @@
                             </core:EventTriggerBehavior>
                         </interactivity:Interaction.Behaviors>
                     </Button>
-                    <Button Style="{StaticResource PlainButtonStyle}">
+                    <Button Grid.Row="3" Style="{StaticResource PlainButtonStyle}" FontFamily="Segoe UI Light" FontWeight="Light" Margin="0,10,0,0">
                         <TextBlock x:Uid="MenuItemPlaylists" Text="playlists" FontSize="40" />
                         <interactivity:Interaction.Behaviors>
                             <core:EventTriggerBehavior EventName="Click">
@@ -56,7 +63,7 @@
                             </core:EventTriggerBehavior>
                         </interactivity:Interaction.Behaviors>
                     </Button>
-                    <Button Style="{StaticResource PlainButtonStyle}">
+                    <Button Grid.Row="4" Style="{StaticResource PlainButtonStyle}" FontFamily="Segoe UI Light" FontWeight="Light" Margin="0,10,0,0">
                         <TextBlock x:Uid="MenuItemSearch" Text="search" FontSize="40" />
                         <interactivity:Interaction.Behaviors>
                             <core:EventTriggerBehavior EventName="Click">
@@ -64,7 +71,7 @@
                             </core:EventTriggerBehavior>
                         </interactivity:Interaction.Behaviors>
                     </Button>
-                </StackPanel>
+                </Grid>
             </DataTemplate>
         </HubSection>
         <HubSection x:Uid="HubMostPlayed" Header="MOST PLAYED BY YOU"

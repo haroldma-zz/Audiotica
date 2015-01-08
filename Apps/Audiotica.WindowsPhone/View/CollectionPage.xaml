@@ -21,7 +21,7 @@
                                   IsSourceGrouped="True" Source="{Binding SortedAlbums}" />
         </Grid.Resources>
 
-        <GridView Name="WallpaperGridView" ItemsSource="{Binding RandomizeAlbumList}" SelectionMode="None">
+        <GridView CacheMode="BitmapCache" Name="WallpaperGridView" ItemsSource="{Binding RandomizeAlbumList}" SelectionMode="None">
             <GridView.ItemsPanel>
                 <ItemsPanelTemplate>
                     <controls:UniformGrid Columns="5" />
@@ -339,24 +339,11 @@
         <CommandBar ClosedDisplayMode="Minimal">
             <AppBarButton x:Uid="CollectionAppBarNewPlaylist" Icon="Add" Label="New Playlist"
                           FontFamily="Global User Interface">
-                <AppBarButton.Flyout>
-                    <PickerFlyout x:Uid="PlaylistNewPicker" Title="NEW PLAYLIST" ConfirmationButtonsVisible="True"
-                                  Placement="Full"
-                                  Confirmed="PickerFlyout_Confirmed" Closed="PickerFlyout_Closed">
-                        <PickerFlyout.Content>
-                            <ListView ItemsSource="{Binding Service.Songs}"
-                                      ItemTemplate="{StaticResource SongDataTemplate}"
-                                      SelectionMode="Multiple" Padding="0,0,0,50">
-                                <ListView.ItemContainerTransitions>
-                                    <TransitionCollection>
-                                        <AddDeleteThemeTransition />
-                                        <ReorderThemeTransition />
-                                    </TransitionCollection>
-                                </ListView.ItemContainerTransitions>
-                            </ListView>
-                        </PickerFlyout.Content>
-                    </PickerFlyout>
-                </AppBarButton.Flyout>
+                <interactivity:Interaction.Behaviors>
+                    <core:EventTriggerBehavior EventName="Click">
+                        <core:NavigateToPageAction TargetPage="Audiotica.View.NewPlaylistPage" Parameter="1" />
+                    </core:EventTriggerBehavior>
+                </interactivity:Interaction.Behaviors>
             </AppBarButton>
             <CommandBar.SecondaryCommands>
                 <AppBarButton Label="import music from phone" Command="{Binding ImportCommand}" />

@@ -62,7 +62,7 @@ namespace Audiotica.ViewModel
             Service.Albums.CollectionChanged += OnCollectionChanged;
             Service.Artists.CollectionChanged += OnCollectionChanged;
 
-            RandomizeAlbumList = new ObservableCollection<Album>();
+            RandomizeAlbumList = new OptimizedObservableCollection<Album>();
         }
 
         #region Private Helpers 
@@ -399,7 +399,7 @@ namespace Audiotica.ViewModel
             set { Set(ref _sortedArtists, value); }
         }
 
-        public ObservableCollection<Album> RandomizeAlbumList { get; set; }
+        public OptimizedObservableCollection<Album> RandomizeAlbumList { get; set; }
 
         public ICollectionService Service
         {

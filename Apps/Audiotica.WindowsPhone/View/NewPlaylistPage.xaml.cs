@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Navigation;
 using Audiotica.Core.Common;
 using Audiotica.Core.Utilities;
 using Audiotica.Data.Collection.Model;
@@ -21,18 +20,6 @@ namespace Audiotica.View
             InitializeComponent();
         }
 
-        private List<Song> _songs;
-
-        protected override void OnNavigatedTo(NavigationEventArgs e)
-        {
-            base.OnNavigatedTo(e);
-
-            if (e.Parameter != null)
-            {
-                _songs = e.Parameter as List<Song>;
-            }
-        }
-
         private async void AppBarButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
             var button = sender as AppBarButton;
@@ -40,7 +27,6 @@ namespace Audiotica.View
 
             button.IsEnabled = false;
             PlaylistNameText.IsEnabled = false;
-            //TODO [Harry,20141219] ui blocker
 
             if (string.IsNullOrEmpty(name))
             {
@@ -58,10 +44,6 @@ namespace Audiotica.View
                 {
                     
                     var playlist = await App.Locator.CollectionService.CreatePlaylistAsync(name);
-                    foreach (var song in _songs)
-                    {
-                        await App.Locator.CollectionService.AddToPlaylistAsync(playlist, song);
-                    }
                     CurtainPrompt.Show("PlaylistCreateSuccess".FromLanguageResource(), playlist.Name);
                     Frame.GoBack();
                 }

@@ -42,7 +42,7 @@ namespace Audiotica.View
             CollectionPivot.SelectedIndex = pivotIndex;
         }
 
-        private void LoadWallpaperArt()
+        private async void LoadWallpaperArt()
         {
             var vm = (CollectionViewModel) DataContext;
 
@@ -63,10 +63,10 @@ namespace Audiotica.View
             var numImages = rows*5;
             var imagesNeeded = numImages - albumCount;
 
-            var shuffle = albums
+            var shuffle = await Task.FromResult(albums
                 .Shuffle()
                 .Take(numImages > albumCount ? albumCount : numImages)
-                .ToList();
+                .ToList());
 
             if (imagesNeeded > 0)
             {
@@ -76,7 +76,7 @@ namespace Audiotica.View
                 {
                     var takeAmmount = imagesNeeded > albumCount ? albumCount : imagesNeeded;
 
-                    repeatList.AddRange(shuffle.Shuffle().Take(takeAmmount));
+                    await Task.Run(() => repeatList.AddRange(shuffle.Shuffle().Take(takeAmmount)));
 
                     imagesNeeded -= shuffle.Count;
                 }
