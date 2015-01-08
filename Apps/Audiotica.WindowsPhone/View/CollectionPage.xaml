@@ -5,6 +5,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:audiotica="using:Audiotica"
     xmlns:interactivity="using:Microsoft.Xaml.Interactivity" xmlns:core="using:Microsoft.Xaml.Interactions.Core"
+    xmlns:controls="using:MyToolkit.Controls"
     Name="Page"
     x:Class="Audiotica.View.CollectionPage"
     mc:Ignorable="d"
@@ -20,12 +21,15 @@
                                   IsSourceGrouped="True" Source="{Binding SortedAlbums}" />
         </Grid.Resources>
 
-        <GridView Name="WallpaperGridView" ItemsSource="{Binding RandomizeAlbumList}">
+        <GridView Name="WallpaperGridView" ItemsSource="{Binding RandomizeAlbumList}" SelectionMode="None">
+            <GridView.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <controls:UniformGrid Columns="5" />
+                </ItemsPanelTemplate>
+            </GridView.ItemsPanel>
             <GridView.ItemTemplate>
                 <DataTemplate>
                     <Image
-                        Width="{Binding DataContext.ArtworkSize, ElementName=Page}"
-                        Height="{Binding DataContext.ArtworkSize, ElementName=Page}"
                         Opacity=".2"
                         Source="{Binding Artwork}" />
                 </DataTemplate>

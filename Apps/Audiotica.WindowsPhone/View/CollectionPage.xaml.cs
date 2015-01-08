@@ -57,12 +57,8 @@ namespace Audiotica.View
 
             if (albumCount < 10) return;
 
-            if (!double.IsNaN(WallpaperGridView.ActualWidth))
-                vm.ArtworkSize = WallpaperGridView.ActualWidth/5;
-                
-
             var h = Window.Current.Bounds.Height;
-            var rows = (int) Math.Ceiling(h/vm.ArtworkSize);
+            var rows = (int)Math.Ceiling(h / (WallpaperGridView.ActualWidth / 5));
 
             var numImages = rows*5;
             var imagesNeeded = numImages - albumCount;

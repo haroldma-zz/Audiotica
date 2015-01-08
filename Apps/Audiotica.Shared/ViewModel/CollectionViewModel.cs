@@ -402,12 +402,6 @@ namespace Audiotica.ViewModel
 
         public ObservableCollection<Album> RandomizeAlbumList { get; set; }
 
-        public double ArtworkSize
-        {
-            get { return _artworkSize; }
-            set { Set(ref _artworkSize, value); }
-        }
-
         public ICollectionService Service
         {
             get { return _service; }
