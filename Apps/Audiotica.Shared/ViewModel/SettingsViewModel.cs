@@ -52,8 +52,12 @@ namespace Audiotica.ViewModel
                 {
                     await CurrentAppSimulator.RequestProductPurchaseAsync(ProductConstants.InAppAdvertisements);
                 }
-// ReSharper disable once ExplicitCallerInfoArgument
+
+                if (!IsAdsEnabled) return;
+
+                // ReSharper disable once ExplicitCallerInfoArgument
                 RaisePropertyChanged("IsAdsEnabled");
+                CurtainPrompt.Show("You can now go the app pivot to disable ads.");
             }
             catch
             {
