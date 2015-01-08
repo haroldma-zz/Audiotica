@@ -17,7 +17,16 @@ namespace Audiotica.PartialView
             SimpleIoc.Default.Register(() => this);
             Loaded += (sender, args) =>
             {
-                if (AppSettingsHelper.Read("Ads", true))
+                var ads = AppSettingsHelper.Read("Ads", true);
+                var owns = App.LicenseInformation.ProductLicenses[ProductConstants.InAppAdvertisements].IsActive;
+
+                if (!owns && !ads)
+                {
+                    AppSettingsHelper.Write("Ads", true);
+                    ads = true;
+                }
+
+                if (ads)
                 {
                     Enable();
                 }

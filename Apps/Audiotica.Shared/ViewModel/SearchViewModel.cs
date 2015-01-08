@@ -1,6 +1,7 @@
 ﻿#region
 
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using Windows.System;
@@ -15,6 +16,7 @@ using Audiotica.Data.Service.Interfaces;
 using Audiotica.Data.Spotify.Models;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
+using GalaSoft.MvvmLight.Threading;
 using IF.Lastfm.Core.Api.Helpers;
 using IF.Lastfm.Core.Objects;
 using MyToolkit.Multimedia;
@@ -37,6 +39,8 @@ namespace Audiotica.ViewModel
         private RelayCommand<ItemClickEventArgs> _songClickRelayCommand;
         private IncrementalObservableCollection<FullTrack> _tracksCollection;
         private Paging<FullTrack> _tracksResponse;
+        private IncrementalObservableCollection<LastTrack> _lastTracksCollection;
+        private PageResponse<LastTrack> _lastTrackResponse;
 
         public SearchViewModel(IScrobblerService service, ISpotifyService spotify)
         {
@@ -73,6 +77,12 @@ namespace Audiotica.ViewModel
             set { Set(ref _tracksCollection, value); }
         }
 
+        public IncrementalObservableCollection<LastTrack> LastTracks
+        {
+            get { return _lastTracksCollection; }
+            set { Set(ref _lastTracksCollection, value); }
+        }
+
         public IncrementalObservableCollection<FullArtist> Artists
         {
             get { return _artistsCollection; }
@@ -93,7 +103,7 @@ namespace Audiotica.ViewModel
 
         private async void SongClickExecute(ItemClickEventArgs item)
         {
-            var track = (FullTrack) item.ClickedItem;
+            var track = (LastTrack) item.ClickedItem;
             await CollectionHelper.SaveTrackAsync(track);
         }
 
@@ -117,37 +127,69 @@ namespace Audiotica.ViewModel
                     _albumsResponse = null;
                 }
 
-                _tracksResponse = await _spotify.SearchTracksAsync(term);
+                if (LastTracks != null)
+                {
+                    LastTracks.Clear();
+                    _lastTrackResponse = null;
+                }
 
-                Tracks = CreateIncrementalCollection(
-                    () => _tracksResponse,
-                    tracks => _tracksResponse = tracks,
-                    async i => await _spotify.SearchTracksAsync(term, offset: i));
-                foreach (var lastTrack in _tracksResponse.Items)
-                    Tracks.Add(lastTrack);
+                var tasks = new List<Task>
+                {
+                    Task.Run(async () =>
+                    {
+                        _tracksResponse = await _spotify.SearchTracksAsync(term);
+                        await DispatcherHelper.RunAsync(() =>
+                        {
+                            Tracks = CreateIncrementalCollection(
+                                () => _tracksResponse,
+                                tracks => _tracksResponse = tracks,
+                                async i => await _spotify.SearchTracksAsync(term, offset: i));
+                            foreach (var lastTrack in _tracksResponse.Items)
+                                Tracks.Add(lastTrack);
+                        });
+                    }),
+                    Task.Run(async () =>
+                    {
+                        _albumsResponse = await _spotify.SearchAlbumsAsync(term);
+                        await DispatcherHelper.RunAsync(() =>
+                        {
+                            Albums = CreateIncrementalCollection(
+                                () => _albumsResponse,
+                                albums => _albumsResponse = albums,
+                                async i => await _spotify.SearchAlbumsAsync(term, offset: i));
+                            foreach (var lastAlbum in _albumsResponse.Items)
+                                Albums.Add(lastAlbum);
+                        });
+                    }),
+                    Task.Run(async () =>
+                    {
+                        _artistsResponse = await _spotify.SearchArtistsAsync(term);
+                        DispatcherHelper.RunAsync(() =>
+                        {
+                            Artists = CreateIncrementalCollection(
+                                () => _artistsResponse,
+                                artists => _artistsResponse = artists,
+                                async i => await _spotify.SearchArtistsAsync(term, offset: i));
+                            foreach (var lastArtist in _artistsResponse.Items)
+                                Artists.Add(lastArtist);
+                        });
+                    }),
+                     Task.Run(async () =>
+                    {
+                        _lastTrackResponse = await _service.SearchTracksAsync(term);
+                        await DispatcherHelper.RunAsync(() =>
+                        {
+                            LastTracks = CreateLastIncrementalCollection(
+                                () => _lastTrackResponse,
+                                artists => _lastTrackResponse = artists,
+                                async i => await _service.SearchTracksAsync(term, i));
+                            foreach (var lastArtist in _artistsResponse.Items)
+                                Artists.Add(lastArtist);
+                        });
+                    })
+                };
 
-                _albumsResponse = await _spotify.SearchAlbumsAsync(term);
-
-                Albums = CreateIncrementalCollection(
-                    () => _albumsResponse,
-                    albums => _albumsResponse = albums,
-                    async i => await _spotify.SearchAlbumsAsync(term, offset: i));
-                foreach (var lastAlbum in _albumsResponse.Items)
-                    Albums.Add(lastAlbum);
-
-                _artistsResponse = await _spotify.SearchArtistsAsync(term);
-
-                Artists = CreateIncrementalCollection(
-                    () => _artistsResponse,
-                    artists => _artistsResponse = artists,
-                    async i => await _spotify.SearchArtistsAsync(term, offset: i));
-
-                foreach (var lastArtist in _artistsResponse.Items)
-                    Artists.Add(lastArtist);
-
-
-                //if (_tracksResponse.TotalItems == 0)
-                //CurtainPrompt.ShowError("NoSearchResultsToast".FromLanguageResource());
+                await Task.WhenAll(tasks);
             }
             catch
             {
@@ -233,6 +275,63 @@ namespace Audiotica.ViewModel
                         return new LoadMoreItemsResult
                         {
                             Count = (uint) resp.Items.Count
+                        };
+                    }
+                    catch
+                    {
+                        IsLoading = false;
+                        setPageResponse(null);
+                        CurtainPrompt.ShowError("GenericLoadingMoreError".FromLanguageResource());
+                        return new LoadMoreItemsResult
+                        {
+                            Count = 0
+                        };
+                    }
+                };
+                var loadMorePostsTask = taskFunc();
+                return loadMorePostsTask.AsAsyncOperation();
+            };
+            return collection;
+        }
+
+        private IncrementalObservableCollection<T> CreateLastIncrementalCollection<T>(
+            Func<PageResponse<T>> getPageResponse, Action<PageResponse<T>> setPageResponse,
+            Func<int, Task<PageResponse<T>>> searchFunc) where T : new()
+        {
+            var collection = new IncrementalObservableCollection<T>
+            {
+                HasMoreItemsFunc = () =>
+                {
+                    var page = getPageResponse();
+                    if (page != null)
+                    {
+                        return page.Page < page.PageSize;
+                    }
+                    return false;
+                }
+            };
+
+            collection.LoadMoreItemsFunc = count =>
+            {
+                Func<Task<LoadMoreItemsResult>> taskFunc = async () =>
+                {
+                    try
+                    {
+                        IsLoading = true;
+
+                        var pageResp = getPageResponse();
+                        var resp = await searchFunc(pageResp.Page + 1);
+
+                        foreach (var item in resp.Content)
+                            collection.Add(item);
+
+                        IsLoading = false;
+
+                        setPageResponse(resp);
+
+                        return new LoadMoreItemsResult
+                        {
+                            Count = (uint)resp.Content.Count
                         };
                     }
                     catch

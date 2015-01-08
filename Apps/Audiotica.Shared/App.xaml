@@ -357,8 +357,12 @@
             <StackPanel Margin="0,0,0,15">
                 <TextBlock Text="{Binding Name}" TextWrapping="Wrap" FontSize="30" FontFamily="Global User Interface"
                            TextTrimming="CharacterEllipsis" FontWeight="Bold" />
-                <TextBlock Text="{Binding ArtistName}" FontSize="22" FontWeight="Thin" Foreground="#89FFFFFF"
-                           TextTrimming="CharacterEllipsis" />
+                <TextBlock FontSize="22" FontWeight="Thin" Foreground="#89FFFFFF"
+                           TextTrimming="CharacterEllipsis" TextWrapping="Wrap">
+                    <Run Text="{Binding ArtistName}" />
+                    <Run Text="{Binding AlbumName, Converter={StaticResource DashNotEmptyToStringConverter}}" />
+                    <Run Text="{Binding AlbumName}" />
+                </TextBlock>
             </StackPanel>
         </DataTemplate>
 
