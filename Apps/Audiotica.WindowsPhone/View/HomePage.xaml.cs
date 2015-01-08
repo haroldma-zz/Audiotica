@@ -2,6 +2,8 @@
 
 using System;
 using System.Linq;
+using Windows.ApplicationModel.DataTransfer;
+using Windows.ApplicationModel.DataTransfer.ShareTarget;
 using Windows.ApplicationModel.Store;
 using Windows.System;
 using Windows.UI.Xaml.Controls;
@@ -65,6 +67,16 @@ namespace Audiotica.View
         {
             var artist = e.ClickedItem as LastArtist;
             Frame.Navigate(typeof(SpotifyArtistPage), "name." + artist.Name);
+        }
+
+        private void AppBarButton_Click_1(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        {
+            Launcher.LaunchUriAsync(new Uri("mailto:help@audiotica.fm"));
+        }
+
+        private void AppBarButton_Click_2(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        {
+            DataTransferManager.ShowShareUI();
         }
     }
 }

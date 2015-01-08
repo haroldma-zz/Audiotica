@@ -5,6 +5,7 @@ using System;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
+using Windows.ApplicationModel.DataTransfer;
 using Windows.ApplicationModel.Store;
 using Windows.System;
 using Windows.UI.Popups;
@@ -116,6 +117,9 @@ namespace Audiotica
             // ReSharper disable once CSharpWarnings::CS4014
             if (!restore)
                 BootAppServicesAsync();
+
+            var dataManager = DataTransferManager.GetForCurrentView();
+            dataManager.DataRequested += DataTransferManagerOnDataRequested;
         }
 
         #endregion
@@ -174,6 +178,16 @@ namespace Audiotica
 
             e.Handled = true;
             MessageBox.Show(e.Message + "\n" + e.Exception.StackTrace, "[DEV-MODE] Crashing Error");
+        }
+
+        private void DataTransferManagerOnDataRequested(DataTransferManager sender, DataRequestedEventArgs e)
+        {
+            var request = e.Request;
+            request.Data.Properties.Title = "Checkout Audiotica!";
+            request.Data.Properties.Description = "A sleek and sexy music app for Windows Phone!";
+
+            const string url = "http://www.windowsphone.com/s?appid=c02aae72-99d3-480f-b6d2-3fac2fed08a7";
+            request.Data.SetText(request.Data.Properties.Description + " " + url);
         }
 
         #endregion

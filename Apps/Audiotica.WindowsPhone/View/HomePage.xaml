@@ -149,6 +149,8 @@
     <Page.BottomAppBar>
         <CommandBar ClosedDisplayMode="Minimal">
             <CommandBar.SecondaryCommands>
+                <AppBarButton Label="share" Click="AppBarButton_Click_2" />
+                <AppBarButton Label="support" Click="AppBarButton_Click_1" />
                 <AppBarButton x:Uid="AppBarHubReview" Label="rate+review" Click="AppBarButton_Click" />
                 <AppBarButton x:Uid="AppBarHubSettings" Label="settings+more">
                     <interactivity:Interaction.Behaviors>

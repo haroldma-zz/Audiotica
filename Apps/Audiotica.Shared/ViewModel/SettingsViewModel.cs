@@ -137,21 +137,21 @@ namespace Audiotica.ViewModel
 
         public bool WallpaperArt
         {
-            get { return AppSettingsHelper.Read("WallpaperArt", true); }
+            get { return AppSettingsHelper.Read("WallpaperArt", true, SettingsStrategy.Roaming); }
             set
             {
                 if (!value)
                     App.Locator.Collection.RandomizeAlbumList.Clear();
 
                 EasyTracker.GetTracker().SendEvent("Settings", "WallpaperArt", value ? "Enabled" : "Disabled", 0);
-                AppSettingsHelper.Write("WallpaperArt", value);
+                AppSettingsHelper.Write("WallpaperArt", value, SettingsStrategy.Roaming);
                 RaisePropertyChanged();
             }
         }
 
         public bool Advertisements
         {
-            get { return AppSettingsHelper.Read("Ads", true); }
+            get { return AppSettingsHelper.Read("Ads", true, SettingsStrategy.Roaming); }
             set
             {
                 if (value)
@@ -163,17 +163,17 @@ namespace Audiotica.ViewModel
                     _adMediatorBar.Disable();
                 }
                 EasyTracker.GetTracker().SendEvent("Settings", "Ads", value ? "Enabled" : "Disabled", 0);
-                AppSettingsHelper.Write("Ads", value);
+                AppSettingsHelper.Write("Ads", value, SettingsStrategy.Roaming);
                 RaisePropertyChanged();
             }
         }
 
         public bool Scrobble
         {
-            get { return AppSettingsHelper.Read<bool>("Scrobble"); }
+            get { return AppSettingsHelper.Read<bool>("Scrobble", SettingsStrategy.Roaming); }
             set
             {
-                AppSettingsHelper.Write("Scrobble", value);
+                AppSettingsHelper.Write("Scrobble", value, SettingsStrategy.Roaming);
                 EasyTracker.GetTracker().SendEvent("Settings", "Scrobble", value ? "Enabled" : "Disabled", 0);
                 RaisePropertyChanged();
             }

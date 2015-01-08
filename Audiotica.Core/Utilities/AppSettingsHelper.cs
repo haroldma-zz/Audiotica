@@ -41,12 +41,6 @@ namespace Audiotica.Core.Utilities
     /// </summary>
     public static class AppSettingsHelper
     {
-        #region Private Fields
-
-        private static readonly ApplicationDataContainer SettingsContainer = ApplicationData.Current.LocalSettings;
-
-        #endregion
-
         #region Public Methods
 
         /// <summary>
@@ -85,15 +79,28 @@ namespace Audiotica.Core.Utilities
             return Read(key, default(T));
         }
 
+        public static T Read<T>(string key, SettingsStrategy strategy)
+        {
+            return Read(key, default(T), strategy);
+        }
+
+        /// <summary>
+        ///     Gets the value from the settings container specified pertaining to the key as string.
+        /// </summary>
+        public static T Read<T>(string key, T defaulValue)
+        {
+            return Read<T>(key, defaulValue, SettingsStrategy.Local);
+        }
+
         /// <summary>
         ///     Gets the value from the settings container pertaining to the key.
         /// </summary>
-        public static T Read<T>(string key, T defaultValue)
+        public static T Read<T>(string key, T defaultValue, SettingsStrategy strategy)
         {
             object obj;
 
             //Try to get the settings value
-            if (SettingsContainer.Values.TryGetValue(key, out obj))
+            if (GetContainerFromStrategy(strategy).Values.TryGetValue(key, out obj))
             {
                 Debug.WriteLine("Found the key '{0}'.", key);
 
@@ -130,19 +137,47 @@ namespace Audiotica.Core.Utilities
         }
 
         /// <summary>
-        ///     Writes the value, using the key, to the container.
+        ///     Writes the value, using the key, to the container specified.
         /// </summary>
         public static void Write(string key, object value)
         {
-            if (SettingsContainer.Values.ContainsKey(key))
-                SettingsContainer.Values[key] = value;
+            Write(key, value, SettingsStrategy.Local);
+        }
+
+        /// <summary>
+        ///     Writes the value, using the key, to the container.
+        /// </summary>
+        public static void Write(string key, object value, SettingsStrategy strategy)
+        {
+            if (GetContainerFromStrategy(strategy).Values.ContainsKey(key))
+                GetContainerFromStrategy(strategy).Values[key] = value;
 
             else
-                SettingsContainer.Values.Add(key, value);
+                GetContainerFromStrategy(strategy).Values.Add(key, value);
 
             Debug.WriteLine("Wroted the value '{0}' with the key '{1}' to settings container.", value, key);
         }
 
         #endregion
+
+        private static ApplicationDataContainer GetContainerFromStrategy(SettingsStrategy location)
+        {
+            switch (location)
+            {
+                case SettingsStrategy.Roaming:
+                    return ApplicationData.Current.RoamingSettings;
+                default:
+                    return ApplicationData.Current.LocalSettings;
+            }
+        }
+    }
+
+    public enum SettingsStrategy
+    {
+        /// <summary>Local, isolated folder</summary>
+        Local,
+
+        /// <summary>Cloud, isolated folder. 100k cumulative limit.</summary>
+        Roaming
     }
 }

@@ -56,13 +56,7 @@
                             <TextBlock x:Uid="SettingsAboutBlock"
                                        Text="A fully complete and open source alternative to Xbox Music.  Using Spotify and Last.FM for metadata with countless other websites for audio, making it able find any song."
                                        FontSize="20" TextWrapping="Wrap" Margin="0,0,0,20" />
-                            <HyperlinkButton x:Uid="SettingsAboutBlog" Content="Blog" NavigateUri="http://blog.zumicts.com"
-                                             FontSize="25" Foreground="{StaticResource PhoneAccentBrush}"
-                                             FontFamily="Global User Interface" />
-                            <HyperlinkButton x:Uid="SettingsAboutEmail" Content="Email"
-                                             NavigateUri="mailto:harry@zumicts.com" FontSize="25"
-                                             Foreground="{StaticResource PhoneAccentBrush}" />
-                            <HyperlinkButton Content="@zumicts" NavigateUri="http://twitter.com/zumicts" FontSize="25"
+                            <HyperlinkButton Content="@Audiotica" NavigateUri="http://twitter.com/audiotica" FontSize="25"
                                              Foreground="{StaticResource PhoneAccentBrush}" />
                             <HyperlinkButton Content="/r/audioticawp" NavigateUri="http://reddit.com/r/AudioticaWP"
                                              FontSize="25" Foreground="{StaticResource PhoneAccentBrush}" />
