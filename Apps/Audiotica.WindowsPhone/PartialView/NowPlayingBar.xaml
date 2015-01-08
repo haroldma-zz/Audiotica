@@ -10,11 +10,25 @@
     DataContext="{Binding Player, Source={StaticResource Locator}}"
     Height="{Binding NowPlayingBarHeight}">
 	<UserControl.Resources>
-		<Storyboard x:Name="SlideUp">
+        <Storyboard x:Name="SlideUp">
             <DoubleAnimation Duration="0:0:0.1" To="-200" Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateY)" Storyboard.TargetName="Grid" d:IsOptimized="True"/>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="TabGrid">
+            	<DiscreteObjectKeyFrame KeyTime="0">
+            		<DiscreteObjectKeyFrame.Value>
+            			<Visibility>Visible</Visibility>
+            		</DiscreteObjectKeyFrame.Value>
+            	</DiscreteObjectKeyFrame>
+            </ObjectAnimationUsingKeyFrames>
 		</Storyboard>
         <Storyboard x:Name="SlideDown">
             <DoubleAnimation Duration="0:0:0.1" To="0" Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateY)" Storyboard.TargetName="Grid" d:IsOptimized="True"/>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="TabGrid">
+            	<DiscreteObjectKeyFrame KeyTime="0:0:0.1">
+            		<DiscreteObjectKeyFrame.Value>
+            			<Visibility>Collapsed</Visibility>
+            		</DiscreteObjectKeyFrame.Value>
+            	</DiscreteObjectKeyFrame>
+            </ObjectAnimationUsingKeyFrames>
         </Storyboard>
         <Style TargetType="FlipView">
             <Setter Property="Background" Value="Transparent"/>
@@ -100,8 +114,8 @@
                             <DoubleAnimationUsingKeyFrames EnableDependentAnimation="True"
                                                            Storyboard.TargetProperty="(FrameworkElement.Height)"
                                                            Storyboard.TargetName="Grid">
-                                <EasingDoubleKeyFrame KeyTime="0" Value="160" />
-                                <EasingDoubleKeyFrame KeyTime="0:0:0.02" Value="280" />
+                                <EasingDoubleKeyFrame KeyTime="0" Value="280" />
+                                <EasingDoubleKeyFrame KeyTime="0:0:0.02" Value="300" />
                                 <EasingDoubleKeyFrame KeyTime="0:0:0.05" Value="200" />
                             </DoubleAnimationUsingKeyFrames>
                         </Storyboard>
@@ -127,7 +141,7 @@
         </Grid.RenderTransform>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <Grid Background="#1F1F1F" Height="80" VerticalAlignment="Top">
             <Grid.RowDefinitions>
@@ -180,7 +194,7 @@
                      Maximum="{Binding Duration, Converter={StaticResource TimespanToDoubleConverter}, Mode=TwoWay}"
                      IsIndeterminate="{Binding IsLoading, Mode=TwoWay}" />
         </Grid>
-        <Grid Grid.Row="1" Height="200">
+        <Grid Name="TabGrid" Visibility="Collapsed" Grid.Row="1">
             <Grid.Background>
                 <ImageBrush AlignmentY="Top" Opacity=".5" ImageSource="{Binding CurrentQueue.Song.Artist.Artwork}" Stretch="UniformToFill" />
             </Grid.Background>

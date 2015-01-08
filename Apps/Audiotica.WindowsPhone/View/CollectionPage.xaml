@@ -20,7 +20,7 @@
                                   IsSourceGrouped="True" Source="{Binding SortedAlbums}" />
         </Grid.Resources>
 
-        <GridView ItemsSource="{Binding RandomizeAlbumList}">
+        <GridView Name="WallpaperGridView" ItemsSource="{Binding RandomizeAlbumList}">
             <GridView.ItemTemplate>
                 <DataTemplate>
                     <Image

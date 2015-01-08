@@ -16,7 +16,7 @@
                 <ScrollViewer>
                     <StackPanel>
                         <StackPanel>
-                            <ToggleSwitch x:Uid="SettingsToggleAds" Header="Ads" IsEnabled="False"
+                            <ToggleSwitch x:Uid="SettingsToggleAds" Header="Ads" IsEnabled="True"
                                       IsOn="{Binding Advertisements, Mode=TwoWay}" />
                             <ToggleSwitch x:Uid="SettingsToggleWallpaper" Header="Album Art Wallpaper"
                                       IsOn="{Binding WallpaperArt, Mode=TwoWay}" />
@@ -45,18 +45,36 @@
                 </StackPanel>
             </PivotItem>
             <PivotItem x:Uid="SettingsAbout" Header="ABOUT">
-                <Grid>
-                    <StackPanel VerticalAlignment="Top">
-                        <Image Height="100" Source="ms-appx:///Assets/Logo.png"/>
-                        <TextBlock x:Uid="SettingsAboutBlock" Text="A fully complete and open source alternative to Xbox Music.  Using Spotify and Last.FM for metadata with countless other websites for audio, making it able find any song." FontSize="20" TextWrapping="Wrap" Margin="0,0,0,20" />
-                        <HyperlinkButton x:Uid="SettingsAboutBlog" Content="Blog" NavigateUri="http://blog.zumicts.com" FontSize="25" Foreground="{StaticResource PhoneAccentBrush}" FontFamily="Global User Interface" />
-                        <HyperlinkButton x:Uid="SettingsAboutEmail" Content="Email" NavigateUri="mailto:harry@zumicts.com" FontSize="25" Foreground="{StaticResource PhoneAccentBrush}" />
-                        <HyperlinkButton Content="@zumicts" NavigateUri="http://twitter.com/zumicts" FontSize="25" Foreground="{StaticResource PhoneAccentBrush}" />
-                        <HyperlinkButton Content="/r/audioticawp" NavigateUri="http://reddit.com/r/AudioticaWP" FontSize="25" Foreground="{StaticResource PhoneAccentBrush}" />
-                        <HyperlinkButton x:Uid="SettingsAboutGithub" Content="Source code at Github" NavigateUri="http://github.com/zumicts/Audiotica" FontSize="25" Foreground="{StaticResource PhoneAccentBrush}" />
-                    </StackPanel>
-                    <HyperlinkButton Command="{Binding DeveloperModeClickRelay}" Content="{Binding Version}" HorizontalAlignment="Right" FontSize="20" VerticalAlignment="Bottom" Margin="0,0,0,5"/>
-                </Grid>
+                <ScrollViewer>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <StackPanel VerticalAlignment="Top">
+                            <Image Height="100" Source="ms-appx:///Assets/Logo.png" />
+                            <TextBlock x:Uid="SettingsAboutBlock"
+                                       Text="A fully complete and open source alternative to Xbox Music.  Using Spotify and Last.FM for metadata with countless other websites for audio, making it able find any song."
+                                       FontSize="20" TextWrapping="Wrap" Margin="0,0,0,20" />
+                            <HyperlinkButton x:Uid="SettingsAboutBlog" Content="Blog" NavigateUri="http://blog.zumicts.com"
+                                             FontSize="25" Foreground="{StaticResource PhoneAccentBrush}"
+                                             FontFamily="Global User Interface" />
+                            <HyperlinkButton x:Uid="SettingsAboutEmail" Content="Email"
+                                             NavigateUri="mailto:harry@zumicts.com" FontSize="25"
+                                             Foreground="{StaticResource PhoneAccentBrush}" />
+                            <HyperlinkButton Content="@zumicts" NavigateUri="http://twitter.com/zumicts" FontSize="25"
+                                             Foreground="{StaticResource PhoneAccentBrush}" />
+                            <HyperlinkButton Content="/r/audioticawp" NavigateUri="http://reddit.com/r/AudioticaWP"
+                                             FontSize="25" Foreground="{StaticResource PhoneAccentBrush}" />
+                            <HyperlinkButton x:Uid="SettingsAboutGithub" Content="Source code at Github"
+                                             NavigateUri="http://github.com/zumicts/Audiotica" FontSize="25"
+                                             Foreground="{StaticResource PhoneAccentBrush}" />
+                        </StackPanel>
+                        <HyperlinkButton Grid.Row="1" Command="{Binding DeveloperModeClickRelay}" Content="{Binding Version}"
+                                         HorizontalAlignment="Right" FontSize="20" VerticalAlignment="Bottom"
+                                         Margin="0,20,0,5" />
+                    </Grid>
+                </ScrollViewer>
             </PivotItem>
         </Pivot>
     </Grid>

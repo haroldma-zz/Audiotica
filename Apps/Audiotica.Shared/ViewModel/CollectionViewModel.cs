@@ -262,6 +262,8 @@ namespace Audiotica.ViewModel
         }
 
         private Song _addableSong;
+        private double _artworkSize = 96;
+
         private async void ItemPickedExecute(AddableCollectionItem item)
         {
             if (item.Playlist != null)
@@ -396,11 +398,8 @@ namespace Audiotica.ViewModel
 
         public double ArtworkSize
         {
-            get
-            {
-                var w = IsInDesignMode ? 480 : App.RootFrame.ActualWidth;
-                return w/5;
-            }
+            get { return _artworkSize; }
+            set { Set(ref _artworkSize, value); }
         }
 
         public ICollectionService Service
