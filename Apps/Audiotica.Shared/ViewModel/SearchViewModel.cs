@@ -172,6 +172,7 @@ namespace Audiotica.ViewModel
             term = term.Trim();
             if (term.StartsWith("http://www.last.fm/music/") && term.Contains("/_/"))
             {
+                CurtainPrompt.Show("Last.fm link detected.");
                 term = term.Replace("http://www.last.fm/music/", "");
                 var artist = term.Substring(0, term.IndexOf("/_/"));
                 var title = WebUtility.UrlDecode(term.Replace(artist + "/_/", ""));

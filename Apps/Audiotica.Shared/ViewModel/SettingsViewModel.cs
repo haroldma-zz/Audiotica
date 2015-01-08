@@ -1,5 +1,7 @@
 ﻿#region
 
+using System;
+using Windows.ApplicationModel.Store;
 using Windows.UI.Xaml;
 using Audiotica.Core.Common;
 using Audiotica.Core.Utilities;
@@ -25,6 +27,7 @@ namespace Audiotica.ViewModel
         {
             _service = service;
             _adMediatorBar = adMediatorBar;
+            InAppAdsClickRelay = new RelayCommand(InAppAdsClicked);
             LoginClickRelay = new RelayCommand(LoginButtonClicked);
             DeveloperModeClickRelay = new RelayCommand(DeveloperModeExecute);
 
@@ -36,6 +39,28 @@ namespace Audiotica.ViewModel
             LastFmPassword = creds.Password;
             IsLoggedIn = true;
         }
+
+        private async void InAppAdsClicked()
+        {
+            try
+            {
+                if (App.IsDebugging)
+                {
+                    await CurrentApp.RequestProductPurchaseAsync(ProductConstants.InAppAdvertisements);
+                }
+                else
+                {
+                    await CurrentAppSimulator.RequestProductPurchaseAsync(ProductConstants.InAppAdvertisements);
+                }
+// ReSharper disable once ExplicitCallerInfoArgument
+                RaisePropertyChanged("IsAdsEnabled");
+            }
+            catch
+            {
+            }
+        }
+
+        public RelayCommand InAppAdsClickRelay { get; set; }
 
         private int _devCount;
         private const int DevModeCount = 7;
@@ -129,6 +154,11 @@ namespace Audiotica.ViewModel
         }
 
         #endregion
+
+        public bool IsAdsEnabled
+        {
+            get { return App.LicenseInformation.ProductLicenses[ProductConstants.InAppAdvertisements].IsActive; }
+        }
 
         public string Version
         {

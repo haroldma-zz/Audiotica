@@ -2,6 +2,7 @@
 
 // The Blank Application template is documented at http://go.microsoft.com/fwlink/?LinkId=234227
 using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
@@ -26,6 +27,8 @@ namespace Audiotica
 {
     public sealed partial class App
     {
+        public static bool IsDebugging = Debugger.IsAttached;
+
         #region Fields
 
 #if WINDOWS_PHONE_APP
@@ -45,6 +48,16 @@ namespace Audiotica
 
         public static Frame RootFrame { get; private set; }
 
+        public static LicenseInformation LicenseInformation
+        {
+            get
+            {
+                return IsDebugging
+                ? CurrentApp.LicenseInformation
+                : CurrentAppSimulator.LicenseInformation;
+            }
+        }
+
         #endregion
 
         #region Constructor
@@ -58,7 +71,7 @@ namespace Audiotica
             UnhandledException += OnUnhandledException;
             AppVersionHelper.OnLaunched();
             EasyTracker.GetTracker().AppVersion =
-                AppVersionHelper.CurrentVersion + "-beta";
+                AppVersionHelper.CurrentVersion + (IsDebugging ? "" : "-beta");
 
             Current.DebugSettings.EnableFrameRateCounter = AppSettingsHelper.Read<bool>("FrameRateCounter");
             Current.DebugSettings.EnableRedrawRegions = AppSettingsHelper.Read<bool>("RedrawRegions");

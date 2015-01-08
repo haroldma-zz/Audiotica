@@ -16,7 +16,7 @@
                 <ScrollViewer>
                     <StackPanel>
                         <StackPanel>
-                            <ToggleSwitch x:Uid="SettingsToggleAds" Header="Ads" IsEnabled="True"
+                            <ToggleSwitch x:Uid="SettingsToggleAds" Header="Ads" IsEnabled="{Binding IsAdsEnabled}"
                                       IsOn="{Binding Advertisements, Mode=TwoWay}" />
                             <ToggleSwitch x:Uid="SettingsToggleWallpaper" Header="Album Art Wallpaper"
                                       IsOn="{Binding WallpaperArt, Mode=TwoWay}" />
@@ -42,6 +42,11 @@
                     <PasswordBox x:Uid="SettingsLastFMPassword" Header="Password" IsEnabled="{Binding IsLoggedIn, Converter={StaticResource BoolToOppositeConverter}}" Password="{Binding LastFmPassword, Mode=TwoWay}" />
                     <Button Content="{Binding IsLoggedIn, Converter={StaticResource IsLoggedInConverter}}" Command="{Binding LoginClickRelay}" HorizontalAlignment="Stretch" Margin="0,0,0,20" />
                     <ToggleSwitch x:Uid="SettingsLastFMScrobble" Header="Scrobble" IsOn="{Binding Scrobble, Mode=TwoWay}" IsEnabled="{Binding IsLoggedIn}" />
+                </StackPanel>
+            </PivotItem>
+            <PivotItem Header="STORE">
+                <StackPanel>
+                    <Button Content="Remove Ads" HorizontalAlignment="Stretch" Command="{Binding InAppAdsClickRelay}" />
                 </StackPanel>
             </PivotItem>
             <PivotItem x:Uid="SettingsAbout" Header="ABOUT">
