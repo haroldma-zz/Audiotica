@@ -56,7 +56,7 @@
                                         <ImageBrush Stretch="UniformToFill" ImageSource="{Binding Images[0].Url}" />
                                     </Ellipse.Fill>
                                 </Ellipse>
-                                <TextBlock VerticalAlignment="Center" Grid.Column="1" Text="{Binding Name}" FontSize="30" FontFamily="Global User Interface"
+                                <TextBlock VerticalAlignment="Center" Grid.Column="1" Text="{Binding Name}" FontSize="22" FontFamily="Global User Interface"
                                                TextTrimming="CharacterEllipsis" FontWeight="Bold" />
                             </Grid>
                         </DataTemplate>

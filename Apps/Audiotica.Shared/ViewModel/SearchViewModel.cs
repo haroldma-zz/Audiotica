@@ -103,8 +103,12 @@ namespace Audiotica.ViewModel
 
         private async void SongClickExecute(ItemClickEventArgs item)
         {
-            var track = (LastTrack) item.ClickedItem;
-            await CollectionHelper.SaveTrackAsync(track);
+            var track = item.ClickedItem;
+
+            if (track is LastTrack)
+                await CollectionHelper.SaveTrackAsync(track as LastTrack);
+            else
+                await CollectionHelper.SaveTrackAsync(track as FullTrack);
         }
 
         public async Task SearchAsync(string term)

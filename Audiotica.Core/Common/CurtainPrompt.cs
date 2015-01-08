@@ -168,14 +168,14 @@ namespace Audiotica.Core.Common
             {
                 Text = isError ? "" : "",
                 FontWeight = FontWeights.Bold,
-                FontSize = 30,
+                FontSize = 22,
                 Foreground = new SolidColorBrush(Colors.White),
                 FontFamily = new FontFamily("Segoe UI Symbol")
             };
             var subMsg = new TextBlock
             {
                 Text = msg,
-                FontSize = 22,
+                FontSize = 16,
                 VerticalAlignment = VerticalAlignment.Center,
                 Margin = new Thickness(20, 0, 0, 0),
                 Foreground = new SolidColorBrush(Colors.White),

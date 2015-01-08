@@ -68,7 +68,7 @@
         </Style>
     </UserControl.Resources>
 
-    <Grid x:Name="Grid" Visibility="Collapsed" VerticalAlignment="Bottom" Height="280" RenderTransformOrigin="0,0" 
+    <Grid x:Name="Grid" Visibility="Collapsed" VerticalAlignment="Bottom" Height="270" RenderTransformOrigin="0,0" 
           Background="Black"
           ManipulationMode="TranslateY" ManipulationDelta="Grid_ManipulationDelta" Margin="0,0,0,-200" 
           ManipulationCompleted="Grid_ManipulationCompleted">
@@ -84,7 +84,7 @@
                                 <EasingDoubleKeyFrame KeyTime="0:0:0.03" Value="250" />
                                 <EasingDoubleKeyFrame KeyTime="0:0:0.1" Value="250" />
                                 <EasingDoubleKeyFrame KeyTime="0:0:0.15" Value="300" />
-                                <EasingDoubleKeyFrame KeyTime="0:0:0.2" Value="280" />
+                                <EasingDoubleKeyFrame KeyTime="0:0:0.2" Value="270" />
                             </DoubleAnimationUsingKeyFrames>
                             <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)"
                                                            Storyboard.TargetName="Grid">
@@ -114,7 +114,7 @@
                             <DoubleAnimationUsingKeyFrames EnableDependentAnimation="True"
                                                            Storyboard.TargetProperty="(FrameworkElement.Height)"
                                                            Storyboard.TargetName="Grid">
-                                <EasingDoubleKeyFrame KeyTime="0" Value="280" />
+                                <EasingDoubleKeyFrame KeyTime="0" Value="270" />
                                 <EasingDoubleKeyFrame KeyTime="0:0:0.02" Value="300" />
                                 <EasingDoubleKeyFrame KeyTime="0:0:0.05" Value="200" />
                             </DoubleAnimationUsingKeyFrames>
@@ -143,7 +143,7 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <Grid Background="#1F1F1F" Height="80" VerticalAlignment="Top">
+        <Grid Background="#1F1F1F" Height="70" VerticalAlignment="Top">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*" />
                 <RowDefinition Height="Auto" />
@@ -167,13 +167,13 @@
                                     <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
-                                <Image Stretch="UniformToFill" Source="{Binding Song.Album.Artwork}" Width="80"
-                                   Margin="0,0,10,0" Height="80" />
+                                <Image Stretch="UniformToFill" Source="{Binding Song.Album.Artwork}" Width="70"
+                                   Margin="0,0,10,0" Height="70" />
                                 <StackPanel VerticalAlignment="Center" Grid.Column="1">
-                                    <TextBlock Text="{Binding Song.Name}" FontSize="20"
+                                    <TextBlock Text="{Binding Song.Name}" FontSize="22"
                                            TextTrimming="CharacterEllipsis" FontWeight="Bold"
                                            FontFamily="Global User Interface" />
-                                    <TextBlock Text="{Binding Song.Artist.Name}" FontSize="15" FontWeight="Thin"
+                                    <TextBlock Text="{Binding Song.Artist.Name}" FontSize="16" FontWeight="Thin"
                                            Foreground="#89FFFFFF"
                                            TextTrimming="CharacterEllipsis" />
                                 </StackPanel>
@@ -183,7 +183,7 @@
                 </FlipView>
                 <Grid Grid.Column="1" Background="#333">
                     <Button Style="{StaticResource PlainButtonStyle}"
-                        Command="{Binding PlayPauseRelayCommand}" Margin="0" VerticalAlignment="Stretch" Width="75"
+                        Command="{Binding PlayPauseRelayCommand}" Margin="0" VerticalAlignment="Stretch" Width="70"
                         VerticalContentAlignment="Stretch">
                         <SymbolIcon Symbol="{Binding PlayPauseIcon}" />
                     </Button>
