@@ -94,9 +94,7 @@ namespace Audiotica.ViewModel
         private async void SongClickExecute(ItemClickEventArgs item)
         {
             var track = (FullTrack) item.ClickedItem;
-            var album = await _spotify.GetAlbumAsync(track.Album.Id);
-
-            await CollectionHelper.SaveTrackAsync(track, album);
+            await CollectionHelper.SaveTrackAsync(track);
         }
 
         public async Task SearchAsync(string term)

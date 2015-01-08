@@ -44,6 +44,14 @@ namespace Audiotica
             await SaveTrackAsync(track, album, false);
         }
 
+        public static async Task SaveTrackAsync(FullTrack track)
+        {
+            CurtainPrompt.Show("SongSavingFindingMp3".FromLanguageResource(), track.Name);
+            var album = await App.Locator.Spotify.GetAlbum(track.Album.Id);
+
+            await SaveTrackAsync(track, album, false);
+        }
+
         public static async Task SaveTrackAsync(SimpleTrack track, FullAlbum album, bool showFindingMessage = true)
         {
             if (showFindingMessage)
