@@ -208,7 +208,13 @@ namespace Audiotica.ViewModel
 
         private void CancelClickExecute(Song song)
         {
-            _downloadService.Cancel(song.Download);
+            if (song.Download != null)
+                _downloadService.Cancel(song.Download);
+            else
+            {
+                song.SongState = SongState.None;
+                App.Locator.SqlService.UpdateItemAsync(song);
+            }
         }
 
         private void DownloadClickExecute(Song song)
