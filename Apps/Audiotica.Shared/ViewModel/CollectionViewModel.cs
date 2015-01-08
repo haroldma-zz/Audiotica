@@ -268,7 +268,6 @@ namespace Audiotica.ViewModel
         }
 
         private Song _addableSong;
-        private double _artworkSize = 96;
 
         private async void ItemPickedExecute(AddableCollectionItem item)
         {
