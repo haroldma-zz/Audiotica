@@ -78,6 +78,12 @@ namespace Audiotica
                 return;
             }
 
+            SpotifySavingAlbums.Add(album.Id);
+
+            while (!App.Locator.CollectionService.IsLibraryLoaded)
+            {
+            }
+
             var collAlbum = App.Locator.CollectionService.Albums.FirstOrDefault(p => p.ProviderId.Contains(album.Id));
 
             var alreadySaved = collAlbum != null;
@@ -89,17 +95,17 @@ namespace Audiotica
                 if (!missingTracks)
                 {
                     CurtainPrompt.ShowError("EntryAlreadySaved".FromLanguageResource(), album.Name);
+                    SpotifySavingAlbums.Remove(album.Id);
                     return;
                 }
             }
 
             if (alreadySaving)
             {
+                SpotifySavingAlbums.Remove(album.Id);
                 CurtainPrompt.ShowError("EntryAlreadySaving".FromLanguageResource(), album.Name);
                 return;
             }
-
-            SpotifySavingAlbums.Add(album.Id);
 
             CurtainPrompt.Show("EntrySaving".FromLanguageResource(), album.Name);
 
@@ -347,6 +353,10 @@ namespace Audiotica
 
             SpotifySavingTracks.Add(track.Id);
 
+            while (!App.Locator.CollectionService.IsLibraryLoaded)
+            {
+            }
+
             var result = await SpotifyHelper.SaveTrackAsync(track, album);
 
             ShowErrorResults(result, track.Name);
@@ -366,6 +376,10 @@ namespace Audiotica
             }
 
             LastfmSavingTracks.Add(track.Id);
+
+            while (!App.Locator.CollectionService.IsLibraryLoaded)
+            {
+            }
 
             var result = await ScrobblerHelper.SaveTrackAsync(track);
 

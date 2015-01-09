@@ -35,22 +35,22 @@ namespace Audiotica.Data.Collection.RunTime
             _bgSqlService = bgSqlService;
             _sqlService = sqlService;
             _dispatcher = dispatcher;
-            Songs = new ObservableCollection<Song>();
-            Artists = new ObservableCollection<Artist>();
-            Albums = new ObservableCollection<Album>();
-            Playlists = new ObservableCollection<Playlist>();
-            PlaybackQueue = new ObservableCollection<QueueSong>();
+            Songs = new OptimizedObservableCollection<Song>();
+            Artists = new OptimizedObservableCollection<Artist>();
+            Albums = new OptimizedObservableCollection<Album>();
+            Playlists = new OptimizedObservableCollection<Playlist>();
+            PlaybackQueue = new OptimizedObservableCollection<QueueSong>();
         }
 
 
         public bool IsLibraryLoaded { get; private set; }
         public event EventHandler LibraryLoaded;
-        public ObservableCollection<Song> Songs { get; set; }
-        public ObservableCollection<Album> Albums { get; set; }
-        public ObservableCollection<Artist> Artists { get; set; }
-        public ObservableCollection<Playlist> Playlists { get; set; }
+        public OptimizedObservableCollection<Song> Songs { get; set; }
+        public OptimizedObservableCollection<Album> Albums { get; set; }
+        public OptimizedObservableCollection<Artist> Artists { get; set; }
+        public OptimizedObservableCollection<Playlist> Playlists { get; set; }
 
-        public ObservableCollection<QueueSong> PlaybackQueue { get; private set; }
+        public OptimizedObservableCollection<QueueSong> PlaybackQueue { get; private set; }
 
         public void LoadLibrary(bool loadEssentials = false)
         {
@@ -66,9 +66,9 @@ namespace Audiotica.Data.Collection.RunTime
             {
                 song.Artist = artists.FirstOrDefault(p => p.Id == song.ArtistId);
                 song.Album = albums.FirstOrDefault(p => p.Id == song.AlbumId);
-                if (isForeground)
-                    _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => Songs.Add(song)).AsTask().Wait();
             }
+
+            Songs.AddRange(songs);
 
             foreach (var album in albums)
             {
@@ -82,9 +82,10 @@ namespace Audiotica.Data.Collection.RunTime
                         album.Artwork = album.HasArtwork
                             ? new BitmapImage(new Uri(CollectionConstant.LocalStorageAppPath + artworkPath))
                             : CollectionConstant.MissingArtworkImage;
-                        Albums.Add(album);
                     }).AsTask().Wait();
             }
+
+            Albums.AddRange(albums);
 
             foreach (var artist in artists)
             {
@@ -99,20 +100,12 @@ namespace Audiotica.Data.Collection.RunTime
                         artist.Artwork = artist.HasArtwork
                             ? new BitmapImage(new Uri(CollectionConstant.LocalStorageAppPath + artworkPath))
                             : null;
-                        Artists.Add(artist);
                     }).AsTask().Wait();
             }
 
-            //Foreground app
-            if (!isForeground)
-            {
-                Songs = new ObservableCollection<Song>(songs);
-                Artists = new ObservableCollection<Artist>(artists);
+            Artists.AddRange(artists);
 
-                if (!loadEssentials)
-                    Albums = new ObservableCollection<Album>(albums);
-            }
-            else
+            if (isForeground)
             {
                 _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                 {

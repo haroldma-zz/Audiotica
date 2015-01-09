@@ -97,6 +97,17 @@ namespace Audiotica.ViewModel
 
                 switch (arg.Action)
                 {
+                    case NotifyCollectionChangedAction.Reset:
+                            if (sender is OptimizedObservableCollection<Song>)
+                                SortedSongs = AlphaKeyGroup<Song>.CreateGroups(Service.Songs.ToList(),
+                                    CultureInfo.CurrentCulture, i => i.Name, true);
+                            else if (sender is OptimizedObservableCollection<Album>)
+                                SortedAlbums = AlphaKeyGroup<Album>.CreateGroups(Service.Albums.ToList(),
+                                    CultureInfo.CurrentCulture, i => i.Name, true);
+                            else if (sender is OptimizedObservableCollection<Artist>)
+                                SortedArtists = AlphaKeyGroup<Artist>.CreateGroups(Service.Artists.ToList(),
+                                    CultureInfo.CurrentCulture, i => i.Name, true);
+                        return;
                     case NotifyCollectionChangedAction.Add:
                         item = (BaseEntry) arg.NewItems[0];
                         break;

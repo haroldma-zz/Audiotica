@@ -119,7 +119,7 @@ namespace Audiotica.ViewModel
                 IsMostStreamedLoading = true;
                 var page = rnd.Next(0, 9)*10;
                 TopTracks = (await _spotify.GetMostStreamedTracksAsync())
-                    .Skip(page).Take(20).ToList();
+                    .Skip(page).Take(10).ToList();
             }
             catch
             {

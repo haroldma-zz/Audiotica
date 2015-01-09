@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Threading.Tasks;
 using Windows.Storage;
+using Audiotica.Core.Common;
 using Audiotica.Data.Collection.Model;
 using TagLib;
 
@@ -18,11 +19,11 @@ namespace Audiotica.Data.Collection
         bool IsLibraryLoaded { get; }
         event EventHandler LibraryLoaded;
 
-        ObservableCollection<Song> Songs { get; set; }
-        ObservableCollection<Album> Albums { get; set; }
-        ObservableCollection<Artist> Artists { get; set; }
-        ObservableCollection<Playlist> Playlists { get; set; }
-        ObservableCollection<QueueSong> PlaybackQueue { get; }
+        OptimizedObservableCollection<Song> Songs { get; set; }
+        OptimizedObservableCollection<Album> Albums { get; set; }
+        OptimizedObservableCollection<Artist> Artists { get; set; }
+        OptimizedObservableCollection<Playlist> Playlists { get; set; }
+        OptimizedObservableCollection<QueueSong> PlaybackQueue { get; }
 
         /// <summary>
         ///     Loads all songs, albums, artist and playlists/queue.

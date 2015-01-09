@@ -25,16 +25,16 @@ namespace Audiotica.Data.Collection.DesignTime
 
         public bool IsLibraryLoaded { get; private set; }
         public event EventHandler LibraryLoaded;
-        public ObservableCollection<Song> Songs { get; set; }
-        public ObservableCollection<Album> Albums { get; set; }
-        public ObservableCollection<Artist> Artists { get; set; }
-        public ObservableCollection<Playlist> Playlists { get; set; }
+        public OptimizedObservableCollection<Song> Songs { get; set; }
+        public OptimizedObservableCollection<Album> Albums { get; set; }
+        public OptimizedObservableCollection<Artist> Artists { get; set; }
+        public OptimizedObservableCollection<Playlist> Playlists { get; set; }
 
-        public ObservableCollection<QueueSong> PlaybackQueue { get; private set; }
+        public OptimizedObservableCollection<QueueSong> PlaybackQueue { get; private set; }
 
         public void LoadLibrary(bool loadEssentials = true)
         {
-            Songs = new ObservableCollection<Song>
+            Songs = new OptimizedObservableCollection<Song>
             {
                 new Song
                 {
@@ -62,7 +62,7 @@ namespace Audiotica.Data.Collection.DesignTime
                 }
             };
 
-            Albums = new ObservableCollection<Album>
+            Albums = new OptimizedObservableCollection<Album>
             {
                  new Album
                         {
@@ -76,13 +76,13 @@ namespace Audiotica.Data.Collection.DesignTime
                         }
             };
 
-            Artists = new ObservableCollection<Artist>
+            Artists = new OptimizedObservableCollection<Artist>
             {
                 new Artist {Name = "Maroon 5", Albums = Albums, Songs = Songs},
                 new Artist {Name = "Taylor Swift"},
             };
 
-            Playlists = new ObservableCollection<Playlist>
+            Playlists = new OptimizedObservableCollection<Playlist>
             {
                 new Playlist
                 {
@@ -108,7 +108,7 @@ namespace Audiotica.Data.Collection.DesignTime
                 playlist.Songs = pSongs;
             }
 
-            PlaybackQueue = new ObservableCollection<QueueSong>(pSongs);
+            PlaybackQueue = new OptimizedObservableCollection<QueueSong>(pSongs);
         }
 
         public Task LoadLibraryAsync(bool loadEssentials = true)

@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
+using System.Linq;
 using Windows.Globalization.Collation;
 using Audiotica.Core.Utilities;
 using MyToolkit.Collections;
@@ -12,7 +13,7 @@ using MyToolkit.Collections;
 
 namespace Audiotica.Core.Common
 {
-    public class AlphaKeyGroup<T> : ObservableCollection<T>
+    public class AlphaKeyGroup<T> : OptimizedObservableCollection<T>
     {
         /// <summary>
         ///     The delegate that is used to get the key information.
@@ -87,7 +88,9 @@ namespace Audiotica.Core.Common
                 foreach (AlphaKeyGroup<T> group in list)
                 {
                     group.OrderKey = getKey;
-                    group.Sort((x, y) => String.Compare(getKey(x), getKey(y), StringComparison.Ordinal));
+                    var asList = group.ToList();
+                    asList.Sort((x, y) => String.Compare(getKey(x), getKey(y), StringComparison.Ordinal));
+                    group.SwitchTo(asList);
                 }
             }
 
