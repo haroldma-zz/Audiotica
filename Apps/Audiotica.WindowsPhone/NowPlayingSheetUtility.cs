@@ -16,10 +16,11 @@ namespace Audiotica
         {
             if (_currentSheet != null) return;
 
+            UiBlockerUtility.BlockNavigation();
+
             _currentSheet = new NowPlayingSheet();
             ModalSheetUtility.Show(_currentSheet);
 
-            UiBlockerUtility.BlockNavigation();
             HardwareButtons.BackPressed += HardwareButtonsOnBackPressed;
         }
 

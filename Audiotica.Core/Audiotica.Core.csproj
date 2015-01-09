@@ -43,6 +43,7 @@
     <Compile Include="Common\AlphaKeyGroup.cs" />
     <Compile Include="Common\AppVersion.cs" />
     <Compile Include="Common\BoolEventArgs.cs" />
+    <Compile Include="Common\TimespanToStringConverter.cs" />
     <Compile Include="Common\CurtainPrompt.cs" />
     <Compile Include="Common\IncrementalObservableCollection.cs" />
     <Compile Include="Common\BoolToOppositeConverter.cs" />

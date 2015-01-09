@@ -82,41 +82,9 @@ namespace Audiotica.PartialView
             }
         }
 
-        private void Grid_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
-        {
-            var transform = Grid.RenderTransform as CompositeTransform;
-            transform.TranslateY += e.Delta.Translation.Y;
-
-            if (transform.TranslateY < -200)
-            {
-                transform.TranslateY = -200;
-            }
-            else if (transform.TranslateY > 0)
-            {
-                transform.TranslateY = 0;
-            }
-        }
-
-        private void Grid_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
-        {
-            if (e.Velocities.Linear.Y < 0)
-            {
-                SlideUp.Begin();
-            }
-            else if(e.Velocities.Linear.Y > 1)
-            {
-                SlideDown.Begin();
-            }
-        }
-
         private void SongFlipView_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            var transform = Grid.RenderTransform as CompositeTransform;
-
-            if (transform.TranslateY == 0)
-                SlideUp.Begin();
-            else
-                SlideDown.Begin();
+            NowPlayingSheetUtility.OpenNowPlaying();
         }
 
         private void Slider_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)

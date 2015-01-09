@@ -168,6 +168,8 @@ namespace Audiotica
         private void HelperOnShutdown(object sender, EventArgs eventArgs)
         {
             CurrentQueue = null;
+            NowPlayingSheetUtility.CloseNowPlaying();
+            IsPlayerActive = false;
         }
 
         private void HelperOnPlaybackStateChanged(object sender, PlaybackStateEventArgs playbackStateEventArgs)
@@ -210,6 +212,7 @@ namespace Audiotica
             }
             else
             {
+                NowPlayingSheetUtility.CloseNowPlaying();
                 IsPlayerActive = false;
                 CurrentQueue = null;
             }

@@ -17,6 +17,7 @@
         <common:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
         <common:BoolToOppositeConverter x:Key="BoolToOppositeConverter" />
         <common:TimespanToDoubleConverter x:Key="TimespanToDoubleConverter" />
+        <common:TimespanToStringConverter x:Key="TimespanToStringConverter" />
         <common:UpperCaseConverter x:Key="UpperCaseConverter" />
         <common:NotEmptyToStringConverter x:Key="DashNotEmptyToStringConverter" NotEmptyText="-" />
         <local:SongStateConverter x:Key="DownloadingSongStateConverter" SongState="Downloading" />
