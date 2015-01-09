@@ -213,24 +213,38 @@ namespace Audiotica.WindowsPhone.Player
             {
                 var isLocal = track.Song.SongState == SongState.Local;
 
-                var file = isLocal
-                    ? StorageHelper.GetFileAsync(track.Song.AudioUrl, KnownFolders.MusicLibrary).Result 
-                    : StorageHelper.GetFileAsync(string.Format("songs/{0}.mp3", track.SongId)).Result;
+                StorageFile file = null;
 
-                try
+                if (isLocal)
                 {
-                    _mediaPlayer.SetFileSource(file);
+                    if (StorageHelper.FileExistsAsync(track.Song.AudioUrl, KnownFolders.MusicLibrary).Result)
+                        file = StorageHelper.GetFileAsync(track.Song.AudioUrl, KnownFolders.MusicLibrary).Result;
                 }
-                catch
+                else
                 {
-                    if (!isLocal)
+                    if (StorageHelper.FileExistsAsync(string.Format("songs/{0}.mp3", track.SongId)).Result)
+                        file = StorageHelper.GetFileAsync(string.Format("songs/{0}.mp3", track.SongId)).Result;
+                }
+
+                if (file != null)
+                {
+                    try
                     {
-                        //corrupt download, perhaps
-                        track.Song.SongState = SongState.None;
-                        _sql.UpdateItem(track.Song);
-                        file.DeleteAsync().AsTask().Wait();
+                        _mediaPlayer.SetFileSource(file);
+                    }
+                    catch
+                    {
+                        if (!isLocal)
+                        {
+                            //corrupt download, perhaps
+                            track.Song.SongState = SongState.None;
+                            _sql.UpdateItem(track.Song);
+                            file.DeleteAsync().AsTask().Wait();
+                        }
                     }
                 }
+                else if (Tracks.Count > 1)
+                    SkipToNext();
             }
         }
 
