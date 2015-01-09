@@ -30,11 +30,16 @@
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <StackPanel Margin="0,0,0,15">
-                            <TextBlock Text="{Binding Song.Name}" FontSize="30" FontFamily="Global User Interface"
-                                       TextTrimming="CharacterEllipsis" FontWeight="Bold" />
-                            <TextBlock Text="{Binding Song.Artist.Name}" FontSize="22" FontWeight="Thin"
-                                       Foreground="#89FFFFFF"
-                                       TextTrimming="CharacterEllipsis" Margin="0,-5,0,0" />
+                            <TextBlock Text="{Binding Song.Name}" FontSize="22" FontFamily="Global User Interface"
+                                           TextWrapping="Wrap"
+                                           TextTrimming="CharacterEllipsis" FontWeight="Bold" />
+                            <TextBlock FontSize="16" FontWeight="Thin" Foreground="#89FFFFFF"
+                                           TextTrimming="CharacterEllipsis" TextWrapping="Wrap" FontFamily="Global User Interface">
+                                    <Run Text="{Binding Song.Artist.Name}" />
+                                    <Run
+                                        Text="{Binding Song.Album.Name, Converter={StaticResource DashNotEmptyToStringConverter}}" />
+                                    <Run Text="{Binding Song.Album.Name}" />
+                            </TextBlock>
                         </StackPanel>
                     </DataTemplate>
                 </ListView.ItemTemplate>

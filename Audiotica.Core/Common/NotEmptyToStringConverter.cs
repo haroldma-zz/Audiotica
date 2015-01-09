@@ -14,6 +14,8 @@ namespace Audiotica.Core.Common
 
         public object Convert(object value, Type targetType, object parameter, string culture)
         {
+            if (value == null)
+                return "";
             return string.IsNullOrEmpty(value.ToString()) ? "" : NotEmptyText;
         }
 

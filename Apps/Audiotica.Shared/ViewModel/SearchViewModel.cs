@@ -187,8 +187,8 @@ namespace Audiotica.ViewModel
                                 () => _lastTrackResponse,
                                 artists => _lastTrackResponse = artists,
                                 async i => await _service.SearchTracksAsync(term, i));
-                            foreach (var lastArtist in _artistsResponse.Items)
-                                Artists.Add(lastArtist);
+                            foreach (var lastTrack in _lastTrackResponse.Content)
+                                LastTracks.Add(lastTrack);
                         });
                     })
                 };
@@ -309,7 +309,7 @@ namespace Audiotica.ViewModel
                     var page = getPageResponse();
                     if (page != null)
                     {
-                        return page.Page < page.PageSize;
+                        return page.Page < page.TotalPages;
                     }
                     return false;
                 }

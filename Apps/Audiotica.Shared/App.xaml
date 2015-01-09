@@ -51,9 +51,9 @@
         <DataTemplate x:Key="GroupHeaderTemplate">
             <Border Background="Transparent" Padding="0,0,0,15">
                 <Border Background="{StaticResource PhoneAccentBrush}"
-                        Width="62" Height="62" Margin="0,0,18,0" HorizontalAlignment="Left">
+                        Width="50" Height="50" Margin="0,0,18,0" HorizontalAlignment="Left">
                     <TextBlock Text="{Binding Key}" Foreground="{StaticResource PhoneForegroundBrush}"
-                               FontSize="48" Padding="6,6,6,0"
+                               FontSize="35" Padding="6,6,6,0"
                                FontFamily="{StaticResource PhoneFontFamilySemiLight}" HorizontalAlignment="Left"
                                VerticalAlignment="Bottom" />
                 </Border>
@@ -795,9 +795,6 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="ListView">
-                        <Border BorderBrush="{TemplateBinding BorderBrush}"
-                                BorderThickness="{TemplateBinding BorderThickness}"
-                                Background="{TemplateBinding Background}">
                             <ScrollViewer x:Name="ScrollViewer" AutomationProperties.AccessibilityView="Raw"
                                           BringIntoViewOnFocusChange="{TemplateBinding ScrollViewer.BringIntoViewOnFocusChange}"
                                           HorizontalScrollMode="{TemplateBinding ScrollViewer.HorizontalScrollMode}"
@@ -821,7 +818,6 @@
                                                 Padding="{TemplateBinding Padding}"
                                                 VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
                             </ScrollViewer>
-                        </Border>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>

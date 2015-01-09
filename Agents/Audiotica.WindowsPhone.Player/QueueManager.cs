@@ -173,26 +173,8 @@ namespace Audiotica.WindowsPhone.Player
         /// </summary>
         private void StartTrackAt(int id)
         {
-            UpdateMediaEnded();
-
             var track = Tracks[id];
-            _currentTrackIndex = id;
-            _mediaPlayer.AutoPlay = false;
-
-            if (track.Song.IsStreaming)
-            {
-                _mediaPlayer.SetUriSource(new Uri(track.Song.AudioUrl));
-            }
-            else
-            {
-                var isLocal = track.Song.SongState == SongState.Local;
-
-                var file = isLocal
-                    ? StorageHelper.GetFileAsync(track.Song.AudioUrl, KnownFolders.MusicLibrary).Result
-                    : StorageHelper.GetFileAsync(string.Format("songs/{0}.mp3", track.SongId)).Result;
-
-                _mediaPlayer.SetFileSource(file);
-            }
+            StartTrack(track);
         }
 
         public void StartTrack(long id)
@@ -203,7 +185,12 @@ namespace Audiotica.WindowsPhone.Player
                 RefreshTracks();
                 track = Tracks != null ? Tracks.FirstOrDefault(p => p.Id == id) : null;
             } while (track == null);
+            
+            StartTrack(track);
+        }
 
+        public void StartTrack(QueueSong track)
+        {
             UpdateMediaEnded();
                 
             _currentTrackIndex = Tracks.IndexOf(track);
@@ -221,7 +208,20 @@ namespace Audiotica.WindowsPhone.Player
                     ? StorageHelper.GetFileAsync(track.Song.AudioUrl, KnownFolders.MusicLibrary).Result 
                     : StorageHelper.GetFileAsync(string.Format("songs/{0}.mp3", track.SongId)).Result;
 
-                _mediaPlayer.SetFileSource(file);
+                try
+                {
+                    _mediaPlayer.SetFileSource(file);
+                }
+                catch
+                {
+                    if (!isLocal)
+                    {
+                        //corrupt download, perhaps
+                        track.Song.SongState = SongState.None;
+                        _sql.UpdateItem(track.Song);
+                        file.DeleteAsync().AsTask().Wait();
+                    }
+                }
             }
         }
 
