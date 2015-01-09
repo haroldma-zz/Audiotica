@@ -81,10 +81,7 @@
                                                            Storyboard.TargetProperty="(FrameworkElement.Height)"
                                                            Storyboard.TargetName="Grid">
                                 <EasingDoubleKeyFrame KeyTime="0" Value="200" />
-                                <EasingDoubleKeyFrame KeyTime="0:0:0.03" Value="250" />
-                                <EasingDoubleKeyFrame KeyTime="0:0:0.1" Value="250" />
-                                <EasingDoubleKeyFrame KeyTime="0:0:0.15" Value="300" />
-                                <EasingDoubleKeyFrame KeyTime="0:0:0.2" Value="270" />
+                                <EasingDoubleKeyFrame KeyTime="0:0:0.1" Value="270" />
                             </DoubleAnimationUsingKeyFrames>
                             <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)"
                                                            Storyboard.TargetName="Grid">
@@ -115,8 +112,7 @@
                                                            Storyboard.TargetProperty="(FrameworkElement.Height)"
                                                            Storyboard.TargetName="Grid">
                                 <EasingDoubleKeyFrame KeyTime="0" Value="270" />
-                                <EasingDoubleKeyFrame KeyTime="0:0:0.02" Value="300" />
-                                <EasingDoubleKeyFrame KeyTime="0:0:0.05" Value="200" />
+                                <EasingDoubleKeyFrame KeyTime="0:0:0.02" Value="200" />
                             </DoubleAnimationUsingKeyFrames>
                         </Storyboard>
                     </VisualTransition>
@@ -355,10 +351,10 @@
                     <StaticResource ResourceKey="SliderStyle1"/>
                 </Slider.Style>
             </Slider>
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="5">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="5">
                 <AppBarToggleButton IsChecked="{Binding IsShuffle, Mode=TwoWay}" Icon="Shuffle" IsCompact="True" />
                 <AppBarToggleButton IsChecked="{Binding IsRepeat, Mode=TwoWay}" Icon="RepeatAll" IsCompact="True" />
-                <AppBarButton Icon="FullScreen" IsCompact="True" />
+                <AppBarButton Icon="FullScreen" IsCompact="True" Click="AppBarButton_Click" />
             </StackPanel>
         </Grid>
     </Grid>

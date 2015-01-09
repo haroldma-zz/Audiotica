@@ -108,11 +108,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AudioPlayerHelper.cs" />
+    <Compile Include="NowPlayingSheetUtility.cs" />
     <Compile Include="PartialView\AdMediatorBar.xaml.cs">
       <DependentUpon>AdMediatorBar.xaml</DependentUpon>
     </Compile>
     <Compile Include="PartialView\NowPlayingBar.xaml.cs">
       <DependentUpon>NowPlayingBar.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="PartialView\NowPlayingSheet.xaml.cs">
+      <DependentUpon>NowPlayingSheet.xaml</DependentUpon>
     </Compile>
     <Compile Include="PlayerViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -196,6 +200,10 @@
     <Page Include="PartialView\NowPlayingBar.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="PartialView\NowPlayingSheet.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\FirstRunPage.xaml">
       <SubType>Designer</SubType>

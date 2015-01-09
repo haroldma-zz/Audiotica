@@ -129,5 +129,17 @@ namespace Audiotica.PartialView
             BackgroundMediaPlayer.Current.Position = App.Locator.Player.Position;
             BackgroundMediaPlayer.Current.Play();
         }
+
+        private void AppBarButton_Click(object sender, RoutedEventArgs e)
+        {
+            SlideDown.Completed += SlideDownOnCompleted;
+            SlideDown.Begin();
+        }
+
+        private void SlideDownOnCompleted(object sender, object o)
+        {
+            SlideDown.Completed -= SlideDownOnCompleted;
+            NowPlayingSheetUtility.OpenNowPlaying();
+        }
     }
 }

@@ -39,7 +39,7 @@ namespace Audiotica.Data.Collection.DesignTime
                 new Song
                 {
                     Name = "Maps",
-                    Artist = new Artist {Name = "Maroon 5"},
+                    Artist = new Artist {Name = "Maroon 5", Artwork = new BitmapImage(new Uri("http://musicimage.xboxlive.com/content/music.1F154700-0200-11DB-89CA-0019B92A3933/image?locale=en-US"))},
                     Album =
                         new Album
                         {

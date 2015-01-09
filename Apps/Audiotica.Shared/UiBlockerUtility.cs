@@ -13,18 +13,23 @@ namespace Audiotica
         private static Popup _popup;
         private static CommandBar _commandBar;
 
-        public static bool IsBlocking { get { return _popup != null; } }
+        public static bool IsBlocking { get; private set; }
+
+        public static void BlockNavigation()
+        {
+            IsBlocking = true;
+
+            _commandBar = (App.RootFrame.Content as Page).BottomAppBar as CommandBar;
+
+            if (_commandBar != null)
+                _commandBar.Visibility = Visibility.Collapsed;
+        }
 
         public static void Block(string message)
         {
             StatusBarHelper.ShowStatus(message);
 
            if (_popup != null) return;
-
-            _commandBar = (App.RootFrame.Content as Page).BottomAppBar as CommandBar;
-
-            if (_commandBar != null)
-                _commandBar.Visibility = Visibility.Collapsed;
 
             const double opacity = 255 * 0.8;
 
@@ -40,10 +45,13 @@ namespace Audiotica
                 Child = grid,
                 IsOpen = true
             };
+            BlockNavigation();
         }
 
         public static void Unblock()
         {
+            IsBlocking = false;
+
             if (_commandBar != null)
             {
                 _commandBar.Visibility = Visibility.Visible;
