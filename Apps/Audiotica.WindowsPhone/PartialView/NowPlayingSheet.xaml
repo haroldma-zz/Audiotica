@@ -19,6 +19,7 @@
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
                     <Border Background="White" BorderThickness="4" BorderBrush="White" HorizontalAlignment="Left"
                             VerticalAlignment="Top">
@@ -31,6 +32,19 @@
                     </Border>
                     <StackPanel Grid.Row="1" Margin="0,10,0,0">
                         <TextBlock FontSize="30" Text="{Binding CurrentQueue.Song.Name}" />
+                        <TextBlock FontSize="24" Text="{Binding CurrentQueue.Song.Artist.Name}" FontWeight="Thin" Foreground="#89FFFFFF"
+                                   TextTrimming="CharacterEllipsis" TextWrapping="Wrap"/>
+                        <TextBlock FontSize="24" Text="{Binding CurrentQueue.Song.Album.Name}" FontWeight="Thin" Foreground="#89FFFFFF"
+                                   TextTrimming="CharacterEllipsis" TextWrapping="Wrap"/>
+                    </StackPanel>
+                    <StackPanel Grid.Row="2" Orientation="Horizontal">
+                        <AppBarButton Command="{Binding PrevRelayCommand}" Icon="Previous" IsCompact="True" />
+                        <AppBarButton Command="{Binding PlayPauseRelayCommand}" IsCompact="True" >
+                            <AppBarButton.Icon>
+                                <SymbolIcon Symbol="{Binding PlayPauseIcon}" />
+                            </AppBarButton.Icon>
+                        </AppBarButton>
+                        <AppBarButton Command="{Binding NextRelayCommand}" Icon="Next" IsCompact="True" />
                     </StackPanel>
                 </Grid>
             </PivotItem>
@@ -43,8 +57,8 @@
                                            TextWrapping="Wrap"
                                            TextTrimming="CharacterEllipsis" FontWeight="Bold" />
                                 <TextBlock FontSize="16" FontWeight="Thin" Foreground="#89FFFFFF"
-                                           TextTrimming="CharacterEllipsis" TextWrapping="Wrap">
-                                    <Run Text="{Binding Song.Artist.Name}" FontFamily="Global User Interface" />
+                                           TextTrimming="CharacterEllipsis" TextWrapping="Wrap" FontFamily="Global User Interface">
+                                    <Run Text="{Binding Song.Artist.Name}" />
                                     <Run
                                         Text="{Binding Song.Album.Name, Converter={StaticResource DashNotEmptyToStringConverter}}" />
                                     <Run Text="{Binding Song.Album.Name}" />
