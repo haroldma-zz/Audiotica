@@ -121,6 +121,12 @@ namespace Audiotica.Data.Collection.RunTime
             if (!loadEssentials)
                 LoadPlaylists();
 
+            var corruptSongs = Songs.Where(p => string.IsNullOrEmpty(p.Name)).ToList();
+            foreach (var corruptSong in corruptSongs)
+            {
+                DeleteSongAsync(corruptSong).Wait();
+            }
+
             if (_dispatcher != null)
                 CleanupFiles();
         }
@@ -356,8 +362,11 @@ namespace Audiotica.Data.Collection.RunTime
             if (song.Album.Songs.Count == 0)
             {
                 await _sqlService.DeleteItemAsync(song.Album);
-                Albums.Remove(song.Album);
-                song.Artist.Albums.Remove(song.Album);
+                await _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                {
+                    Albums.Remove(song.Album);
+                    song.Artist.Albums.Remove(song.Album);
+                });
             }
 
 
@@ -365,13 +374,13 @@ namespace Audiotica.Data.Collection.RunTime
             if (song.Artist.Songs.Count == 0)
             {
                 await _sqlService.DeleteItemAsync(song.Artist);
-                Artists.Remove(song.Artist);
+                await _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => Artists.Remove(song.Artist));
             }
 
             //good, now lets delete it from the db
             await _sqlService.DeleteItemAsync(song);
 
-            Songs.Remove(song);
+            await _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>Songs.Remove(song));
         }
 
         public async Task<List<HistoryEntry>> FetchHistoryAsync()

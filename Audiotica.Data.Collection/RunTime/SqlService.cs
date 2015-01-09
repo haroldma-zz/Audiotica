@@ -210,7 +210,14 @@ namespace Audiotica.Data.Collection.RunTime
                                 //cast dates from string
                             else if (propertyInfo.PropertyType == typeof (DateTime))
                             {
-                                value = value == null ? DateTime.MinValue : DateTime.Parse(value.ToString());
+                                if (value == null)
+                                    value = DateTime.MinValue;
+                                else
+                                {
+                                    DateTime outDateTime;
+                                    DateTime.TryParse(value.ToString(), out outDateTime);
+                                    value = outDateTime;
+                                }
                             }
 
                                 //cast timespan from ticks (int64)

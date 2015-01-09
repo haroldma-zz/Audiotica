@@ -76,7 +76,13 @@ namespace Audiotica.Core.Common
             foreach (T item in items)
             {
                 var index = "";
-                index = slg.Lookup(getKey(item));
+
+                var lookUp = getKey(item);
+
+                if (string.IsNullOrEmpty(lookUp))
+                    continue;
+
+                index = slg.Lookup(lookUp);
                 if (string.IsNullOrEmpty(index) == false)
                 {
                     list.Find(a => a.Key == index).Items.Add(item);
