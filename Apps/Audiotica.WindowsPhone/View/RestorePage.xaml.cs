@@ -18,8 +18,9 @@ namespace Audiotica.View
             InitializeComponent();
         }
 
-        private async void PageBase_Loaded(object sender, RoutedEventArgs e)
+        public override async void NavigatedTo(object parameter)
         {
+            base.NavigatedTo(parameter);
             StatusBarHelper.ShowStatus("Restoring (this may take a bit)...");
 
             var file = await StorageHelper.GetFileAsync("_current_restore.autcp");

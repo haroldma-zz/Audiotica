@@ -10,14 +10,14 @@ namespace Audiotica.View
             InitializeComponent();
         }
 
-        protected override void OnNavigatedTo(NavigationEventArgs e)
+        public override void NavigatedTo(object e)
         {
-            base.OnNavigatedTo(e);
-            var id = e.Parameter as long?;
+            base.NavigatedTo(e);
+            var id = e as long?;
 
             if (id == null) return;
 
-            var msg = new GenericMessage<long>((long)id);
+            var msg = new GenericMessage<long>((long) id);
             Messenger.Default.Send(msg, "album-coll-detail-id");
         }
     }

@@ -6,6 +6,7 @@ using Windows.ApplicationModel.DataTransfer;
 using Windows.ApplicationModel.DataTransfer.ShareTarget;
 using Windows.ApplicationModel.Store;
 using Windows.System;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Navigation;
@@ -23,16 +24,8 @@ namespace Audiotica.View
         public HomePage()
         {
             InitializeComponent();
-        }
-
-        protected override void OnNavigatedTo(NavigationEventArgs e)
-        {
-            base.OnNavigatedTo(e);
-
-            if (Frame.CanGoBack)
-            {
-                Frame.BackStack.RemoveAt(0);
-            }
+            Bar = BottomAppBar;
+            BottomAppBar = null;
         }
 
         //TODO [Harry,20140908] move this to view model with RelayCommand
@@ -77,6 +70,36 @@ namespace Audiotica.View
         private void AppBarButton_Click_2(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
             DataTransferManager.ShowShareUI();
+        }
+
+        private void SongButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        {
+            App.Navigator.GoTo<CollectionPage, ZoomInTransition>(0);
+        }
+
+        private void ArtistButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        {
+            App.Navigator.GoTo<CollectionPage, ZoomInTransition>(1);
+        }
+
+        private void AlbumButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        {
+            App.Navigator.GoTo<CollectionPage, ZoomInTransition>(2);
+        }
+
+        private void PlaylistButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        {
+            App.Navigator.GoTo<CollectionPage, ZoomInTransition>(3);
+        }
+
+        private void SearchButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        {
+            App.Navigator.GoTo<SearchPage, ZoomInTransition>(null);
+        }
+
+        private void SettingsButtonBase_OnClick(object sender, RoutedEventArgs e)
+        {
+            App.Navigator.GoTo<SettingsPage, ZoomOutTransition>(null);
         }
     }
 }

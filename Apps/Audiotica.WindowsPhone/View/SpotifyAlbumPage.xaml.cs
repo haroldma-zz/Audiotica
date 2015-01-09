@@ -19,10 +19,9 @@ namespace Audiotica.View
             InitializeComponent();
         }
 
-        protected override void OnNavigatedTo(NavigationEventArgs e)
+        public override void NavigatedTo(object parameter)
         {
-            base.OnNavigatedTo(e);
-            var album = e.Parameter as string;
+            var album = parameter as string;
 
             if (album == null) return;
 

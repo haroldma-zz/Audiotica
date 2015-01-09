@@ -17,10 +17,10 @@ namespace Audiotica.View
             InitializeComponent();
         }
 
-        protected override async void OnNavigatedTo(NavigationEventArgs e)
+        public override void NavigatedTo(object parameter)
         {
-            base.OnNavigatedTo(e);
-            var id = e.Parameter as string;
+            base.NavigatedTo(parameter);
+            var id = parameter as string;
 
             if (id == null) return;
 
@@ -31,7 +31,7 @@ namespace Audiotica.View
         private void ListView_ItemClick(object sender, ItemClickEventArgs e)
         {
             var album = e.ClickedItem as SimpleAlbum;
-            if (album != null) Frame.Navigate(typeof (SpotifyAlbumPage), album.Id);
+            if (album != null) App.Navigator.GoTo<SpotifyAlbumPage, ZoomInTransition>(album.Id);
         }
     }
 }

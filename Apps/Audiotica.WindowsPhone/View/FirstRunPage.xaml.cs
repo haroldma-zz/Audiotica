@@ -24,13 +24,12 @@ namespace Audiotica.View
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
-            base.OnNavigatedTo(e);
             BackgroundAnimation.Begin();
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            Frame.Navigate(typeof (HomePage));
+            App.Navigator.GoTo<HomePage, PageTransition>(null);
         }
 
         private void FlipView_SelectionChanged(object sender, SelectionChangedEventArgs e)

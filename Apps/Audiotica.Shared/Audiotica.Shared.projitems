@@ -20,6 +20,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)ContinuationManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ModalSheetUtility.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)NavigationHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Navigator.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PageBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ProductConstans.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SavingError.cs" />
@@ -28,6 +29,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)ShowFlyoutAction.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SongStateConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SuspensionManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PageTransition.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)TransitionHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UiBlockerUtility.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModel\SpotifyArtistViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModel\SpotifyAlbumViewModel.cs" />
@@ -43,6 +46,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)ViewModel\ViewModelLocator.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ScrobblerHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)WaveFormHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ZoomOutTransition.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ZoomInTransition.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="$(MSBuildThisFileDirectory)analytics.xml" />

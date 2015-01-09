@@ -198,19 +198,19 @@ namespace Audiotica.ViewModel
         private void AlbumClickExecute(ItemClickEventArgs obj)
         {
             var album = obj.ClickedItem as Album;
-            App.RootFrame.Navigate(typeof (CollectionAlbumPage), album.Id);
+            App.Navigator.GoTo<CollectionAlbumPage, ZoomInTransition>(album.Id);
         }
 
         private void ArtistClickExecute(ItemClickEventArgs obj)
         {
             var artist = obj.ClickedItem as Artist;
-            App.RootFrame.Navigate(typeof (CollectionArtistPage), artist.Id);
+            App.Navigator.GoTo<CollectionArtistPage, ZoomInTransition>(artist.Id);
         }
 
         private void PlaylistClickExecute(ItemClickEventArgs obj)
         {
             var playlist = obj.ClickedItem as Playlist;
-            App.RootFrame.Navigate(typeof (CollectionPlaylistPage), playlist.Id);
+            App.Navigator.GoTo<CollectionPlaylistPage, ZoomInTransition>(playlist.Id);
         }
 
         #endregion

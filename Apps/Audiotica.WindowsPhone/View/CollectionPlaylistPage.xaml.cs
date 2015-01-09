@@ -27,7 +27,8 @@ namespace Audiotica.View
         public CollectionPlaylistPage()
         {
             InitializeComponent();
-            HardwareButtons.BackPressed += HardwareButtonsOnBackPressed;
+            Bar = BottomAppBar;
+            BottomAppBar = null;
             CreateCommands();
         }
 
@@ -83,29 +84,35 @@ namespace Audiotica.View
         {
             if (SongList.SelectionMode != ListViewSelectionMode.Multiple &&
                 SongList.ReorderMode != ListViewReorderMode.Enabled) return;
-
-            e.Handled = true;
             ToSingleMode();
         }
 
-        protected override void OnNavigatedTo(NavigationEventArgs e)
+        public override void NavigatedTo(object parameter)
         {
-            base.OnNavigatedTo(e);
+            base.NavigatedTo(parameter);
 
             if (_originalCommands == null)
-                _originalCommands = (BottomAppBar as CommandBar).PrimaryCommands.ToList();
+                _originalCommands = (Bar as CommandBar).PrimaryCommands.ToList();
 
-            var id = e.Parameter as long?;
+            var id = parameter as long?;
 
             if (id == null) return;
+
+            HardwareButtons.BackPressed += HardwareButtonsOnBackPressed;
 
             var msg = new GenericMessage<long>((long) id);
             Messenger.Default.Send(msg, "playlist-coll-detail-id");
         }
 
+        public override void NavigatedFrom()
+        {
+            base.NavigatedFrom();
+            HardwareButtons.BackPressed -= HardwareButtonsOnBackPressed;
+        }
+
         private void ToMultiMode()
         {
-            var bar = BottomAppBar as CommandBar;
+            var bar = Bar as CommandBar;
             SongList.IsItemClickEnabled = false;
             SongList.SelectionMode = ListViewSelectionMode.Multiple;
             bar.PrimaryCommands.Clear();
@@ -114,7 +121,8 @@ namespace Audiotica.View
 
         private void ToSingleMode()
         {
-            var bar = BottomAppBar as CommandBar;
+            UiBlockerUtility.Unblock();
+            var bar = Bar as CommandBar;
             SongList.IsItemClickEnabled = true;
             SongList.SelectionMode = ListViewSelectionMode.None;
             bar.PrimaryCommands.Clear();
@@ -123,13 +131,14 @@ namespace Audiotica.View
 
         private void SelectAppBarButton_Click(object sender, RoutedEventArgs e)
         {
+            UiBlockerUtility.BlockNavigation(false);
             SongList.SelectedIndex = -1;
             ToMultiMode();
         }
 
         private void ReorderAppBarButton_Click(object sender, RoutedEventArgs e)
         {
-            var bar = BottomAppBar as CommandBar;
+            var bar = Bar as CommandBar;
             SongList.IsItemClickEnabled = false;
             SongList.ReorderMode = ListViewReorderMode.Enabled;
             bar.PrimaryCommands.Clear();

@@ -11,11 +11,12 @@ namespace Audiotica.View
         public SearchPage()
         {
             InitializeComponent();
-            Loaded += (sender, args) =>
-            {
-                if (!_isBack)
-                    SearchTextBox.Focus(FocusState.Keyboard);
-            };
+        }
+
+        public override void NavigatedTo(object parameter)
+        {
+            base.NavigatedTo(parameter);
+            SearchTextBox.Focus(FocusState.Keyboard);
         }
 
         private void ListView_ItemClick(object sender, ItemClickEventArgs e)
@@ -28,13 +29,6 @@ namespace Audiotica.View
         {
             var artist = e.ClickedItem as SimpleArtist;
             Frame.Navigate(typeof(SpotifyArtistPage), artist.Id);
-        }
-
-        private bool _isBack;
-        protected override void OnNavigatedTo(NavigationEventArgs e)
-        {
-            base.OnNavigatedTo(e);
-            _isBack = e.NavigationMode == NavigationMode.Back;
         }
 
         private void SearchTextBox_GotFocus(object sender, RoutedEventArgs e)

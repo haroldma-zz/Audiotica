@@ -194,9 +194,6 @@ namespace Audiotica.Core.Common
 
             //Make the framework (re)calculate the size of the element
             grid.Measure(new Size(Double.MaxValue, Double.MaxValue));
-            Size visualSize = grid.DesiredSize;
-            grid.Arrange(new Rect(new Point(0, 0), visualSize));
-            grid.UpdateLayout();
 
             _popup.VerticalOffset = -grid.DesiredSize.Height;
         }

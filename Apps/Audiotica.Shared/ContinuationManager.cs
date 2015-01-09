@@ -38,23 +38,13 @@ namespace Audiotica
             get { return id; }
         }
 
-        /// <summary>
-        ///     Sets the ContinuationArgs for this instance. Using default Frame of current Window
-        ///     Should be called by the main activation handling code in App.xaml.cs
-        /// </summary>
-        /// <param name="args">The activation args</param>
-        internal void Continue(IContinuationActivatedEventArgs args)
-        {
-            Continue(args, Window.Current.Content as Frame);
-        }
 
         /// <summary>
         ///     Sets the ContinuationArgs for this instance. Should be called by the main activation
         ///     handling code in App.xaml.cs
         /// </summary>
         /// <param name="args">The activation args</param>
-        /// <param name="rootFrame">The frame control that contains the current page</param>
-        internal void Continue(IContinuationActivatedEventArgs args, Frame rootFrame)
+        internal void Continue(IContinuationActivatedEventArgs args)
         {
             if (args == null)
                 throw new ArgumentNullException("args");
@@ -62,13 +52,11 @@ namespace Audiotica
             this.args = args;
             id = Guid.NewGuid();
 
-            if (rootFrame == null)
-                return;
 
             switch (args.Kind)
             {
                 case ActivationKind.PickFileContinuation:
-                    var fileOpenPickerPage = rootFrame.Content as IFileOpenPickerContinuable;
+                    var fileOpenPickerPage = App.Navigator.CurrentPage as IFileOpenPickerContinuable;
                     if (fileOpenPickerPage != null)
                     {
                         fileOpenPickerPage.ContinueFileOpenPicker(args as FileOpenPickerContinuationEventArgs);
@@ -76,7 +64,7 @@ namespace Audiotica
                     break;
 
                 case ActivationKind.PickSaveFileContinuation:
-                    var fileSavePickerPage = rootFrame.Content as IFileSavePickerContinuable;
+                    var fileSavePickerPage = App.Navigator.CurrentPage as IFileSavePickerContinuable;
                     if (fileSavePickerPage != null)
                     {
                         fileSavePickerPage.ContinueFileSavePicker(args as FileSavePickerContinuationEventArgs);
@@ -84,7 +72,7 @@ namespace Audiotica
                     break;
 
                 case ActivationKind.PickFolderContinuation:
-                    var folderPickerPage = rootFrame.Content as IFolderPickerContinuable;
+                    var folderPickerPage = App.Navigator.CurrentPage as IFolderPickerContinuable;
                     if (folderPickerPage != null)
                     {
                         folderPickerPage.ContinueFolderPicker(args as FolderPickerContinuationEventArgs);
@@ -92,7 +80,7 @@ namespace Audiotica
                     break;
 
                 case ActivationKind.WebAuthenticationBrokerContinuation:
-                    var wabPage = rootFrame.Content as IWebAuthenticationContinuable;
+                    var wabPage = App.Navigator.CurrentPage as IWebAuthenticationContinuable;
                     if (wabPage != null)
                     {
                         wabPage.ContinueWebAuthentication(args as WebAuthenticationBrokerContinuationEventArgs);

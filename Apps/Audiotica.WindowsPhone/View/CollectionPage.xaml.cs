@@ -28,17 +28,18 @@ namespace Audiotica.View
         public CollectionPage()
         {
             InitializeComponent();
-
-            Loaded += (sender, args) => LoadWallpaperArt();
+            Bar = BottomAppBar;
+            BottomAppBar = null;
         }
 
-        protected override void OnNavigatedTo(NavigationEventArgs e)
+        public override void NavigatedTo(object parameter)
         {
-            base.OnNavigatedTo(e);
+            base.NavigatedTo(parameter);
+            if (parameter == null) return;
 
-            if (e.NavigationMode == NavigationMode.Back) return;
+            LoadWallpaperArt();
 
-            var pivotIndex = int.Parse(e.Parameter.ToString());
+            var pivotIndex = (int)parameter;
             CollectionPivot.SelectedIndex = pivotIndex;
         }
 
@@ -58,7 +59,7 @@ namespace Audiotica.View
             if (albumCount < 10) return;
 
             var h = Window.Current.Bounds.Height;
-            var rows = (int)Math.Ceiling(h / (WallpaperGridView.ActualWidth / 5));
+            var rows = (int)Math.Ceiling(h / (ActualWidth / 5));
 
             var numImages = rows*5;
             var imagesNeeded = numImages - albumCount;
@@ -89,29 +90,8 @@ namespace Audiotica.View
 
         private void CollectionPivot_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            (BottomAppBar as CommandBar).ClosedDisplayMode =
+            (Bar as CommandBar).ClosedDisplayMode =
                 CollectionPivot.SelectedIndex == 3 ? AppBarClosedDisplayMode.Compact : AppBarClosedDisplayMode.Minimal;
-        }
-
-        private void PickerFlyout_Confirmed(PickerFlyout sender, PickerConfirmedEventArgs args)
-        {
-            var listView = (ListView) sender.Content;
-            var selection = listView.SelectedItems.Select(o => (Song) o).ToList();
-
-            if (selection.Count > 0)
-            {
-                Frame.Navigate(typeof (NewPlaylistPage), selection);
-            }
-            else
-            {
-                CurtainPrompt.ShowError("SongsNoneSelected".FromLanguageResource());
-            }
-        }
-
-        private void PickerFlyout_Closed(object sender, object e)
-        {
-            var listView = (ListView) ((PickerFlyout) sender).Content;
-            listView.SelectedIndex = -1;
         }
 
         public async void ContinueFileSavePicker(FileSavePickerContinuationEventArgs args)

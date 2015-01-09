@@ -8,6 +8,7 @@ using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.ApplicationModel.Store;
+using Windows.Phone.UI.Input;
 using Windows.System;
 using Windows.UI.Popups;
 using Windows.UI.ViewManagement;
@@ -20,6 +21,7 @@ using Audiotica.View;
 using Audiotica.ViewModel;
 using GalaSoft.MvvmLight.Threading;
 using GoogleAnalytics;
+using MyToolkit.Paging.Handlers;
 
 #endregion
 
@@ -40,6 +42,8 @@ namespace Audiotica
         #endregion
 
         #region Properties
+
+        public static Navigator Navigator { get; set; }
 
         public static ViewModelLocator Locator
         {
@@ -65,6 +69,7 @@ namespace Audiotica
         public App()
         {
             InitializeComponent();
+            HardwareButtons.BackPressed += HardwareButtonsOnBackPressed;
             _continuationManager = new ContinuationManager();
             Suspending += OnSuspending;
             Resuming += OnResuming;
@@ -75,6 +80,18 @@ namespace Audiotica
 
             Current.DebugSettings.EnableFrameRateCounter = AppSettingsHelper.Read<bool>("FrameRateCounter");
             Current.DebugSettings.EnableRedrawRegions = AppSettingsHelper.Read<bool>("RedrawRegions");
+        }
+
+        private void HardwareButtonsOnBackPressed(object sender, BackPressedEventArgs e)
+        {
+            if (UiBlockerUtility.IsBlocking)
+            {
+                e.Handled = true;
+            }
+            else if (Navigator.GoBack())
+            {
+                e.Handled = true;
+            }
         }
 
         #endregion
@@ -90,14 +107,14 @@ namespace Audiotica
             if (RootFrame.Content == null)
             {
                 RootFrame.Navigated += RootFrame_FirstNavigated;
-                RootFrame.Navigate(typeof (HomePage));
+                RootFrame.Navigate(typeof (RootPage));
             }
 
             var continuationEventArgs = e as IContinuationActivatedEventArgs;
 
             if (continuationEventArgs != null)
             {
-                _continuationManager.Continue(continuationEventArgs, RootFrame);
+                _continuationManager.Continue(continuationEventArgs);
             }
 
             Window.Current.Activate();
@@ -109,19 +126,12 @@ namespace Audiotica
 
             var restore = await StorageHelper.FileExistsAsync("_current_restore.autcp");
 
-            var page = typeof (HomePage);
-
-            if (AppVersionHelper.IsFirstRun)
-                page = typeof (FirstRunPage);
-            else if (restore)
-                page = typeof (RestorePage);
-
             if (RootFrame.Content == null)
             {
                 RootFrame.Navigated += RootFrame_FirstNavigated;
 
                 //MainPage is always in rootFrame so we don't have to worry about restoring the navigation state on resume
-                RootFrame.Navigate(page, e.Arguments);
+                RootFrame.Navigate(typeof(RootPage), e.Arguments);
             }
 
             // Ensure the current window is active
@@ -190,7 +200,7 @@ namespace Audiotica
             if (AppSettingsHelper.Read("Crashing", true)) return;
 
             e.Handled = true;
-            MessageBox.Show(e.Message + "\n" + e.Exception.StackTrace, "[DEV-MODE] Crashing Error");
+            DispatcherHelper.RunAsync(() => CurtainPrompt.ShowError("[DEV-MODE] Crashing Error" + "\n" + e.Message + "\n" + e.Exception.StackTrace));
         }
 
         private void DataTransferManagerOnDataRequested(DataTransferManager sender, DataRequestedEventArgs e)

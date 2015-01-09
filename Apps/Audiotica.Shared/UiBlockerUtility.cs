@@ -15,9 +15,11 @@ namespace Audiotica
 
         public static bool IsBlocking { get; private set; }
 
-        public static void BlockNavigation()
+        public static void BlockNavigation(bool hideNavBar = true)
         {
             IsBlocking = true;
+
+            if (!hideNavBar) return;
 
             _commandBar = (App.RootFrame.Content as Page).BottomAppBar as CommandBar;
 

@@ -1,6 +1,7 @@
 ﻿#region
 
 using System;
+using Windows.Foundation;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 using GoogleAnalytics;
@@ -13,71 +14,44 @@ namespace Audiotica
     {
         private const string StateKey = "State";
 
-        private readonly NavigationHelper _navigationHelper;
-
-        protected PageBase()
+        public AppBar Bar
         {
-            _navigationHelper = new NavigationHelper(this);
-            NavigationCacheMode = NavigationCacheMode.Required;
-            _navigationHelper.LoadState += NavigationHelperLoadState;
-            _navigationHelper.SaveState += NavigationHelperSaveState;
+            get;
+            protected set;
         }
 
-        public NavigationHelper NavigationHelper
+        public virtual void NavigatedFrom()
         {
-            get { return _navigationHelper; }
+            _navigatedAway = true;
         }
 
-        protected virtual void LoadState(object state)
+        public virtual void BeforeNavigateTo()
         {
+            _navigatedAway = false;
         }
 
-        protected void NavigationHelperLoadState(object sender, LoadStateEventArgs e)
+        public virtual void NavigatedTo(Object parameter)
         {
-            if (e.PageState != null
-                && e.PageState.ContainsKey(StateKey))
+            var pageName = "HomePage";
+
+            if (App.Navigator.CurrentPage != null)
             {
-                LoadState(e.PageState[StateKey]);
+                pageName = App.Navigator.CurrentPage.ToString();
+                pageName = pageName.Remove(0, pageName.LastIndexOf(".", StringComparison.Ordinal) + 1);
             }
-        }
-
-        protected void NavigationHelperSaveState(object sender, SaveStateEventArgs e)
-        {
-            if (e.PageState == null)
-            {
-                throw new InvalidOperationException("PageState is null");
-            }
-
-            if (e.PageState.ContainsKey(StateKey))
-            {
-                e.PageState.Remove(StateKey);
-            }
-
-            var state = SaveState();
-
-            if (state != null)
-            {
-                e.PageState.Add(StateKey, state);
-            }
-        }
-
-        protected override void OnNavigatedFrom(NavigationEventArgs e)
-        {
-            _navigationHelper.OnNavigatedFrom(e);
-        }
-
-        protected override void OnNavigatedTo(NavigationEventArgs e)
-        {
-            _navigationHelper.OnNavigatedTo(e);
-
-            var pageName = e.Content.ToString();
-            pageName = pageName.Remove(0, pageName.LastIndexOf(".", StringComparison.Ordinal) + 1);
             EasyTracker.GetTracker().SendView(pageName);
         }
 
-        protected virtual object SaveState()
+
+
+        private bool _navigatedAway;
+        public void SetSize(Size size)
         {
-            return null;
+            if (_navigatedAway) return;
+
+            Width = size.Width;
+            Height = size.Height;
+            Measure(size);
         }
     }
 }

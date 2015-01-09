@@ -127,6 +127,9 @@
     <Compile Include="View\RestorePage.xaml.cs">
       <DependentUpon>RestorePage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\RootPage.xaml.cs">
+      <DependentUpon>RootPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\SpotifyArtistPage.xaml.cs">
       <DependentUpon>SpotifyArtistPage.xaml</DependentUpon>
     </Compile>
@@ -210,6 +213,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\RestorePage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\RootPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

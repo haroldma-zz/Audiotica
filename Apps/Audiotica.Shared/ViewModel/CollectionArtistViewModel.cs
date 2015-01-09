@@ -57,9 +57,9 @@ namespace Audiotica.ViewModel
         {
             if (Artist != null && Artist.Id == id) return;
 
-            Messenger.Default.Send(false, "artist-coll-sim");
             Messenger.Default.Send(false, "artist-coll-bio");
-            
+            Messenger.Default.Send(false, "artist-coll-sim");
+
             SetArtist(id);
         }
 
