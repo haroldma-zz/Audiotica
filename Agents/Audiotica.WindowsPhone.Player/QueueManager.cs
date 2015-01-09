@@ -117,6 +117,8 @@ namespace Audiotica.WindowsPhone.Player
         /// </summary>
         private void MediaPlayer_MediaOpened(MediaPlayer sender, object args)
         {
+            _retryCount = 0;
+
             // wait for media to be ready
             sender.Play();
 
@@ -163,9 +165,13 @@ namespace Audiotica.WindowsPhone.Player
         {
             Debug.WriteLine("Failed with error code " + args.ExtendedErrorCode);
 
-            if (Tracks.Count > 1)
-                SkipToNext();
+            if (Tracks.Count <= 1 || _retryCount >= 5) return;
+
+            SkipToNext();
+            _retryCount++;
         }
+
+        private int _retryCount;
 
         #endregion
 
