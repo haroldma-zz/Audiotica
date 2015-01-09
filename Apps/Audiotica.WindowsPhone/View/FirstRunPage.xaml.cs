@@ -22,14 +22,15 @@ namespace Audiotica.View
             this.InitializeComponent();
         }
 
-        protected override void OnNavigatedTo(NavigationEventArgs e)
+        public override void NavigatedTo(object parameter)
         {
+            base.NavigatedTo(parameter);
             BackgroundAnimation.Begin();
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            App.Navigator.GoTo<HomePage, PageTransition>(null);
+            App.Navigator.GoTo<HomePage, ZoomOutTransition>(null);
         }
 
         private void FlipView_SelectionChanged(object sender, SelectionChangedEventArgs e)

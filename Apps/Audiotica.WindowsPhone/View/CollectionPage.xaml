@@ -337,18 +337,11 @@
     </Grid>
     <Page.BottomAppBar>
         <CommandBar ClosedDisplayMode="Minimal">
-            <AppBarButton x:Uid="CollectionAppBarNewPlaylist" Icon="Add" Label="New Playlist"
-                          FontFamily="Global User Interface">
-                <interactivity:Interaction.Behaviors>
-                    <core:EventTriggerBehavior EventName="Click">
-                        <core:NavigateToPageAction TargetPage="Audiotica.View.NewPlaylistPage" Parameter="1" />
-                    </core:EventTriggerBehavior>
-                </interactivity:Interaction.Behaviors>
-            </AppBarButton>
+            <AppBarButton x:Uid="CollectionAppBarNewPlaylist" Icon="Add" Label="New Playlist" Click="ButtonBase_OnClick" />
             <CommandBar.SecondaryCommands>
-                <AppBarButton Label="import music from phone" Command="{Binding ImportCommand}" />
-                <AppBarButton Label="backup collection" Command="{Binding CreateBackupCommand}" />
-                <AppBarButton Label="restore collection" Command="{Binding RestoreCommand}" />
+                <AppBarButton Label="import music from phone" Click="ImportButtonBase_OnClick"/>
+                <AppBarButton Label="backup collection" Click="BackupButtonBase_OnClick" />
+                <AppBarButton Label="restore collection" Click="RestoreButtonBase_OnClick" />
             </CommandBar.SecondaryCommands>
         </CommandBar>
     </Page.BottomAppBar>

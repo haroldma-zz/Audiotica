@@ -123,13 +123,20 @@ namespace Audiotica
             {
                 //need to reopen (when it fails to open it disposes of the stream
                 fileStream = await file.OpenStreamForReadAsync();
-                tagFile = File.Create(new StreamFileAbstraction(
-                    file.Name.Replace(".mp3", ".m4a"), fileStream, fileStream));
+                try
+                {
+                    tagFile = File.Create(new StreamFileAbstraction(
+                        file.Name.Replace(".mp3", ".m4a"), fileStream, fileStream));
+                }
+                catch { }
             }
 
-            var tags = tagFile.Tag;
+            var tags = tagFile == null ? null : tagFile.Tag;
             using (fileStream) { }
-            using (tagFile) { }
+
+            if (tagFile != null)
+                using (tagFile)
+                {}
 
             #endregion
 

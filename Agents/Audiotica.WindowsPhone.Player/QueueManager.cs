@@ -162,6 +162,9 @@ namespace Audiotica.WindowsPhone.Player
         private void mediaPlayer_MediaFailed(MediaPlayer sender, MediaPlayerFailedEventArgs args)
         {
             Debug.WriteLine("Failed with error code " + args.ExtendedErrorCode);
+
+            if (Tracks.Count > 1)
+                SkipToNext();
         }
 
         #endregion

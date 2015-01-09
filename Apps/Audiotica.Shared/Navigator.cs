@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using Windows.Foundation;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Audiotica.View;
 using GalaSoft.MvvmLight.Threading;
 
 #endregion
@@ -103,20 +104,23 @@ namespace Audiotica
                     OnNavigated();
                 });
 
-                Commit(() => transition.PlayReverse(() =>
+                if (!(transition.FromPage is FirstRunPage || transition.FromPage is RestorePage))
                 {
-                    CurrentPage = transition.FromPage;
+                    Commit(() => transition.PlayReverse(() =>
+                    {
+                        CurrentPage = transition.FromPage;
 
-                    var from = _rootContainer.Children.IndexOf(transition.FromPage);
-                    var to = _rootContainer.Children.Count - 1;
+                        var from = _rootContainer.Children.IndexOf(transition.FromPage);
+                        var to = _rootContainer.Children.Count - 1;
 
-                    _rootContainer.Children.Move((uint) from, (uint) to);
+                        _rootContainer.Children.Move((uint) from, (uint) to);
 
-                    _rootPage.BottomAppBar = transition.FromPage.Bar;
-                    transition.ToPage.NavigatedFrom();
-                    transition.FromPage.NavigatedTo(null);
-                }));
-                return;
+                        _rootPage.BottomAppBar = transition.FromPage.Bar;
+                        transition.ToPage.NavigatedFrom();
+                        transition.FromPage.NavigatedTo(null);
+                    }));
+                    return;
+                }
             }
             page = GetPage<TPage>();
             page.BeforeNavigateTo();

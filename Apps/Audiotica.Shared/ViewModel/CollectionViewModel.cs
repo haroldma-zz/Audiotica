@@ -82,10 +82,6 @@ namespace Audiotica.ViewModel
             EntryPlayClickCommand = new RelayCommand<BaseEntry>(EntryPlayClickExecute);
 
             ItemPickedCommand = new RelayCommand<AddableCollectionItem>(ItemPickedExecute);
-
-            CreateBackupCommand = new RelayCommand(CreateBackupExecute);
-            RestoreCommand = new RelayCommand(RestoreExecute);
-            ImportCommand = new RelayCommand(ImportExecute);
         }
 
         private void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs arg)
@@ -349,45 +345,6 @@ namespace Audiotica.ViewModel
             }
         }
 
-        private void CreateBackupExecute()
-        {
-            var savePicker = new FileSavePicker
-            {
-                SuggestedStartLocation = PickerLocationId.DocumentsLibrary
-            };
-            // Dropdown of file types the user can save the file as
-            savePicker.FileTypeChoices.Add("Audiotica Backup", new List<string>() { ".autcp" });
-            // Default file name if the user does not type one in or select a file to replace
-            savePicker.SuggestedFileName = string.Format("{0}-WP81", (int)DateTime.Now.ToUnixTimeStamp());
-
-            savePicker.PickSaveFileAndContinue();
-        }
-
-        private async void RestoreExecute()
-        {
-            if (await MessageBox.ShowAsync("This will delete all your pre-existing data.", "Continue with Restore?",
-                MessageBoxButton.YesNo) != MessageBoxResult.Yes) return;
-
-            var fileOpenPicker = new FileOpenPicker { SuggestedStartLocation = PickerLocationId.DocumentsLibrary };
-            fileOpenPicker.FileTypeFilter.Add(".autcp");
-            fileOpenPicker.PickSingleFileAndContinue();
-        }
-
-        private async void ImportExecute()
-        {
-            UiBlockerUtility.Block("Scanning...");
-            var localMusic = await LocalMusicHelper.GetFilesInMusic();
-
-            for (var i = 0; i < localMusic.Count; i++)
-            {
-                StatusBarHelper.ShowStatus(string.Format("{0} of {1} items added", i + 1, localMusic.Count), (double)i / localMusic.Count);
-                await LocalMusicHelper.SaveTrackAsync(localMusic[i]);
-            }
-
-            UiBlockerUtility.Unblock();
-            await CollectionHelper.DownloadArtistsArtworkAsync();
-        }
-
         #endregion
 
         #region Properties
@@ -438,10 +395,6 @@ namespace Audiotica.ViewModel
         public RelayCommand<AddableCollectionItem> ItemPickedCommand { get; set; }
 
         public RelayCommand<BaseEntry> EntryPlayClickCommand { get; set; }
-
-        public RelayCommand CreateBackupCommand { get; set; }
-        public RelayCommand RestoreCommand { get; set; }
-        public RelayCommand ImportCommand { get; set; }
 
         #endregion
     }
