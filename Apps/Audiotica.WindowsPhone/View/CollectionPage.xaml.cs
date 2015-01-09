@@ -30,6 +30,7 @@ namespace Audiotica.View
             InitializeComponent();
             Bar = BottomAppBar;
             BottomAppBar = null;
+            Loaded += (sender, args) =>  LoadWallpaperArt();
         }
 
         public override void NavigatedTo(object parameter)

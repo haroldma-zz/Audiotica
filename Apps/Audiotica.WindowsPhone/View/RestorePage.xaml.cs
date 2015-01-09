@@ -64,7 +64,7 @@ namespace Audiotica.View
             StatusBarHelper.HideStatus();
             CurtainPrompt.Show("Finish restoring.");
             (Application.Current as App).BootAppServicesAsync();
-            Frame.Navigate(typeof (HomePage));
+            App.Navigator.GoTo<HomePage, ZoomInTransition>(null);
         }
     }
 }

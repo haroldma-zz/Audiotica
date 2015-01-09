@@ -22,13 +22,13 @@ namespace Audiotica.View
         private void ListView_ItemClick(object sender, ItemClickEventArgs e)
         {
             var album = e.ClickedItem as SimpleAlbum;
-            Frame.Navigate(typeof(SpotifyAlbumPage), album.Id);
+            App.Navigator.GoTo<SpotifyAlbumPage, ZoomInTransition>(album.Id);
         }
 
         private void ListView_ItemClick_1(object sender, ItemClickEventArgs e)
         {
             var artist = e.ClickedItem as SimpleArtist;
-            Frame.Navigate(typeof(SpotifyArtistPage), artist.Id);
+            App.Navigator.GoTo<SpotifyArtistPage, ZoomInTransition>(artist.Id);
         }
 
         private void SearchTextBox_GotFocus(object sender, RoutedEventArgs e)

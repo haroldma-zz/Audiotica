@@ -37,7 +37,6 @@ namespace Audiotica.View
         public override void NavigatedFrom()
         {
             base.NavigatedFrom();
-            ArtistPivot.SelectedIndex = 0;
             Messenger.Default.Unregister<bool>(this, "artist-coll-bio", BioUpdate);
             Messenger.Default.Unregister<bool>(this, "artist-coll-sim", SimUpdate);
         }

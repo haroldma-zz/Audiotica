@@ -59,7 +59,7 @@ namespace Audiotica.View
         private void RecommendationListView_ItemClick(object sender, ItemClickEventArgs e)
         {
             var artist = e.ClickedItem as LastArtist;
-            Frame.Navigate(typeof(SpotifyArtistPage), "name." + artist.Name);
+            App.Navigator.GoTo<SpotifyArtistPage, ZoomInTransition>("name." + artist.Name);
         }
 
         private void AppBarButton_Click_1(object sender, Windows.UI.Xaml.RoutedEventArgs e)
