@@ -23,11 +23,12 @@ namespace Audiotica
         private static async Task RetriveFilesInFolder(List<StorageFile> list, StorageFolder parent)
         {
             list.AddRange((await parent.GetFilesAsync()).Where(p => p.FileType == ".wma" || p.FileType == ".mp3"));
-
+            
             //avoiding DRM folder of xbox music
-            foreach (var item in (await parent.GetFoldersAsync()).Where(item => !item.Path.Contains(@"\Music\Xbox Music")))
+            foreach (var folder in (await parent.GetFoldersAsync()).Where(folder => 
+                folder.Name != "Xbox Music" && folder.Name != "Subscription Cache" && folder.Name != "Podcasts"))
             {
-                await RetriveFilesInFolder(list, item);
+                await RetriveFilesInFolder(list, folder);
             }
         }
 
