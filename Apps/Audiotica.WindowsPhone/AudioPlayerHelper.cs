@@ -90,9 +90,11 @@ namespace Audiotica
                 AddMediaPlayerEventHandlers();
 
             AppSettingsHelper.Write(PlayerConstants.CurrentTrack, song.Id);
-
+            
             var message = new ValueSet {{PlayerConstants.StartPlayback, null}};
             BackgroundMediaPlayer.SendMessageToBackground(message);
+
+            RaiseEvent(TrackChanged);
         }
 
         public void PlayPauseToggle()
