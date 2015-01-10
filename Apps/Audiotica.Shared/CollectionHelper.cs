@@ -266,7 +266,6 @@ namespace Audiotica
                 App.Locator.AudioPlayerHelper.PlaySong(queueSong);
 
                 await Task.Delay(500).ConfigureAwait(false);
-
                 for (var index = 1; index < ordered.Count; index++)
                 {
                     if (!_currentlyPreparing)
@@ -290,20 +289,20 @@ namespace Audiotica
             if (!App.Locator.Player.IsPlayerActive)
                 await App.Locator.CollectionService.ClearQueueAsync();
 
-            var overflow = App.Locator.CollectionService.PlaybackQueue.Count - MaxPlayQueueCount;
+            var overflow = App.Locator.CollectionService.CurrentPlaybackQueue.Count - MaxPlayQueueCount;
             if (overflow > 0)
                 for (var i = 0; i < overflow; i++)
                 {
-                    var queueToRemove = App.Locator.CollectionService.PlaybackQueue.LastOrDefault();
+                    var queueToRemove = App.Locator.CollectionService.CurrentPlaybackQueue.LastOrDefault();
                     if (queueToRemove == App.Locator.Player.CurrentQueue)
                         queueToRemove =
-                            App.Locator.CollectionService.PlaybackQueue[
-                                App.Locator.CollectionService.PlaybackQueue.Count - 2];
+                            App.Locator.CollectionService.CurrentPlaybackQueue[
+                                App.Locator.CollectionService.CurrentPlaybackQueue.Count - 2];
 
-                    await App.Locator.CollectionService.DeleteFromQueueAsync(queueToRemove.Song);
+                    await App.Locator.CollectionService.DeleteFromQueueAsync(queueToRemove);
                 }
 
-            var position = App.Locator.CollectionService.PlaybackQueue.IndexOf(App.Locator.Player.CurrentQueue) + 1;
+            var position = App.Locator.CollectionService.CurrentPlaybackQueue.IndexOf(App.Locator.Player.CurrentQueue) + 1;
             var queueSong = await App.Locator.CollectionService.AddToQueueAsync(song, position);
 
             if (!App.Locator.Player.IsPlayerActive)

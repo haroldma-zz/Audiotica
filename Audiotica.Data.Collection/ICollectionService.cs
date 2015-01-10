@@ -75,7 +75,7 @@ namespace Audiotica.Data.Collection
         /// </summary>
         /// <param name="songToRemove"></param>
         /// <returns></returns>
-        Task DeleteFromQueueAsync(Song songToRemove);
+        Task DeleteFromQueueAsync(QueueSong songToRemove);
 
         #endregion
 

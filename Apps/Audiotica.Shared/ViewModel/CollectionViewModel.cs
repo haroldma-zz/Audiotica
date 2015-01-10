@@ -330,7 +330,6 @@ namespace Audiotica.ViewModel
 
                     await Task.WhenAll(album.Songs.ToList().Select(song => Task.WhenAll(new List<Task>
                     {
-                        Service.DeleteFromQueueAsync(song),
                         Service.DeleteSongAsync(song)
                     })));
                 }

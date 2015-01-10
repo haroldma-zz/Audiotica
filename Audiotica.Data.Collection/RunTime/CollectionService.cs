@@ -27,7 +27,6 @@ namespace Audiotica.Data.Collection.RunTime
     {
         private readonly CoreDispatcher _dispatcher;
         private readonly Dictionary<long, QueueSong> _lookupMap = new Dictionary<long, QueueSong>();
-        private readonly Dictionary<long, QueueSong> _shuffleLookupMap = new Dictionary<long, QueueSong>();
         private readonly ISqlService _sqlService;
         private readonly ISqlService _bgSqlService;
 
@@ -458,7 +457,6 @@ namespace Audiotica.Data.Collection.RunTime
             await _bgSqlService.DeleteTableAsync<QueueSong>();
 
             _lookupMap.Clear();
-            _shuffleLookupMap.Clear();
             await _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
             {
                 PlaybackQueue.Clear();
@@ -501,6 +499,7 @@ namespace Audiotica.Data.Collection.RunTime
 
             if (insert)
             {
+                index = position;
                 next = PlaybackQueue[position];
                 prev = _lookupMap[next.PrevId];
                 shuffleNext = next;
@@ -574,10 +573,9 @@ namespace Audiotica.Data.Collection.RunTime
                     if (insert)
                         PlaybackQueue.Insert(position, newQueue);
                     else
-                    {
                         PlaybackQueue.Add(newQueue);
-                        ShufflePlaybackQueue.Insert(index, newQueue);
-                    }
+
+                    ShufflePlaybackQueue.Insert(index, newQueue);
 
                     if (_lookupMap.ContainsKey(newQueue.Id))
                         _lookupMap.Remove(newQueue.Id);
@@ -598,34 +596,48 @@ namespace Audiotica.Data.Collection.RunTime
         }
 
 
-        public async Task DeleteFromQueueAsync(Song songToRemove)
+        public async Task DeleteFromQueueAsync(QueueSong songToRemove)
         {
             QueueSong previousModel;
 
-            var queueSongToRemove = PlaybackQueue.FirstOrDefault(p => p.SongId == songToRemove.Id);
-
-            if (queueSongToRemove == null)
+            if (songToRemove == null)
                 return;
 
-            if (_lookupMap.TryGetValue(queueSongToRemove.PrevId, out previousModel))
+            if (_lookupMap.TryGetValue(songToRemove.PrevId, out previousModel))
             {
-                previousModel.NextId = queueSongToRemove.NextId;
+                previousModel.NextId = songToRemove.NextId;
+                await _bgSqlService.UpdateItemAsync(previousModel);
+            }
+
+            if (_lookupMap.TryGetValue(songToRemove.ShufflePrevId, out previousModel))
+            {
+                previousModel.ShuffleNextId = songToRemove.ShuffleNextId;
                 await _bgSqlService.UpdateItemAsync(previousModel);
             }
 
             QueueSong nextModel;
 
-            if (_lookupMap.TryGetValue(queueSongToRemove.NextId, out nextModel))
+            if (_lookupMap.TryGetValue(songToRemove.NextId, out nextModel))
             {
-                nextModel.PrevId = queueSongToRemove.PrevId;
+                nextModel.PrevId = songToRemove.PrevId;
                 await _bgSqlService.UpdateItemAsync(nextModel);
             }
 
-            await _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => PlaybackQueue.Remove(queueSongToRemove));
-            _lookupMap.Remove(queueSongToRemove.Id);
+            if (_lookupMap.TryGetValue(songToRemove.ShuffleNextId, out nextModel))
+            {
+                nextModel.ShufflePrevId = songToRemove.ShufflePrevId;
+                await _bgSqlService.UpdateItemAsync(nextModel);
+            }
+
+            await _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+            {
+                PlaybackQueue.Remove(songToRemove);
+                CurrentPlaybackQueue.Remove(songToRemove);
+            });
+            _lookupMap.Remove(songToRemove.Id);
 
             //Delete from database
-            await _bgSqlService.DeleteItemAsync(queueSongToRemove);
+            await _bgSqlService.DeleteItemAsync(songToRemove);
         }
 
         private void LoadQueue()
@@ -643,17 +655,8 @@ namespace Audiotica.Data.Collection.RunTime
 
                 _lookupMap.Add(queueSong.Id, queueSong);
 
-                #region shuffle
-
-                if (_shuffleLookupMap.ContainsKey(queueSong.Id))
-                    _shuffleLookupMap.Remove(queueSong.Id);
-
-                _shuffleLookupMap.Add(queueSong.Id, queueSong);
-
                 if (queueSong.ShufflePrevId == 0)
                     shuffleHead = queueSong;
-
-                #endregion
 
                 if (queueSong.PrevId == 0)
                     head = queueSong;
@@ -675,24 +678,23 @@ namespace Audiotica.Data.Collection.RunTime
                     else
                         break;
                 }
-
-                if (shuffleHead != null)
+            }
+            if (shuffleHead != null)
+            {
+                for (var i = 0; i < queue.Count; i++)
                 {
-                    for (var i = 0; i < queue.Count; i++)
-                    {
-                        if (_dispatcher != null)
-                            _dispatcher.RunAsync(CoreDispatcherPriority.Normal,
-                                () => ShufflePlaybackQueue.Add(shuffleHead))
-                                .AsTask()
-                                .Wait();
-                        else
-                            ShufflePlaybackQueue.Add(shuffleHead);
+                    if (_dispatcher != null)
+                        _dispatcher.RunAsync(CoreDispatcherPriority.Normal,
+                            () => ShufflePlaybackQueue.Add(shuffleHead))
+                            .AsTask()
+                            .Wait();
+                    else
+                        ShufflePlaybackQueue.Add(shuffleHead);
 
-                        if (shuffleHead.ShuffleNextId != 0)
-                            shuffleHead = _shuffleLookupMap[shuffleHead.ShuffleNextId];
-                        else
-                            break;
-                    }
+                    if (shuffleHead.ShuffleNextId != 0)
+                        shuffleHead = _lookupMap[shuffleHead.ShuffleNextId];
+                    else
+                        break;
                 }
             }
         }
