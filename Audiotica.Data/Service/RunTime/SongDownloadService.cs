@@ -112,9 +112,6 @@ namespace Audiotica.Data.Service.RunTime
             //Update the IsDownloading property
             song.SongState = SongState.Downloaded;
             await _sqlService.UpdateItemAsync(song);
-
-            //update queue on bg
-            AppSettingsHelper.WriteAsJson(PlayerConstants.QueueDateCreated, DateTime.Now);
         }
 
         /// <summary>

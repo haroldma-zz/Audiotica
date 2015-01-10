@@ -175,13 +175,28 @@ namespace Audiotica.Data.Collection.RunTime
             return await Task.FromResult(UpdateItem(item)).ConfigureAwait(false);
         }
 
+        public T SelectWhere<T>(string property, string value) where T : new()
+        {
+            return SelectAll<T>(property, value).FirstOrDefault();
+        }
+
         public List<T> SelectAll<T>() where T : new()
+        {
+            return SelectAll<T>(null, null);
+        }
+
+        public List<T> SelectAll<T>(string property, string whereValue) where T : new()
         {
             var type = typeof (T);
             var items = new List<T>();
 
-            using (var statement = DbConnection.Prepare("SELECT * FROM " + type.Name))
+            using (var statement = DbConnection.Prepare("SELECT * FROM " + type.Name + 
+                (string.IsNullOrEmpty(whereValue) ? "" : 
+                string.Format(" WHERE {0} = ?", property))))
             {
+                if (whereValue != null)
+                    statement.Bind(1, whereValue);
+
                 var result = statement.Step();
     
                 while (result == SQLiteResult.ROW || result == SQLiteResult.BUSY)

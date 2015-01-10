@@ -27,6 +27,7 @@ namespace Audiotica.Data.Collection
         Task<SQLiteResult> UpdateItemAsync(BaseEntry item);
 
 
+        T SelectWhere<T>(string property, string value) where T : new();
         List<T> SelectAll<T>() where T : new();
         Task<List<T>> SelectAllAsync<T>() where T : new();
 

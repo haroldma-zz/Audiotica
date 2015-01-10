@@ -62,6 +62,11 @@ namespace Audiotica.Data.Collection.DesignTime
             throw new NotImplementedException();
         }
 
+        public T SelectWhere<T>(string property, string value) where T : new()
+        {
+            throw new NotImplementedException();
+        }
+
 
         public List<T> SelectAll<T>() where T : new()
         {

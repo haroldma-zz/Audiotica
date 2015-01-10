@@ -9,8 +9,6 @@
         public const string AppSuspended = "appsuspend";
         public const string AppResumed = "appresumed";
         public const string StartPlayback = "startplayback";
-        public const string QueueCount = "QueueCount";
-        public const string QueueDateCreated = "QueueDate";
         public const string SkipNext = "skipnext";
         public const string Position = "position";
         public const string AppState = "appstate";

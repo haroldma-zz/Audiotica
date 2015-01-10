@@ -24,8 +24,9 @@ namespace Audiotica.WindowsPhone.Player
         private readonly ISqlService _bgSql;
         private readonly MediaPlayer _mediaPlayer;
         private readonly ISqlService _sql;
-        private QueueSong _currentTrack;
         private int _currentTrackIndex = -1;
+        private long _currentTrackId = -1;
+        private QueueSong _currentTrack;
 
         public QueueManager()
         {
@@ -67,8 +68,6 @@ namespace Audiotica.WindowsPhone.Player
             _mediaPlayer.MediaFailed += mediaPlayer_MediaFailed;
         }
 
-        private List<QueueSong> Tracks { get; set; }
-
         #endregion
 
         #region Public properties, events and handlers
@@ -80,14 +79,7 @@ namespace Audiotica.WindowsPhone.Player
         {
             get
             {
-                if (_currentTrackIndex == -1)
-                    return null;
-
-                if (_currentTrack != null)
-                    return _currentTrack;
-
-                _currentTrack = _currentTrackIndex < Tracks.Count ? Tracks[_currentTrackIndex] : null;
-                return _currentTrack;
+                return _currentTrack ?? (_currentTrack = GetCurrentQueueSong());
             }
         }
 
@@ -155,7 +147,7 @@ namespace Audiotica.WindowsPhone.Player
         private void MediaPlayer_MediaEnded(MediaPlayer sender, object args)
         {
             if (AppSettingsHelper.Read<bool>("Repeat"))
-                StartTrackAt(_currentTrackIndex);
+                StartTrack(GetCurrentQueueSong());
 
             else
                 SkipToNext();
@@ -165,7 +157,7 @@ namespace Audiotica.WindowsPhone.Player
         {
             Debug.WriteLine("Failed with error code " + args.ExtendedErrorCode);
 
-            if (Tracks.Count <= 1 || _retryCount >= 5) return;
+            if (_retryCount >= 5) return;
 
             SkipToNext();
             _retryCount++;
@@ -177,32 +169,14 @@ namespace Audiotica.WindowsPhone.Player
 
         #region Playlist command handlers
 
-        /// <summary>
-        ///     Starts track at given position in the track list
-        /// </summary>
-        private void StartTrackAt(int id)
-        {
-            var track = Tracks[id];
-            StartTrack(track);
-        }
-
-        public void StartTrack(long id)
-        {
-            QueueSong track;
-            do
-            {
-                RefreshTracks();
-                track = Tracks != null ? Tracks.FirstOrDefault(p => p.Id == id) : null;
-            } while (track == null);
-            
-            StartTrack(track);
-        }
-
         public void StartTrack(QueueSong track)
         {
+            if (track == null)
+                return;
+
+            _currentTrack = track;
+            _currentTrackId = track.Id;
             UpdateMediaEnded();
-                
-            _currentTrackIndex = Tracks.IndexOf(track);
             _mediaPlayer.AutoPlay = false;
 
             if (track.Song.IsStreaming)
@@ -243,7 +217,7 @@ namespace Audiotica.WindowsPhone.Player
                         }
                     }
                 }
-                else if (Tracks.Count > 1)
+                else if (CurrentTrack.NextId != 0 && CurrentTrack.PrevId != 0)
                     SkipToNext();
             }
         }
@@ -253,8 +227,7 @@ namespace Audiotica.WindowsPhone.Player
         /// </summary>
         public void PlayAllTracks()
         {
-            RefreshTracks();
-            StartTrackAt(0);
+            StartTrack(GetQueueSongWherePrevId(0));
         }
 
         /// <summary>
@@ -262,22 +235,8 @@ namespace Audiotica.WindowsPhone.Player
         /// </summary>
         public void SkipToNext()
         {
-            RefreshTracks();
-
-            var index = _currentTrackIndex + 1;
-
-            if (Tracks.Count > 2 && AppSettingsHelper.Read<bool>("Shuffle"))
-            {
-                var rnd = new Random();
-                var shuffle = rnd.Next(0, Tracks.Count);
-                while (shuffle == index)
-                {
-                    shuffle = rnd.Next(0, Tracks.Count);    
-                }
-                index = shuffle;
-            }
-
-            StartTrackAt(index%Tracks.Count);
+            var next = GetQueueSongWherePrevId(CurrentTrackId) ?? GetQueueSongWherePrevId(0);
+            StartTrack(next);
         }
 
         private void UpdateMediaEnded()
@@ -326,7 +285,7 @@ namespace Audiotica.WindowsPhone.Player
                 }
             }
 
-            _currentTrack = null;
+            _currentTrackId = -1;
         }
 
         /// <summary>
@@ -334,15 +293,8 @@ namespace Audiotica.WindowsPhone.Player
         /// </summary>
         public void SkipToPrevious()
         {
-            RefreshTracks();
-            if (_currentTrackIndex == 0)
-            {
-                StartTrackAt(Tracks.Count - 1);
-            }
-            else
-            {
-                StartTrackAt(_currentTrackIndex - 1);
-            }
+            var prev = GetQueueSongWhereNextId(CurrentTrackId) ?? GetQueueSongWhereNextId(0);
+            StartTrack(prev);
         }
 
         #endregion
@@ -353,28 +305,50 @@ namespace Audiotica.WindowsPhone.Player
             _sql.Dispose();
         }
 
-        private int _currentQueueCount;
-        private DateTime _currentQueueDate;
-
-        public void RefreshTracks()
+        public long CurrentTrackId
         {
-            var queueCount = AppSettingsHelper.Read<int>(PlayerConstants.QueueCount);
-            var queueDate = AppSettingsHelper.ReadJsonAs<DateTime>(PlayerConstants.QueueDateCreated);
+            get { return _currentTrackId <= 0 ? (_currentTrackId = GetCurrentId()) : _currentTrackId; }
+        }
 
-            if (queueCount > 0)
-                if (_currentQueueCount == queueCount &&
-                    _currentQueueDate == queueDate) return;
+        private long GetCurrentId()
+        {
+            return AppSettingsHelper.Read<long>(PlayerConstants.CurrentTrack);
+        }
 
-            var collectionService = new CollectionService(_sql, _bgSql, null);
-            try
+        public QueueSong GetCurrentQueueSong()
+        {
+            return GetQueueSongById(CurrentTrackId);
+        }
+
+        private QueueSong GetQueueSong(string prop, long id)
+        {
+            var queue = _bgSql.SelectWhere<QueueSong>(prop, id.ToString());
+            if (queue != null)
             {
-                collectionService.LoadLibrary(true);
-                Tracks = collectionService.PlaybackQueue.ToList();
+                var song = _sql.SelectWhere<Song>("Id", queue.SongId.ToString());
+                var artist = _sql.SelectWhere<Artist>("Id", song.ArtistId.ToString());
 
-                _currentQueueDate = queueDate;
-                _currentQueueCount = Tracks.Count;
+                song.Artist = artist;
+                queue.Song = song;
+                return queue;
             }
-            catch { }
+
+            return null;
+        }
+
+        public QueueSong GetQueueSongById(long id)
+        {
+            return GetQueueSong("Id", id);
+        }
+
+        public QueueSong GetQueueSongWhereNextId(long id)
+        {
+            return GetQueueSong("NextId", id);
+        }
+
+        public QueueSong GetQueueSongWherePrevId(long id)
+        {
+            return GetQueueSong("PrevId", id);
         }
     }
 }

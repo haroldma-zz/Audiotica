@@ -260,8 +260,7 @@ namespace Audiotica.WindowsPhone.Player
         {
             try
             {
-                var currenttrack = AppSettingsHelper.Read<long>(PlayerConstants.CurrentTrack);
-                QueueManager.StartTrack(currenttrack);
+                QueueManager.StartTrack(QueueManager.GetCurrentQueueSong());
             }
             catch (Exception ex)
             {

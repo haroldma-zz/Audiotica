@@ -252,12 +252,6 @@ namespace Audiotica
                 await Task.Delay(500);
             }
 
-            if (createQueue)
-            {
-                AppSettingsHelper.Write(PlayerConstants.QueueCount, ordered.Count);
-                AppSettingsHelper.WriteAsJson(PlayerConstants.QueueDateCreated, DateTime.Now);
-            }
-
             if (!createQueue)
             {
                 App.Locator.AudioPlayerHelper.PlaySong(playbackQueue.First(p => p.SongId == song.Id));
@@ -312,11 +306,6 @@ namespace Audiotica
 
             var position = App.Locator.CollectionService.PlaybackQueue.IndexOf(App.Locator.Player.CurrentQueue) + 1;
             var queueSong = await App.Locator.CollectionService.AddToQueueAsync(song, position);
-
-            //update queue count
-            var count = App.Locator.CollectionService.PlaybackQueue.Count;
-            AppSettingsHelper.Write(PlayerConstants.QueueCount, count);
-            AppSettingsHelper.WriteAsJson(PlayerConstants.QueueDateCreated, DateTime.Now);
 
             if (!App.Locator.Player.IsPlayerActive)
                 App.Locator.AudioPlayerHelper.PlaySong(queueSong);
