@@ -502,8 +502,8 @@ namespace Audiotica.Data.Collection.RunTime
                 index = position;
                 next = PlaybackQueue[position];
                 prev = _lookupMap[next.PrevId];
-                shuffleNext = next;
-                shufflePrev = prev;
+                shuffleNext = ShufflePlaybackQueue[position];
+                shufflePrev = _lookupMap[next.ShufflePrevId];
             }
             else
             {
