@@ -1,5 +1,8 @@
-﻿using Windows.UI.Xaml.Navigation;
+﻿#region
+
 using GalaSoft.MvvmLight.Messaging;
+
+#endregion
 
 namespace Audiotica.View
 {

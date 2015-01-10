@@ -67,7 +67,7 @@ namespace Audiotica.Core.Common
         /// <param name="getKey">A delegate to get the key from an item.</param>
         /// <param name="sort">Will sort the data if true.</param>
         /// <returns>An items source for a LongListSelector</returns>
-        public static ObservableCollection<AlphaKeyGroup<T>> CreateGroups(IEnumerable<T> items, CultureInfo ci, GetKeyDelegate getKey,
+        public static OptimizedObservableCollection<AlphaKeyGroup<T>> CreateGroups(IEnumerable<T> items, CultureInfo ci, GetKeyDelegate getKey,
             bool sort)
         {
             var slg = new CharacterGroupings();
@@ -100,7 +100,7 @@ namespace Audiotica.Core.Common
                 }
             }
 
-            return new ObservableCollection<AlphaKeyGroup<T>>(list);
+            return new OptimizedObservableCollection<AlphaKeyGroup<T>>(list);
         }
     }
 }

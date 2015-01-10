@@ -155,7 +155,7 @@ namespace Audiotica
             SpotifySavingAlbums.Remove(album.Id);
         }
 
-        public static async Task DownloadArtistsArtworkAsync(bool missingOnly = true)
+        public static async void DownloadArtistsArtworkAsync(bool missingOnly = true)
         {
             var artists = App.Locator.CollectionService.Artists.ToList();
 

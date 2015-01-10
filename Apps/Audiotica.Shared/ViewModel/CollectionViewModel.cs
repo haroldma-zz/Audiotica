@@ -33,18 +33,16 @@ namespace Audiotica.ViewModel
 {
     public class CollectionViewModel : ViewModelBase
     {
-        private readonly AudioPlayerHelper _audioPlayer;
         private readonly ICollectionService _service;
         private readonly ISongDownloadService _downloadService;
         private ObservableCollection<AlphaKeyGroup<Album>> _sortedAlbums;
         private ObservableCollection<AlphaKeyGroup<Artist>> _sortedArtists;
         private ObservableCollection<AlphaKeyGroup<Song>> _sortedSongs;
 
-        public CollectionViewModel(ICollectionService service, ISongDownloadService downloadService, AudioPlayerHelper audioPlayer)
+        public CollectionViewModel(ICollectionService service, ISongDownloadService downloadService)
         {
             _service = service;
             _downloadService = downloadService;
-            _audioPlayer = audioPlayer;
 
             CreateCommand();
 

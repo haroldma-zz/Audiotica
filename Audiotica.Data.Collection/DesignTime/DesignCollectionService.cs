@@ -116,12 +116,12 @@ namespace Audiotica.Data.Collection.DesignTime
             throw new NotImplementedException();
         }
 
-        public Task AddSongAsync(Song song, string artworkUrl, string artistArtwork)
+        public Task AddSongAsync(Song song, string artworkUrl)
         {
             throw new NotImplementedException();
         }
 
-        public Task AddSongAsync(Song song, Tag tags, string artistArtwork)
+        public Task AddSongAsync(Song song, Tag tags)
         {
             throw new NotImplementedException();
         }

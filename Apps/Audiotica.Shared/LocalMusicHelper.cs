@@ -180,9 +180,9 @@ namespace Audiotica
 
             try
             {
-                await
-                    App.Locator.CollectionService.AddSongAsync(song, tags, null)
+                await App.Locator.CollectionService.AddSongAsync(song, tags)
                         .ConfigureAwait(false);
+                CollectionHelper.DownloadArtistsArtworkAsync();
                 return SavingError.None;
             }
             catch (NetworkException)

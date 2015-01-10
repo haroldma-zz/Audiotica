@@ -133,7 +133,7 @@ namespace Audiotica.Data.Collection.RunTime
             if (!loadEssentials)
                 LoadPlaylists();
 
-            var corruptSongs = Songs.Where(p => string.IsNullOrEmpty(p.Name)).ToList();
+            var corruptSongs = Songs.Where(p => string.IsNullOrEmpty(p.Name) || p.Album == null || p.Artist == null).ToList();
             foreach (var corruptSong in corruptSongs)
             {
                 DeleteSongAsync(corruptSong).Wait();
@@ -160,17 +160,17 @@ namespace Audiotica.Data.Collection.RunTime
                 || (p.Name == name && p.Album.Name == album && p.ArtistName == artist)) != null;
         }
 
-        public Task AddSongAsync(Song song, string artworkUrl, string artistArtwork)
+        public Task AddSongAsync(Song song, string artworkUrl)
         {
-            return AddSongAsync(song, null, artworkUrl, artistArtwork);
+            return AddSongAsync(song, null, artworkUrl);
         }
 
-        public Task AddSongAsync(Song song, Tag tags, string artistArtwork)
+        public Task AddSongAsync(Song song, Tag tags)
         {
-            return AddSongAsync(song, tags, null, artistArtwork);
+            return AddSongAsync(song, tags, null);
         }
 
-        private async Task AddSongAsync(Song song, Tag tags, string artworkUrl, string artistArtwork)
+        private async Task AddSongAsync(Song song, Tag tags, string artworkUrl)
         {
             #region create artist
 
@@ -187,26 +187,8 @@ namespace Audiotica.Data.Collection.RunTime
             if (artist == null)
             {
                 await _sqlService.InsertAsync(primaryArtist);
-
-                #region Download artwork
-
-                var artistFilePath = string.Format(CollectionConstant.ArtistsArtworkPath, primaryArtist.Id);
-
-                if (!string.IsNullOrEmpty(artistArtwork))
-                {
-                    //get it
-                    song.Artist.HasArtwork = await GetArtworkAsync(artistFilePath, artistArtwork);
-                    await _sqlService.UpdateItemAsync(primaryArtist);
-                }
-
-                //set it
-                await _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-                    primaryArtist.Artwork =
-                        primaryArtist.HasArtwork
-                            ? new BitmapImage(new Uri(CollectionConstant.LocalStorageAppPath + artistFilePath))
-                            : null);
-
-                #endregion
+                await _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => 
+                    Artists.Insert(0, primaryArtist));
 
                 song.Artist = primaryArtist;
                 song.ArtistId = primaryArtist.Id;
@@ -252,6 +234,7 @@ namespace Audiotica.Data.Collection.RunTime
             else
             {
                 await _sqlService.InsertAsync(song.Album);
+                await _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => Albums.Insert(0, song.Album));
 
                 #region Download artwork
 
@@ -274,7 +257,7 @@ namespace Audiotica.Data.Collection.RunTime
                         artwork.Dispose();
                     }
                 }
-                if (!string.IsNullOrEmpty(artworkUrl))
+                else if (!string.IsNullOrEmpty(artworkUrl))
                 {
                     song.Album.HasArtwork = await GetArtworkAsync(albumFilePath, artworkUrl);
                     await _sqlService.UpdateItemAsync(song.Album);
@@ -298,16 +281,6 @@ namespace Audiotica.Data.Collection.RunTime
 
             await _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
             {
-                if (album == null)
-                {
-                    Albums.Insert(0, song.Album);
-                }
-
-                if (artist == null)
-                {
-                    Artists.Insert(0, song.Artist);
-                }
-
                 if (!song.Artist.Albums.Contains(song.Album))
                     song.Artist.Albums.Insert(0, song.Album);
 
@@ -370,23 +343,28 @@ namespace Audiotica.Data.Collection.RunTime
                 }
             }
 
-            song.Album.Songs.Remove(song);
-            if (song.Album.Songs.Count == 0)
+            if (song.Album != null)
             {
-                await _sqlService.DeleteItemAsync(song.Album);
-                await _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                song.Album.Songs.Remove(song);
+                if (song.Album.Songs.Count == 0)
                 {
-                    Albums.Remove(song.Album);
-                    song.Artist.Albums.Remove(song.Album);
-                });
+                    await _sqlService.DeleteItemAsync(song.Album);
+                    await _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                    {
+                        Albums.Remove(song.Album);
+                        song.Artist.Albums.Remove(song.Album);
+                    });
+                }
             }
 
-
-            song.Artist.Songs.Remove(song);
-            if (song.Artist.Songs.Count == 0)
+            if (song.Artist != null)
             {
-                await _sqlService.DeleteItemAsync(song.Artist);
-                await _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => Artists.Remove(song.Artist));
+                song.Artist.Songs.Remove(song);
+                if (song.Artist.Songs.Count == 0)
+                {
+                    await _sqlService.DeleteItemAsync(song.Artist);
+                    await _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => Artists.Remove(song.Artist));
+                }
             }
 
             //good, now lets delete it from the db

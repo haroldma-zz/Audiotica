@@ -168,10 +168,10 @@ namespace Audiotica
 
             //download missing artwork for artist
             if (Locator.CollectionService.IsLibraryLoaded)
-                await CollectionHelper.DownloadArtistsArtworkAsync();
+                CollectionHelper.DownloadArtistsArtworkAsync();
             else
                 Locator.CollectionService.LibraryLoaded +=
-                    async (o, args) => await CollectionHelper.DownloadArtistsArtworkAsync();
+                    async (o, args) => CollectionHelper.DownloadArtistsArtworkAsync();
 
             #endregion
         }

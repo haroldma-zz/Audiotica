@@ -22,7 +22,6 @@ namespace Audiotica.ViewModel
 {
     public class MainViewModel : ViewModelBase
     {
-        private readonly AudioPlayerHelper _audioPlayer;
         private readonly ICollectionService _collectionService;
         private readonly IScrobblerService _service;
         private readonly ISpotifyService _spotify;
@@ -43,10 +42,9 @@ namespace Audiotica.ViewModel
             _collectionService = collectionService;
             _service = service;
             _spotify = spotify;
-            _audioPlayer = audioPlayer;
             _collectionService.LibraryLoaded += CollectionServiceOnLibraryLoaded;
             _collectionService.Songs.CollectionChanged += SongsOnCollectionChanged;
-            _audioPlayer.TrackChanged += CollectionServiceOnLibraryLoaded;
+            audioPlayer.TrackChanged += CollectionServiceOnLibraryLoaded;
 
             //Load data automatically
             LoadChartDataAsync();

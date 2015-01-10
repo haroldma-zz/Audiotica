@@ -46,7 +46,7 @@ namespace Audiotica.View
 
         private async void LoadWallpaperArt()
         {
-            var vm = (CollectionViewModel) DataContext;
+            var vm = App.Locator.Collection;
 
             if (vm.RandomizeAlbumList.Count != 0 || !AppSettingsHelper.Read("WallpaperArt", true)) return;
 
@@ -182,7 +182,7 @@ namespace Audiotica.View
             }
 
             UiBlockerUtility.Unblock();
-            await CollectionHelper.DownloadArtistsArtworkAsync();
+            CollectionHelper.DownloadArtistsArtworkAsync();
         }
 
         private void BackupButtonBase_OnClick(object sender, RoutedEventArgs e)

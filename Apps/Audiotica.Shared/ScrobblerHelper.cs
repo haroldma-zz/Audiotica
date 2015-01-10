@@ -65,9 +65,9 @@ namespace Audiotica
 
             try
             {
-                await
-                    App.Locator.CollectionService.AddSongAsync(preparedSong.Song, preparedSong.ArtworkUrl, preparedSong.ArtistArtworkUrl)
+                await App.Locator.CollectionService.AddSongAsync(preparedSong.Song, preparedSong.ArtworkUrl)
                         .ConfigureAwait(false);
+                CollectionHelper.DownloadArtistsArtworkAsync();
                 return SavingError.None;
             }
             catch (NetworkException)
@@ -116,10 +116,6 @@ namespace Audiotica
                 preparedSong.ArtworkUrl = (track.Images != null && track.Images.Largest != null)
                     ? track.Images.Largest.AbsoluteUri
                     : null;
-            
-            preparedSong.ArtistArtworkUrl = (artist.MainImage != null && artist.MainImage.Largest != null)
-                    ? artist.MainImage.Largest.AbsoluteUri
-                    : null;
 
             preparedSong.Song.Artist = artist.ToArtist();
 
@@ -130,7 +126,6 @@ namespace Audiotica
         {
             public Song Song { get; set; }
             public string ArtworkUrl { get; set; }
-            public string ArtistArtworkUrl { get; set; }
         }
     }
 }
