@@ -4,6 +4,7 @@ using System;
 using Windows.Foundation;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
+using Audiotica.View;
 using GoogleAnalytics;
 
 #endregion
@@ -12,21 +13,24 @@ namespace Audiotica
 {
     public abstract class PageBase : Page
     {
-        private const string StateKey = "State";
-
         public AppBar Bar
         {
             get;
             protected set;
         }
 
-        public virtual void NavigatedFrom()
+        public virtual void NavigatedFrom(NavigationMode mode)
         {
-            _navigatedAway = true;
+            _navigatedAway = mode == NavigationMode.Back;
         }
 
         public virtual void BeforeNavigateTo()
         {
+            if (_navigatedAway && _size != Size.Empty)
+            {
+                Width = _size.Width;
+                Height = _size.Height;
+            }
             _navigatedAway = false;
         }
 
@@ -45,9 +49,14 @@ namespace Audiotica
 
 
         private bool _navigatedAway;
+        private Size _size = Size.Empty;
         public void SetSize(Size size)
         {
-            if (_navigatedAway) return;
+            if (_navigatedAway)
+            {
+                _size = size;
+                return;
+            }
 
             Width = size.Width;
             Height = size.Height;

@@ -3,6 +3,7 @@
 using System;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Navigation;
 using Audiotica.Data.Collection.Model;
 using GalaSoft.MvvmLight.Messaging;
 using IF.Lastfm.Core.Objects;
@@ -34,9 +35,9 @@ namespace Audiotica.View
             Messenger.Default.Register<bool>(this, "artist-coll-sim", SimUpdate);
         }
 
-        public override void NavigatedFrom()
+        public override void NavigatedFrom(NavigationMode mode)
         {
-            base.NavigatedFrom();
+            base.NavigatedFrom(mode);
             Messenger.Default.Unregister<bool>(this, "artist-coll-bio", BioUpdate);
             Messenger.Default.Unregister<bool>(this, "artist-coll-sim", SimUpdate);
         }

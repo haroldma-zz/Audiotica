@@ -68,7 +68,11 @@ namespace Audiotica.Data.Collection.RunTime
                 song.Album = albums.FirstOrDefault(p => p.Id == song.AlbumId);
             }
 
-            Songs.AddRange(songs);
+            if (_dispatcher != null)
+                _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                    Songs.AddRange(songs));
+            else
+                Songs.AddRange(songs);
 
             foreach (var album in albums)
             {
@@ -85,7 +89,11 @@ namespace Audiotica.Data.Collection.RunTime
                     }).AsTask().Wait();
             }
 
-            Albums.AddRange(albums);
+            if (_dispatcher != null)
+                _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                    Albums.AddRange(albums));
+            else
+                Albums.AddRange(albums);
 
             foreach (var artist in artists)
             {
@@ -103,7 +111,11 @@ namespace Audiotica.Data.Collection.RunTime
                     }).AsTask().Wait();
             }
 
-            Artists.AddRange(artists);
+            if (_dispatcher != null)
+                _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                    Artists.AddRange(artists));
+            else
+                Artists.AddRange(artists);
 
             if (isForeground)
             {

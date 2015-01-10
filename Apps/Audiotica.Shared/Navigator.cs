@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using Windows.Foundation;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Navigation;
 using Audiotica.View;
 using GalaSoft.MvvmLight.Threading;
 
@@ -84,7 +85,7 @@ namespace Audiotica
             OnNavigating();
             if (CurrentPage != null)
             {
-                CurrentPage.NavigatedFrom();
+                CurrentPage.NavigatedFrom(NavigationMode.Forward);
                 page = GetPage<TPage>();
                 page.BeforeNavigateTo();
                 var transition = Activator.CreateInstance<TTransition>();
@@ -116,7 +117,7 @@ namespace Audiotica
                         _rootContainer.Children.Move((uint) from, (uint) to);
 
                         _rootPage.BottomAppBar = transition.FromPage.Bar;
-                        transition.ToPage.NavigatedFrom();
+                        transition.ToPage.NavigatedFrom(NavigationMode.Back);
                         transition.FromPage.NavigatedTo(null);
                     }));
                     return;

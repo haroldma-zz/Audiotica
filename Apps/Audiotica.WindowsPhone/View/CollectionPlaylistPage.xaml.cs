@@ -104,9 +104,9 @@ namespace Audiotica.View
             Messenger.Default.Send(msg, "playlist-coll-detail-id");
         }
 
-        public override void NavigatedFrom()
+        public override void NavigatedFrom(NavigationMode mode)
         {
-            base.NavigatedFrom();
+            base.NavigatedFrom(mode);
             HardwareButtons.BackPressed -= HardwareButtonsOnBackPressed;
         }
 
