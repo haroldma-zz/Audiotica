@@ -30,8 +30,10 @@ namespace Audiotica.PartialView
         }
 
         public Popup Popup { get; private set; }
+        private bool _justLoaded;
         public void OnOpened(Popup popup)
         {
+            _justLoaded = true;
             Popup = popup;
             App.Locator.AudioPlayerHelper.TrackChanged += AudioPlayerHelperOnTrackChanged;
         }
@@ -79,6 +81,12 @@ namespace Audiotica.PartialView
 
         private void Slider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
         {
+            if (_justLoaded)
+            {
+                _justLoaded = false;
+                return;
+            }
+
             var diff = e.NewValue - e.OldValue;
             if (!(diff > 5) && !(diff < -5)) return;
 
