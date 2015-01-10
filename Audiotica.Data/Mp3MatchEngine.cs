@@ -28,9 +28,9 @@ namespace Audiotica.Data
             MatchProvider.Netease,
             MatchProvider.Mp3Clan,
             MatchProvider.Mp3Truck,
-            MatchProvider.YouTube,
             MatchProvider.Meile,
             MatchProvider.SoundCloud,
+            MatchProvider.YouTube
         };
 
 
