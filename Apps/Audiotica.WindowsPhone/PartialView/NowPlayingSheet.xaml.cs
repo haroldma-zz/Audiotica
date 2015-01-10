@@ -81,7 +81,7 @@ namespace Audiotica.PartialView
 
         private void Slider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
         {
-            if (_justLoaded)
+            if (_justLoaded || BackgroundMediaPlayer.Current.Position == App.Locator.Player.Position)
             {
                 _justLoaded = false;
                 return;
