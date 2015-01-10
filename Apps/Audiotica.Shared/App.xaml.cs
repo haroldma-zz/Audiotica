@@ -3,6 +3,7 @@
 // The Blank Application template is documented at http://go.microsoft.com/fwlink/?LinkId=234227
 using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
@@ -17,6 +18,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 using Audiotica.Core.Common;
 using Audiotica.Core.Utilities;
+using Audiotica.Data.Service.RunTime;
 using Audiotica.View;
 using Audiotica.ViewModel;
 using GalaSoft.MvvmLight.Threading;

@@ -41,6 +41,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ApiKeys.cs" />
+    <Compile Include="Model\Deezer\DeezerAlbum.cs" />
+    <Compile Include="Model\Deezer\DeezerArtist.cs" />
+    <Compile Include="Model\Deezer\DeezerPageResponse.cs" />
+    <Compile Include="Model\Deezer\DeezerSong.cs" />
     <Compile Include="Model\EchoNest\EchoArtistUrlsRoot.cs" />
     <Compile Include="Model\EchoNest\EchoArtistVideosRoot.cs" />
     <Compile Include="Model\EchoNest\EchoArtistImagesRoot.cs" />
@@ -49,6 +53,8 @@
     <Compile Include="Model\EchoNest\EchoSong.cs" />
     <Compile Include="Model\LocalSong.cs" />
     <Compile Include="Model\Mp3ClanRoot.cs" />
+    <Compile Include="Service\Interfaces\IDeezerService.cs" />
+    <Compile Include="Service\RunTime\DeezerService.cs" />
     <Compile Include="Spotify\AlbumType.cs" />
     <Compile Include="Spotify\Models\BasicModel.cs" />
     <Compile Include="Spotify\Models\ChartTrack.cs" />
