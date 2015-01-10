@@ -46,11 +46,11 @@ namespace Audiotica.ViewModel
             {
                 if (App.IsDebugging)
                 {
-                    await CurrentApp.RequestProductPurchaseAsync(ProductConstants.InAppAdvertisements);
+                    await CurrentAppSimulator.RequestProductPurchaseAsync(ProductConstants.InAppAdvertisements);
                 }
                 else
                 {
-                    await CurrentAppSimulator.RequestProductPurchaseAsync(ProductConstants.InAppAdvertisements);
+                    await CurrentApp.RequestProductPurchaseAsync(ProductConstants.InAppAdvertisements);
                 }
 
                 if (!IsAdsEnabled) return;
