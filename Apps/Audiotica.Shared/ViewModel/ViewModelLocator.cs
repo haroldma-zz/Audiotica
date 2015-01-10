@@ -108,8 +108,24 @@ namespace Audiotica.ViewModel
             return new SqlServiceConfig()
             {
                 Tables = dbTypes,
-                CurrentVersion = 1,
-                Path = "player.sqldb"
+                CurrentVersion = 2,
+                Path = "player.sqldb",
+                OnUpdate = (connection, d) =>
+                {
+                    if (d == 0) return;
+
+                    if (d == 1)
+                    {
+                        using (var statement = connection.Prepare("ALTER TABLE QueueSong ADD COLUMN ShufflePrevId INTEGER"))
+                        {
+                            statement.Step();
+                        }
+                        using (var statement = connection.Prepare("ALTER TABLE QueueSong ADD COLUMN ShuffleNextId INTEGER"))
+                        {
+                            statement.Step();
+                        }
+                    }
+                }
             };
         }
 

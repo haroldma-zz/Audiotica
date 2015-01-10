@@ -6,5 +6,16 @@ namespace Audiotica.Data.Collection.Model
     {
         [SqlProperty(ReferenceTo = typeof(Playlist))]
         public long PlaylistId { get; set; }
+
+
+        #region ignored from base
+
+        [SqlIgnore]
+        public new long ShuffleNextId { get; set; }
+
+        [SqlIgnore]
+        public new long ShufflePrevId { get; set; }
+
+        #endregion
     }
 }

@@ -148,7 +148,7 @@
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
-                <FlipView Name="SongFlipView" ItemsSource="{Binding CollectionService.PlaybackQueue}"
+                <FlipView Name="SongFlipView" ItemsSource="{Binding CollectionService.CurrentPlaybackQueue}"
                       SelectionChanged="FlipView_SelectionChanged" Tapped="SongFlipView_Tapped">
                     <FlipView.ItemsPanel>
                         <ItemsPanelTemplate>

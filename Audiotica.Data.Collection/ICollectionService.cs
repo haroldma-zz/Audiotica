@@ -24,6 +24,8 @@ namespace Audiotica.Data.Collection
         OptimizedObservableCollection<Artist> Artists { get; set; }
         OptimizedObservableCollection<Playlist> Playlists { get; set; }
         OptimizedObservableCollection<QueueSong> PlaybackQueue { get; }
+        OptimizedObservableCollection<QueueSong> ShufflePlaybackQueue { get; }
+        OptimizedObservableCollection<QueueSong> CurrentPlaybackQueue { get; }
 
         /// <summary>
         ///     Loads all songs, albums, artist and playlists/queue.
@@ -48,6 +50,9 @@ namespace Audiotica.Data.Collection
         bool SongAlreadyExists(string localSongPath);
 
         #region Playback Queue
+
+        void ShuffleModeChanged();
+        Task ShuffleCurrentQueueAsync();
 
         /// <summary>
         /// Erases all songs in the playback queue (database and  PlaybackQueue prop)

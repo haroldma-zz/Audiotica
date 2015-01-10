@@ -83,7 +83,9 @@ namespace Audiotica
             set
             {
                 AppSettingsHelper.Write("Shuffle", value);
+                _service.ShuffleModeChanged();
                 RaisePropertyChanged();
+                AudioPlayerHelper.OnShuffleChanged();
             }
         }
 
@@ -201,7 +203,7 @@ namespace Audiotica
             {
                 Position = BackgroundMediaPlayer.Current.Position;
                 var currentId = AppSettingsHelper.Read<long>(PlayerConstants.CurrentTrack);
-                CurrentQueue = _service.PlaybackQueue.FirstOrDefault(p => p.Id == currentId);
+                CurrentQueue = _service.CurrentPlaybackQueue.FirstOrDefault(p => p.Id == currentId);
 
                 if (CurrentQueue != null
                     && CurrentQueue.Song != null

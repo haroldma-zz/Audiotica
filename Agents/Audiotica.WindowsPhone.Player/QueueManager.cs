@@ -24,7 +24,6 @@ namespace Audiotica.WindowsPhone.Player
         private readonly ISqlService _bgSql;
         private readonly MediaPlayer _mediaPlayer;
         private readonly ISqlService _sql;
-        private int _currentTrackIndex = -1;
         private long _currentTrackId = -1;
         private QueueSong _currentTrack;
 
@@ -38,7 +37,7 @@ namespace Audiotica.WindowsPhone.Player
             var bgConfig = new SqlServiceConfig
             {
                 Tables = bgDbTypes,
-                CurrentVersion = 1,
+                CurrentVersion = 2,
                 Path = "player.sqldb"
             };
             _bgSql = new SqlService(bgConfig);
@@ -336,6 +335,8 @@ namespace Audiotica.WindowsPhone.Player
             return null;
         }
 
+        private bool IsShuffle { get { return AppSettingsHelper.Read<bool>("Shuffle"); } }
+
         public QueueSong GetQueueSongById(long id)
         {
             return GetQueueSong("Id", id);
@@ -343,12 +344,12 @@ namespace Audiotica.WindowsPhone.Player
 
         public QueueSong GetQueueSongWhereNextId(long id)
         {
-            return GetQueueSong("NextId", id);
+            return GetQueueSong((IsShuffle ? "Shuffle" : "") + "NextId", id);
         }
 
         public QueueSong GetQueueSongWherePrevId(long id)
         {
-            return GetQueueSong("PrevId", id);
+            return GetQueueSong((IsShuffle ? "Shuffle" : "") + "PrevId", id);
         }
     }
 }

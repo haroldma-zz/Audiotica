@@ -1,6 +1,7 @@
 ﻿#region
 
 using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -16,6 +17,7 @@ using Windows.UI.Xaml.Media;
 using Audiotica.Core;
 using Audiotica.Core.Utilities;
 using Audiotica.Data.Collection.Model;
+using Audiotica.Data.Collection.RunTime;
 using Audiotica.View;
 
 #endregion
@@ -30,6 +32,16 @@ namespace Audiotica.PartialView
 
             var visBinding = new Binding {Source = DataContext, Path = new PropertyPath("CurrentQueue")};
             SetBinding(IsVisibleProperty, visBinding);
+
+            (App.Locator.CollectionService as CollectionService).PropertyChanged += OnPropertyChanged;
+        }
+
+        private void OnPropertyChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
+        {
+            if (propertyChangedEventArgs.PropertyName == "CurrentPlaybackQueue")
+            {
+                SongFlipView.SelectedItem = App.Locator.Player.CurrentQueue;
+            }
         }
 
         public static readonly DependencyProperty IsVisibleProperty =
@@ -85,17 +97,6 @@ namespace Audiotica.PartialView
         private void SongFlipView_Tapped(object sender, TappedRoutedEventArgs e)
         {
             NowPlayingSheetUtility.OpenNowPlaying();
-        }
-
-        private void Slider_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
-        {
-            BackgroundMediaPlayer.Current.Pause();
-        }
-
-        private void Slider_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
-        {
-            BackgroundMediaPlayer.Current.Position = App.Locator.Player.Position;
-            BackgroundMediaPlayer.Current.Play();
         }
 
         private void AppBarButton_Click(object sender, RoutedEventArgs e)

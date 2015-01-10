@@ -348,7 +348,7 @@
                 </Grid>
             </PivotItem>
             <PivotItem Header="QUEUE">
-                <ListView Name="CurrentQueueView" ItemsSource="{Binding CollectionService.PlaybackQueue}" ItemContainerStyle="{StaticResource SelectionListViewItemStyle}" Padding="0,0,0,20" SelectionChanged="CurrentQueueView_SelectionChanged">
+                <ListView Name="CurrentQueueView" ItemsSource="{Binding CollectionService.CurrentPlaybackQueue}" ItemContainerStyle="{StaticResource SelectionListViewItemStyle}" Padding="0,0,0,20" SelectionChanged="CurrentQueueView_SelectionChanged">
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <StackPanel Margin="0,0,0,15">

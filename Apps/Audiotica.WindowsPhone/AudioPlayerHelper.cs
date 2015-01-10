@@ -70,6 +70,11 @@ namespace Audiotica
             }
         }
 
+        public void OnShuffleChanged()
+        {
+            RaiseEvent(TrackChanged);
+        }
+
         public void OnAppActive()
         {
             AppSettingsHelper.Write(PlayerConstants.AppState, PlayerConstants.ForegroundAppActive);

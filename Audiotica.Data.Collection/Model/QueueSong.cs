@@ -11,5 +11,9 @@ namespace Audiotica.Data.Collection.Model
         public long PrevId { get; set; }
 
         public long NextId { get; set; }
+
+        public long ShuffleNextId { get; set; }
+
+        public long ShufflePrevId { get; set; }
     }
 }

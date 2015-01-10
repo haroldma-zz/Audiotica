@@ -221,7 +221,7 @@ namespace Audiotica
         }
 
         //haven't tested with more than this
-        private const int MaxPlayQueueCount = 1000;
+        private const int MaxPlayQueueCount = 250;
 
         public static async Task PlaySongsAsync(Song song, List<Song> songs)
         {
@@ -263,6 +263,10 @@ namespace Audiotica
 
                 await App.Locator.CollectionService.ClearQueueAsync().ConfigureAwait(false);
                 var queueSong = await App.Locator.CollectionService.AddToQueueAsync(song).ConfigureAwait(false);
+
+                //add the first one to shuffle list
+                DispatcherHelper.RunAsync(()=> App.Locator.CollectionService.ShufflePlaybackQueue.Add(queueSong));
+
                 App.Locator.AudioPlayerHelper.PlaySong(queueSong);
 
                 await Task.Delay(500).ConfigureAwait(false);
@@ -275,6 +279,7 @@ namespace Audiotica
                     await App.Locator.CollectionService.AddToQueueAsync(s).ConfigureAwait(false);
                 }
 
+                await App.Locator.CollectionService.ShuffleCurrentQueueAsync();
 
                 _currentlyPreparing = false;
             }

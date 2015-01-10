@@ -31,6 +31,8 @@ namespace Audiotica.Data.Collection.DesignTime
         public OptimizedObservableCollection<Playlist> Playlists { get; set; }
 
         public OptimizedObservableCollection<QueueSong> PlaybackQueue { get; private set; }
+        public OptimizedObservableCollection<QueueSong> ShufflePlaybackQueue { get; private set; }
+        public OptimizedObservableCollection<QueueSong> CurrentPlaybackQueue { get; private set; }
 
         public void LoadLibrary(bool loadEssentials = true)
         {
@@ -142,6 +144,16 @@ namespace Audiotica.Data.Collection.DesignTime
         }
 
         public bool SongAlreadyExists(string localSongPath)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void ShuffleModeChanged()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task ShuffleCurrentQueueAsync()
         {
             throw new NotImplementedException();
         }

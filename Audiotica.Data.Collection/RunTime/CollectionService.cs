@@ -23,10 +23,11 @@ using TagLib;
 
 namespace Audiotica.Data.Collection.RunTime
 {
-    public class CollectionService : ICollectionService
+    public class CollectionService : ObservableObject, ICollectionService
     {
         private readonly CoreDispatcher _dispatcher;
         private readonly Dictionary<long, QueueSong> _lookupMap = new Dictionary<long, QueueSong>();
+        private readonly Dictionary<long, QueueSong> _shuffleLookupMap = new Dictionary<long, QueueSong>();
         private readonly ISqlService _sqlService;
         private readonly ISqlService _bgSqlService;
 
@@ -40,8 +41,10 @@ namespace Audiotica.Data.Collection.RunTime
             Albums = new OptimizedObservableCollection<Album>();
             Playlists = new OptimizedObservableCollection<Playlist>();
             PlaybackQueue = new OptimizedObservableCollection<QueueSong>();
+            ShufflePlaybackQueue = new OptimizedObservableCollection<QueueSong>();
         }
 
+        private bool IsShuffle { get { return AppSettingsHelper.Read<bool>("Shuffle");} }
 
         public bool IsLibraryLoaded { get; private set; }
         public event EventHandler LibraryLoaded;
@@ -50,7 +53,18 @@ namespace Audiotica.Data.Collection.RunTime
         public OptimizedObservableCollection<Artist> Artists { get; set; }
         public OptimizedObservableCollection<Playlist> Playlists { get; set; }
 
+        public OptimizedObservableCollection<QueueSong> CurrentPlaybackQueue
+        {
+            get
+            {
+                if (IsShuffle)
+                    return ShufflePlaybackQueue;
+                return PlaybackQueue;
+            }
+        }
+
         public OptimizedObservableCollection<QueueSong> PlaybackQueue { get; private set; }
+        public OptimizedObservableCollection<QueueSong> ShufflePlaybackQueue { get; private set; }
 
         public void LoadLibrary(bool loadEssentials = false)
         {
@@ -154,6 +168,11 @@ namespace Audiotica.Data.Collection.RunTime
         public bool SongAlreadyExists(string localSongPath)
         {
             return Songs.FirstOrDefault(p => p.SongState == SongState.Local && p.AudioUrl == localSongPath) != null;
+        }
+
+        public void ShuffleModeChanged()
+        {
+            RaisePropertyChanged(() => CurrentPlaybackQueue);
         }
 
         public bool SongAlreadyExists(string providerId, string name, string album, string artist)
@@ -437,8 +456,36 @@ namespace Audiotica.Data.Collection.RunTime
         {
             if (PlaybackQueue.Count == 0) return;
             await _bgSqlService.DeleteTableAsync<QueueSong>();
+
             _lookupMap.Clear();
-            await _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => PlaybackQueue.Clear());
+            _shuffleLookupMap.Clear();
+            await _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+            {
+                PlaybackQueue.Clear();
+                ShufflePlaybackQueue.Clear();
+            });
+        }
+
+        public async Task ShuffleCurrentQueueAsync()
+        {
+            var unshuffle = PlaybackQueue.ToList().Shuffle();
+
+            if (unshuffle.Count >= 5)
+            {
+                _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => ShufflePlaybackQueue.SwitchTo(unshuffle));
+
+                for (var i = 0; i < unshuffle.Count; i++)
+                {
+                    var queueSong = unshuffle[i];
+
+                    queueSong.ShufflePrevId = i == 0 ? 0 : unshuffle[i - 1].Id;
+
+                    if (i + 1 < unshuffle.Count)
+                        queueSong.ShuffleNextId = unshuffle[i + 1].Id;
+
+                    await _bgSqlService.UpdateItemAsync(queueSong);
+                }
+            }
         }
 
         public async Task<QueueSong> AddToQueueAsync(Song song, int position = -1)
@@ -511,6 +558,7 @@ namespace Audiotica.Data.Collection.RunTime
             throw new NotImplementedException();
         }
 
+
         public async Task DeleteFromQueueAsync(Song songToRemove)
         {
             QueueSong previousModel;
@@ -545,6 +593,7 @@ namespace Audiotica.Data.Collection.RunTime
         {
             var queue = _bgSqlService.SelectAll<QueueSong>();
             QueueSong head = null;
+            QueueSong shuffleHead = null;
 
             foreach (var queueSong in queue)
             {
@@ -555,26 +604,53 @@ namespace Audiotica.Data.Collection.RunTime
 
                 _lookupMap.Add(queueSong.Id, queueSong);
 
+                #region shuffle
+
+                if (_shuffleLookupMap.ContainsKey(queueSong.Id))
+                    _shuffleLookupMap.Remove(queueSong.Id);
+
+                _shuffleLookupMap.Add(queueSong.Id, queueSong);
+
+                if (queueSong.ShufflePrevId == 0)
+                    shuffleHead = queueSong;
+
+                #endregion
+
                 if (queueSong.PrevId == 0)
                     head = queueSong;
             }
 
-            if (head == null)
-                return;
-
-            for (var i = 0; i < queue.Count; i++)
+            if (head != null)
             {
-                if (_dispatcher != null)
-                    _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => PlaybackQueue.Add(head))
-                        .AsTask()
-                        .Wait();
-                else
-                    PlaybackQueue.Add(head);
+                for (var i = 0; i < queue.Count; i++)
+                {
+                    if (_dispatcher != null)
+                        _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => PlaybackQueue.Add(head))
+                            .AsTask()
+                            .Wait();
+                    else
+                        PlaybackQueue.Add(head);
 
-                if (head.NextId != 0)
-                    head = _lookupMap[head.NextId];
-                else
-                    break;
+                    if (head.NextId != 0)
+                        head = _lookupMap[head.NextId];
+                    else
+                        break;
+                }
+
+                for (var i = 0; i < queue.Count; i++)
+                {
+                    if (_dispatcher != null)
+                        _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => ShufflePlaybackQueue.Add(shuffleHead))
+                            .AsTask()
+                            .Wait();
+                    else
+                        ShufflePlaybackQueue.Add(shuffleHead);
+
+                    if (shuffleHead.ShuffleNextId != 0)
+                        shuffleHead = _shuffleLookupMap[shuffleHead.ShuffleNextId];
+                    else
+                        break;
+                }
             }
         }
 
