@@ -63,13 +63,27 @@ namespace Audiotica.PartialView
             }
         }
 
+        private bool _seeking;
         private void Slider_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
         {
+            _seeking = true;
             BackgroundMediaPlayer.Current.Pause();
         }
 
         private void Slider_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
         {
+            _seeking = false;
+            BackgroundMediaPlayer.Current.Position = App.Locator.Player.Position;
+            BackgroundMediaPlayer.Current.Play();
+        }
+
+        private void Slider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
+        {
+            var diff = e.NewValue - e.OldValue;
+            if (!(diff > 5) && !(diff < -5)) return;
+
+            if (_seeking) return;
+
             BackgroundMediaPlayer.Current.Position = App.Locator.Player.Position;
             BackgroundMediaPlayer.Current.Play();
         }
