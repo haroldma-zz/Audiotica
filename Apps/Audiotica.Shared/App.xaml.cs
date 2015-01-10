@@ -32,6 +32,7 @@ namespace Audiotica
     public sealed partial class App
     {
         public static bool IsDebugging = Debugger.IsAttached;
+        public static bool IsProduction = true;
 
         #region Fields
 
@@ -78,7 +79,7 @@ namespace Audiotica
             UnhandledException += OnUnhandledException;
             AppVersionHelper.OnLaunched();
             EasyTracker.GetTracker().AppVersion =
-                AppVersionHelper.CurrentVersion + (IsDebugging ? "" : "-beta");
+                AppVersionHelper.CurrentVersion + (IsProduction ? "" : "-beta");
 
             Current.DebugSettings.EnableFrameRateCounter = AppSettingsHelper.Read<bool>("FrameRateCounter");
             Current.DebugSettings.EnableRedrawRegions = AppSettingsHelper.Read<bool>("RedrawRegions");
