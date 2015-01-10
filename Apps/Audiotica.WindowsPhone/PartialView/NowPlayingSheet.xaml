@@ -338,7 +338,7 @@
                         <TextBlock HorizontalAlignment="Right" Text="{Binding Duration, Converter={StaticResource TimespanToStringConverter}}" />
                     </Grid>
                     <Slider Grid.Row="2" Value="{Binding Position, Converter={StaticResource TimespanToDoubleConverter}, Mode=TwoWay}"
-                    Visibility="{Binding IsLoading, Converter={StaticResource ReverseVisibilityConverter}}"
+                    IsEnabled="{Binding IsLoading, Converter={StaticResource BoolToOppositeConverter}}"
                     Maximum="{Binding Duration, Converter={StaticResource TimespanToDoubleConverter}, Mode=TwoWay}" VerticalAlignment="Top" 
                     ManipulationMode="TranslateX" ManipulationStarted="Slider_ManipulationStarted" ManipulationCompleted="Slider_ManipulationCompleted" Margin="0,20,0,0" ValueChanged="Slider_ValueChanged"/>
                     <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="5,0">
