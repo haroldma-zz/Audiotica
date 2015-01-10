@@ -8,71 +8,6 @@
     mc:Ignorable="d"
     DataContext="{Binding Player, Source={StaticResource Locator}}">
     <Page.Resources>
-        <FontFamily x:Key="ContentControlThemeFontFamily">Segoe WP</FontFamily>
-        <SolidColorBrush x:Key="AppBarItemBackgroundThemeBrush" Color="Transparent"/>
-        <Style x:Key="BigAppBarButtonStyle" TargetType="AppBarButton">
-            <Setter Property="Foreground" Value="{ThemeResource AppBarItemForegroundThemeBrush}"/>
-            <Setter Property="VerticalAlignment" Value="Top"/>
-            <Setter Property="HorizontalAlignment" Value="Left"/>
-            <Setter Property="FontFamily" Value="{ThemeResource ContentControlThemeFontFamily}"/>
-            <Setter Property="FontWeight" Value="Normal"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="AppBarButton">
-                        <StackPanel x:Name="LayoutRoot" Background="Transparent">
-                            <VisualStateManager.VisualStateGroups>
-                                <VisualStateGroup x:Name="ApplicationViewStates">
-                                    <VisualState x:Name="FullSize"/>
-                                    <VisualState x:Name="Compact">
-                                        <Storyboard>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Visibility" Storyboard.TargetName="TextLabel">
-                                                <DiscreteObjectKeyFrame KeyTime="0" Value="Collapsed"/>
-                                            </ObjectAnimationUsingKeyFrames>
-                                        </Storyboard>
-                                    </VisualState>
-                                </VisualStateGroup>
-                                <VisualStateGroup x:Name="CommonStates">
-                                    <VisualState x:Name="Normal"/>
-                                    <VisualState x:Name="Pressed">
-                                        <Storyboard>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Stroke" Storyboard.TargetName="Ellipse">
-                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource AppBarItemForegroundThemeBrush}"/>
-                                            </ObjectAnimationUsingKeyFrames>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Fill" Storyboard.TargetName="Ellipse">
-                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource AppBarItemForegroundThemeBrush}"/>
-                                            </ObjectAnimationUsingKeyFrames>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Foreground" Storyboard.TargetName="Content">
-                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource AppBarItemPressedForegroundThemeBrush}"/>
-                                            </ObjectAnimationUsingKeyFrames>
-                                        </Storyboard>
-                                    </VisualState>
-                                    <VisualState x:Name="Disabled">
-                                        <Storyboard>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Stroke" Storyboard.TargetName="Ellipse">
-                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource AppBarItemDisabledForegroundThemeBrush}"/>
-                                            </ObjectAnimationUsingKeyFrames>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Foreground" Storyboard.TargetName="Content">
-                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource AppBarItemDisabledForegroundThemeBrush}"/>
-                                            </ObjectAnimationUsingKeyFrames>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Foreground" Storyboard.TargetName="TextLabel">
-                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource AppBarItemDisabledForegroundThemeBrush}"/>
-                                            </ObjectAnimationUsingKeyFrames>
-                                        </Storyboard>
-                                    </VisualState>
-                                </VisualStateGroup>
-                            </VisualStateManager.VisualStateGroups>
-                            <Grid HorizontalAlignment="Center" Height="75" Margin="0,12,0,4" Width="75">
-                                <Ellipse x:Name="Ellipse" Fill="{ThemeResource AppBarItemBackgroundThemeBrush}" Height="75" Stroke="{ThemeResource AppBarItemForegroundThemeBrush}" StrokeThickness="2.5" UseLayoutRounding="False" Width="75"/>
-                                <Grid x:Name="ContentRoot" Background="Transparent">
-                                    <ContentPresenter x:Name="Content" AutomationProperties.AccessibilityView="Raw" Content="{TemplateBinding Icon}" Foreground="{TemplateBinding Foreground}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
-                                </Grid>
-                            </Grid>
-                            <TextBlock x:Name="TextLabel" Foreground="{ThemeResource AppBarItemForegroundThemeBrush}" FontSize="9.5" FontFamily="{TemplateBinding FontFamily}" Margin="0,0,0,10.5" TextAlignment="Center" TextWrapping="Wrap" Text="{TemplateBinding Label}" Width="70.5"/>
-                        </StackPanel>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
         <Style x:Key="SelectionListViewItemStyle" TargetType="ListViewItem">
             <Setter Property="FontFamily" Value="{ThemeResource ContentControlThemeFontFamily}" />
             <Setter Property="FontSize" Value="{ThemeResource ControlContentThemeFontSize}" />
@@ -386,24 +321,27 @@
                         <TextBlock FontSize="24" Text="{Binding CurrentQueue.Song.Album.Name}" FontWeight="Thin" Foreground="#89FFFFFF"
                                    TextTrimming="CharacterEllipsis" TextWrapping="Wrap"/>
                     </StackPanel>
-                    <StackPanel Grid.Row="2" Orientation="Horizontal">
+                    <StackPanel Grid.Row="3" Orientation="Horizontal" Margin="0,0,0,25">
                         <AppBarButton Command="{Binding PrevRelayCommand}" Icon="Previous" IsCompact="True" VerticalAlignment="Center" />
-                        <AppBarButton Command="{Binding PlayPauseRelayCommand}" IsCompact="True" Style="{StaticResource BigAppBarButtonStyle}" Margin="10,0">
+                        <AppBarButton Command="{Binding PlayPauseRelayCommand}" IsCompact="True" Margin="20,0" RenderTransformOrigin="0.5,0.5">
+                            <AppBarButton.RenderTransform>
+                                <CompositeTransform ScaleX="2" ScaleY="2"/>
+                            </AppBarButton.RenderTransform>
                             <AppBarButton.Icon>
                                 <SymbolIcon Symbol="{Binding PlayPauseIcon}" />
                             </AppBarButton.Icon>
                         </AppBarButton>
                         <AppBarButton Command="{Binding NextRelayCommand}" Icon="Next" IsCompact="True" VerticalAlignment="Center" />
                     </StackPanel>
-                    <Grid Grid.Row="3">
+                    <Grid Grid.Row="2" Margin="0,20,0,0">
                         <TextBlock Text="{Binding Position, Converter={StaticResource TimespanToStringConverter}}" />
                         <TextBlock HorizontalAlignment="Right" Text="{Binding Duration, Converter={StaticResource TimespanToStringConverter}}" />
                     </Grid>
-                    <Slider Grid.Row="3" Value="{Binding Position, Converter={StaticResource TimespanToDoubleConverter}, Mode=TwoWay}"
+                    <Slider Grid.Row="2" Value="{Binding Position, Converter={StaticResource TimespanToDoubleConverter}, Mode=TwoWay}"
                     Visibility="{Binding IsLoading, Converter={StaticResource ReverseVisibilityConverter}}"
                     Maximum="{Binding Duration, Converter={StaticResource TimespanToDoubleConverter}, Mode=TwoWay}" VerticalAlignment="Top" 
-                    ManipulationMode="TranslateX" ManipulationStarted="Slider_ManipulationStarted" ManipulationCompleted="Slider_ManipulationCompleted"/>
-                    <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="5">
+                    ManipulationMode="TranslateX" ManipulationStarted="Slider_ManipulationStarted" ManipulationCompleted="Slider_ManipulationCompleted" Margin="0,20,0,0"/>
+                    <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="5,0">
                         <AppBarToggleButton IsChecked="{Binding IsShuffle, Mode=TwoWay}" Icon="Shuffle" IsCompact="True" />
                         <AppBarToggleButton IsChecked="{Binding IsRepeat, Mode=TwoWay}" Icon="RepeatAll" IsCompact="True" />
                     </StackPanel>
@@ -429,7 +367,7 @@
                     </ListView.ItemTemplate>
                 </ListView>
             </PivotItem>
-<!--            <PivotItem Header="SOCIAL" />-->
+            <!--            <PivotItem Header="SOCIAL" />-->
         </Pivot>
     </Grid>
 </Page>
