@@ -36,8 +36,9 @@ namespace Audiotica.PartialView
             (App.Locator.CollectionService as CollectionService).PropertyChanged += OnPropertyChanged;
         }
 
-        private void OnPropertyChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
+        private async void OnPropertyChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
         {
+            await Task.Delay(250);
             if (propertyChangedEventArgs.PropertyName == "CurrentPlaybackQueue")
             {
                 SongFlipView.SelectedItem = App.Locator.Player.CurrentQueue;
@@ -68,7 +69,7 @@ namespace Audiotica.PartialView
                 var containsSong = true;
                 while (containsSong)
                 {
-                    containsSong = !App.Locator.CollectionService.PlaybackQueue.Contains(e.NewValue);
+                    containsSong = !App.Locator.CollectionService.CurrentPlaybackQueue.Contains(e.NewValue);
 
                     if (!containsSong)
                     {

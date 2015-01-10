@@ -490,8 +490,12 @@ namespace Audiotica.Data.Collection.RunTime
 
         public async Task<QueueSong> AddToQueueAsync(Song song, int position = -1)
         {
+            var rnd = new Random(DateTime.Now.Millisecond);
             QueueSong prev;
+            QueueSong shufflePrev = null;
             QueueSong next = null;
+            QueueSong shuffleNext = null;
+            var index = 0;
 
             var insert = position != -1 && position < PlaybackQueue.Count;
 
@@ -499,9 +503,27 @@ namespace Audiotica.Data.Collection.RunTime
             {
                 next = PlaybackQueue[position];
                 prev = _lookupMap[next.PrevId];
+                shuffleNext = next;
+                shufflePrev = prev;
             }
             else
+            {
                 prev = PlaybackQueue.LastOrDefault();
+
+                if (ShufflePlaybackQueue.Count > 1)
+                {
+                    index = rnd.Next(1, ShufflePlaybackQueue.Count - 1);
+                    shuffleNext = ShufflePlaybackQueue.ElementAt(index);
+
+                    if (shuffleNext.PrevId != 0)
+                        shufflePrev = _lookupMap[shuffleNext.ShufflePrevId];
+                }
+                else
+                {
+                    index = PlaybackQueue.Count;
+                    shufflePrev = prev;
+                }
+            }
 
 
             //Create the new queue entry
@@ -510,6 +532,8 @@ namespace Audiotica.Data.Collection.RunTime
                 SongId = song.Id,
                 NextId = next == null ? 0 : next.Id,
                 PrevId = prev == null ? 0 : prev.Id,
+                ShuffleNextId = shuffleNext == null ? 0 : shuffleNext.Id,
+                ShufflePrevId = shufflePrev == null ? 0 : shufflePrev.Id,
                 Song = song
             };
 
@@ -530,6 +554,18 @@ namespace Audiotica.Data.Collection.RunTime
                 await _bgSqlService.UpdateItemAsync(prev);
             }
 
+            if (shuffleNext != null)
+            {
+                shuffleNext.ShufflePrevId = newQueue.Id;
+                await _bgSqlService.UpdateItemAsync(shuffleNext);
+            }
+
+            if (shufflePrev != null)
+            {
+                shufflePrev.ShuffleNextId = newQueue.Id;
+                await _bgSqlService.UpdateItemAsync(shufflePrev);
+            }
+
             try
             {
                 //Add the new queue entry to the collection and map
@@ -538,7 +574,10 @@ namespace Audiotica.Data.Collection.RunTime
                     if (insert)
                         PlaybackQueue.Insert(position, newQueue);
                     else
+                    {
                         PlaybackQueue.Add(newQueue);
+                        ShufflePlaybackQueue.Insert(index, newQueue);
+                    }
 
                     if (_lookupMap.ContainsKey(newQueue.Id))
                         _lookupMap.Remove(newQueue.Id);
@@ -637,19 +676,23 @@ namespace Audiotica.Data.Collection.RunTime
                         break;
                 }
 
-                for (var i = 0; i < queue.Count; i++)
+                if (shuffleHead != null)
                 {
-                    if (_dispatcher != null)
-                        _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => ShufflePlaybackQueue.Add(shuffleHead))
-                            .AsTask()
-                            .Wait();
-                    else
-                        ShufflePlaybackQueue.Add(shuffleHead);
+                    for (var i = 0; i < queue.Count; i++)
+                    {
+                        if (_dispatcher != null)
+                            _dispatcher.RunAsync(CoreDispatcherPriority.Normal,
+                                () => ShufflePlaybackQueue.Add(shuffleHead))
+                                .AsTask()
+                                .Wait();
+                        else
+                            ShufflePlaybackQueue.Add(shuffleHead);
 
-                    if (shuffleHead.ShuffleNextId != 0)
-                        shuffleHead = _shuffleLookupMap[shuffleHead.ShuffleNextId];
-                    else
-                        break;
+                        if (shuffleHead.ShuffleNextId != 0)
+                            shuffleHead = _shuffleLookupMap[shuffleHead.ShuffleNextId];
+                        else
+                            break;
+                    }
                 }
             }
         }
