@@ -48,7 +48,7 @@ namespace Audiotica.View
         {
             var vm = App.Locator.Collection;
 
-            if (vm.RandomizeAlbumList.Count != 0 || !AppSettingsHelper.Read("WallpaperArt", true)) return;
+            if (vm.RandomizeAlbumList.Count != 0 || !AppSettingsHelper.Read("WallpaperArt", true, SettingsStrategy.Roaming)) return;
 
             var albums =
                 App.Locator.CollectionService.Albums.ToList()

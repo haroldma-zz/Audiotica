@@ -24,7 +24,6 @@ namespace Audiotica.WindowsPhone.Player
         private readonly ISqlService _bgSql;
         private readonly MediaPlayer _mediaPlayer;
         private readonly ISqlService _sql;
-        private long _currentTrackId = -1;
         private QueueSong _currentTrack;
 
         public QueueManager()
@@ -174,7 +173,6 @@ namespace Audiotica.WindowsPhone.Player
                 return;
 
             _currentTrack = track;
-            _currentTrackId = track.Id;
             UpdateMediaEnded();
             _mediaPlayer.AutoPlay = false;
 
@@ -234,7 +232,7 @@ namespace Audiotica.WindowsPhone.Player
         /// </summary>
         public void SkipToNext()
         {
-            var next = GetQueueSongWherePrevId(CurrentTrackId) ?? GetQueueSongWherePrevId(0);
+            var next = GetQueueSongWherePrevId(GetCurrentId()) ?? GetQueueSongWherePrevId(0);
             StartTrack(next);
         }
 
@@ -283,8 +281,6 @@ namespace Audiotica.WindowsPhone.Player
                     _bgSql.DeleteItemAsync(historyItem);
                 }
             }
-
-            _currentTrackId = -1;
         }
 
         /// <summary>
@@ -292,7 +288,7 @@ namespace Audiotica.WindowsPhone.Player
         /// </summary>
         public void SkipToPrevious()
         {
-            var prev = GetQueueSongWhereNextId(CurrentTrackId) ?? GetQueueSongWhereNextId(0);
+            var prev = GetQueueSongWhereNextId(GetCurrentId()) ?? GetQueueSongWhereNextId(0);
             StartTrack(prev);
         }
 
@@ -304,11 +300,6 @@ namespace Audiotica.WindowsPhone.Player
             _sql.Dispose();
         }
 
-        public long CurrentTrackId
-        {
-            get { return _currentTrackId <= 0 ? (_currentTrackId = GetCurrentId()) : _currentTrackId; }
-        }
-
         private long GetCurrentId()
         {
             return AppSettingsHelper.Read<long>(PlayerConstants.CurrentTrack);
@@ -316,7 +307,7 @@ namespace Audiotica.WindowsPhone.Player
 
         public QueueSong GetCurrentQueueSong()
         {
-            return GetQueueSongById(CurrentTrackId);
+            return GetQueueSongById(GetCurrentId());
         }
 
         private QueueSong GetQueueSong(string prop, long id)

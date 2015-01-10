@@ -228,7 +228,7 @@ namespace Audiotica
 
             _isUpdating = true;
 
-            var scrobble = _scrobblerService.IsAuthenticated && AppSettingsHelper.Read<bool>("Scrobble");
+            var scrobble = _scrobblerService.IsAuthenticated && AppSettingsHelper.Read<bool>("Scrobble", SettingsStrategy.Roaming);
 
             #region Update now playing (last.fm)
 
