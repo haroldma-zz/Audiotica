@@ -194,12 +194,12 @@ namespace Audiotica
 
         private void HelperOnTrackChanged(object sender, EventArgs eventArgs)
         {
-            Position = TimeSpan.Zero;
             Duration = BackgroundMediaPlayer.Current.NaturalDuration;
 
             if (BackgroundMediaPlayer.Current.CurrentState != MediaPlayerState.Closed &&
                 BackgroundMediaPlayer.Current.CurrentState != MediaPlayerState.Stopped)
             {
+                Position = BackgroundMediaPlayer.Current.Position;
                 var currentId = AppSettingsHelper.Read<long>(PlayerConstants.CurrentTrack);
                 CurrentQueue = _service.PlaybackQueue.FirstOrDefault(p => p.Id == currentId);
 
