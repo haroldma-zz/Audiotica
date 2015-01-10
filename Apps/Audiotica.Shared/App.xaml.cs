@@ -257,8 +257,11 @@ namespace Audiotica
                 {
                     await Locator.SqlService.InitializeAsync().ConfigureAwait(false);
                     await Locator.BgSqlService.InitializeAsync().ConfigureAwait(false);
-                    await Locator.CollectionService.LoadLibraryAsync().ConfigureAwait(false);
-                    DispatcherHelper.RunAsync(() => Locator.Download.LoadDownloads());
+
+                    Locator.CollectionService.LibraryLoaded += (sender, args) => 
+                        DispatcherHelper.RunAsync(() => Locator.Download.LoadDownloads());
+
+                    await Locator.CollectionService.LoadLibraryAsync().ConfigureAwait(false);                     
                 }
                 catch (Exception ex)
                 {

@@ -117,14 +117,7 @@ namespace Audiotica.Data.Collection.RunTime
             else
                 Artists.AddRange(artists);
 
-            if (isForeground)
-            {
-                _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-                {
-                    if (LibraryLoaded != null)
-                        LibraryLoaded(this, null);
-                });
-            }
+           
 
             IsLibraryLoaded = true;
 
@@ -133,14 +126,23 @@ namespace Audiotica.Data.Collection.RunTime
             if (!loadEssentials)
                 LoadPlaylists();
 
-            var corruptSongs = Songs.Where(p => string.IsNullOrEmpty(p.Name) || p.Album == null || p.Artist == null).ToList();
-            foreach (var corruptSong in corruptSongs)
+            if (isForeground)
             {
-                DeleteSongAsync(corruptSong).Wait();
-            }
+                var corruptSongs = Songs.Where(p => string.IsNullOrEmpty(p.Name) || p.Album == null || p.Artist == null).ToList();
+                foreach (var corruptSong in corruptSongs)
+                {
+                    DeleteSongAsync(corruptSong).Wait();
+                }
 
-            if (_dispatcher != null)
+                _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                {
+                    if (LibraryLoaded != null)
+                        LibraryLoaded(this, null);
+                });
+
                 CleanupFiles();
+            }
+                
         }
 
         public Task LoadLibraryAsync(bool loadEssentials = false)
