@@ -17,12 +17,12 @@ namespace Audiotica.PartialView
             SimpleIoc.Default.Register(() => this);
             Loaded += (sender, args) =>
             {
-                var ads = AppSettingsHelper.Read("Ads", true);
+                var ads = AppSettingsHelper.Read("Ads", true, SettingsStrategy.Roaming);
                 var owns = App.LicenseInformation.ProductLicenses[ProductConstants.InAppAdvertisements].IsActive;
 
                 if (!owns && !ads)
                 {
-                    AppSettingsHelper.Write("Ads", true);
+                    AppSettingsHelper.Write("Ads", true, SettingsStrategy.Roaming);
                     ads = true;
                 }
 
