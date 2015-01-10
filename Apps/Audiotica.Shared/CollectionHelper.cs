@@ -302,8 +302,7 @@ namespace Audiotica
                     await App.Locator.CollectionService.DeleteFromQueueAsync(queueToRemove);
                 }
 
-            var position = App.Locator.CollectionService.CurrentPlaybackQueue.IndexOf(App.Locator.Player.CurrentQueue) + 1;
-            var queueSong = await App.Locator.CollectionService.AddToQueueAsync(song, position);
+            var queueSong = await App.Locator.CollectionService.AddToQueueAsync(song, App.Locator.Player.CurrentQueue);
 
             if (!App.Locator.Player.IsPlayerActive)
                 App.Locator.AudioPlayerHelper.PlaySong(queueSong);
