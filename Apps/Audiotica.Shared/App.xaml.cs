@@ -57,8 +57,8 @@ namespace Audiotica
             get
             {
                 return IsDebugging
-                ? CurrentApp.LicenseInformation
-                : CurrentAppSimulator.LicenseInformation;
+                ? CurrentAppSimulator.LicenseInformation
+                : CurrentApp.LicenseInformation;
             }
         }
 
