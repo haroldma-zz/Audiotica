@@ -510,8 +510,12 @@ namespace Audiotica.Data.Collection.RunTime
                 {
                     if (insert)
                         PlaybackQueue.Insert(position, newQueue);
-                else
-                    PlaybackQueue.Add(newQueue);
+                    else
+                        PlaybackQueue.Add(newQueue);
+
+                    if (_lookupMap.ContainsKey(newQueue.Id))
+                        _lookupMap.Remove(newQueue.Id);
+
                     _lookupMap.Add(newQueue.Id, newQueue);
                 });
                 return newQueue;
@@ -566,7 +570,11 @@ namespace Audiotica.Data.Collection.RunTime
             {
                 queueSong.Song = Songs.FirstOrDefault(p => p.Id == queueSong.SongId);
 
+                if (_lookupMap.ContainsKey(queueSong.Id))
+                    _lookupMap.Remove(queueSong.Id);
+
                 _lookupMap.Add(queueSong.Id, queueSong);
+
                 if (queueSong.PrevId == 0)
                     head = queueSong;
             }
