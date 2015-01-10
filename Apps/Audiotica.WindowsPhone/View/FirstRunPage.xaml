@@ -57,7 +57,7 @@
                            Text="With Audiotica you'll never have to break a sweat to get music!  It is the one stop place to find everything you'll ever need."
                            FontSize="22" TextWrapping="Wrap" />
             </Grid>
-            <Grid Margin="20,50,125,0">
+            <Grid Margin="20,50,100,0">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
