@@ -78,6 +78,14 @@ namespace Audiotica
                 return;
             }
 
+            var alreadySaving = SpotifySavingAlbums.FirstOrDefault(p => p == album.Id) != null;
+
+            if (alreadySaving)
+            {
+                CurtainPrompt.ShowError("EntryAlreadySaving".FromLanguageResource(), album.Name);
+                return;
+            }
+
             SpotifySavingAlbums.Add(album.Id);
 
             while (!App.Locator.CollectionService.IsLibraryLoaded)
@@ -87,7 +95,6 @@ namespace Audiotica
             var collAlbum = App.Locator.CollectionService.Albums.FirstOrDefault(p => p.ProviderId.Contains(album.Id));
 
             var alreadySaved = collAlbum != null;
-            var alreadySaving = SpotifySavingAlbums.FirstOrDefault(p => p == album.Id) != null;
 
             if (alreadySaved)
             {
@@ -98,13 +105,6 @@ namespace Audiotica
                     SpotifySavingAlbums.Remove(album.Id);
                     return;
                 }
-            }
-
-            if (alreadySaving)
-            {
-                SpotifySavingAlbums.Remove(album.Id);
-                CurtainPrompt.ShowError("EntryAlreadySaving".FromLanguageResource(), album.Name);
-                return;
             }
 
             CurtainPrompt.Show("EntrySaving".FromLanguageResource(), album.Name);
