@@ -42,8 +42,12 @@ namespace Audiotica.WindowsPhone.Player
 
         public async Task UpdateNowPlaying(QueueSong queue)
         {
-            await _service.ScrobbleNowPlayingAsync(queue.Song.Name, queue.Song.ArtistName,
+            try
+            {
+                await _service.ScrobbleNowPlayingAsync(queue.Song.Name, queue.Song.ArtistName,
                     DateTime.UtcNow, queue.Song.Duration);
+            }
+            catch { }
         }
 
         public async Task<bool> Scrobble(HistoryEntry item, TimeSpan position)

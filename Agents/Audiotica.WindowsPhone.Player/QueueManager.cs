@@ -137,10 +137,12 @@ namespace Audiotica.WindowsPhone.Player
 
             await _bgSql.InsertAsync(historyItem);
 
-            if (CurrentTrack.Song.Duration.Ticks == _mediaPlayer.NaturalDuration.Ticks) return;
+            if (CurrentTrack.Song.Duration.Ticks != _mediaPlayer.NaturalDuration.Ticks)
+            {
 
-            CurrentTrack.Song.Duration = _mediaPlayer.NaturalDuration;
-            await _sql.UpdateItemAsync(CurrentTrack.Song);
+                CurrentTrack.Song.Duration = _mediaPlayer.NaturalDuration;
+                await _sql.UpdateItemAsync(CurrentTrack.Song);
+            }
 
             if (_scrobbler.IsScrobblingEnabled())
                 await _scrobbler.UpdateNowPlaying(CurrentTrack);
