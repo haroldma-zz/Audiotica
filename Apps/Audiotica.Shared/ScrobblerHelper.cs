@@ -49,7 +49,15 @@ namespace Audiotica
 
         public static async Task<SavingError> SaveTrackAsync(LastTrack track)
         {
-            if (App.Locator.CollectionService.SongAlreadyExists(track.ToSong().ProviderId, track.Name, track.AlbumName,
+            PreparedSong preparedSong = null;
+            var providerId = track.ToSong().ProviderId;
+            if (providerId == "lastid.")
+            {
+                preparedSong = await PrepareTrackForDownloadAsync(track);
+                providerId = preparedSong.Song.ProviderId;
+            }
+
+            if (App.Locator.CollectionService.SongAlreadyExists(providerId, track.Name, track.AlbumName,
                 track.ArtistName))
             {
                 return SavingError.AlreadyExists;
@@ -60,7 +68,8 @@ namespace Audiotica
             if (string.IsNullOrEmpty(url))
                 return SavingError.NoMatch;
 
-            var preparedSong = await PrepareTrackForDownloadAsync(track);
+            if (preparedSong == null)
+                preparedSong = await PrepareTrackForDownloadAsync(track);
             preparedSong.Song.AudioUrl = url;
 
             try

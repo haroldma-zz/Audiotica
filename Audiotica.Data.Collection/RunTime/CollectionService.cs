@@ -67,6 +67,9 @@ namespace Audiotica.Data.Collection.RunTime
 
         public void LoadLibrary(bool loadEssentials = false)
         {
+            if (IsLibraryLoaded)
+                return;
+
             var songs = _sqlService.SelectAll<Song>().OrderByDescending(p => p.Id).ToList();
             var artists = _sqlService.SelectAll<Artist>().OrderByDescending(p => p.Id).ToList();
             var albums = new List<Album>();

@@ -48,6 +48,7 @@ namespace Audiotica.Data
                 .Replace("- mono", "")
                 .Replace("- intro", "")
                 .Replace("- no intro", "")
+                .Replace("- ep version", "")
                 .Replace("- deluxe edition", "").Trim();
 
             var currentProvider = 0;
