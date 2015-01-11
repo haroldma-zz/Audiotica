@@ -2,6 +2,7 @@
 
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Windows.Media.Playback;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -209,7 +210,7 @@ namespace Audiotica
                     && CurrentQueue.Song != null
                     && CurrentQueue.Song.Duration.Ticks != Duration.Ticks)
                     CurrentQueue.Song.Duration = Duration;
-                
+
                 IsPlayerActive = true;
             }
             else
@@ -218,75 +219,6 @@ namespace Audiotica
                 IsPlayerActive = false;
                 CurrentQueue = null;
             }
-
-            ScrobbleHistory();
-        }
-
-        private async void ScrobbleHistory()
-        {
-            if (_isUpdating) return;
-
-            _isUpdating = true;
-
-            var scrobble = _scrobblerService.IsAuthenticated && AppSettingsHelper.Read<bool>("Scrobble", SettingsStrategy.Roaming);
-
-            #region Update now playing (last.fm)
-
-            if (CurrentQueue != null && scrobble)
-            {
-                var npAlbumName = CurrentQueue.Song.Album.ProviderId.StartsWith("autc.single.")
-                    ? ""
-                    : CurrentQueue.Song.Album.Name;
-                var npArtistName = string.IsNullOrEmpty(npAlbumName) ? "" : CurrentQueue.Song.Artist.Name;
-
-                await
-                    _scrobblerService.ScrobbleNowPlayingAsync(CurrentQueue.Song.Name, CurrentQueue.Song.ArtistName,
-                        DateTime.UtcNow, CurrentQueue.Song.Duration, npAlbumName, npArtistName);
-            }
-
-            #endregion
-
-            #region Scrobble
-
-            var history = (await _service.FetchHistoryAsync()).Where(p => p.CanScrobble);
-
-            foreach (var historyEntry in history)
-            {
-                if (historyEntry.Song != null)
-                {
-                    if (historyEntry.Song.LastPlayed < historyEntry.DatePlayed)
-                    {
-                        historyEntry.Song.PlayCount++;
-                        historyEntry.Song.LastPlayed = historyEntry.DatePlayed;
-                    }
-
-                    if (!historyEntry.Scrobbled && historyEntry.CanScrobble && scrobble)
-                    {
-                        var albumName = historyEntry.Song.Album.ProviderId.StartsWith("autc.single.")
-                            ? ""
-                            : historyEntry.Song.Album.Name;
-                        var artistName = string.IsNullOrEmpty(albumName) ? "" : historyEntry.Song.Artist.Name;
-
-                        var result =
-                            await
-                                _scrobblerService.ScrobbleAsync(historyEntry.Song.Name, historyEntry.Song.ArtistName,
-                                    historyEntry.DatePlayed.ToUniversalTime(), historyEntry.Song.Duration, albumName,
-                                    artistName);
-
-                        //if no error happened, or there was a failure (unrecoverable), then mark as scrobled
-                        historyEntry.Scrobbled = result == LastFmApiError.None || result == LastFmApiError.Failure;
-                    }
-
-                    if (!historyEntry.Scrobbled && scrobble) continue;
-                }
-
-                if (historyEntry.Scrobbled)
-                    await _bgSqlService.DeleteItemAsync(historyEntry);
-            }
-
-            #endregion
-
-            _isUpdating = false;
         }
 
         private void PlayPauseToggle()

@@ -17,16 +17,14 @@ namespace Audiotica.ViewModel
 {
     public class SettingsViewModel : ViewModelBase
     {
-        private readonly AdMediatorBar _adMediatorBar;
         private readonly IScrobblerService _service;
         private string _password;
         private bool _scrobbleSwitch;
         private string _username;
 
-        public SettingsViewModel(IScrobblerService service, AdMediatorBar adMediatorBar)
+        public SettingsViewModel(IScrobblerService service)
         {
             _service = service;
-            _adMediatorBar = adMediatorBar;
             InAppAdsClickRelay = new RelayCommand(InAppAdsClicked);
             LoginClickRelay = new RelayCommand(LoginButtonClicked);
             DeveloperModeClickRelay = new RelayCommand(DeveloperModeExecute);
@@ -190,11 +188,11 @@ namespace Audiotica.ViewModel
             {
                 if (value)
                 {
-                    _adMediatorBar.Enable();
+                    App.Locator.Ads.Enable();
                 }
                 else
                 {
-                    _adMediatorBar.Disable();
+                    App.Locator.Ads.Disable();
                 }
                 EasyTracker.GetTracker().SendEvent("Settings", "Ads", value ? "Enabled" : "Disabled", 0);
                 AppSettingsHelper.Write("Ads", value, SettingsStrategy.Roaming);

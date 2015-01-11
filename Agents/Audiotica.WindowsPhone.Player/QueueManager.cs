@@ -12,6 +12,8 @@ using Audiotica.Core.Utilities;
 using Audiotica.Data.Collection;
 using Audiotica.Data.Collection.Model;
 using Audiotica.Data.Collection.RunTime;
+using Audiotica.Data.Service.RunTime;
+using IF.Lastfm.Core.Api.Enums;
 
 #endregion
 
@@ -28,6 +30,8 @@ namespace Audiotica.WindowsPhone.Player
 
         public QueueManager()
         {
+            _scrobbler = new ScrobblerHelper();
+
             var bgDbTypes = new List<Type>
             {
                 typeof (QueueSong),
@@ -122,7 +126,7 @@ namespace Audiotica.WindowsPhone.Player
             OnTrackChanged();
         }
 
-        private void OnTrackChanged()
+        private async void OnTrackChanged()
         {
             var played = DateTime.Now;
             var historyItem = new HistoryEntry
@@ -131,12 +135,15 @@ namespace Audiotica.WindowsPhone.Player
                 SongId = CurrentTrack.SongId
             };
 
-            _bgSql.Insert(historyItem);
+            await _bgSql.InsertAsync(historyItem);
 
             if (CurrentTrack.Song.Duration.Ticks == _mediaPlayer.NaturalDuration.Ticks) return;
 
             CurrentTrack.Song.Duration = _mediaPlayer.NaturalDuration;
-            _sql.UpdateItem(CurrentTrack.Song);
+            await _sql.UpdateItemAsync(CurrentTrack.Song);
+
+            if (_scrobbler.IsScrobblingEnabled())
+                await _scrobbler.UpdateNowPlaying(CurrentTrack);
         }
 
         /// <summary>
@@ -162,6 +169,7 @@ namespace Audiotica.WindowsPhone.Player
         }
 
         private int _retryCount;
+        private readonly ScrobblerHelper _scrobbler;
 
         #endregion
 
@@ -172,8 +180,10 @@ namespace Audiotica.WindowsPhone.Player
             if (track == null)
                 return;
 
+            if (_scrobbler.IsScrobblingEnabled())
+                ScrobbleOnMediaEnded(_currentTrack);
+
             _currentTrack = track;
-            UpdateMediaEnded();
             _mediaPlayer.AutoPlay = false;
 
             if (track.Song.IsStreaming)
@@ -236,51 +246,45 @@ namespace Audiotica.WindowsPhone.Player
             StartTrack(next);
         }
 
-        private void UpdateMediaEnded()
+        private async void ScrobbleOnMediaEnded(QueueSong queue)
+        {
+            var item = GetHistoryItem(queue);
+            if (item == null) return;
+
+            item.Song = queue.Song;
+            try
+            {
+                if (_scrobbler.CanScrobble(item.Song, _mediaPlayer.Position))
+                {
+                    if (await _scrobbler.Scrobble(item, _mediaPlayer.Position))
+                    {
+                        queue.Song.PlayCount++;
+                        queue.Song.LastPlayed = item.DatePlayed;
+
+                        if (queue.Song.Duration.Ticks != _mediaPlayer.NaturalDuration.Ticks)
+                            queue.Song.Duration = _mediaPlayer.NaturalDuration;
+
+                        _sql.UpdateItem(queue.Song);
+                    }
+                }
+            }
+            catch { }
+            await _bgSql.DeleteItemAsync(item);
+        }
+
+        private HistoryEntry GetHistoryItem(QueueSong queue)
         {
             var history = _bgSql.SelectAll<HistoryEntry>();
 
             //if null then the player has just been launched
-            if (CurrentTrack == null)
+            if (queue == null)
             {
                 //reset the incrementable Id of the table
-                if (history.Count(p => p.CanScrobble) == 0)
-                    _bgSql.DeleteTableAsync<HistoryEntry>().Wait();
-                return;
+                _bgSql.DeleteTableAsync<HistoryEntry>().Wait();
+                return null;
             }
 
-            var historyItem = history.FirstOrDefault(p => p.SongId == CurrentTrack.SongId);
-            if (historyItem != null)
-            {
-                var playbackTime = _mediaPlayer.Position.TotalSeconds;
-                var duration = _mediaPlayer.NaturalDuration.TotalSeconds;
-
-                /* When is a scrobble a scrobble?
-                 * A track should only be scrobbled when the following conditions have been met:
-                 * 1. The track must be longer than 30 seconds.
-                 * 2. And the track has been played for at least half its duration, or for 4 minutes (whichever occurs earlier.)
-                 */
-
-                if (duration >= 30 
-                    && (playbackTime >= duration/2 || playbackTime >= 60*4))
-                {
-                    CurrentTrack.Song.PlayCount++;
-                    CurrentTrack.Song.LastPlayed = historyItem.DatePlayed;
-
-                    if (CurrentTrack.Song.Duration.Ticks != _mediaPlayer.NaturalDuration.Ticks)
-                        CurrentTrack.Song.Duration = _mediaPlayer.NaturalDuration;
-
-                    _sql.UpdateItem(CurrentTrack.Song);
-
-                    historyItem.CanScrobble = true;
-                    _bgSql.UpdateItem(historyItem);
-                }
-                else
-                {
-                    //not a scrobble
-                    _bgSql.DeleteItemAsync(historyItem);
-                }
-            }
+            return history.FirstOrDefault(p => p.SongId == queue.SongId);
         }
 
         /// <summary>

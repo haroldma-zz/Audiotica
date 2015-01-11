@@ -66,9 +66,9 @@ namespace Audiotica.ViewModel
             SimpleIoc.Default.Register<CollectionPlaylistViewModel>();
             SimpleIoc.Default.Register<ArtistViewModel>();
             SimpleIoc.Default.Register<SearchViewModel>();
-            SimpleIoc.Default.Register<SettingsViewModel>();
             SimpleIoc.Default.Register<SpotifyAlbumViewModel>();
             SimpleIoc.Default.Register<SpotifyArtistViewModel>();
+            SimpleIoc.Default.Register<SettingsViewModel>();
         }
 
         private SqlServiceConfig GetForegroundConfig()
@@ -114,16 +114,34 @@ namespace Audiotica.ViewModel
                 {
                     if (d == 0) return;
 
-                    if (d == 1)
+                    if (d != 1) return;
+
+                    bool hasCol;
+                    using (
+                        var statement =
+                            connection.Prepare(
+                                string.Format(
+                                    "SELECT sql FROM sqlite_master WHERE type = 'table' AND name = '{0}'", "QueueSong")))
                     {
-                        using (var statement = connection.Prepare("ALTER TABLE QueueSong ADD COLUMN ShufflePrevId INTEGER"))
-                        {
-                            statement.Step();
-                        }
-                        using (var statement = connection.Prepare("ALTER TABLE QueueSong ADD COLUMN ShuffleNextId INTEGER"))
-                        {
-                            statement.Step();
-                        }
+                        statement.Step();
+
+                        var text = statement.GetText(0);
+                        hasCol = text.Contains("ShufflePrevId");
+                    }
+
+                    if (hasCol) return;
+
+                    using (
+                        var statement =
+                            connection.Prepare("ALTER TABLE QueueSong ADD COLUMN ShufflePrevId INTEGER"))
+                    {
+                        statement.Step();
+                    }
+                    using (
+                        var statement =
+                            connection.Prepare("ALTER TABLE QueueSong ADD COLUMN ShuffleNextId INTEGER"))
+                    {
+                        statement.Step();
                     }
                 }
             };
