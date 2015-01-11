@@ -158,25 +158,27 @@ namespace Audiotica
         public static async void DownloadArtistsArtworkAsync(bool missingOnly = true)
         {
             var artists = App.Locator.CollectionService.Artists.ToList();
-
+            
             if (missingOnly)
                 artists = artists.Where(p => !p.HasArtwork).ToList();
-
+            
             var tasks = artists.Select(artist => Task.Factory.StartNew(async () =>
             {
-                if (artist.ProviderId == "autc.unknown")
+                if (artist.ProviderId == "autc.unknown" || string.IsNullOrEmpty(artist.Name))
                     return;
-
-                var lastArtist = await App.Locator.ScrobblerService.GetDetailArtist(artist.Name);
-
-                if (lastArtist.MainImage == null || lastArtist.MainImage.Largest == null) return;
-
-                var artistFilePath = string.Format(CollectionConstant.ArtistsArtworkPath, artist.Id);
-                var file =
-                    await StorageHelper.CreateFileAsync(artistFilePath, option: CreationCollisionOption.ReplaceExisting);
 
                 try
                 {
+                    var lastArtist = await App.Locator.ScrobblerService.GetDetailArtist(artist.Name);
+
+                    if (lastArtist.MainImage == null || lastArtist.MainImage.Largest == null) return;
+
+                    var artistFilePath = string.Format(CollectionConstant.ArtistsArtworkPath, artist.Id);
+                    var file =
+                        await
+                            StorageHelper.CreateFileAsync(artistFilePath,
+                                option: CreationCollisionOption.ReplaceExisting);
+
                     using (var client = new HttpClient())
                     {
                         using (var stream = await client.GetStreamAsync(lastArtist.MainImage.Largest))
