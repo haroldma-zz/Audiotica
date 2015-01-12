@@ -48,6 +48,7 @@ namespace Audiotica.PartialView
         {
             CurrentQueueView.Loaded -= CurrentQueueViewOnLoaded;
             App.Locator.AudioPlayerHelper.TrackChanged -= AudioPlayerHelperOnTrackChanged;
+            DataContext = null;
             Popup = null;
         }
 
@@ -81,7 +82,7 @@ namespace Audiotica.PartialView
 
         private void Slider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
         {
-            if (_justLoaded || BackgroundMediaPlayer.Current.Position == App.Locator.Player.Position)
+            if (DataContext == null || _justLoaded || App.Locator.Player.IsLoading || BackgroundMediaPlayer.Current.Position == App.Locator.Player.Position)
             {
                 _justLoaded = false;
                 return;
