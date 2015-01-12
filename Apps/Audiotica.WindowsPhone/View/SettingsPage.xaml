@@ -23,7 +23,6 @@
                         </StackPanel>
                         <StackPanel Visibility="{Binding DevMode, Converter={StaticResource VisibilityConverter}}" VerticalAlignment="Top" Margin="0,50,0,0">
                             <TextBlock Text="Developer Options" Style="{StaticResource TitleTextBlockStyle}" Margin="0,0,0,10" FontSize="24" />
-                            <ToggleSwitch Header="Crashing (BE CAREFUL DISABLING)" IsOn="{Binding Crashing, Mode=TwoWay}" />
                             <ToggleSwitch Header="Simulate First Run" IsOn="{Binding SimulateFirstRun, Mode=TwoWay}" />
                             <ToggleSwitch Header="Simulate Update" IsOn="{Binding SimulateUpdate, Mode=TwoWay}" />
                             <ToggleSwitch Header="Frame Rate Counter" IsOn="{Binding FrameRateCounter, Mode=TwoWay}" />

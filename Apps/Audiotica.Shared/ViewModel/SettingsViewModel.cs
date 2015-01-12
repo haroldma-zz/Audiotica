@@ -102,17 +102,6 @@ namespace Audiotica.ViewModel
             }
         }
 
-        public bool Crashing
-        {
-            get { return AppSettingsHelper.Read("Crashing", true); }
-            set
-            {
-                AppSettingsHelper.Write("Crashing", value);
-                EasyTracker.GetTracker().SendEvent("Settings", "Crashing", value ? "Enabled" : "Disabled", 0);
-                RaisePropertyChanged();
-            }
-        }
-
         public bool SimulateFirstRun
         {
             get { return AppSettingsHelper.Read<bool>("SimulateFirstRun"); }

@@ -198,12 +198,15 @@ namespace Audiotica
             deferral.Complete();
         }
 
-        private void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
+        private async void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
-            if (AppSettingsHelper.Read("Crashing", true)) return;
-
             e.Handled = true;
-            DispatcherHelper.RunAsync(() => CurtainPrompt.ShowError("[DEV-MODE] Crashing Error" + "\n" + e.Message + "\n" + e.Exception.StackTrace));
+            if (await MessageBox.ShowAsync(
+                "There was a problem with the application. Please contact support with details on what you were doing.",
+                "Crash prevented", MessageBoxButton.OkCancel) == MessageBoxResult.Ok)
+            {
+                Launcher.LaunchUriAsync(new Uri("mailto:help@zumicts.com&subject=Crashing Error&body=\n\n" + e.Exception.Message + e.Exception.StackTrace));
+            }
         }
 
         private void DataTransferManagerOnDataRequested(DataTransferManager sender, DataRequestedEventArgs e)
