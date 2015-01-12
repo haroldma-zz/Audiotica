@@ -26,9 +26,9 @@ namespace Audiotica.Data
     {
         private static readonly Mp3Provider[] Providers =
         {
-            Mp3Provider.Mp3Skull,
             Mp3Provider.Mp3Clan,
             Mp3Provider.Netease,
+            Mp3Provider.Mp3Skull,
             Mp3Provider.Mp3Truck,
             Mp3Provider.Meile,
             Mp3Provider.SoundCloud,
