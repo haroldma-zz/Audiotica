@@ -11,26 +11,28 @@ using Audiotica.Data.Service.RunTime;
 
 namespace Audiotica.Data
 {
+    public enum Mp3Provider
+    {
+        Mp3Truck,
+        SoundCloud,
+        Netease,
+        Mp3Clan,
+        Meile,
+        YouTube,
+        Mp3Skull,
+    }
+
     public static class Mp3MatchEngine
     {
-        public enum MatchProvider
+        private static readonly Mp3Provider[] Providers =
         {
-            Mp3Truck,
-            SoundCloud,
-            Netease,
-            Mp3Clan,
-            Meile,
-            YouTube,
-        }
-
-        private static readonly MatchProvider[] Providers =
-        {
-            MatchProvider.Netease,
-            MatchProvider.Mp3Clan,
-            MatchProvider.Mp3Truck,
-            MatchProvider.Meile,
-            MatchProvider.SoundCloud,
-           // MatchProvider.YouTube
+            Mp3Provider.Mp3Skull,
+            Mp3Provider.Mp3Clan,
+            Mp3Provider.Netease,
+            Mp3Provider.Mp3Truck,
+            Mp3Provider.Meile,
+            Mp3Provider.SoundCloud,
+           // Mp3Provider.YouTube
         };
 
 
@@ -66,7 +68,7 @@ namespace Audiotica.Data
             return url;
         }
 
-        public static async Task<string> GetMatch(MatchProvider provider, string title, string artist,
+        public static async Task<string> GetMatch(Mp3Provider provider, string title, string artist,
             string album = null)
         {
             var service = new Mp3SearchService();
@@ -74,23 +76,26 @@ namespace Audiotica.Data
 
             switch (provider)
             {
-                case MatchProvider.Netease:
+                case Mp3Provider.Netease:
                     webSongs = await service.SearchNetease(title, artist, album, 3).ConfigureAwait(false);
                     break;
-                case MatchProvider.YouTube:
+                case Mp3Provider.YouTube:
                     webSongs = await service.SearchYoutube(title, artist, album, 3).ConfigureAwait(false);
                     break;
-                case MatchProvider.Mp3Clan:
+                case Mp3Provider.Mp3Clan:
                     webSongs = await service.SearchMp3Clan(title, artist, album, 3).ConfigureAwait(false);
                     break;
-                case MatchProvider.Meile:
+                case Mp3Provider.Meile:
                     webSongs = await service.SearchMeile(title, artist, album, 3).ConfigureAwait(false);
                     break;
-                case MatchProvider.Mp3Truck:
+                case Mp3Provider.Mp3Truck:
                     webSongs = await service.SearchMp3Truck(title, artist, album).ConfigureAwait(false);
                     break;
-                case MatchProvider.SoundCloud:
+                case Mp3Provider.SoundCloud:
                     webSongs = await service.SearchSoundCloud(title, artist, album).ConfigureAwait(false);
+                    break;
+                case Mp3Provider.Mp3Skull:
+                    webSongs = await service.SearchMp3Skull(title, artist, album).ConfigureAwait(false);
                     break;
             }
 

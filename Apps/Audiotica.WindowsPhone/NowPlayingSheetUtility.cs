@@ -12,13 +12,14 @@ namespace Audiotica
     {
         private static NowPlayingSheet _currentSheet;
 
-        public static void OpenNowPlaying()
+        public static async void OpenNowPlaying()
         {
             if (_currentSheet != null) return;
 
-            UiBlockerUtility.BlockNavigation();
-
             _currentSheet = new NowPlayingSheet();
+
+            await UiBlockerUtility.BlockNavigation();
+
             ModalSheetUtility.Show(_currentSheet);
 
             HardwareButtons.BackPressed += HardwareButtonsOnBackPressed;

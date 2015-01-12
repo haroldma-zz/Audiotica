@@ -88,19 +88,9 @@ namespace Audiotica.Data.Model
         public string Artist { get; set; }
         public string AudioUrl { get; set; }
         public int BitRate { get; set; }
-        public int ByteSize { get; set; }
+        public double ByteSize { get; set; }
         public Uri ArtworkImage { get; set; }
         public TimeSpan Duration { get; set; }
         public Mp3Provider Provider { get; set; }
-    }
-
-    public enum Mp3Provider
-    {
-        Mp3Clan,
-        SoundCloud,
-        YouTube,
-        Meile,
-        Netease,
-        Mp3Trunk
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Windows.UI;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
@@ -15,7 +16,7 @@ namespace Audiotica
 
         public static bool IsBlocking { get; private set; }
 
-        public static void BlockNavigation(bool hideNavBar = true)
+        public static async Task BlockNavigation(bool hideNavBar = true)
         {
             IsBlocking = true;
 
@@ -24,7 +25,11 @@ namespace Audiotica
             _commandBar = (App.RootFrame.Content as Page).BottomAppBar as CommandBar;
 
             if (_commandBar != null)
+            {
                 _commandBar.Visibility = Visibility.Collapsed;
+                //waiting for the appbar to hide
+                await Task.Delay(250);
+            }
         }
 
         public static void Block(string message)
