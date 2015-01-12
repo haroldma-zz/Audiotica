@@ -41,7 +41,17 @@ namespace Audiotica.Data.Service.RunTime
         private const string NeteaseDetailApi = "http://music.163.com/api/song/detail/?ids=%5B{0}%5D";
 
         private const string Mp3SkullSearchUrl = "http://mp3skull.com/search_db.php?q={0}&fckh={1}";
+
         private string _mp3SkullFckh;
+        private string Mp3SkullFckh
+        {
+            get { return _mp3SkullFckh ?? (_mp3SkullFckh = AppSettingsHelper.Read<string>("Mp3SkullFckh")); }
+            set
+            {
+                _mp3SkullFckh = value;
+                AppSettingsHelper.Write("Mp3SkullFckh", value);
+            }
+        }
 
         public async Task<List<WebSong>>  SearchYoutube(string title, string artist, string album = null, int limit = 5)
         {
@@ -248,7 +258,7 @@ namespace Audiotica.Data.Service.RunTime
         {
             using (var client = new HttpClient())
             {
-                var url = string.Format(Mp3SkullSearchUrl, CreateQuery(title, artist, album), _mp3SkullFckh);
+                var url = string.Format(Mp3SkullSearchUrl, CreateQuery(title, artist, album), Mp3SkullFckh);
                 var resp = await client.GetAsync(url).ConfigureAwait(false);
 
                 if (!resp.IsSuccessStatusCode) return null;
@@ -258,13 +268,16 @@ namespace Audiotica.Data.Service.RunTime
                 var doc = new HtmlDocument();
                 doc.LoadHtml(html);
 
+                if (html.Contains("You have made too many request"))
+                    return null;
+
                 if (html.Contains("Your search session has expired"))
                 {
                     var fckhNode = doc.DocumentNode.Descendants("input").FirstOrDefault(
                         p => p.Attributes.Contains("name") && p.Attributes["name"].Value == "fckh");
                     if (fckhNode == null)
                         return null;
-                    _mp3SkullFckh = fckhNode.Attributes["value"].Value;
+                    Mp3SkullFckh = fckhNode.Attributes["value"].Value;
 
                     return await SearchMp3Skull(title, artist, album);
                 }
