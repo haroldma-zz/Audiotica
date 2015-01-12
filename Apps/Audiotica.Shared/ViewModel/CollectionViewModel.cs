@@ -20,7 +20,6 @@ using Audiotica.Core.Utilities;
 using Audiotica.Data.Collection;
 using Audiotica.Data.Collection.Model;
 using Audiotica.Data.Collection.SqlHelper;
-using Audiotica.Data.Service.Interfaces;
 using Audiotica.View;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
@@ -34,17 +33,17 @@ namespace Audiotica.ViewModel
     public class CollectionViewModel : ViewModelBase
     {
         private readonly ICollectionService _service;
-        private readonly ISongDownloadService _downloadService;
+        private readonly CollectionCommandHelper _commands;
         private ObservableCollection<AlphaKeyGroup<Album>> _sortedAlbums;
         private ObservableCollection<AlphaKeyGroup<Artist>> _sortedArtists;
         private ObservableCollection<AlphaKeyGroup<Song>> _sortedSongs;
 
-        public CollectionViewModel(ICollectionService service, ISongDownloadService downloadService)
+        public CollectionViewModel(ICollectionService service, CollectionCommandHelper commands)
         {
             _service = service;
-            _downloadService = downloadService;
+            _commands = commands;
 
-            CreateCommand();
+            SongClickCommand = new RelayCommand<ItemClickEventArgs>(SongClickExecute);
 
             if (IsInDesignModeStatic)
                 _service.LoadLibrary();
@@ -63,24 +62,9 @@ namespace Audiotica.ViewModel
             RandomizeAlbumList = new OptimizedObservableCollection<Album>();
         }
 
+        public RelayCommand<ItemClickEventArgs> SongClickCommand { get; set; }
+
         #region Private Helpers 
-
-        private void CreateCommand()
-        {
-            SongClickCommand = new RelayCommand<ItemClickEventArgs>(SongClickExecute);
-            ArtistClickCommand = new RelayCommand<ItemClickEventArgs>(ArtistClickExecute);
-            AlbumClickCommand = new RelayCommand<ItemClickEventArgs>(AlbumClickExecute);
-            PlaylistClickCommand = new RelayCommand<ItemClickEventArgs>(PlaylistClickExecute);
-
-            AddToClickCommand = new RelayCommand<Song>(AddToClickExecute);
-            DeleteClickCommand = new RelayCommand<BaseEntry>(DeleteClickExecute);
-            DownloadClickCommand = new RelayCommand<Song>(DownloadClickExecute);
-            CancelClickCommand = new RelayCommand<Song>(CancelClickExecute);
-
-            EntryPlayClickCommand = new RelayCommand<BaseEntry>(EntryPlayClickExecute);
-
-            ItemPickedCommand = new RelayCommand<AddableCollectionItem>(ItemPickedExecute);
-        }
 
         private void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs arg)
         {
@@ -178,171 +162,12 @@ namespace Audiotica.ViewModel
 
         #endregion
 
-        #region Commands (Execute)
-
-        #region Collection item clicked
-
         private async void SongClickExecute(ItemClickEventArgs e)
         {
             var song = e.ClickedItem as Song;
             var queueSong = _service.Songs.OrderBy(p => p.Name).ToList();
             await CollectionHelper.PlaySongsAsync(song, queueSong);
         }
-
-        private void AlbumClickExecute(ItemClickEventArgs obj)
-        {
-            var album = obj.ClickedItem as Album;
-            App.Navigator.GoTo<CollectionAlbumPage, ZoomInTransition>(album.Id);
-        }
-
-        private void ArtistClickExecute(ItemClickEventArgs obj)
-        {
-            var artist = obj.ClickedItem as Artist;
-            App.Navigator.GoTo<CollectionArtistPage, ZoomInTransition>(artist.Id);
-        }
-
-        private void PlaylistClickExecute(ItemClickEventArgs obj)
-        {
-            var playlist = obj.ClickedItem as Playlist;
-            App.Navigator.GoTo<CollectionPlaylistPage, ZoomInTransition>(playlist.Id);
-        }
-
-        #endregion
-
-        #region Downloading
-
-        private void CancelClickExecute(Song song)
-        {
-            if (song.Download != null)
-                _downloadService.Cancel(song.Download);
-            else
-            {
-                song.SongState = SongState.None;
-                App.Locator.SqlService.UpdateItemAsync(song);
-            }
-        }
-
-        private void DownloadClickExecute(Song song)
-        {
-            _downloadService.StartDownloadAsync(song);
-        }
-
-        #endregion
-
-        private async void EntryPlayClickExecute(BaseEntry item)
-        {
-            List<Song> queueSongs = null;
-
-            if (item is Artist)
-            {
-                var artist = item as Artist;
-                queueSongs = artist.Songs.ToList();
-            }
-
-            else if (item is Album)
-            {
-                var album = item as Album;
-                queueSongs = album.Songs.ToList();
-            }
-
-            else if (item is Playlist)
-            {
-                var playlist = item as Playlist;
-                queueSongs = playlist.Songs.Select(p => p.Song).ToList();
-            }
-
-            if (queueSongs != null)
-                await CollectionHelper.PlaySongsAsync(queueSongs);
-        }
-
-        private void AddToClickExecute(Song song)
-        {
-            song.AddableTo.Clear();
-            song.AddableTo.Add(new AddableCollectionItem
-            {
-                Name = "NowPlayingName".FromLanguageResource()
-            });
-            song.AddableTo.AddRange(Service
-                .Playlists.Where(p => p.Songs.Count(pp => pp.SongId == song.Id) == 0)
-                .Select(p => new AddableCollectionItem
-                {
-                    Playlist = p,
-                    Name = p.Name
-                }));
-            _addableSong = song;
-        }
-
-        private Song _addableSong;
-
-        private async void ItemPickedExecute(AddableCollectionItem item)
-        {
-            if (item.Playlist != null)
-            {
-                await Service.AddToPlaylistAsync(item.Playlist, _addableSong);
-            }
-            else
-            {
-                await CollectionHelper.AddToQueueAsync(_addableSong);
-            }
-        }
-
-        private async void DeleteClickExecute(BaseEntry item)
-        {
-            var name = "unknown";
-
-            try
-            {
-                if (item is Song)
-                {
-                    var song = item as Song;
-                    name = song.Name;
-
-                    await Service.DeleteSongAsync(song);
-                }
-
-                else if (item is Playlist)
-                {
-                    var playlist = item as Playlist;
-                    name = playlist.Name;
-
-                    await Service.DeletePlaylistAsync(playlist);
-                }
-
-                else if (item is Artist)
-                {
-                    var artist = item as Artist;
-                    name = artist.Name;
-
-                    Service.Artists.Remove(artist);
-
-                    await Task.WhenAll(artist.Songs.ToList().Select(song => Task.WhenAll(new List<Task>
-                    {
-                        Service.DeleteSongAsync(song)
-                    })));
-                }
-
-                else if (item is Album)
-                {
-                    var album = item as Album;
-                    name = album.Name;
-
-                    Service.Albums.Remove(album);
-
-                    await Task.WhenAll(album.Songs.ToList().Select(song => Task.WhenAll(new List<Task>
-                    {
-                        Service.DeleteSongAsync(song)
-                    })));
-                }
-
-                CurtainPrompt.Show("EntryDeletingSuccess".FromLanguageResource(), name);
-            }
-            catch
-            {
-                CurtainPrompt.ShowError("EntryDeletingError".FromLanguageResource(), name);
-            }
-        }
-
-        #endregion
 
         #region Properties
 
@@ -371,27 +196,10 @@ namespace Audiotica.ViewModel
             get { return _service; }
         }
 
-        public RelayCommand<ItemClickEventArgs> SongClickCommand { get; set; }
-
-        public RelayCommand<ItemClickEventArgs> PlaylistClickCommand { get; set; }
-
-        public RelayCommand<ItemClickEventArgs> AlbumClickCommand { get; set; }
-
-        public RelayCommand<ItemClickEventArgs> ArtistClickCommand { get; set; }
-
-
-        public RelayCommand<Song> CancelClickCommand { get; set; }
-
-        public RelayCommand<Song> DownloadClickCommand { get; set; }
-
-
-        public RelayCommand<Song> AddToClickCommand { get; set; }
-
-        public RelayCommand<BaseEntry> DeleteClickCommand { get; set; }
-
-        public RelayCommand<AddableCollectionItem> ItemPickedCommand { get; set; }
-
-        public RelayCommand<BaseEntry> EntryPlayClickCommand { get; set; }
+        public CollectionCommandHelper Commands
+        {
+            get { return _commands; }
+        }
 
         #endregion
     }

@@ -13,6 +13,7 @@ namespace Audiotica.Data.Collection.Model
         {
             Songs = new ObservableCollection<Song>();
             Albums = new ObservableCollection<Album>();
+            AddableTo = new ObservableCollection<AddableCollectionItem>();
         }
 
         public string ProviderId { get; set; }
@@ -29,6 +30,8 @@ namespace Audiotica.Data.Collection.Model
 
         public ObservableCollection<Song> Songs { get; set; }
 
-        public ObservableCollection<Album> Albums { get; set; } 
+        public ObservableCollection<Album> Albums { get; set; }
+
+        public ObservableCollection<AddableCollectionItem> AddableTo { get; set; }
     }
 }

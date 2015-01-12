@@ -63,7 +63,7 @@ namespace Audiotica.Data.Collection
         /// <summary>
         /// Adds the current song to the end of the queue.
         /// </summary>
-        Task<QueueSong> AddToQueueAsync(Song song, QueueSong position = null);
+        Task<QueueSong> AddToQueueAsync(Song song, QueueSong position = null, bool shuffleInsert = true);
 
         /// <summary>
         /// Moves the queue items at the old index to the new index

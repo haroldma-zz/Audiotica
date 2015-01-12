@@ -71,7 +71,7 @@
                                                     <MenuFlyout>
                                                         <MenuFlyoutItem x:Uid="MenuItemAddTo" Text="Add to"
                                                                         CommandParameter="{Binding}"
-                                                                        Command="{Binding DataContext.AddToClickCommand, ElementName=Page}">
+                                                                        Command="{Binding DataContext.Commands.AddToClickCommand, ElementName=Page}">
                                                             <interactivity:Interaction.Behaviors>
                                                                 <core:EventTriggerBehavior EventName="Click">
                                                                     <audiotica:ShowFlyoutAction />
@@ -85,7 +85,7 @@
                                                                         <core:EventTriggerBehavior
                                                                             EventName="ItemsPicked">
                                                                             <core:InvokeCommandAction
-                                                                                Command="{Binding DataContext.ItemPickedCommand, ElementName=Page}"
+                                                                                Command="{Binding DataContext.Commands.ItemPickedCommand, ElementName=Page}"
                                                                                 CommandParameter="{Binding SelectedItem, ElementName=Picker}" />
                                                                         </core:EventTriggerBehavior>
                                                                     </interactivity:Interaction.Behaviors>
@@ -95,7 +95,7 @@
                                                         <MenuFlyoutItem x:Uid="MenuItemDelete" Text="Delete"
                                                                         Foreground="Red"
                                                                         CommandParameter="{Binding}"
-                                                                        Command="{Binding DataContext.DeleteClickCommand, ElementName=Page}" />
+                                                                        Command="{Binding DataContext.Commands.DeleteClickCommand, ElementName=Page}" />
                                                     </MenuFlyout>
                                                 </FlyoutBase.AttachedFlyout>
                                                 <StackPanel>
@@ -113,13 +113,13 @@
                                                 <Grid Grid.Column="1"
                                                       Visibility="{Binding SongState, Converter={StaticResource NoneSongStateConverter}}">
                                                     <AppBarButton Icon="Download" IsCompact="True" Margin="0,-5,0,0"
-                                                                  Command="{Binding DataContext.DownloadClickCommand ,ElementName=Page}"
+                                                                  Command="{Binding DataContext.Commands.DownloadClickCommand ,ElementName=Page}"
                                                                   CommandParameter="{Binding}" />
                                                 </Grid>
                                                 <Grid Grid.Column="1"
                                                       Visibility="{Binding SongState, Converter={StaticResource DownloadingSongStateConverter}}">
                                                     <AppBarButton Icon="Cancel" IsCompact="True" Margin="0,-5,0,0"
-                                                                  Command="{Binding DataContext.CancelClickCommand ,ElementName=Page}"
+                                                                  Command="{Binding DataContext.Commands.CancelClickCommand ,ElementName=Page}"
                                                                   CommandParameter="{Binding}" />
                                                 </Grid>
                                             </Grid>
@@ -165,7 +165,7 @@
                                 Padding="0,0,0,25">
                                 <interactivity:Interaction.Behaviors>
                                     <core:EventTriggerBehavior EventName="ItemClick">
-                                        <core:InvokeCommandAction Command="{Binding ArtistClickCommand}" />
+                                        <core:InvokeCommandAction Command="{Binding Commands.ArtistClickCommand}" />
                                     </core:EventTriggerBehavior>
                                 </interactivity:Interaction.Behaviors>
                                 <GridView.GroupStyle>
@@ -182,9 +182,32 @@
                                             </interactivity:Interaction.Behaviors>
                                             <FlyoutBase.AttachedFlyout>
                                                 <MenuFlyout>
+                                                    <MenuFlyoutItem x:Uid="MenuItemAddTo" Text="Add to"
+                                                                        CommandParameter="{Binding}"
+                                                                        Command="{Binding DataContext.Commands.AddToClickCommand, ElementName=Page}">
+                                                        <interactivity:Interaction.Behaviors>
+                                                            <core:EventTriggerBehavior EventName="Click">
+                                                                <audiotica:ShowFlyoutAction />
+                                                            </core:EventTriggerBehavior>
+                                                        </interactivity:Interaction.Behaviors>
+                                                        <FlyoutBase.AttachedFlyout>
+                                                            <ListPickerFlyout x:Name="Picker"
+                                                                                  DisplayMemberPath="Name"
+                                                                                  ItemsSource="{Binding AddableTo}">
+                                                                <interactivity:Interaction.Behaviors>
+                                                                    <core:EventTriggerBehavior
+                                                                            EventName="ItemsPicked">
+                                                                        <core:InvokeCommandAction
+                                                                                Command="{Binding DataContext.Commands.ItemPickedCommand, ElementName=Page}"
+                                                                                CommandParameter="{Binding SelectedItem, ElementName=Picker}" />
+                                                                    </core:EventTriggerBehavior>
+                                                                </interactivity:Interaction.Behaviors>
+                                                            </ListPickerFlyout>
+                                                        </FlyoutBase.AttachedFlyout>
+                                                    </MenuFlyoutItem>
                                                     <MenuFlyoutItem x:Uid="MenuItemDelete" Text="Delete"
                                                                     Foreground="Red"
-                                                                    Command="{Binding DataContext.DeleteClickCommand, ElementName=Page}"
+                                                                    Command="{Binding DataContext.Commands.DeleteClickCommand, ElementName=Page}"
                                                                     CommandParameter="{Binding}" />
                                                 </MenuFlyout>
                                             </FlyoutBase.AttachedFlyout>
@@ -192,7 +215,7 @@
                                                 <Image Source="{Binding Artwork}" Height="115" Width="115"
                                                        Stretch="UniformToFill" />
                                                 <AppBarButton Icon="Play" IsCompact="True" Margin="0,-10,10,0"
-                                                              Command="{Binding DataContext.EntryPlayClickCommand, ElementName=Page}"
+                                                              Command="{Binding DataContext.Commands.EntryPlayClickCommand, ElementName=Page}"
                                                               CommandParameter="{Binding}"
                                                               Style="{StaticResource AppBarButtonWithShadowStyle}" />
                                             </Grid>
@@ -233,7 +256,7 @@
                                 Padding="0,0,0,25">
                                 <interactivity:Interaction.Behaviors>
                                     <core:EventTriggerBehavior EventName="ItemClick">
-                                        <core:InvokeCommandAction Command="{Binding AlbumClickCommand}" />
+                                        <core:InvokeCommandAction Command="{Binding Commands.AlbumClickCommand}" />
                                     </core:EventTriggerBehavior>
                                 </interactivity:Interaction.Behaviors>
                                 <GridView.ItemTemplate>
@@ -246,8 +269,31 @@
                                             </interactivity:Interaction.Behaviors>
                                             <FlyoutBase.AttachedFlyout>
                                                 <MenuFlyout>
+                                                    <MenuFlyoutItem x:Uid="MenuItemAddTo" Text="Add to"
+                                                                        CommandParameter="{Binding}"
+                                                                        Command="{Binding DataContext.Commands.AddToClickCommand, ElementName=Page}">
+                                                        <interactivity:Interaction.Behaviors>
+                                                            <core:EventTriggerBehavior EventName="Click">
+                                                                <audiotica:ShowFlyoutAction />
+                                                            </core:EventTriggerBehavior>
+                                                        </interactivity:Interaction.Behaviors>
+                                                        <FlyoutBase.AttachedFlyout>
+                                                            <ListPickerFlyout x:Name="Picker"
+                                                                                  DisplayMemberPath="Name"
+                                                                                  ItemsSource="{Binding AddableTo}">
+                                                                <interactivity:Interaction.Behaviors>
+                                                                    <core:EventTriggerBehavior
+                                                                            EventName="ItemsPicked">
+                                                                        <core:InvokeCommandAction
+                                                                                Command="{Binding DataContext.Commands.ItemPickedCommand, ElementName=Page}"
+                                                                                CommandParameter="{Binding SelectedItem, ElementName=Picker}" />
+                                                                    </core:EventTriggerBehavior>
+                                                                </interactivity:Interaction.Behaviors>
+                                                            </ListPickerFlyout>
+                                                        </FlyoutBase.AttachedFlyout>
+                                                    </MenuFlyoutItem>
                                                     <MenuFlyoutItem x:Uid="MenuItemDelete" Text="Delete" Foreground="Red"
-                                                        Command="{Binding DataContext.DeleteClickCommand, ElementName=Page}"
+                                                        Command="{Binding DataContext.Commands.DeleteClickCommand, ElementName=Page}"
                                                         CommandParameter="{Binding}" />
                                                 </MenuFlyout>
                                             </FlyoutBase.AttachedFlyout>
@@ -255,7 +301,7 @@
                                                 <Image Source="{Binding Artwork}" Height="115" Width="115"
                                                        Stretch="UniformToFill" />
                                                 <AppBarButton Icon="Play" IsCompact="True" Margin="0,-10,10,0"
-                                                              Command="{Binding DataContext.EntryPlayClickCommand, ElementName=Page}"
+                                                              Command="{Binding DataContext.Commands.EntryPlayClickCommand, ElementName=Page}"
                                                               CommandParameter="{Binding}"
                                                               Style="{StaticResource AppBarButtonWithShadowStyle}" />
                                             </Grid>
@@ -299,7 +345,7 @@
                     <ListView IsItemClickEnabled="True" ItemsSource="{Binding Service.Playlists}" Padding="0,0,0,25">
                         <interactivity:Interaction.Behaviors>
                             <core:EventTriggerBehavior EventName="ItemClick">
-                                <core:InvokeCommandAction Command="{Binding PlaylistClickCommand}" />
+                                <core:InvokeCommandAction Command="{Binding Commands.PlaylistClickCommand}" />
                             </core:EventTriggerBehavior>
                         </interactivity:Interaction.Behaviors>
                         <ListView.ItemTemplate>
@@ -317,12 +363,12 @@
                                     <FlyoutBase.AttachedFlyout>
                                         <MenuFlyout>
                                             <MenuFlyoutItem x:Uid="MenuItemDelete" Text="Delete" Foreground="Red"
-                                                            Command="{Binding DataContext.DeleteClickCommand, ElementName=Page}"
+                                                            Command="{Binding DataContext.Commands.DeleteClickCommand, ElementName=Page}"
                                                             CommandParameter="{Binding}" />
                                         </MenuFlyout>
                                     </FlyoutBase.AttachedFlyout>
                                     <AppBarButton Icon="Play" IsCompact="True" Margin="0,-10,10,0"
-                                                  Command="{Binding DataContext.EntryPlayClickCommand, ElementName=Page}"
+                                                  Command="{Binding DataContext.Commands.EntryPlayClickCommand, ElementName=Page}"
                                                   CommandParameter="{Binding}"/>
                                     <TextBlock VerticalAlignment="Center" Grid.Column="1" Text="{Binding Name}"
                                                FontSize="22" FontFamily="Global User Interface"

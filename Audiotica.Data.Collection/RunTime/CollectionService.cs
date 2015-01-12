@@ -489,7 +489,7 @@ namespace Audiotica.Data.Collection.RunTime
             }
         }
 
-        public async Task<QueueSong> AddToQueueAsync(Song song, QueueSong position = null)
+        public async Task<QueueSong> AddToQueueAsync(Song song, QueueSong position = null, bool shuffleInsert = true)
         {
             var rnd = new Random(DateTime.Now.Millisecond);
             QueueSong prev = null;
@@ -506,7 +506,7 @@ namespace Audiotica.Data.Collection.RunTime
             }
 
             var insert = normalIndex > -1 &&  normalIndex < PlaybackQueue.Count;
-            var shuffleInsert = shuffleIndex > -1;
+            var insertShuffle = shuffleIndex > -1 && shuffleInsert;
             var shuffleLastAdd = shuffleIndex == ShufflePlaybackQueue.Count;
 
             if (insert)
@@ -520,7 +520,7 @@ namespace Audiotica.Data.Collection.RunTime
                 prev = PlaybackQueue.LastOrDefault();
             }
 
-            if (shuffleInsert)
+            if (insertShuffle)
             {
                 if (shuffleLastAdd)
                     shufflePrev = ShufflePlaybackQueue[ShufflePlaybackQueue.Count - 1];
@@ -700,7 +700,7 @@ namespace Audiotica.Data.Collection.RunTime
                     else
                         PlaybackQueue.Add(head);
 
-                    if (head.NextId != 0)
+                    if (head.NextId != 0 && _lookupMap.ContainsKey(head.NextId))
                         head = _lookupMap[head.NextId];
                     else
                         break;
@@ -718,7 +718,7 @@ namespace Audiotica.Data.Collection.RunTime
                     else
                         ShufflePlaybackQueue.Add(shuffleHead);
 
-                    if (shuffleHead.ShuffleNextId != 0)
+                    if (shuffleHead.ShuffleNextId != 0 && _lookupMap.ContainsKey(shuffleHead.ShuffleNextId))
                         shuffleHead = _lookupMap[shuffleHead.ShuffleNextId];
                     else
                         break;

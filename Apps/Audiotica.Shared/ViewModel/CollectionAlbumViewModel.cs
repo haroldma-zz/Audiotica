@@ -15,12 +15,14 @@ namespace Audiotica.ViewModel
     public class CollectionAlbumViewModel : ViewModelBase
     {
         private readonly ICollectionService _service;
+        private readonly CollectionCommandHelper _commands;
         private Album _album;
         private readonly RelayCommand<ItemClickEventArgs> _songClickCommand;
 
-        public CollectionAlbumViewModel(ICollectionService service)
+        public CollectionAlbumViewModel(ICollectionService service, CollectionCommandHelper commands)
         {
             _service = service;
+            _commands = commands;
             _songClickCommand = new RelayCommand<ItemClickEventArgs>(SongClickExecute);
             MessengerInstance.Register<GenericMessage<long>>(this, "album-coll-detail-id", ReceivedId);
 
@@ -49,6 +51,11 @@ namespace Audiotica.ViewModel
         public RelayCommand<ItemClickEventArgs> SongClickRelayCommand
         {
             get { return _songClickCommand; }
+        }
+
+        public CollectionCommandHelper Commands
+        {
+            get { return _commands; }
         }
 
         public void SetAlbum(long id)

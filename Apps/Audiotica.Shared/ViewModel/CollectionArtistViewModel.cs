@@ -17,18 +17,18 @@ namespace Audiotica.ViewModel
 {
     public class CollectionArtistViewModel : ViewModelBase
     {
-        private readonly AudioPlayerHelper _audioPlayer;
         private readonly ICollectionService _service;
+        private readonly CollectionCommandHelper _commands;
         private readonly IScrobblerService _lastService;
         private readonly RelayCommand<ItemClickEventArgs> _songClickCommand;
         private Artist _artist;
         private LastArtist _lastArtist;
 
-        public CollectionArtistViewModel(ICollectionService service, IScrobblerService lastService, AudioPlayerHelper audioPlayer)
+        public CollectionArtistViewModel(ICollectionService service, CollectionCommandHelper commands, IScrobblerService lastService)
         {
             _service = service;
+            _commands = commands;
             _lastService = lastService;
-            _audioPlayer = audioPlayer;
             _songClickCommand = new RelayCommand<ItemClickEventArgs>(SongClickExecute);
             MessengerInstance.Register<long>(this, "artist-coll-detail-id", ReceivedId);
 
@@ -48,9 +48,14 @@ namespace Audiotica.ViewModel
             set { Set(ref _lastArtist, value); }
         }
 
-        public RelayCommand<ItemClickEventArgs> SongClickRelayCommand
+        public RelayCommand<ItemClickEventArgs> SongClickCommand
         {
             get { return _songClickCommand; }
+        }
+
+        public CollectionCommandHelper Commands
+        {
+            get { return _commands; }
         }
 
         private void ReceivedId(long id)

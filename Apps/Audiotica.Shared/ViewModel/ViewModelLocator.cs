@@ -56,6 +56,7 @@ namespace Audiotica.ViewModel
             }
 
             SimpleIoc.Default.Register<SpotifyWebApi>();
+            SimpleIoc.Default.Register<CollectionCommandHelper>();
             SimpleIoc.Default.Register<AudioPlayerHelper>();
             SimpleIoc.Default.Register<CollectionViewModel>(true);
             SimpleIoc.Default.Register<MainViewModel>();

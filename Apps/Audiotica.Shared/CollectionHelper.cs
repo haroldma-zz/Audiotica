@@ -280,7 +280,7 @@ namespace Audiotica
             }
         }
 
-        public static async Task AddToQueueAsync(Song song)
+        public static async Task AddToQueueAsync(Song song, bool shuffleInsert = true, bool playIfNotActive = true)
         {
             if (_currentlyPreparing)
             {
@@ -304,10 +304,13 @@ namespace Audiotica
                     await App.Locator.CollectionService.DeleteFromQueueAsync(queueToRemove);
                 }
 
-            var queueSong = await App.Locator.CollectionService.AddToQueueAsync(song, App.Locator.Player.CurrentQueue);
+            var queueSong = await App.Locator.CollectionService.AddToQueueAsync(song, App.Locator.Player.CurrentQueue, shuffleInsert);
 
-            if (!App.Locator.Player.IsPlayerActive)
+            if (!App.Locator.Player.IsPlayerActive && playIfNotActive)
+            {
                 App.Locator.AudioPlayerHelper.PlaySong(queueSong);
+                await Task.Delay(500).ConfigureAwait(false);
+            }
         }
 
         #endregion
