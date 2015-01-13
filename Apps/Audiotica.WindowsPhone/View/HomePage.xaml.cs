@@ -43,7 +43,7 @@ namespace Audiotica.View
             Frame.Navigate(typeof (SpotifyArtistPage), "name." + artist.Name);
         }
 
-        private void AppBarButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        private void AppBarButton_Click(object sender, RoutedEventArgs e)
         {
             Launcher.LaunchUriAsync(new Uri("ms-windows-store:reviewapp?appid=" + CurrentApp.AppId));
         }

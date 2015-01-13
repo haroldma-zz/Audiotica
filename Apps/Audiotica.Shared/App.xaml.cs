@@ -159,7 +159,11 @@ namespace Audiotica
             ApplicationView.GetForCurrentView().VisibleBoundsChanged += OnVisibleBoundsChanged;
             OnVisibleBoundsChanged(null, null);
 
-            await ReviewReminderAsync();
+            var crash = AppSettingsHelper.ReadJsonAs<Exception>("CrashingException");
+            if (crash != null)
+                await WarnAboutCrashAsync("Application Crashed", crash);
+            else
+                await ReviewReminderAsync();
 
             #region On update
 
@@ -201,12 +205,25 @@ namespace Audiotica
         private async void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
             e.Handled = true;
+            //just in case it crashes, save it
+            AppSettingsHelper.WriteAsJson("CrashingException", e.Exception);
+
+            await WarnAboutCrashAsync("Crash prevented", e.Exception);
+        }
+
+        private async Task WarnAboutCrashAsync(string title, Exception e)
+        {
             if (await MessageBox.ShowAsync(
-                "There was a problem with the application. Please contact support with details on what you were doing.",
-                "Crash prevented", MessageBoxButton.OkCancel) == MessageBoxResult.Ok)
+                   "There was a problem with the application. Please contact support with details on what you were doing.",
+                   title, MessageBoxButton.OkCancel) == MessageBoxResult.Ok)
             {
-                Launcher.LaunchUriAsync(new Uri("mailto:?tohelp@zumicts.com&subject=Crashing Error&body=\n\n" + e.Exception.Message + e.Exception.StackTrace));
+                Launcher.LaunchUriAsync(
+                    new Uri("mailto:tohelp@zumicts.com?subject=Crashing Error&body=\n\n" + e.Message +
+                            e.StackTrace));
             }
+            
+            //made it so far, no need to save the crash details
+            AppSettingsHelper.Write("CrashingException", null);
         }
 
         private void DataTransferManagerOnDataRequested(DataTransferManager sender, DataRequestedEventArgs e)
@@ -220,25 +237,6 @@ namespace Audiotica
         }
 
         #endregion
-
-        private async Task RestoreStatusAsync(ApplicationExecutionState previousExecutionState)
-        {
-            // Do not repeat app initialization when the Window already has content,
-            // just ensure that the window is active
-            if (previousExecutionState == ApplicationExecutionState.Terminated)
-            {
-                // Restore the saved session state only when appropriate
-                try
-                {
-                    await SuspensionManager.RestoreAsync();
-                }
-                catch (SuspensionManagerException)
-                {
-                    //Something went wrong restoring state.
-                    //Assume there is no state and continue
-                }
-            }
-        }
 
         private void CreateRootFrame()
         {
