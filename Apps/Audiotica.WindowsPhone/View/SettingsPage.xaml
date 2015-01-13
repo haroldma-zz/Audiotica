@@ -20,6 +20,8 @@
                                       IsOn="{Binding Advertisements, Mode=TwoWay}" />
                             <ToggleSwitch x:Uid="SettingsToggleWallpaper" Header="Album Art Wallpaper"
                                       IsOn="{Binding WallpaperArt, Mode=TwoWay}" />
+                            <ToggleSwitch Header="On &quot;Add To Queue&quot; Insert"
+                                      IsOn="{Binding AddToInsert, Mode=TwoWay}" />
                         </StackPanel>
                         <StackPanel Visibility="{Binding DevMode, Converter={StaticResource VisibilityConverter}}" VerticalAlignment="Top" Margin="0,50,0,0">
                             <TextBlock Text="Developer Options" Style="{StaticResource TitleTextBlockStyle}" Margin="0,0,0,10" FontSize="24" />

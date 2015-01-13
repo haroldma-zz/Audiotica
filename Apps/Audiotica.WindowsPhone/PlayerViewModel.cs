@@ -221,12 +221,9 @@ namespace Audiotica
                 if (CurrentQueue != null
                     && CurrentQueue.Song != null
                     && CurrentQueue.Song.Duration.Ticks != Duration.Ticks)
-                {
                     CurrentQueue.Song.Duration = Duration;
 
-
-                    IsPlayerActive = true;
-                }
+                IsPlayerActive = true;
             }
             else
             {

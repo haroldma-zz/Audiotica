@@ -174,6 +174,17 @@ namespace Audiotica.ViewModel
             }
         }
 
+        public bool AddToInsert
+        {
+            get { return AppSettingsHelper.Read("AddToInsert", true, SettingsStrategy.Roaming); }
+            set
+            {
+                EasyTracker.GetTracker().SendEvent("Settings", "AddToInsert", value ? "Enabled" : "Disabled", 0);
+                AppSettingsHelper.Write("AddToInsert", value, SettingsStrategy.Roaming);
+                RaisePropertyChanged();
+            }
+        }
+
         public bool Advertisements
         {
             get { return AppSettingsHelper.Read("Ads", true, SettingsStrategy.Roaming); }
