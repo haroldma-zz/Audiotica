@@ -33,15 +33,27 @@ namespace Audiotica.WindowsPhone.Player
         {
             _scrobbler = new ScrobblerHelper();
 
+            var historyDbTypes = new List<Type>
+            {
+                typeof (HistoryEntry),
+            };
+            var historyConfig = new SqlServiceConfig
+            {
+                Tables = historyDbTypes,
+                CurrentVersion = 1,
+                Path = "history.sqldb"
+            };
+            _historySql = new SqlService(historyConfig);
+            _historySql.Initialize();
+            
             var bgDbTypes = new List<Type>
             {
                 typeof (QueueSong),
-                typeof (HistoryEntry),
             };
             var bgConfig = new SqlServiceConfig
             {
                 Tables = bgDbTypes,
-                CurrentVersion = 2,
+                CurrentVersion = 3,
                 Path = "player.sqldb"
             };
             _bgSql = new SqlService(bgConfig);
@@ -57,7 +69,7 @@ namespace Audiotica.WindowsPhone.Player
             var config = new SqlServiceConfig
             {
                 Tables = dbTypes,
-                CurrentVersion = 6,
+                CurrentVersion = 7,
                 Path = "collection.sqldb"
             };
 
@@ -136,11 +148,10 @@ namespace Audiotica.WindowsPhone.Player
                 SongId = CurrentTrack.SongId
             };
 
-            await _bgSql.InsertAsync(historyItem);
+            await _historySql.InsertAsync(historyItem);
 
             if (CurrentTrack.Song.Duration.Ticks != _mediaPlayer.NaturalDuration.Ticks)
             {
-
                 CurrentTrack.Song.Duration = _mediaPlayer.NaturalDuration;
                 await _sql.UpdateItemAsync(CurrentTrack.Song);
             }
@@ -173,6 +184,7 @@ namespace Audiotica.WindowsPhone.Player
 
         private int _retryCount;
         private readonly ScrobblerHelper _scrobbler;
+        private SqlService _historySql;
 
         #endregion
 
@@ -263,18 +275,18 @@ namespace Audiotica.WindowsPhone.Player
                 }
             }
             catch { }
-            await _bgSql.DeleteItemAsync(item);
+            await _historySql.DeleteItemAsync(item);
         }
 
         private HistoryEntry GetHistoryItem(QueueSong queue)
         {
-            var history = _bgSql.SelectAll<HistoryEntry>();
+            var history = _historySql.SelectAll<HistoryEntry>();
 
             //if null then the player has just been launched
             if (queue == null)
             {
                 //reset the incrementable Id of the table
-                _bgSql.DeleteTableAsync<HistoryEntry>().Wait();
+                _historySql.DeleteTableAsync<HistoryEntry>().Wait();
                 return null;
             }
 
