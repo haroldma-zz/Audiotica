@@ -202,14 +202,21 @@ namespace Audiotica
             if (BackgroundMediaPlayer.Current.CurrentState != MediaPlayerState.Closed &&
                 BackgroundMediaPlayer.Current.CurrentState != MediaPlayerState.Stopped)
             {
+                if (CurrentQueue != null)
+                {
+                    CurrentQueue.Song.PlayCount++;
+                    CurrentQueue.Song.LastPlayed = DateTime.Now;
+                }}
+
                 Position = BackgroundMediaPlayer.Current.Position;
                 var currentId = AppSettingsHelper.Read<int>(PlayerConstants.CurrentTrack);
                 CurrentQueue = _service.CurrentPlaybackQueue.FirstOrDefault(p => p.Id == currentId);
 
                 if (CurrentQueue != null
                     && CurrentQueue.Song != null
-                    && CurrentQueue.Song.Duration.Ticks != Duration.Ticks)
+                    && CurrentQueue.Song.Duration.Ticks != Duration.Ticks) { 
                     CurrentQueue.Song.Duration = Duration;
+
 
                 IsPlayerActive = true;
             }

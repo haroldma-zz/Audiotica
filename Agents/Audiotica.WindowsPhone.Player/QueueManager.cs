@@ -195,8 +195,7 @@ namespace Audiotica.WindowsPhone.Player
             if (track == null)
                 return;
 
-            if (_scrobbler.IsScrobblingEnabled())
-                ScrobbleOnMediaEnded(_currentTrack);
+            ScrobbleOnMediaEnded(_currentTrack);
 
             _currentTrack = track;
             _mediaPlayer.AutoPlay = false;
@@ -262,16 +261,17 @@ namespace Audiotica.WindowsPhone.Player
             {
                 if (_scrobbler.CanScrobble(item.Song, _mediaPlayer.Position))
                 {
-                    if (await _scrobbler.Scrobble(item, _mediaPlayer.Position))
+                    if (_scrobbler.IsScrobblingEnabled())
                     {
-                        queue.Song.PlayCount++;
-                        queue.Song.LastPlayed = item.DatePlayed;
-
-                        if (queue.Song.Duration.Ticks != _mediaPlayer.NaturalDuration.Ticks)
-                            queue.Song.Duration = _mediaPlayer.NaturalDuration;
-
-                        _sql.UpdateItem(queue.Song);
+                        await _scrobbler.Scrobble(item, _mediaPlayer.Position);
                     }
+                    queue.Song.PlayCount++;
+                    queue.Song.LastPlayed = item.DatePlayed;
+
+                    if (queue.Song.Duration.Ticks != _mediaPlayer.NaturalDuration.Ticks)
+                        queue.Song.Duration = _mediaPlayer.NaturalDuration;
+
+                    _sql.UpdateItem(queue.Song);
                 }
             }
             catch { }

@@ -25,6 +25,7 @@ namespace Audiotica.ViewModel
         private readonly ICollectionService _collectionService;
         private readonly IScrobblerService _service;
         private readonly ISpotifyService _spotify;
+        private readonly AudioPlayerHelper _audioPlayer;
         private bool _isLastfmEnabled;
         private bool _isMostStreamedEnabled;
         private bool _isMostStreamedLoading;
@@ -42,6 +43,7 @@ namespace Audiotica.ViewModel
             _collectionService = collectionService;
             _service = service;
             _spotify = spotify;
+            _audioPlayer = audioPlayer;
             _collectionService.LibraryLoaded += CollectionServiceOnLibraryLoaded;
             _collectionService.Songs.CollectionChanged += SongsOnCollectionChanged;
             audioPlayer.TrackChanged += CollectionServiceOnLibraryLoaded;
@@ -100,12 +102,15 @@ namespace Audiotica.ViewModel
             }
         }
 
-        private async void CollectionServiceOnLibraryLoaded(object sender, EventArgs eventArgs)
-        {          
+        private void CollectionServiceOnLibraryLoaded(object sender, EventArgs eventArgs)
+        {
             MostPlayed = _collectionService.Songs.ToList()
                 .Where(p => p.PlayCount != 0 && (DateTime.Now - p.LastPlayed).TotalDays <= 14)
                 .OrderByDescending(p => p.PlayCount)
                 .Take(10).ToList();
+
+            if (MostPlayed.Count == 10)
+                _audioPlayer.TrackChanged -= CollectionServiceOnLibraryLoaded;
         }
 
         public async Task LoadChartDataAsync()
