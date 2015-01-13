@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -17,6 +18,7 @@ using Audiotica.Core.Common;
 using Audiotica.Core.Utilities;
 using Audiotica.Data.Collection.Model;
 using Audiotica.ViewModel;
+using MyToolkit.Paging.Animations;
 using MyToolkit.Utilities;
 
 #endregion
@@ -174,14 +176,32 @@ namespace Audiotica.View
         {
             UiBlockerUtility.Block("Scanning...");
             var localMusic = await LocalMusicHelper.GetFilesInMusic();
+            var failedCount = 0;
 
+            App.Locator.CollectionService.Songs.SuppressEvents = true;
+            App.Locator.CollectionService.Artists.SuppressEvents = true;
+            App.Locator.CollectionService.Albums.SuppressEvents = true;
             for (var i = 0; i < localMusic.Count; i++)
             {
-                StatusBarHelper.ShowStatus(string.Format("{0} of {1} items added", i + 1, localMusic.Count), (double)i / localMusic.Count);
-                await LocalMusicHelper.SaveTrackAsync(localMusic[i]);
+                StatusBarHelper.ShowStatus(string.Format("Importing {0} of {1} items", i + 1, localMusic.Count), (double)i / localMusic.Count);
+                try
+                {
+                    await LocalMusicHelper.SaveTrackAsync(localMusic[i]);
+                }
+                catch
+                {
+                    failedCount++;
+                }
             }
 
+            App.Locator.CollectionService.Songs.Reset();
+            App.Locator.CollectionService.Artists.Reset();
+            App.Locator.CollectionService.Albums.Reset();
+
             UiBlockerUtility.Unblock();
+
+            if (failedCount > 0)
+                CurtainPrompt.ShowError("Couldn't import {0} song(s).", failedCount);
             CollectionHelper.DownloadArtistsArtworkAsync();
         }
 

@@ -82,14 +82,15 @@ namespace Audiotica.PartialView
 
         private void Slider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
         {
-            if (DataContext == null || _justLoaded || App.Locator.Player.IsLoading || BackgroundMediaPlayer.Current.Position == App.Locator.Player.Position)
+            if (DataContext == null || _justLoaded || App.Locator.Player.IsLoading 
+                || BackgroundMediaPlayer.Current.NaturalDuration.TotalSeconds == 0)
             {
                 _justLoaded = false;
                 return;
             }
 
-            var diff = e.NewValue - e.OldValue;
-            if (!(diff > 5) && !(diff < -5)) return;
+            var diff = App.Locator.Player.Position.TotalSeconds - BackgroundMediaPlayer.Current.Position.TotalSeconds;
+            if (!(diff > 10) && !(diff < -10)) return;
 
             if (_seeking) return;
 

@@ -107,6 +107,12 @@ namespace Audiotica.Core.Common
             }
         }
 
+        public void Reset()
+        {
+            SuppressEvents = false;
+            OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+        }
+
         /// <summary>
         /// Replaces the current <see cref="OptimizedObservableCollection{T}"/> instance items with the ones specified in the items collection, raising a single <see cref="NotifyCollectionChangedAction.Reset"/> event.
         /// </summary>

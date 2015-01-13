@@ -108,35 +108,39 @@ namespace Audiotica
 
             #region id3 tags
 
-            File tagFile;
-            var fileStream = await file.OpenStreamForReadAsync();
-            try
+            Tag tags = null;
+            if (file.FileType == ".mp3")
             {
-                tagFile = File.Create(new StreamFileAbstraction(file.Name, fileStream, fileStream));
-            }
-            catch
-            {
-                tagFile = null;
-            }
-
-            if (tagFile == null)
-            {
-                //need to reopen (when it fails to open it disposes of the stream
-                fileStream = await file.OpenStreamForReadAsync();
+                var fileStream = await file.OpenStreamForReadAsync();
+                File tagFile;
                 try
                 {
-                    tagFile = File.Create(new StreamFileAbstraction(
-                        file.Name.Replace(".mp3", ".m4a"), fileStream, fileStream));
+                    tagFile = File.Create(new StreamFileAbstraction(file.Name, fileStream, fileStream));
                 }
-                catch { }
+                catch
+                {
+                    tagFile = null;
+                }
+
+                if (tagFile == null)
+                {
+                    //need to reopen (when it fails to open it disposes of the stream
+                    fileStream = await file.OpenStreamForReadAsync();
+                    try
+                    {
+                        tagFile = File.Create(new StreamFileAbstraction(
+                            file.Name.Replace(".mp3", ".m4a"), fileStream, fileStream));
+                    }
+                    catch
+                    {
+                    }
+                }
+
+                tags = tagFile == null ? null : tagFile.Tag;
+                fileStream.Dispose();
+                if (tagFile != null)
+                    tagFile.Dispose();
             }
-
-            var tags = tagFile == null ? null : tagFile.Tag;
-            using (fileStream) { }
-
-            if (tagFile != null)
-                using (tagFile)
-                {}
 
             #endregion
 

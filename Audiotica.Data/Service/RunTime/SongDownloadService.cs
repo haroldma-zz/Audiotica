@@ -11,6 +11,7 @@ using Windows.Networking.BackgroundTransfer;
 using Windows.Storage;
 using Windows.UI.Core;
 using Audiotica.Core;
+using Audiotica.Core.Common;
 using Audiotica.Core.Utilities;
 using Audiotica.Data.Collection;
 using Audiotica.Data.Collection.Model;
@@ -195,14 +196,26 @@ namespace Audiotica.Data.Service.RunTime
         {
             song.SongState = SongState.Downloading;
             await _sqlService.UpdateItemAsync(song).ConfigureAwait(false);
+            try
+            {
+                var destinationFile =
+                    await StorageHelper.CreateFileAsync(string.Format("songs/{0}.mp3", song.Id)).ConfigureAwait(false);
 
-            var destinationFile = await StorageHelper.CreateFileAsync(string.Format("songs/{0}.mp3", song.Id)).ConfigureAwait(false);
+                var downloader = new BackgroundDownloader();
+                var download = downloader.CreateDownload(new Uri(song.AudioUrl), destinationFile);
+                download.Priority = BackgroundTransferPriority.Default;
 
-            var downloader = new BackgroundDownloader();
-            var download = downloader.CreateDownload(new Uri(song.AudioUrl), destinationFile);
-            download.Priority = BackgroundTransferPriority.Default;
-
-            _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => HandleDownload(song, download, true));
+                _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => HandleDownload(song, download, true));
+            }
+            catch (Exception e)
+            {
+                if (e.Message.Contains("there is not enough space on the disk"))
+                    _dispatcher.RunAsync(CoreDispatcherPriority.Normal,
+                        () => CurtainPrompt.ShowError("Not enough disk space to download."));
+                
+                song.SongState = SongState.None;
+                _sqlService.UpdateItemAsync(song).ConfigureAwait(false);
+            }
         }
 
         #endregion
