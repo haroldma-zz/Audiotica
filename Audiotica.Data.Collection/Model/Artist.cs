@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using Windows.UI.Xaml.Media.Imaging;
 using Audiotica.Data.Collection.SqlHelper;
+using SQLite;
 
 namespace Audiotica.Data.Collection.Model
 {
@@ -22,16 +23,20 @@ namespace Audiotica.Data.Collection.Model
 
         public bool HasArtwork { get; set; }
 
+        [Ignore]
         public BitmapImage Artwork
         {
             get { return _artwork; }
             set { Set(ref _artwork, value); }
         }
 
+        [Ignore]
         public ObservableCollection<Song> Songs { get; set; }
 
+        [Ignore]
         public ObservableCollection<Album> Albums { get; set; }
 
+        [Ignore]
         public ObservableCollection<AddableCollectionItem> AddableTo { get; set; }
     }
 }

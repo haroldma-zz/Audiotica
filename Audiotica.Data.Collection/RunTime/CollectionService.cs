@@ -2,7 +2,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -15,8 +14,6 @@ using Audiotica.Core.Common;
 using Audiotica.Core.Utilities;
 using Audiotica.Data.Collection.Model;
 using GalaSoft.MvvmLight;
-using Microsoft.Practices.ServiceLocation;
-using SQLitePCL;
 using TagLib;
 
 #endregion
@@ -25,10 +22,10 @@ namespace Audiotica.Data.Collection.RunTime
 {
     public class CollectionService : ObservableObject, ICollectionService
     {
+        private readonly ISqlService _bgSqlService;
         private readonly CoreDispatcher _dispatcher;
         private readonly Dictionary<long, QueueSong> _lookupMap = new Dictionary<long, QueueSong>();
         private readonly ISqlService _sqlService;
-        private readonly ISqlService _bgSqlService;
 
         public CollectionService(ISqlService sqlService, ISqlService bgSqlService, CoreDispatcher dispatcher)
         {
@@ -43,7 +40,10 @@ namespace Audiotica.Data.Collection.RunTime
             ShufflePlaybackQueue = new OptimizedObservableCollection<QueueSong>();
         }
 
-        private bool IsShuffle { get { return AppSettingsHelper.Read<bool>("Shuffle");} }
+        private bool IsShuffle
+        {
+            get { return AppSettingsHelper.Read<bool>("Shuffle"); }
+        }
 
         public bool IsLibraryLoaded { get; private set; }
         public event EventHandler LibraryLoaded;
@@ -133,7 +133,6 @@ namespace Audiotica.Data.Collection.RunTime
             else
                 Artists.AddRange(artists);
 
-           
 
             IsLibraryLoaded = true;
 
@@ -144,7 +143,8 @@ namespace Audiotica.Data.Collection.RunTime
 
             if (isForeground)
             {
-                var corruptSongs = Songs.Where(p => string.IsNullOrEmpty(p.Name) || p.Album == null || p.Artist == null).ToList();
+                var corruptSongs =
+                    Songs.Where(p => string.IsNullOrEmpty(p.Name) || p.Album == null || p.Artist == null).ToList();
                 foreach (var corruptSong in corruptSongs)
                 {
                     DeleteSongAsync(corruptSong).Wait();
@@ -158,7 +158,6 @@ namespace Audiotica.Data.Collection.RunTime
 
                 CleanupFiles();
             }
-                
         }
 
         public Task LoadLibraryAsync(bool loadEssentials = false)
@@ -179,8 +178,9 @@ namespace Audiotica.Data.Collection.RunTime
 
         public bool SongAlreadyExists(string providerId, string name, string album, string artist)
         {
-            return Songs.FirstOrDefault(p => p.ProviderId == providerId 
-                || (p.Name == name && p.Album.Name == album && p.ArtistName == artist)) != null;
+            return Songs.FirstOrDefault(p => p.ProviderId == providerId
+                                             || (p.Name == name && p.Album.Name == album && p.ArtistName == artist)) !=
+                   null;
         }
 
         public Task AddSongAsync(Song song, string artworkUrl)
@@ -191,6 +191,65 @@ namespace Audiotica.Data.Collection.RunTime
         public Task AddSongAsync(Song song, Tag tags)
         {
             return AddSongAsync(song, tags, null);
+        }
+
+        public async Task DeleteSongAsync(Song song)
+        {
+            // remove it from artist, albums and playlists songs
+            var playlists = Playlists.Where(p => p.Songs.Count(pp => pp.SongId == song.Id) > 0).ToList();
+
+            foreach (var playlist in playlists)
+            {
+                var songs = playlist.Songs.Where(p => p.SongId == song.Id).ToList();
+                foreach (var playlistSong in songs)
+                {
+                    await DeleteFromPlaylistAsync(playlist, playlistSong);
+                }
+
+                if (playlist.Songs.Count == 0)
+                {
+                    await DeletePlaylistAsync(playlist);
+                }
+            }
+
+            if (song.Album != null)
+            {
+                song.Album.Songs.Remove(song);
+                if (song.Album.Songs.Count == 0)
+                {
+                    await _sqlService.DeleteItemAsync(song.Album);
+                    await _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                    {
+                        Albums.Remove(song.Album);
+                        song.Artist.Albums.Remove(song.Album);
+                    });
+                }
+            }
+
+            if (song.Artist != null)
+            {
+                song.Artist.Songs.Remove(song);
+                if (song.Artist.Songs.Count == 0)
+                {
+                    await _sqlService.DeleteItemAsync(song.Artist);
+                    await _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => Artists.Remove(song.Artist));
+                }
+            }
+
+            //good, now lets delete it from the db
+            await _sqlService.DeleteItemAsync(song);
+
+            await _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => Songs.Remove(song));
+        }
+
+        public async Task<List<HistoryEntry>> FetchHistoryAsync()
+        {
+            var list = await Task.FromResult(_bgSqlService.SelectAll<HistoryEntry>().ToList());
+            foreach (var historyEntry in list)
+            {
+                historyEntry.Song = Songs.FirstOrDefault(p => p.Id == historyEntry.SongId);
+            }
+            return list;
         }
 
         private async Task AddSongAsync(Song song, Tag tags, string artworkUrl)
@@ -210,7 +269,7 @@ namespace Audiotica.Data.Collection.RunTime
             if (artist == null)
             {
                 await _sqlService.InsertAsync(primaryArtist);
-                await _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => 
+                await _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                     Artists.Insert(0, primaryArtist));
 
                 song.Artist = primaryArtist;
@@ -321,7 +380,8 @@ namespace Audiotica.Data.Collection.RunTime
         private async Task<bool> GetArtworkAsync(string filePath, Stream stream)
         {
             using (var fileStream = await
-                        (await StorageHelper.CreateFileAsync(filePath, option: CreationCollisionOption.ReplaceExisting)).OpenStreamForWriteAsync())
+                (await StorageHelper.CreateFileAsync(filePath, option: CreationCollisionOption.ReplaceExisting))
+                    .OpenStreamForWriteAsync())
             {
                 await stream.CopyToAsync(fileStream);
                 return true;
@@ -347,65 +407,6 @@ namespace Audiotica.Data.Collection.RunTime
             return false;
         }
 
-        public async Task DeleteSongAsync(Song song)
-        {
-            // remove it from artist, albums and playlists songs
-            var playlists = Playlists.Where(p => p.Songs.Count(pp => pp.SongId == song.Id) > 0).ToList();
-
-            foreach (var playlist in playlists)
-            {
-                var songs = playlist.Songs.Where(p => p.SongId == song.Id).ToList();
-                foreach (var playlistSong in songs)
-                {
-                    await DeleteFromPlaylistAsync(playlist, playlistSong);
-                }
-
-                if (playlist.Songs.Count == 0)
-                {
-                    await DeletePlaylistAsync(playlist);
-                }
-            }
-
-            if (song.Album != null)
-            {
-                song.Album.Songs.Remove(song);
-                if (song.Album.Songs.Count == 0)
-                {
-                    await _sqlService.DeleteItemAsync(song.Album);
-                    await _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-                    {
-                        Albums.Remove(song.Album);
-                        song.Artist.Albums.Remove(song.Album);
-                    });
-                }
-            }
-
-            if (song.Artist != null)
-            {
-                song.Artist.Songs.Remove(song);
-                if (song.Artist.Songs.Count == 0)
-                {
-                    await _sqlService.DeleteItemAsync(song.Artist);
-                    await _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => Artists.Remove(song.Artist));
-                }
-            }
-
-            //good, now lets delete it from the db
-            await _sqlService.DeleteItemAsync(song);
-
-            await _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>Songs.Remove(song));
-        }
-
-        public async Task<List<HistoryEntry>> FetchHistoryAsync()
-        {
-            var list = await Task.FromResult(_bgSqlService.SelectAll<HistoryEntry>().ToList());
-            foreach (var historyEntry in list)
-            {
-                historyEntry.Song = Songs.FirstOrDefault(p => p.Id == historyEntry.SongId);
-            }
-            return list;
-        }
-
         private async void CleanupFiles()
         {
             var artworkFolder = await StorageHelper.GetFolderAsync("artworks");
@@ -417,7 +418,7 @@ namespace Audiotica.Data.Collection.RunTime
             foreach (var file in from file in artworks
                 let id = file.Name.Replace(".jpg", "")
                 where Albums.FirstOrDefault(p => p.Id.ToString() == id) == null
-                && Artists.FirstOrDefault(p => p.ProviderId == id) == null
+                      && Artists.FirstOrDefault(p => p.ProviderId == id) == null
                 select file)
             {
                 try
@@ -505,7 +506,7 @@ namespace Audiotica.Data.Collection.RunTime
                 normalIndex = PlaybackQueue.IndexOf(position) + 1;
             }
 
-            var insert = normalIndex > -1 &&  normalIndex < PlaybackQueue.Count;
+            var insert = normalIndex > -1 && normalIndex < PlaybackQueue.Count;
             var insertShuffle = shuffleIndex > -1 && shuffleInsert;
             var shuffleLastAdd = shuffleIndex == ShufflePlaybackQueue.Count;
 
@@ -746,7 +747,7 @@ namespace Audiotica.Data.Collection.RunTime
         public async Task DeletePlaylistAsync(Playlist playlist)
         {
             await _sqlService.DeleteItemAsync(playlist);
-            await _sqlService.DeleteWhereAsync<PlaylistSong>("PlaylistId", playlist.Id.ToString());
+            await _sqlService.DeleteWhereAsync(playlist);
             Playlists.Remove(playlist);
         }
 

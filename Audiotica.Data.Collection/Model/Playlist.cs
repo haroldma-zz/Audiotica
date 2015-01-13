@@ -3,6 +3,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Audiotica.Data.Collection.SqlHelper;
+using SQLite;
 
 #endregion
 
@@ -19,6 +20,7 @@ namespace Audiotica.Data.Collection.Model
 
         public string Name { get; set; }
 
+        [Ignore]
         public ObservableCollection<PlaylistSong> Songs { get; set; }
     }
 }

@@ -111,18 +111,19 @@ namespace Audiotica
             Tag tags = null;
             if (file.FileType == ".mp3")
             {
+                bool tryAsM4a = false;
                 var fileStream = await file.OpenStreamForReadAsync();
-                File tagFile;
+                File tagFile = null;
                 try
                 {
                     tagFile = File.Create(new StreamFileAbstraction(file.Name, fileStream, fileStream));
                 }
-                catch
+                catch (Exception e)
                 {
-                    tagFile = null;
+                    tryAsM4a = e is CorruptFileException;
                 }
 
-                if (tagFile == null)
+                if (tryAsM4a)
                 {
                     //need to reopen (when it fails to open it disposes of the stream
                     fileStream = await file.OpenStreamForReadAsync();
@@ -186,7 +187,6 @@ namespace Audiotica
             {
                 await App.Locator.CollectionService.AddSongAsync(song, tags)
                         .ConfigureAwait(false);
-                CollectionHelper.DownloadArtistsArtworkAsync();
                 return SavingError.None;
             }
             catch (NetworkException)

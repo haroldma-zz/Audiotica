@@ -7,6 +7,7 @@ using Windows.UI.Xaml.Media.Imaging;
 using Audiotica.Core.Common;
 using Audiotica.Core.Utilities;
 using Audiotica.Data.Collection.SqlHelper;
+using SQLite;
 
 #endregion
 
@@ -24,8 +25,8 @@ namespace Audiotica.Data.Collection.Model
 
         public string ProviderId { get; set; }
 
-        [SqlProperty(ReferenceTo = typeof (Artist))]
-        public long PrimaryArtistId { get; set; }
+        [Indexed]
+        public int PrimaryArtistId { get; set; }
 
 
         public string Name { get; set; }
@@ -34,14 +35,18 @@ namespace Audiotica.Data.Collection.Model
 
         public DateTime ReleaseDate { get; set; }
 
+        [Ignore]
         public OptimizedObservableCollection<Song> Songs { get; set; }
 
+        [Ignore]
         public BitmapImage Artwork { get { return _artwork; } set { Set(ref _artwork, value); } }
 
+        [Ignore]
         public Artist PrimaryArtist { get; set; }
 
         public bool HasArtwork { get; set; }
 
+        [Ignore]
         public ObservableCollection<AddableCollectionItem> AddableTo { get; set; }
     }
 }

@@ -127,6 +127,7 @@ namespace Audiotica
 
             if (album.Tracks.Items.Count > 1)
             {
+                App.Locator.SqlService.DbConnection.BeginTransaction();
                 //save the rest at the rest time
                 var songs = album.Tracks.Items.Skip(index).Select(track => _SaveTrackAsync(track, album));
                 var results = await Task.WhenAll(songs);
@@ -142,6 +143,7 @@ namespace Audiotica
 
                 if (missing)
                     CurtainPrompt.ShowError("AlbumMissingTracks".FromLanguageResource(), missingCount, album.Name);
+                App.Locator.SqlService.DbConnection.Commit();
             }
             else
                 success = App.Locator.CollectionService.Albums.FirstOrDefault(p => p.ProviderId.Contains(album.Id)) != null;
@@ -268,6 +270,7 @@ namespace Audiotica
                 App.Locator.AudioPlayerHelper.PlaySong(queueSong);
 
                 await Task.Delay(500).ConfigureAwait(false);
+                App.Locator.SqlService.DbConnection.BeginTransaction();
                 for (var index = 1; index < ordered.Count; index++)
                 {
                     if (!_currentlyPreparing)
@@ -275,6 +278,7 @@ namespace Audiotica
                     var s = ordered[index];
                     await App.Locator.CollectionService.AddToQueueAsync(s).ConfigureAwait(false);
                 }
+                App.Locator.SqlService.DbConnection.Commit();
 
                 _currentlyPreparing = false;
             }
@@ -348,7 +352,15 @@ namespace Audiotica
             {
             }
 
+            var startTransaction = !App.Locator.SqlService.DbConnection.IsInTransaction;
+
+            if (startTransaction)
+                App.Locator.SqlService.DbConnection.BeginTransaction();
+
             var result = await SpotifyHelper.SaveTrackAsync(track, album);
+
+            if (startTransaction)
+                App.Locator.SqlService.DbConnection.Commit();
 
             ShowErrorResults(result, track.Name);
 
@@ -372,7 +384,15 @@ namespace Audiotica
             {
             }
 
+            var startTransaction = !App.Locator.SqlService.DbConnection.IsInTransaction;
+
+            if (startTransaction)
+                App.Locator.SqlService.DbConnection.BeginTransaction();
+
             var result = await ScrobblerHelper.SaveTrackAsync(track);
+
+            if (startTransaction)
+                App.Locator.SqlService.DbConnection.Commit();
 
             ShowErrorResults(result, track.Name);
 

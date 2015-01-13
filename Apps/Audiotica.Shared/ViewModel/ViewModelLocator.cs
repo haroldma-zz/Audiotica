@@ -18,6 +18,7 @@ using GalaSoft.MvvmLight.Ioc;
 using GalaSoft.MvvmLight.Threading;
 using IF.Lastfm.Core.Api;
 using Microsoft.Practices.ServiceLocation;
+using SQLite;
 
 #endregion
 
@@ -85,18 +86,8 @@ namespace Audiotica.ViewModel
             return new SqlServiceConfig()
             {
                 Tables = dbTypes,
-                CurrentVersion = 6,
-                Path = "collection.sqldb",
-                OnUpdate = (connection, d) =>
-                {
-                    if (d == 5)
-                    {
-                        using (var statement = connection.Prepare("ALTER TABLE Artist ADD COLUMN HasArtwork INTEGER"))
-                        {
-                            statement.Step();
-                        }
-                    }
-                }
+                CurrentVersion = 7,
+                Path = "collection.sqldb"
             };
         }
         private SqlServiceConfig GetBackgroundConfig()
@@ -109,42 +100,8 @@ namespace Audiotica.ViewModel
             return new SqlServiceConfig()
             {
                 Tables = dbTypes,
-                CurrentVersion = 2,
-                Path = "player.sqldb",
-                OnUpdate = (connection, d) =>
-                {
-                    if (d == 0) return;
-
-                    if (d != 1) return;
-
-                    bool hasCol;
-                    using (
-                        var statement =
-                            connection.Prepare(
-                                string.Format(
-                                    "SELECT sql FROM sqlite_master WHERE type = 'table' AND name = '{0}'", "QueueSong")))
-                    {
-                        statement.Step();
-
-                        var text = statement.GetText(0);
-                        hasCol = text.Contains("ShufflePrevId");
-                    }
-
-                    if (hasCol) return;
-
-                    using (
-                        var statement =
-                            connection.Prepare("ALTER TABLE QueueSong ADD COLUMN ShufflePrevId INTEGER"))
-                    {
-                        statement.Step();
-                    }
-                    using (
-                        var statement =
-                            connection.Prepare("ALTER TABLE QueueSong ADD COLUMN ShuffleNextId INTEGER"))
-                    {
-                        statement.Step();
-                    }
-                }
+                CurrentVersion = 3,
+                Path = "player.sqldb"
             };
         }
 

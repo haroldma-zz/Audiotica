@@ -1,19 +1,26 @@
 ﻿using Audiotica.Data.Collection.SqlHelper;
+using SQLite;
 
 namespace Audiotica.Data.Collection.Model
 {
     public class QueueSong : BaseEntry
     {
+        [Ignore]
         public Song Song { get; set; }
 
-        public long SongId { get; set; }
+        [Indexed]
+        public int SongId { get; set; }
 
-        public long PrevId { get; set; }
+        [Indexed]
+        public int PrevId { get; set; }
 
-        public long NextId { get; set; }
+        [Indexed]
+        public int NextId { get; set; }
 
-        public long ShuffleNextId { get; set; }
+        [Indexed]
+        public int ShuffleNextId { get; set; }
 
-        public long ShufflePrevId { get; set; }
+        [Indexed]
+        public int ShufflePrevId { get; set; }
     }
 }

@@ -1,17 +1,25 @@
-﻿using System;
+﻿#region
+
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
 using System.Threading.Tasks;
-using Audiotica.Data.Collection.Model;
 using Audiotica.Data.Collection.SqlHelper;
-using SQLitePCL;
+using SQLite;
+
+#endregion
 
 namespace Audiotica.Data.Collection.DesignTime
 {
     public class DesignSqlService : ISqlService
     {
+        public void Dispose()
+        {
+            throw new NotImplementedException();
+        }
+
+        public SQLiteConnection DbConnection { get; private set; }
+
         public void Initialize()
         {
             throw new NotImplementedException();
@@ -22,51 +30,40 @@ namespace Audiotica.Data.Collection.DesignTime
             throw new NotImplementedException();
         }
 
-        public void ResetData()
+        public bool Insert(BaseEntry entry)
         {
             throw new NotImplementedException();
         }
 
-        public SQLiteResult Insert(BaseEntry entry)
+        public Task<bool> InsertAsync(BaseEntry entry)
         {
             throw new NotImplementedException();
         }
 
-        public Task<SQLiteResult> InsertAsync(BaseEntry entry)
+        public bool DeleteItem(BaseEntry item)
         {
             throw new NotImplementedException();
         }
 
-        public SQLiteResult DeleteItem(BaseEntry item)
+        public Task<bool> DeleteItemAsync(BaseEntry item)
         {
             throw new NotImplementedException();
         }
 
-        public Task InsertPlaylistSongAsync(PlaylistSong song)
+        public bool UpdateItem(BaseEntry item)
         {
             throw new NotImplementedException();
         }
 
-        public Task<SQLiteResult> DeleteItemAsync(BaseEntry item)
+        public Task<bool> UpdateItemAsync(BaseEntry item)
         {
             throw new NotImplementedException();
         }
 
-        public SQLiteResult UpdateItem(BaseEntry item)
+        public T SelectWhere<T>(Expression<Func<T, bool>> expression) where T : new()
         {
             throw new NotImplementedException();
         }
-
-        public Task<SQLiteResult> UpdateItemAsync(BaseEntry queue)
-        {
-            throw new NotImplementedException();
-        }
-
-        public T SelectWhere<T>(string property, string value) where T : new()
-        {
-            throw new NotImplementedException();
-        }
-
 
         public List<T> SelectAll<T>() where T : new()
         {
@@ -83,12 +80,7 @@ namespace Audiotica.Data.Collection.DesignTime
             throw new NotImplementedException();
         }
 
-        public Task DeleteWhereAsync<T>(string property, string value)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Dispose()
+        public Task DeleteWhereAsync(BaseEntry entry)
         {
             throw new NotImplementedException();
         }

@@ -203,7 +203,7 @@ namespace Audiotica
                 BackgroundMediaPlayer.Current.CurrentState != MediaPlayerState.Stopped)
             {
                 Position = BackgroundMediaPlayer.Current.Position;
-                var currentId = AppSettingsHelper.Read<long>(PlayerConstants.CurrentTrack);
+                var currentId = AppSettingsHelper.Read<int>(PlayerConstants.CurrentTrack);
                 CurrentQueue = _service.CurrentPlaybackQueue.FirstOrDefault(p => p.Id == currentId);
 
                 if (CurrentQueue != null

@@ -3,6 +3,7 @@
 using System;
 using System.Collections.ObjectModel;
 using Audiotica.Data.Collection.SqlHelper;
+using SQLite;
 
 #endregion
 
@@ -19,11 +20,11 @@ namespace Audiotica.Data.Collection.Model
         private SongState _songState;
         public string ProviderId { get; set; }
 
-        [SqlProperty(ReferenceTo = typeof (Artist))]
-        public long ArtistId { get; set; }
+        [Indexed]
+        public int ArtistId { get; set; }
 
-        [SqlProperty(ReferenceTo = typeof (Album))]
-        public long AlbumId { get; set; }
+        [Indexed]
+        public int AlbumId { get; set; }
 
         public string Name { get; set; }
 
@@ -40,9 +41,8 @@ namespace Audiotica.Data.Collection.Model
             set { Set(ref _songState, value); }
         }
 
-        public long PlayCount { get; set; }
+        public int PlayCount { get; set; }
 
-        [SqlProperty(IsNull = true)]
         public DateTime LastPlayed { get; set; }
 
         public HeartState HeartState { get; set; }
@@ -50,7 +50,7 @@ namespace Audiotica.Data.Collection.Model
         public TimeSpan Duration { get; set; }
 
 
-        [SqlIgnore]
+        [Ignore]
         public bool IsStreaming
         {
             get
@@ -60,16 +60,20 @@ namespace Audiotica.Data.Collection.Model
             }
         }
 
+        [Ignore]
         public Artist Artist { get; set; }
 
+        [Ignore]
         public Album Album { get; set; }
 
+        [Ignore]
         public BackgroundDownload Download
         {
             get { return _download; }
             set { Set(ref _download, value); }
         }
 
+        [Ignore]
         public ObservableCollection<AddableCollectionItem> AddableTo { get; set; }
     }
 

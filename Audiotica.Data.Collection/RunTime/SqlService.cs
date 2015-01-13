@@ -2,12 +2,14 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
+using Windows.Security.Cryptography.Certificates;
+using Audiotica.Data.Collection.Model;
 using Audiotica.Data.Collection.SqlHelper;
-using SQLitePCL;
+using SQLite;
 
 #endregion
 
@@ -32,13 +34,8 @@ namespace Audiotica.Data.Collection.RunTime
 
         public void Initialize()
         {
-            long sqlVersion;
-
-            using (var statement = DbConnection.Prepare("PRAGMA user_version"))
-            {
-                statement.Step();
-                sqlVersion = (long) statement[0];
-            }
+            var cmd = new SQLiteCommand(DbConnection) {CommandText = "PRAGMA user_version"};
+            var sqlVersion = cmd.ExecuteScalar<int>();
 
             if (sqlVersion == _config.CurrentVersion) return;
 
@@ -52,270 +49,130 @@ namespace Audiotica.Data.Collection.RunTime
             await Task.Run(() => Initialize()).ConfigureAwait(false);
         }
 
-        public void ResetData()
+        public bool Insert(BaseEntry entry)
         {
-            var sql = @"DELETE FROM Song";
-            using (var statement = DbConnection.Prepare(sql))
+            try
             {
-                statement.Step();
+                DbConnection.Insert(entry);
+                return true;
             }
-
-            sql = @"DELETE FROM Album";
-            using (var statement = DbConnection.Prepare(sql))
+            catch (SQLiteException e)
             {
-                statement.Step();
+                return e.Result == SQLite3.Result.Busy && Insert(entry);
             }
-
-            sql = @"DELETE FROM Artist";
-            using (var statement = DbConnection.Prepare(sql))
+            catch
             {
-                statement.Step();
-            }
-
-            sql = @"DELETE FROM QueueSong";
-            using (var statement = DbConnection.Prepare(sql))
-            {
-                statement.Step();
-            }
-
-            sql = @"DELETE FROM PlaylistSong";
-            using (var statement = DbConnection.Prepare(sql))
-            {
-                statement.Step();
+                return false;
             }
         }
 
-        public SQLiteResult Insert(BaseEntry entry)
-        {
-            SQLiteResult res;
-            using (var custstmt = DbConnection.Prepare(EasySql.CreateInsert(entry.GetType())))
-            {
-                EasySql.FillInsert(custstmt, entry);
-                bool retry;
-                do
-                {
-                    res = custstmt.Step();
-                    retry = res == SQLiteResult.BUSY;
-                } while (retry);
-            }
-
-            if (res != SQLiteResult.DONE) return res;
-
-            using (var idstmt = DbConnection.Prepare("SELECT last_insert_rowid()"))
-            {
-                idstmt.Step();
-                {
-                    entry.Id = (long) idstmt[0];
-                }
-            }
-
-            return res;
-        }
-
-        public async Task<SQLiteResult> InsertAsync(BaseEntry entry)
+        public async Task<bool> InsertAsync(BaseEntry entry)
         {
             return await Task.FromResult(Insert(entry)).ConfigureAwait(false);
         }
 
-        public SQLiteResult DeleteItem(BaseEntry item)
+        public bool DeleteItem(BaseEntry item)
         {
-            using (
-                var projstmt =
-                    DbConnection.Prepare(string.Format("DELETE FROM {0} WHERE Id = ?", item.GetType().Name)))
+            try
             {
-                // Reset the prepared statement so we can reuse it.
-                projstmt.ClearBindings();
-                projstmt.Reset();
-
-                projstmt.Bind(1, item.Id);
-
-                SQLiteResult result;
-                bool retry;
-                do
-                {
-                    result = projstmt.Step();
-                    retry = result == SQLiteResult.BUSY;
-                } while (retry);
-
-                return result;
+                DbConnection.Delete(item);
+                return true;
+            }
+            catch (SQLiteException e)
+            {
+                return e.Result == SQLite3.Result.Busy && DeleteItem(item);
+            }
+            catch
+            {
+                return false;
             }
         }
 
-        public async Task<SQLiteResult> DeleteItemAsync(BaseEntry item)
+        public async Task<bool> DeleteItemAsync(BaseEntry item)
         {
             return await Task.FromResult(DeleteItem(item)).ConfigureAwait(false);
         }
 
-        public SQLiteResult UpdateItem(BaseEntry item)
+        public bool UpdateItem(BaseEntry item)
         {
-            using (
-                var projstmt =
-                    DbConnection.Prepare(EasySql.CreateUpdate(item.GetType())))
+            try
             {
-                // Reset the prepared statement so we can reuse it.
-                projstmt.ClearBindings();
-                projstmt.Reset();
-
-                EasySql.FillUpdate(projstmt, item);
-
-                SQLiteResult res;
-                bool retry;
-                do
-                {
-                    res = projstmt.Step();
-                    retry = res == SQLiteResult.BUSY;
-                } while (retry);
-
-                return res;
+                DbConnection.Update(item);
+                return true;
+            }
+            catch
+            {
+                return false;
             }
         }
 
-        public async Task<SQLiteResult> UpdateItemAsync(BaseEntry item)
+        public async Task<bool> UpdateItemAsync(BaseEntry item)
         {
             return await Task.FromResult(UpdateItem(item)).ConfigureAwait(false);
         }
 
-        public T SelectWhere<T>(string property, string value) where T : new()
+        public async Task<List<T>> SelectAllAsync<T>() where T : new()
         {
-            return SelectAll<T>(property, value).FirstOrDefault();
+            return await Task.Factory.StartNew(() => SelectAll<T>()).ConfigureAwait(false);
         }
 
         public List<T> SelectAll<T>() where T : new()
         {
-            return SelectAll<T>(null, null);
-        }
-
-        public List<T> SelectAll<T>(string property, string whereValue) where T : new()
-        {
-            var type = typeof (T);
-            var items = new List<T>();
-
-            using (var statement = DbConnection.Prepare("SELECT * FROM " + type.Name + 
-                (string.IsNullOrEmpty(whereValue) ? "" : 
-                string.Format(" WHERE {0} = ?", property))))
+            try
             {
-                if (whereValue != null)
-                    statement.Bind(1, whereValue);
-
-                var result = statement.Step();
-    
-                while (result == SQLiteResult.ROW || result == SQLiteResult.BUSY)
-                {
-                    if (result != SQLiteResult.BUSY)
-                    {
-                        var item = new T();
-                        var props =
-                            type.GetRuntimeProperties()
-                                .Where(
-                                    p =>
-                                        p.GetCustomAttribute<SqlIgnore>() == null &&
-                                        (EasySql.NetToSqlKepMap.ContainsKey(p.PropertyType) ||
-                                         p.PropertyType.GetTypeInfo().IsEnum));
-
-                        foreach (var propertyInfo in props)
-                        {
-                            var value = statement[propertyInfo.Name];
-
-                            //cast enums from long
-                            if (propertyInfo.GetMethod.ReturnType.GetTypeInfo().IsEnum)
-                            {
-                                value = Enum.ToObject(propertyInfo.PropertyType, value ?? 0);
-                            }
-
-                                //cast dates from string
-                            else if (propertyInfo.PropertyType == typeof (DateTime))
-                            {
-                                if (value == null)
-                                    value = DateTime.MinValue;
-                                else
-                                {
-                                    DateTime outDateTime;
-                                    DateTime.TryParse(value.ToString(), out outDateTime);
-                                    value = outDateTime;
-                                }
-                            }
-
-                                //cast timespan from ticks (int64)
-                            else if (propertyInfo.PropertyType == typeof (TimeSpan))
-                            {
-                                value = value == null ? TimeSpan.MinValue : TimeSpan.FromTicks((Int64) value);
-                            }
-
-                            else if (propertyInfo.PropertyType == typeof (bool))
-                            {
-                                value = value != null && (long) value == 1;
-                            }
-
-                            propertyInfo.SetValue(item, value);
-                        }
-                        items.Add(item);
-                    }
-
-                    result = statement.Step();
-                }
+                return DbConnection.Table<T>().ToList();
             }
-
-            return items;
+            catch (SQLiteException e)
+            {
+                if (e.Result == SQLite3.Result.Busy)
+                    return SelectAll<T>();
+            }
+            catch
+            {
+            }
+            return new List<T>();
         }
 
-        public async Task<List<T>> SelectAllAsync<T>() where T : new()
+        public T SelectWhere<T>(Expression<Func<T, bool>> expression) where T : new()
         {
-            return await Task.FromResult(SelectAll<T>()).ConfigureAwait(false);
+            try
+            {
+                return DbConnection.Table<T>().Where(expression).FirstOrDefault();
+            }
+            catch (SQLiteException e)
+            {
+                if (e.Result == SQLite3.Result.Busy)
+                    return SelectWhere(expression);
+            }
+            catch
+            {
+            }
+            return default(T);
         }
 
         public Task DeleteTableAsync<T>()
         {
             return Task.Run(() =>
             {
-                using (
-                    var projstmt =
-                        DbConnection.Prepare("DELETE FROM " + typeof (T).Name))
-                {
-                    projstmt.Step();
-                }
-
-                using ( //reset id seed
-                    var projstmt =
-                        DbConnection.Prepare("DELETE FROM sqlite_sequence  WHERE name = '" + typeof (T).Name + "'"))
-                {
-                    projstmt.Step();
-                }
+                DbConnection.DeleteAll<T>();
+                var cmd = new SQLiteCommand(DbConnection) { CommandText = "DELETE FROM sqlite_sequence  WHERE name = '" + typeof(T).Name + "'" };
+                cmd.ExecuteNonQuery();
             });
         }
 
-        public Task DeleteWhereAsync<T>(string property, string value)
+        public Task DeleteWhereAsync(BaseEntry entry)
         {
             return Task.Run(() =>
             {
-                using (
-                    var projstmt =
-                        DbConnection.Prepare(string.Format("DELETE FROM {0} WHERE {1} = ?", typeof (T).Name, property)))
-                {
-                    // Reset the prepared statement so we can reuse it.
-                    projstmt.ClearBindings();
-                    projstmt.Reset();
-
-                    projstmt.Bind(1, value);
-
-                    projstmt.Step();
-                }
+                DbConnection.Delete(entry);
             });
         }
 
         private void CreateTablesIfNotExists()
         {
-            foreach (var sql in _config.Tables.Select(EasySql.CreateTable))
+            foreach (var type in _config.Tables)
             {
-                using (var statement = DbConnection.Prepare(sql))
-                {
-                    statement.Step();
-                }
-            }
-
-            // Turn on Foreign Key constraints
-            using (var statement = DbConnection.Prepare("PRAGMA foreign_keys = ON"))
-            {
-                statement.Step();
+                DbConnection.CreateTable(type);
             }
 
             UpdateDbVersion(_config.CurrentVersion);
@@ -323,20 +180,16 @@ namespace Audiotica.Data.Collection.RunTime
 
         private void UpdateDbVersion(double version)
         {
-            //Set version to one
-            var sql = @"PRAGMA user_version = " + version;
-            using (var statement = DbConnection.Prepare(sql))
-            {
-                statement.Step();
-            }
+            var cmd = new SQLiteCommand(DbConnection) { CommandText = "PRAGMA user_version = " + version };
+            cmd.ExecuteNonQuery();
         }
     }
 
     public class SqlServiceConfig
     {
+        public Action<SQLiteConnection, double> OnUpdate;
         public double CurrentVersion { get; set; }
         public string Path { get; set; }
         public List<Type> Tables { get; set; }
-        public Action<SQLiteConnection, double> OnUpdate;
     }
 }

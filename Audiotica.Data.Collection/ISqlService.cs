@@ -4,9 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using Audiotica.Data.Collection.Model;
 using Audiotica.Data.Collection.SqlHelper;
-using SQLitePCL;
+using SQLite;
 
 #endregion
 
@@ -14,24 +13,25 @@ namespace Audiotica.Data.Collection
 {
     public interface ISqlService : IDisposable
     {
+        SQLiteConnection DbConnection { get; }
+
         void Initialize();
         Task InitializeAsync();
-        void ResetData();
 
-        SQLiteResult Insert(BaseEntry entry);
-        Task<SQLiteResult> InsertAsync(BaseEntry entry);
+        bool Insert(BaseEntry entry);
+        Task<bool> InsertAsync(BaseEntry entry);
 
-        SQLiteResult DeleteItem(BaseEntry item);
-        Task<SQLiteResult> DeleteItemAsync(BaseEntry item);
-        SQLiteResult UpdateItem(BaseEntry item);
-        Task<SQLiteResult> UpdateItemAsync(BaseEntry item);
+        bool DeleteItem(BaseEntry item);
+        Task<bool> DeleteItemAsync(BaseEntry item);
+        bool UpdateItem(BaseEntry item);
+        Task<bool> UpdateItemAsync(BaseEntry item);
 
 
-        T SelectWhere<T>(string property, string value) where T : new();
+        T SelectWhere<T>(Expression<Func<T, bool>> expression) where T : new();
         List<T> SelectAll<T>() where T : new();
         Task<List<T>> SelectAllAsync<T>() where T : new();
 
         Task DeleteTableAsync<T>();
-        Task DeleteWhereAsync<T>(string property, string value);
+        Task DeleteWhereAsync(BaseEntry entry);
     }
 }

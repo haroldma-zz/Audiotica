@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Linq.Expressions;
 using Windows.Foundation;
 using Windows.Media.Playback;
 using Windows.Storage;
@@ -198,16 +199,7 @@ namespace Audiotica.WindowsPhone.Player
 
                 StorageFile file = null;
 
-                if (isLocal)
-                {
-                    if (StorageHelper.FileExistsAsync(track.Song.AudioUrl, KnownFolders.MusicLibrary).Result)
-                        file = StorageHelper.GetFileAsync(track.Song.AudioUrl, KnownFolders.MusicLibrary).Result;
-                }
-                else
-                {
-                    if (StorageHelper.FileExistsAsync(string.Format("songs/{0}.mp3", track.SongId)).Result)
-                        file = StorageHelper.GetFileAsync(string.Format("songs/{0}.mp3", track.SongId)).Result;
-                }
+                file = isLocal ? StorageHelper.GetFileAsync(track.Song.AudioUrl, KnownFolders.MusicLibrary).Result : StorageHelper.GetFileAsync(string.Format("songs/{0}.mp3", track.SongId)).Result;
 
                 if (file != null)
                 {
@@ -306,9 +298,9 @@ namespace Audiotica.WindowsPhone.Player
             _sql.Dispose();
         }
 
-        private long GetCurrentId()
+        private int GetCurrentId()
         {
-            return AppSettingsHelper.Read<long>(PlayerConstants.CurrentTrack);
+            return AppSettingsHelper.Read<int>(PlayerConstants.CurrentTrack);
         }
 
         public QueueSong GetCurrentQueueSong()
@@ -316,37 +308,35 @@ namespace Audiotica.WindowsPhone.Player
             return GetQueueSongById(GetCurrentId());
         }
 
-        private QueueSong GetQueueSong(string prop, long id)
+        private QueueSong GetQueueSong(Expression<Func<QueueSong, bool>> expression)
         {
-            var queue = _bgSql.SelectWhere<QueueSong>(prop, id.ToString());
-            if (queue != null)
-            {
-                var song = _sql.SelectWhere<Song>("Id", queue.SongId.ToString());
-                var artist = _sql.SelectWhere<Artist>("Id", song.ArtistId.ToString());
+            var queue = _bgSql.SelectWhere(expression);
+            
+            if (queue == null) return null;
 
-                song.Artist = artist;
-                queue.Song = song;
-                return queue;
-            }
+            var song = _sql.SelectWhere<Song>(p => p.Id == queue.SongId);
+            var artist = _sql.SelectWhere<Artist>(p => p.Id == song.ArtistId);
 
-            return null;
+            song.Artist = artist;
+            queue.Song = song;
+            return queue;
         }
 
         private bool IsShuffle { get { return AppSettingsHelper.Read<bool>("Shuffle"); } }
 
-        public QueueSong GetQueueSongById(long id)
+        public QueueSong GetQueueSongById(int id)
         {
-            return GetQueueSong("Id", id);
+            return GetQueueSong(p => p.Id == id);
         }
 
-        public QueueSong GetQueueSongWhereNextId(long id)
+        public QueueSong GetQueueSongWhereNextId(int id)
         {
-            return GetQueueSong((IsShuffle ? "Shuffle" : "") + "NextId", id);
+            return IsShuffle ? GetQueueSong(p => p.ShuffleNextId == id) : GetQueueSong(p => p.NextId == id);
         }
 
-        public QueueSong GetQueueSongWherePrevId(long id)
+        public QueueSong GetQueueSongWherePrevId(int id)
         {
-            return GetQueueSong((IsShuffle ? "Shuffle" : "") + "PrevId", id);
+            return IsShuffle ? GetQueueSong(p => p.ShufflePrevId == id) : GetQueueSong(p => p.PrevId == id);
         }
     }
 }
