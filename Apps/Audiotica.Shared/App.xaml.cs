@@ -205,7 +205,7 @@ namespace Audiotica
                 "There was a problem with the application. Please contact support with details on what you were doing.",
                 "Crash prevented", MessageBoxButton.OkCancel) == MessageBoxResult.Ok)
             {
-                Launcher.LaunchUriAsync(new Uri("mailto:help@zumicts.com&subject=Crashing Error&body=\n\n" + e.Exception.Message + e.Exception.StackTrace));
+                Launcher.LaunchUriAsync(new Uri("mailto:?tohelp@zumicts.com&subject=Crashing Error&body=\n\n" + e.Exception.Message + e.Exception.StackTrace));
             }
         }
 
