@@ -30,7 +30,7 @@ namespace Audiotica.ViewModel
             _commands = commands;
             _lastService = lastService;
             _songClickCommand = new RelayCommand<ItemClickEventArgs>(SongClickExecute);
-            MessengerInstance.Register<long>(this, "artist-coll-detail-id", ReceivedId);
+            MessengerInstance.Register<int>(this, "artist-coll-detail-id", ReceivedId);
 
             if (IsInDesignMode)
                 SetArtist(0);
@@ -58,7 +58,7 @@ namespace Audiotica.ViewModel
             get { return _commands; }
         }
 
-        private void ReceivedId(long id)
+        private void ReceivedId(int id)
         {
             if (Artist != null && Artist.Id == id) return;
 
@@ -75,7 +75,7 @@ namespace Audiotica.ViewModel
             await CollectionHelper.PlaySongsAsync(song, queueSong);
         }
 
-        private async void SetArtist(long id)
+        private async void SetArtist(int id)
         {
             LastArtist = null;
             Artist = _service.Artists.FirstOrDefault(p => p.Id == id);

@@ -27,10 +27,10 @@ namespace Audiotica.View
         public override void NavigatedTo(object e)
         {
             base.NavigatedTo(e);
-            var id = e as long?;
+            var id = e as int?;
             if (id == null) return;
 
-            Messenger.Default.Send((long) id, "artist-coll-detail-id");
+            Messenger.Default.Send((int)id, "artist-coll-detail-id");
             Messenger.Default.Register<bool>(this, "artist-coll-bio", BioUpdate);
             Messenger.Default.Register<bool>(this, "artist-coll-sim", SimUpdate);
         }

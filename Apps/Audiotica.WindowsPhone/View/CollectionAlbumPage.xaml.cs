@@ -16,11 +16,11 @@ namespace Audiotica.View
         public override void NavigatedTo(object e)
         {
             base.NavigatedTo(e);
-            var id = e as long?;
+            var id = e as int?;
 
             if (id == null) return;
 
-            var msg = new GenericMessage<long>((long) id);
+            var msg = new GenericMessage<int>((int)id);
             Messenger.Default.Send(msg, "album-coll-detail-id");
         }
     }
