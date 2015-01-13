@@ -225,7 +225,7 @@ namespace Audiotica
         }
 
         //haven't tested with more than this
-        private const int MaxPlayQueueCount = 250;
+        private const int MaxPlayQueueCount = 100;
 
         public static async Task PlaySongsAsync(Song song, List<Song> songs)
         {

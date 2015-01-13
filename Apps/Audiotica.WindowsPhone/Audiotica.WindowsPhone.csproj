@@ -156,9 +156,6 @@
     <Compile Include="View\HomePage.xaml.cs">
       <DependentUpon>HomePage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\NowPlayingPage.xaml.cs">
-      <DependentUpon>NowPlayingPage.xaml</DependentUpon>
-    </Compile>
     <Compile Include="View\NewPlaylistPage.xaml.cs">
       <DependentUpon>NewPlaylistPage.xaml</DependentUpon>
     </Compile>
@@ -255,10 +252,6 @@
     <Page Include="View\HomePage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="View\NowPlayingPage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
     </Page>
     <Page Include="View\NewPlaylistPage.xaml">
       <SubType>Designer</SubType>
