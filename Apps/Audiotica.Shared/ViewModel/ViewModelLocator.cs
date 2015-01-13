@@ -94,7 +94,7 @@ namespace Audiotica.ViewModel
         {
             var dbTypes = new List<Type>
             {
-                typeof (HistoryEntry)
+                typeof (QueueSong)
             };
             return new SqlServiceConfig()
             {
