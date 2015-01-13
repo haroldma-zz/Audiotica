@@ -5,8 +5,17 @@
     xmlns:local="using:Audiotica.View"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:partialView="using:Audiotica.PartialView"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-    <Canvas
-      x:Name="LayoutRoot"/>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Canvas x:Name="LayoutRoot"/>
+        <partialView:AdMediatorBar Grid.Row="1" />
+        <partialView:NowPlayingBar Grid.Row="2" />
+    </Grid>
 </Page>

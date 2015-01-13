@@ -884,9 +884,6 @@ namespace SQLite
 
 					throw;
 				}
-			} else { 
-				// Calling BeginTransaction on an already open transaction is invalid
-				throw new InvalidOperationException ("Cannot begin a transaction while already in a transaction.");
 			}
 		}
 

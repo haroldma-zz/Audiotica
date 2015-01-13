@@ -34,33 +34,6 @@
             <Setter Property="Foreground" Value="#89FFFFFF" />
         </Style>
 
-        <JumpListItemBackgroundConverter x:Key="BackgroundConverter" />
-        <JumpListItemForegroundConverter x:Key="ForegroundConverter" />
-        <DataTemplate x:Key="JumpTemplate">
-            <Border Padding="5">
-                <Border Background="{Binding Converter={StaticResource BackgroundConverter}}"
-                        Width="82" Height="82" HorizontalAlignment="Left">
-                    <TextBlock Text="{Binding Group.Key}"
-                               Foreground="{Binding Converter={StaticResource ForegroundConverter}}"
-                               FontSize="42" Padding="10,10,10,0"
-                               HorizontalAlignment="Left" VerticalAlignment="Bottom"
-                               FontWeight="SemiBold" />
-                </Border>
-            </Border>
-        </DataTemplate>
-
-        <DataTemplate x:Key="GroupHeaderTemplate">
-            <Border Background="Transparent" Padding="0,0,0,15">
-                <Border Background="{StaticResource PhoneAccentBrush}"
-                        Width="50" Height="50" Margin="0,0,18,0" HorizontalAlignment="Left">
-                    <TextBlock Text="{Binding Key}" Foreground="{StaticResource PhoneForegroundBrush}"
-                               FontSize="35" Padding="6,6,6,0"
-                               FontFamily="{StaticResource PhoneFontFamilySemiLight}" HorizontalAlignment="Left"
-                               VerticalAlignment="Bottom" />
-                </Border>
-            </Border>
-        </DataTemplate>
-
         <Style x:Key="AppBarButtonWithShadowStyle" TargetType="AppBarButton">
             <Setter Property="Foreground"
                     Value="{ThemeResource AppBarItemForegroundThemeBrush}" />
@@ -229,43 +202,6 @@
             <TextBlock Text="{Binding}" FontSize="20" FontFamily="Global User Interface" Margin="0,5,0,0" />
         </DataTemplate>
 
-        <Style x:Key="AppFrame" TargetType="Frame">
-            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-            <Setter Property="IsTabStop" Value="False" />
-            <Setter Property="VerticalContentAlignment" Value="Stretch" />
-            <Setter Property="Background" Value="{ThemeResource ApplicationPageBackgroundThemeBrush}" />
-            <Setter Property="ContentTransitions">
-                <Setter.Value>
-                    <TransitionCollection>
-                        <NavigationThemeTransition>
-                            <ContinuumNavigationTransitionInfo />
-                        </NavigationThemeTransition>
-                    </TransitionCollection>
-                </Setter.Value>
-            </Setter>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="Frame">
-                        <Grid Background="{TemplateBinding Background}">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="*" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                            </Grid.RowDefinitions>
-                            <ContentPresenter ContentTemplate="{TemplateBinding ContentTemplate}"
-                                              ContentTransitions="{TemplateBinding ContentTransitions}"
-                                              Content="{TemplateBinding Content}"
-                                              HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                              Margin="{TemplateBinding Padding}"
-                                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
-                            <partialView:AdMediatorBar Grid.Row="1" />
-                            <partialView:NowPlayingBar Grid.Row="2" />
-                        </Grid>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-
         <DataTemplate x:Key="SimilarLastArtistDataTemplate">
             <Grid Height="150" Margin="0,0,0,10" Background="{StaticResource PhoneAccentBrush}">
                 <Grid>
@@ -281,57 +217,6 @@
                 </Grid>
             </Grid>
         </DataTemplate>
-
-        <DataTemplate x:Key="SongDataTemplate">
-            <StackPanel Margin="0,0,0,15">
-                <TextBlock Text="{Binding Name}" FontSize="22" FontFamily="Global User Interface" TextWrapping="Wrap"
-                           TextTrimming="CharacterEllipsis" FontWeight="Bold" />
-                <TextBlock FontSize="16" FontWeight="Thin" Foreground="#89FFFFFF"
-                           TextTrimming="CharacterEllipsis" TextWrapping="Wrap">
-                    <Run Text="{Binding Artist.Name}" />
-                    <Run Text="{Binding Album.Name, Converter={StaticResource DashNotEmptyToStringConverter}}" />
-                    <Run Text="{Binding Album.Name}" />
-                </TextBlock>
-            </StackPanel>
-        </DataTemplate>
-        <DataTemplate x:Key="SongNoAlbumDataTemplate">
-            <StackPanel Margin="0,0,0,15">
-                <TextBlock Text="{Binding Name}" FontSize="22" FontFamily="Global User Interface" TextWrapping="Wrap"
-                           TextTrimming="CharacterEllipsis" FontWeight="Bold" />
-                <TextBlock Text="{Binding Artist.Name}" FontSize="16" FontWeight="Thin" Foreground="#89FFFFFF"
-                           TextTrimming="CharacterEllipsis" TextWrapping="Wrap" />
-            </StackPanel>
-        </DataTemplate>
-
-        <DataTemplate x:Key="AlbumDataTemplate">
-            <Grid Margin="0,0,0,10">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
-                <Grid VerticalAlignment="Top" Background="{StaticResource PhoneAccentBrush}">
-                    <Image Stretch="UniformToFill" Width="175" Height="175" Source="{Binding Artwork}" />
-                </Grid>
-                <Grid Grid.Column="1" Margin="10">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                    </Grid.RowDefinitions>
-                    <TextBlock Margin="0,5,0,0" Text="{Binding Name}" FontSize="22"
-                               FontFamily="Global User Interface" TextWrapping="Wrap"
-                               TextTrimming="CharacterEllipsis" FontWeight="Bold" />
-                    <TextBlock Grid.Row="1" Text="{Binding PrimaryArtist.Name}" FontSize="16" FontWeight="Thin"
-                               Foreground="#89FFFFFF" TextTrimming="CharacterEllipsis" TextWrapping="Wrap" />
-                    <TextBlock Grid.Row="2" FontSize="18" FontWeight="Thin"
-                               Foreground="#89FFFFFF" TextTrimming="CharacterEllipsis" TextWrapping="Wrap">
-                        <Run Text="{Binding Songs.Count}" />
-                        <Run Text="{Binding Songs.Count, Converter={StaticResource SongToPluralConverter}}" />
-                    </TextBlock>
-                </Grid>
-            </Grid>
-        </DataTemplate>
-
 
         <DataTemplate x:Key="LastAlbumDataTemplate">
             <Grid Margin="0,0,0,10">
@@ -355,7 +240,6 @@
                 </Grid>
             </Grid>
         </DataTemplate>
-
         <DataTemplate x:Key="LastTrackDataTemplate">
             <StackPanel Margin="0,0,0,15">
                 <TextBlock Text="{Binding Name}" TextWrapping="Wrap" FontSize="22" FontFamily="Global User Interface"
@@ -389,7 +273,6 @@
                            TextTrimming="CharacterEllipsis" TextWrapping="Wrap" />
             </StackPanel>
         </DataTemplate>
-
         <DataTemplate x:Key="SpotifyAlbumDataTemplate">
             <Grid Margin="0,0,0,10">
                 <Grid.ColumnDefinitions>
@@ -819,30 +702,6 @@
                                                 Padding="{TemplateBinding Padding}"
                                                 VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
                             </ScrollViewer>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-
-        <Style x:Key="NoFeedbackListViewItem" TargetType="ListViewItem">
-            <Setter Property="FontFamily" Value="{ThemeResource ContentControlThemeFontFamily}" />
-            <Setter Property="FontSize" Value="{ThemeResource ControlContentThemeFontSize}" />
-            <Setter Property="Background" Value="Transparent" />
-            <Setter Property="TabNavigation" Value="Local" />
-            <Setter Property="IsHoldingEnabled" Value="False" />
-            <Setter Property="Margin" Value="{ThemeResource ListViewItemMargin}" />
-            <Setter Property="HorizontalContentAlignment" Value="Left" />
-            <Setter Property="VerticalContentAlignment" Value="Top" />
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="ListViewItem">
-                        <Border x:Name="ContentContainer">
-                            <ContentPresenter x:Name="contentPresenter"
-                                              ContentTemplate="{TemplateBinding ContentTemplate}"
-                                              ContentTransitions="{TemplateBinding ContentTransitions}"
-                                              Content="{TemplateBinding Content}" Margin="{TemplateBinding Padding}"
-                                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
-                        </Border>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>

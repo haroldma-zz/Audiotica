@@ -113,8 +113,9 @@ namespace Audiotica.Data.Collection.RunTime
 
             foreach (var artist in artists)
             {
-                artist.Songs.AddRange(songs.Where(p => p.ArtistId == artist.Id));
-                artist.Albums.AddRange(albums.Where(p => p.PrimaryArtistId == artist.Id));
+                artist.Songs.AddRange(songs.Where(p => p.ArtistId == artist.Id).OrderBy(p => p.Name));
+                artist.Albums.AddRange(albums.Where(p => p.PrimaryArtistId == artist.Id).OrderBy(p => p.Name));
+
                 var songsAlbums = artist.Songs.Select(p => p.Album);
                 artist.Albums.AddRange(songsAlbums.Where(p => !artist.Albums.Contains(p)));
                 if (isForeground)
@@ -363,15 +364,41 @@ namespace Audiotica.Data.Collection.RunTime
 
             await _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
             {
+                #region Order album songs
+
+                var orderedAlbumSong = song.Album.Songs.ToList();
+                orderedAlbumSong.Add(song);
+                orderedAlbumSong.Sort((p, m) => p.TrackNumber.CompareTo(m.TrackNumber));
+
+                var index = orderedAlbumSong.IndexOf(song);
+                song.Album.Songs.Insert(index, song);
+
+                #endregion
+
+                #region Order artist songs
+
+                var orderedArtistSong = song.Artist.Songs.ToList();
+                orderedArtistSong.Add(song);
+                orderedArtistSong.Sort((p, m) => String.Compare(p.Name, m.Name, StringComparison.Ordinal));
+
+                index = orderedArtistSong.IndexOf(song);
+                song.Artist.Songs.Insert(index, song);
+
+                #endregion
+
+                #region Order artist album
+
                 if (!song.Artist.Albums.Contains(song.Album))
-                    song.Artist.Albums.Insert(0, song.Album);
+                {
+                    var orderedArtistAlbum = song.Artist.Albums.ToList();
+                    orderedArtistAlbum.Add(album);
+                    orderedArtistAlbum.Sort((p, m) => String.Compare(p.Name, m.Name, StringComparison.Ordinal));
 
-                song.Artist.Songs.Insert(0, song);
+                    index = orderedArtistAlbum.IndexOf(album);
+                    song.Artist.Albums.Insert(index, album);
+                }
 
-                var list = song.Album.Songs.ToList();
-                list.Add(song);
-                list.Sort((p, m) => p.TrackNumber.CompareTo(m.TrackNumber));
-                song.Album.Songs.ReplaceWith(list);
+                #endregion
 
                 Songs.Insert(0, song);
             });

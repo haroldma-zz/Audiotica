@@ -5,7 +5,6 @@
     xmlns:local="using:Audiotica.View"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:common="using:Audiotica.Core.Common"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
     xmlns:audiotica="using:Audiotica"
@@ -14,37 +13,28 @@
     DataContext="{Binding Source={StaticResource Locator}, Path=SpotifyAlbum}">
 
     <Grid>
-        <ListView Padding="0,40,0,0" Margin="20,0" ItemContainerStyle="{StaticResource NoFeedbackListViewItem}">
-            <Grid>
-                <Grid Margin="0,0,0,10">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
-                    <Image Height="100" Width="100"
-                           Source="{Binding Album.Images[0].Url}" />
-                    <StackPanel Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="5,0,0,0">
-                        <TextBlock Text="{Binding Album.Name}" FontSize="22" TextAlignment="Right"
-                                   TextTrimming="CharacterEllipsis" FontWeight="Bold" />
-                        <HyperlinkButton Content="{Binding Album.Artists[0].Name}" FontSize="16"
-                                         HorizontalAlignment="Right" Foreground="#89FFFFFF" />
-                        <TextBlock Text="{Binding Album.ReleaseDate}" FontSize="16" TextAlignment="Right"
-                                   Foreground="#89FFFFFF"
-                                   TextTrimming="CharacterEllipsis" />
+        <ListView IsItemClickEnabled="True" ItemsSource="{Binding Tracks}"
+                          ItemTemplate="{StaticResource SpotifyTrackNoAlbumDataTemplate}" Padding="15,25,15,20">
+            <ListView.HeaderTemplate>
+                <DataTemplate>
+                    <StackPanel Margin="0,10,0,20">
+                        <Grid>
+                            <Image Source="{Binding Album.Images[0].Url}" />
+                            <StackPanel VerticalAlignment="Bottom" Background="#BF000000">
+                                <TextBlock Text="{Binding Album.Name}" Margin="15,10,15,0" FontSize="30" />
+                                <TextBlock Text="{Binding Album.Artist.Name}" Margin="15,0,15,10"
+                                           Foreground="#89FFFFFF" FontSize="24" />
+                            </StackPanel>
+                        </Grid>
+                        <Button x:Uid="AlbumNameSaveAllButton" Content="Save All" HorizontalAlignment="Stretch" Click="Button_Click" />
                     </StackPanel>
-                </Grid>
-            </Grid>
-            <Button x:Uid="AlbumNameSaveAllButton" Content="Save All" HorizontalAlignment="Stretch" Click="Button_Click" />
-            <Grid Margin="0,20,0,0">
-                <ListView IsItemClickEnabled="True" ItemsSource="{Binding Tracks}" Margin="0,5,0,0"
-                          ItemTemplate="{StaticResource SpotifyTrackNoAlbumDataTemplate}">
-                    <interactivity:Interaction.Behaviors>
-                        <core:EventTriggerBehavior EventName="ItemClick">
-                            <core:InvokeCommandAction Command="{Binding SongClickRelayCommand}" />
-                        </core:EventTriggerBehavior>
-                    </interactivity:Interaction.Behaviors>
-                </ListView>
-            </Grid>
+                </DataTemplate>
+            </ListView.HeaderTemplate>
+            <interactivity:Interaction.Behaviors>
+                <core:EventTriggerBehavior EventName="ItemClick">
+                    <core:InvokeCommandAction Command="{Binding SongClickRelayCommand}" />
+                </core:EventTriggerBehavior>
+            </interactivity:Interaction.Behaviors>
         </ListView>
         <Grid Visibility="{Binding IsLoading, Converter={StaticResource VisibilityConverter}}" Background="{StaticResource ApplicationPageBackgroundThemeBrush}">
             <ProgressBar IsIndeterminate="{Binding IsLoading}" />

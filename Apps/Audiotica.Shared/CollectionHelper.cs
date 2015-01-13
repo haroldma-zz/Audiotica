@@ -214,11 +214,11 @@ namespace Audiotica
 
         #region Playing
 
-        public static async Task PlaySongsAsync(List<Song> songs)
+        public static async Task PlaySongsAsync(List<Song> songs, bool random = false)
         {
             if (songs.Count == 0) return;
 
-            var index = songs.Count == 1 ? 0 : new Random().Next(0, songs.Count - 1);
+            var index = random ? (songs.Count == 1 ? 0 : new Random().Next(0, songs.Count - 1)) : 0;
             var song = songs[index];
 
             await PlaySongsAsync(song, songs);

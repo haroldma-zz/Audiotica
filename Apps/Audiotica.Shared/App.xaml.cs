@@ -244,13 +244,11 @@ namespace Audiotica
         {
             RootFrame = Window.Current.Content as Frame;
 
-            if (RootFrame == null)
-            {
-                RootFrame = new Frame {Style = (Style) Resources["AppFrame"]};
+            if (RootFrame != null) return;
 
-                Window.Current.Content = RootFrame;
-                DispatcherHelper.Initialize();
-            }
+            RootFrame = new Frame();
+            Window.Current.Content = RootFrame;
+            DispatcherHelper.Initialize();
         }
 
         public async Task BootAppServicesAsync()
