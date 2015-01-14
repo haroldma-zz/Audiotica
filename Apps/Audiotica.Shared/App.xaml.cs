@@ -134,7 +134,27 @@ namespace Audiotica
                 RootFrame.Navigated += RootFrame_FirstNavigated;
 
                 //MainPage is always in rootFrame so we don't have to worry about restoring the navigation state on resume
-                RootFrame.Navigate(typeof(RootPage), e.Arguments);
+                RootFrame.Navigate(typeof (RootPage), e.Arguments);
+            }
+
+            if (e.Arguments.StartsWith("artists/"))
+            {
+                if (Navigator.CurrentPage is CollectionArtistPage)
+                    Navigator.GoBack();
+
+                var id = int.Parse(e.Arguments.Replace("artists/", ""));
+
+                if (Locator.CollectionService.Artists.FirstOrDefault(p => p.Id == id) != null)
+                    Navigator.GoTo<CollectionArtistPage, ZoomInTransition>(id);
+                else if (!Locator.CollectionService.IsLibraryLoaded)
+                {
+                    UiBlockerUtility.Block("Loading collection...");
+                    Locator.CollectionService.LibraryLoaded += (sender, args) =>
+                    {
+                        UiBlockerUtility.Unblock();
+                        Navigator.GoTo<CollectionArtistPage,ZoomInTransition>(id);
+                    };
+                }
             }
 
             // Ensure the current window is active

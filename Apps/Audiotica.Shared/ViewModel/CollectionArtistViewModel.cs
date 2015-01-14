@@ -1,8 +1,11 @@
 ﻿#region
 
+using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Windows.UI.StartScreen;
 using Windows.UI.Xaml.Controls;
+using Audiotica.Core.Utilities;
 using Audiotica.Data.Collection;
 using Audiotica.Data.Collection.Model;
 using Audiotica.Data.Service.Interfaces;

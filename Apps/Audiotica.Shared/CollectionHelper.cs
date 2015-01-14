@@ -169,6 +169,11 @@ namespace Audiotica
                 if (artist.ProviderId == "autc.unknown" || string.IsNullOrEmpty(artist.Name))
                     return;
 
+                //don't want to retry getting this pic while we're downloading it
+                var hadArtwork = artist.HasArtwork;
+                artist.HasArtwork = true;
+
+
                 try
                 {
                     var lastArtist = await App.Locator.ScrobblerService.GetDetailArtist(artist.Name);
@@ -192,7 +197,7 @@ namespace Audiotica
                         }
                     }
 
-                    if (!artist.HasArtwork)
+                    if (!hadArtwork)
                     {
                         artist.HasArtwork = true;
                         await App.Locator.SqlService.UpdateItemAsync(artist);
@@ -204,6 +209,7 @@ namespace Audiotica
                 }
                 catch
                 {
+                    artist.HasArtwork = false;
                 }
             })).Cast<Task>().ToList();
 
