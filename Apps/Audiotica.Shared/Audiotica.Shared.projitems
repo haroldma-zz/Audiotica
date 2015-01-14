@@ -26,6 +26,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)ProductConstans.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SavingError.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LocalMusicHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SongViewer.xaml.cs">
+      <DependentUpon>SongViewer.xaml</DependentUpon>
+    </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)SpotifyHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ShowFlyoutAction.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SongStateConverter.cs" />
@@ -60,5 +63,11 @@
   </ItemGroup>
   <ItemGroup>
     <PRIResource Include="$(MSBuildThisFileDirectory)Strings\en-US\Resources.resw" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="$(MSBuildThisFileDirectory)SongViewer.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
 </Project>
