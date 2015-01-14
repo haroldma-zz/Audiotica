@@ -26,7 +26,7 @@ namespace Audiotica.ViewModel
             _service = service;
             _audioPlayer = audioPlayer;
             _songClickCommand = new RelayCommand<ItemClickEventArgs>(SongClickExecute);
-            MessengerInstance.Register<GenericMessage<long>>(this, "playlist-coll-detail-id", ReceivedId);
+            MessengerInstance.Register<GenericMessage<int>>(this, "playlist-coll-detail-id", ReceivedId);
 
             if (IsInDesignMode)
                 SetPlaylist(0);
@@ -43,12 +43,12 @@ namespace Audiotica.ViewModel
             get { return _songClickCommand; }
         }
 
-        private void ReceivedId(GenericMessage<long> obj)
+        private void ReceivedId(GenericMessage<int> obj)
         {
             SetPlaylist(obj.Content);
         }
 
-        public void SetPlaylist(long id)
+        public void SetPlaylist(int id)
         {
             if (Playlist != null)
             {

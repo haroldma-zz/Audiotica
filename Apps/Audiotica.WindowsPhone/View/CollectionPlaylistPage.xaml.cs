@@ -96,13 +96,13 @@ namespace Audiotica.View
             else
                 ToSingleMode();
 
-            var id = parameter as long?;
+            var id = parameter as int?;
 
             if (id == null) return;
 
             HardwareButtons.BackPressed += HardwareButtonsOnBackPressed;
 
-            var msg = new GenericMessage<long>((long) id);
+            var msg = new GenericMessage<int>((int)id);
             Messenger.Default.Send(msg, "playlist-coll-detail-id");
         }
 
