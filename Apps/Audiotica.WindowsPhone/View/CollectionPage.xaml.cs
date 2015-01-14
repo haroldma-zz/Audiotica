@@ -217,7 +217,7 @@ namespace Audiotica.View
             // Dropdown of file types the user can save the file as
             savePicker.FileTypeChoices.Add("Audiotica Backup", new List<string>() { ".autcp" });
             // Default file name if the user does not type one in or select a file to replace
-            savePicker.SuggestedFileName = string.Format("{0}-WP81", (int)DateTime.Now.ToUnixTimeStamp());
+            savePicker.SuggestedFileName = string.Format("{0}-WP81", DateTime.Now.ToString("MM-dd-yy_H.mm"));
 
             savePicker.PickSaveFileAndContinue();
         }

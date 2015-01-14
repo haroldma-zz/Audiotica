@@ -47,56 +47,59 @@ namespace Audiotica
 
         public static async Task<byte[]> CreateBackup(StorageFolder folder)
         {
-            var autcpStream = new MemoryStream();
-
-            //add header now
-            AddHeader(autcpStream);
-
-            #region Compress everything
-
-            using (var zipArchive = new ZipArchive(autcpStream, ZipArchiveMode.Create))
+            using (var autcpStream = new MemoryStream())
             {
-                var filesToCompress = await folder.GetItemsAsync();
+                //add header now
+                AddHeader(autcpStream);
 
-                foreach (var item in filesToCompress)
+                #region Compress everything
+
+                using (var zipArchive = new ZipArchive(autcpStream, ZipArchiveMode.Create))
                 {
-                    var files = new List<StorageFile>();
+                    var filesToCompress = await folder.GetItemsAsync();
 
-                    if (item.IsOfType(StorageItemTypes.File))
+                    foreach (var item in filesToCompress)
                     {
-                        var file = (item as StorageFile);
-                        if (file.FileType == ".autcp"
-                            || file.FileType == ".sqldb"
-                            || file.Name.StartsWith("_"))
-                            continue;
-                        files.Add(file);
-                    }
-                    else if (item.IsOfType(StorageItemTypes.Folder))
-                    {
-                        var name = (item as StorageFolder).Name;
-                        if (name == "SOMA" || name == "Logs" || name == "AdMediator")
-                            continue;
+                        var files = new List<StorageFile>();
 
-                        files.AddRange(await (item as StorageFolder).GetFilesAsync());
-                    }
-
-                    foreach (var file in files)
-                    {
-                        var stream = (await file.OpenStreamForReadAsync());
-                        var path = file.Path.Replace(folder.Path + "\\", "").Replace("\\", "/");
-
-                        var entry = zipArchive.CreateEntry(path, CompressionLevel.Optimal);
-                        using (var entryStream = entry.Open())
+                        if (item.IsOfType(StorageItemTypes.File))
                         {
-                            await stream.CopyToAsync(entryStream);
+                            var file = (item as StorageFile);
+                            if (file.FileType == ".autcp"
+                                || file.FileType == ".sqldb"
+                                || file.Name.StartsWith("_"))
+                                continue;
+                            files.Add(file);
+                        }
+                        else if (item.IsOfType(StorageItemTypes.Folder))
+                        {
+                            var name = (item as StorageFolder).Name;
+                            if (name == "SOMA" || name == "Logs" || name == "AdMediator")
+                                continue;
+
+                            files.AddRange(await (item as StorageFolder).GetFilesAsync());
+                        }
+
+                        foreach (var file in files)
+                        {
+                            using (var stream = (await file.OpenStreamForReadAsync()))
+                            {
+                                var path = file.Path.Replace(folder.Path + "\\", "").Replace("\\", "/");
+
+                                var entry = zipArchive.CreateEntry(path, CompressionLevel.Optimal);
+                                using (var entryStream = entry.Open())
+                                {
+                                    await stream.CopyToAsync(entryStream);
+                                }
+                            }
                         }
                     }
                 }
+
+                #endregion
+
+                return autcpStream.ToArray();
             }
-
-            #endregion
-
-            return autcpStream.ToArray();
         }
 
         public static bool AddHeader(Stream stream)
