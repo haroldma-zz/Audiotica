@@ -218,7 +218,7 @@ namespace Audiotica
                    title, MessageBoxButton.OkCancel) == MessageBoxResult.Ok)
             {
                 Launcher.LaunchUriAsync(
-                    new Uri("mailto:tohelp@zumicts.com?subject=Crashing Error&body=\n\n" + e.Message +
+                    new Uri("mailto:help@audiotica.fm?subject=Crashing Error&body=\n\n" + e.Message +
                             e.StackTrace));
             }
             
