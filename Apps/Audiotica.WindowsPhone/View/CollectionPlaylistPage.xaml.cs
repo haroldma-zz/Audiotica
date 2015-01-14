@@ -93,6 +93,8 @@ namespace Audiotica.View
 
             if (_originalCommands == null)
                 _originalCommands = (Bar as CommandBar).PrimaryCommands.ToList();
+            else
+                ToSingleMode();
 
             var id = parameter as long?;
 
