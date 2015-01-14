@@ -566,7 +566,7 @@ namespace Audiotica.Data.Collection.RunTime
                     shuffleIndex = rnd.Next(1, ShufflePlaybackQueue.Count - 1);
                     shuffleNext = ShufflePlaybackQueue.ElementAt(shuffleIndex);
 
-                    if (shuffleNext.PrevId != 0)
+                    if (shuffleNext.ShufflePrevId != 0)
                         shufflePrev = _lookupMap[shuffleNext.ShufflePrevId];
                 }
                 else

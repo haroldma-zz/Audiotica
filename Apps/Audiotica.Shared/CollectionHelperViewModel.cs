@@ -163,7 +163,7 @@ namespace Audiotica
                 var albumSongs = album.Songs.ToList();
 
                 //when inserting we need to reverse the list to keep the order
-                if (App.Locator.Settings.AddToInsert)
+                if (App.Locator.Settings.AddToInsert && App.Locator.Player.CurrentQueue != null)
                     albumSongs.Reverse();
 
                 album.AddableTo.Clear();
@@ -189,7 +189,7 @@ namespace Audiotica
                 var artistSongs = artist.Songs.ToList();
 
                 //when inserting we need to reverse the list to keep the order
-                if (App.Locator.Settings.AddToInsert)
+                if (App.Locator.Settings.AddToInsert && App.Locator.Player.CurrentQueue != null)
                     artistSongs.Reverse();
 
                 artist.AddableTo.Clear();
@@ -217,6 +217,9 @@ namespace Audiotica
             for (var i = 0; i < _addable.Count; i++)
             {
                 var song = _addable[i];
+                var playIfNotActive = i == (App.Locator.Settings.AddToInsert 
+                && App.Locator.Player.CurrentQueue != null ? _addable.Count - 1 : 0);
+
                 if (item.Playlist != null)
                 {
                     //only add if is not there already
@@ -226,7 +229,14 @@ namespace Audiotica
 
                 else
                     //the last song insert it into the shuffle list (the others shuffle them around)
-                    await CollectionHelper.AddToQueueAsync(song, i == _addable.Count - 1, i == 0).ConfigureAwait(false);
+                    await CollectionHelper.AddToQueueAsync(song, i == _addable.Count - 1, 
+                        playIfNotActive, i == 0).ConfigureAwait(false);
+
+                if (App.Locator.Player.CurrentQueue != null || !App.Locator.Settings.AddToInsert) continue;
+
+                _addable.RemoveAt(0);
+                _addable.Reverse();
+                _addable.Insert(0, song);
             }
         }
 

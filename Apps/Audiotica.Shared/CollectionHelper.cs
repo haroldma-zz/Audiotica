@@ -291,7 +291,7 @@ namespace Audiotica
             }
         }
 
-        public static async Task AddToQueueAsync(Song song, bool shuffleInsert = true, bool playIfNotActive = true)
+        public static async Task AddToQueueAsync(Song song, bool shuffleInsert = true, bool playIfNotActive = true, bool clearIfNotActive = true)
         {
             if (_currentlyPreparing)
             {
@@ -299,7 +299,7 @@ namespace Audiotica
                 return;
             }
 
-            if (!App.Locator.Player.IsPlayerActive)
+            if (!App.Locator.Player.IsPlayerActive && clearIfNotActive)
                 await App.Locator.CollectionService.ClearQueueAsync();
 
             var overflow = App.Locator.CollectionService.CurrentPlaybackQueue.Count - MaxPlayQueueCount;
@@ -312,18 +312,18 @@ namespace Audiotica
                             App.Locator.CollectionService.CurrentPlaybackQueue[
                                 App.Locator.CollectionService.CurrentPlaybackQueue.Count - 2];
 
-                    await App.Locator.CollectionService.DeleteFromQueueAsync(queueToRemove);
+                    await App.Locator.CollectionService.DeleteFromQueueAsync(queueToRemove).ConfigureAwait(false);
                 }
 
             var insert = AppSettingsHelper.Read("AddToInsert", true, SettingsStrategy.Roaming);
 
             var queueSong = await App.Locator.CollectionService.AddToQueueAsync(song, 
-                insert ? App.Locator.Player.CurrentQueue : null, shuffleInsert);
+                insert ? App.Locator.Player.CurrentQueue : null, shuffleInsert).ConfigureAwait(false);
 
             if (!App.Locator.Player.IsPlayerActive && playIfNotActive)
             {
                 App.Locator.AudioPlayerHelper.PlaySong(queueSong);
-                await Task.Delay(500).ConfigureAwait(false);
+                DispatcherHelper.RunAsync(() => App.Locator.Player.CurrentQueue = queueSong);
             }
         }
 
