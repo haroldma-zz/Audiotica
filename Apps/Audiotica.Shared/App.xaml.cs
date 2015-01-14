@@ -139,6 +139,8 @@ namespace Audiotica
 
             if (e.Arguments.StartsWith("artists/"))
             {
+                NowPlayingSheetUtility.CloseNowPlaying();
+
                 if (Navigator.CurrentPage is CollectionArtistPage)
                     Navigator.GoBack();
 
@@ -159,6 +161,8 @@ namespace Audiotica
 
             else if (e.Arguments.StartsWith("albums/"))
             {
+                NowPlayingSheetUtility.CloseNowPlaying();
+
                 if (Navigator.CurrentPage is CollectionAlbumPage)
                     Navigator.GoBack();
 
