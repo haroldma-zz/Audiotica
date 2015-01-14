@@ -1,11 +1,10 @@
 ﻿#region
 
-using System;
+using Windows.Foundation;
 using Windows.UI.StartScreen;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
-using Audiotica.Core.Utilities;
 using Audiotica.Data.Collection.Model;
 using Audiotica.ViewModel;
 using GalaSoft.MvvmLight.Messaging;
@@ -19,6 +18,7 @@ namespace Audiotica.View
     {
         private readonly PivotItem _bioPivotItem;
         private readonly PivotItem _similarPivotItem;
+        private TypedEventHandler<ListViewBase, ContainerContentChangingEventArgs> _delegate;
 
         public CollectionArtistPage()
         {
@@ -29,21 +29,33 @@ namespace Audiotica.View
             _similarPivotItem = SimilarPivot;
         }
 
+        private CollectionArtistViewModel Vm
+        {
+            get { return DataContext as CollectionArtistViewModel; }
+        }
+
+        /// <summary>
+        ///     Managing delegate creation to ensure we instantiate a single instance for
+        ///     optimal performance.
+        /// </summary>
+        private TypedEventHandler<ListViewBase, ContainerContentChangingEventArgs> ContainerContentChangingDelegate
+        {
+            get { return _delegate ?? (_delegate = ItemListView_ContainerContentChanging); }
+        }
+
         public override void NavigatedTo(object e)
         {
             base.NavigatedTo(e);
             var id = e as int?;
             if (id == null) return;
 
-            Messenger.Default.Send((int)id, "artist-coll-detail-id");
+            Messenger.Default.Send((int) id, "artist-coll-detail-id");
             Messenger.Default.Register<bool>(this, "artist-coll-bio", BioUpdate);
             Messenger.Default.Register<bool>(this, "artist-coll-sim", SimUpdate);
             Messenger.Default.Register<bool>(this, "artist-coll-pin", ToggleAppBarButton);
 
             ToggleAppBarButton(SecondaryTile.Exists("artist." + Vm.Artist.Id));
         }
-
-        private CollectionArtistViewModel Vm { get { return DataContext as CollectionArtistViewModel; } }
 
         private void ToggleAppBarButton(bool isPinned)
         {
@@ -102,6 +114,37 @@ namespace Audiotica.View
         private async void PinUnpinAppBarButton_OnClick(object sender, RoutedEventArgs e)
         {
             ToggleAppBarButton(await CollectionHelper.PinToggleAsync(Vm.Artist));
+        }
+
+        private void ItemListView_ContainerContentChanging(ListViewBase sender, ContainerContentChangingEventArgs args)
+        {
+            var songViewer = args.ItemContainer.ContentTemplateRoot as SongViewer;
+
+            if (songViewer == null)
+                return;
+
+            if (args.InRecycleQueue)
+            {
+                songViewer.ClearData();
+            }
+            else
+                switch (args.Phase)
+                {
+                    case 0:
+                        songViewer.ShowPlaceholder(args.Item as Song);
+                        args.RegisterUpdateCallback(ContainerContentChangingDelegate);
+                        break;
+                    case 1:
+                        songViewer.ShowTitle();
+                        args.RegisterUpdateCallback(ContainerContentChangingDelegate);
+                        break;
+                    case 2:
+                        songViewer.ShowRest();
+                        break;
+                }
+
+            // For imporved performance, set Handled to true since app is visualizing the data item 
+            args.Handled = true;
         }
     }
 }

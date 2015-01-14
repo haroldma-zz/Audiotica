@@ -41,12 +41,14 @@ namespace Audiotica.Data
         {
             title = title.ToLower()
                 .Replace("feat.", "ft.") //better alternatives for matching
+                .Replace("- bonus track", "")
+                .Replace("bonus track", "")
                 .Replace("- live", "(live)")
                 .Replace("- remix", "(remix)")
                 .Replace("a cappella", "acappella")
                 .Replace("- acoustic version", "(acoustic)")
+                .Replace("- acoustic", "(acoustic)")
                 .Replace("- cover", "(cover)")
-                .Replace("- bonus track", "")
                 .Replace("- stereo", "")
                 .Replace("- mono", "")
                 .Replace("- intro", "")

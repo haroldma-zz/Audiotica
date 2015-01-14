@@ -5,6 +5,7 @@
     xmlns:local="using:Audiotica.PartialView"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:audiotica="using:Audiotica"
     mc:Ignorable="d"
     DataContext="{Binding Player, Source={StaticResource Locator}}">
     <Page.Resources>
@@ -348,21 +349,10 @@
                 </Grid>
             </PivotItem>
             <PivotItem Header="QUEUE">
-                <ListView Name="CurrentQueueView" ItemsSource="{Binding CollectionService.CurrentPlaybackQueue}" ItemContainerStyle="{StaticResource SelectionListViewItemStyle}" Padding="0,0,0,20" SelectionChanged="CurrentQueueView_SelectionChanged">
+                <ListView ContainerContentChanging="ItemListView_ContainerContentChanging" Name="CurrentQueueView" ItemsSource="{Binding CollectionService.CurrentPlaybackQueue}" ItemContainerStyle="{StaticResource SelectionListViewItemStyle}" Padding="0,0,0,20" SelectionChanged="CurrentQueueView_SelectionChanged">
                     <ListView.ItemTemplate>
                         <DataTemplate>
-                            <StackPanel Margin="0,0,0,15">
-                                <TextBlock Text="{Binding Song.Name}" FontSize="22" FontFamily="Global User Interface"
-                                           TextWrapping="Wrap"
-                                           TextTrimming="CharacterEllipsis" FontWeight="Bold" />
-                                <TextBlock FontSize="16" FontWeight="Thin" Foreground="#89FFFFFF"
-                                           TextTrimming="CharacterEllipsis" TextWrapping="Wrap" FontFamily="Global User Interface">
-                                    <Run Text="{Binding Song.Artist.Name}" />
-                                    <Run
-                                        Text="{Binding Song.Album.Name, Converter={StaticResource DashNotEmptyToStringConverter}}" />
-                                    <Run Text="{Binding Song.Album.Name}" />
-                                </TextBlock>
-                            </StackPanel>
+                            <audiotica:SongViewer />
                         </DataTemplate>
                     </ListView.ItemTemplate>
                 </ListView>

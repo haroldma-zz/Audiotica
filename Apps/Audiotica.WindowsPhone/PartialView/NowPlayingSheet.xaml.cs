@@ -1,6 +1,7 @@
 ﻿#region
 
 using System;
+using Windows.Foundation;
 using Windows.Media.Playback;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -67,6 +68,8 @@ namespace Audiotica.PartialView
         }
 
         private bool _seeking;
+        private TypedEventHandler<ListViewBase, ContainerContentChangingEventArgs> _delegate;
+
         private void Slider_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
         {
             _seeking = true;
@@ -96,6 +99,45 @@ namespace Audiotica.PartialView
 
             BackgroundMediaPlayer.Current.Position = App.Locator.Player.Position;
             BackgroundMediaPlayer.Current.Play();
+        }
+
+        private void ItemListView_ContainerContentChanging(ListViewBase sender, ContainerContentChangingEventArgs args)
+        {
+            var songViewer = args.ItemContainer.ContentTemplateRoot as SongViewer;
+
+            if (songViewer == null)
+                return;
+
+            if (args.InRecycleQueue)
+            {
+                songViewer.ClearData();
+            }
+            else switch (args.Phase)
+                {
+                    case 0:
+                        songViewer.ShowPlaceholder((args.Item as QueueSong).Song, true);
+                        args.RegisterUpdateCallback(ContainerContentChangingDelegate);
+                        break;
+                    case 1:
+                        songViewer.ShowTitle();
+                        args.RegisterUpdateCallback(ContainerContentChangingDelegate);
+                        break;
+                    case 2:
+                        songViewer.ShowRest();
+                        break;
+                }
+
+            // For imporved performance, set Handled to true since app is visualizing the data item 
+            args.Handled = true;
+        }
+
+        /// <summary>
+        ///     Managing delegate creation to ensure we instantiate a single instance for
+        ///     optimal performance.
+        /// </summary>
+        private TypedEventHandler<ListViewBase, ContainerContentChangingEventArgs> ContainerContentChangingDelegate
+        {
+            get { return _delegate ?? (_delegate = ItemListView_ContainerContentChanging); }
         }
     }
 }
