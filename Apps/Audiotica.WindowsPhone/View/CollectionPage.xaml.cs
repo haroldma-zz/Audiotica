@@ -190,7 +190,7 @@ namespace Audiotica.View
         private async void Import()
         {
             UiBlockerUtility.Block("Scanning...");
-            var localMusic = await LocalMusicHelper.GetFilesInMusic();
+            var localMusic = await LocalMusicHelper.GetFilesInMusicAsync().Log();
             var failedCount = 0;
 
             App.Locator.CollectionService.Songs.SuppressEvents = true;
@@ -203,7 +203,7 @@ namespace Audiotica.View
                 StatusBarHelper.ShowStatus(string.Format("Importing {0} of {1} items", i + 1, localMusic.Count), (double)i / localMusic.Count);
                 try
                 {
-                    await LocalMusicHelper.SaveTrackAsync(localMusic[i]);
+                    await LocalMusicHelper.SaveTrackAsync(localMusic[i]).Log();
                 }
                 catch
                 {
@@ -220,7 +220,7 @@ namespace Audiotica.View
 
             if (failedCount > 0)
                 CurtainPrompt.ShowError("Couldn't import {0} song(s).", failedCount);
-            CollectionHelper.DownloadArtistsArtworkAsync();
+            await CollectionHelper.DownloadArtistsArtworkAsync().Log();
         }
 
         private void BackupButtonBase_OnClick(object sender, RoutedEventArgs e)

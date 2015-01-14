@@ -32,7 +32,7 @@ namespace Audiotica
             }
         }
 
-        public static async Task<List<StorageFile>> GetFilesInMusic()
+        public static async Task<List<StorageFile>> GetFilesInMusicAsync()
         {
             var audioFiles = new List<StorageFile>();
 
