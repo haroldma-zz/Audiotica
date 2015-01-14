@@ -46,7 +46,7 @@
         </StackPanel>
         
         <FlipView x:Name="FlipView" SelectionChanged="FlipView_SelectionChanged">
-            <Grid Margin="20,50,100,0">
+            <Grid Margin="20,50,87,0">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
