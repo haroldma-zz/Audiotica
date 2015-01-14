@@ -112,7 +112,7 @@ namespace Audiotica
                 do
                 {
                     //first save one song (to avoid duplicate album creation)
-                    result = await _SaveTrackAsync(album.Tracks.Items[index], album).Log();
+                    result = await _SaveTrackAsync(album.Tracks.Items[index], album);
                     index++;
                 } while (result != SavingError.None && index < album.Tracks.Items.Count);
             }
@@ -124,7 +124,7 @@ namespace Audiotica
             {
                 App.Locator.SqlService.DbConnection.BeginTransaction();
                 //save the rest at the rest time
-                var songs = album.Tracks.Items.Skip(index).Select(track => _SaveTrackAsync(track, album).Log());
+                var songs = album.Tracks.Items.Skip(index).Select(track => _SaveTrackAsync(track, album));
                 var results = await Task.WhenAll(songs);
 
                 //now wait a split second before showing success message
@@ -365,7 +365,7 @@ namespace Audiotica
             if (startTransaction)
                 App.Locator.SqlService.DbConnection.BeginTransaction();
 
-            var result = await SpotifyHelper.SaveTrackAsync(track, album).Log();
+            var result = await SpotifyHelper.SaveTrackAsync(track, album);
 
             if (startTransaction)
                 App.Locator.SqlService.DbConnection.Commit();
@@ -397,7 +397,7 @@ namespace Audiotica
             if (startTransaction)
                 App.Locator.SqlService.DbConnection.BeginTransaction();
 
-            var result = await ScrobblerHelper.SaveTrackAsync(track).Log();
+            var result = await ScrobblerHelper.SaveTrackAsync(track);
 
             if (startTransaction)
                 App.Locator.SqlService.DbConnection.Commit();

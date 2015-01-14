@@ -259,17 +259,6 @@ namespace Audiotica
         {
             var stacktrace = e.StackTrace;
 
-            if (stacktrace.Contains("TaskAwaiter"))
-            {
-                try
-                {
-                    stacktrace = e.StackTraceEx();
-                }
-                catch
-                {
-                }
-            }
-
             const string emailTo = "help@audiotica.fm";
             const string emailSubject = "Audiotica crash report";
             var emailBody = "I encountered a problem with Audiotica...\r\n\r\n" + e.Message + "\r\n\r\nDetails:\r\n" + stacktrace;
@@ -315,17 +304,17 @@ namespace Audiotica
             {
                 try
                 {
-                    await Locator.SqlService.InitializeAsync().Log().ConfigureAwait(false);
-                    await Locator.BgSqlService.InitializeAsync().Log().ConfigureAwait(false);
+                    await Locator.SqlService.InitializeAsync().ConfigureAwait(false);
+                    await Locator.BgSqlService.InitializeAsync().ConfigureAwait(false);
 
                     Locator.CollectionService.LibraryLoaded += (sender, args) => 
                         DispatcherHelper.RunAsync(() => Locator.Download.LoadDownloads());
 
-                    await Locator.CollectionService.LoadLibraryAsync().Log().ConfigureAwait(false);                     
+                    await Locator.CollectionService.LoadLibraryAsync().ConfigureAwait(false);                     
                 }
                 catch (Exception ex)
                 {
-                    EasyTracker.GetTracker().SendException(ex.Message + " " + ex.StackTraceEx(), true);
+                    EasyTracker.GetTracker().SendException(ex.Message + " " + ex.StackTrace, true);
                     DispatcherHelper.RunAsync(() => CurtainPrompt.ShowError("AppErrorBooting".FromLanguageResource()));
                 }
 

@@ -273,9 +273,6 @@
     <Reference Include="AdDuplex.Universal.WinPhone.WinRT">
       <HintPath>..\..\packages\AdDuplexWinPhone81.8.5.0.5\lib\portable-win81+wpa81\AdDuplex.Universal.WinPhone.WinRT.winmd</HintPath>
     </Reference>
-    <Reference Include="AsyncStackTraceEx">
-      <HintPath>..\..\packages\AsyncStackTraceEx.1.0.0.1\lib\portable-net45+win+wpa81+wp80\AsyncStackTraceEx.dll</HintPath>
-    </Reference>
     <Reference Include="GalaSoft.MvvmLight, Version=5.0.2.32240, Culture=neutral, PublicKeyToken=e7570ab207bcb616, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\MvvmLightLibs.5.0.2.0\lib\wpa81\GalaSoft.MvvmLight.dll</HintPath>
