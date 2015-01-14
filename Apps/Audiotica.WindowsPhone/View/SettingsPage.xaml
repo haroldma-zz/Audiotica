@@ -47,7 +47,7 @@
             </PivotItem>
             <PivotItem Header="STORE">
                 <StackPanel>
-                    <Button Content="Remove Ads" HorizontalAlignment="Stretch" Command="{Binding InAppAdsClickRelay}" />
+                    <Button Content="Remove Ads" IsEnabled="{Binding IsAdsEnabled, Converter={StaticResource BoolToOppositeConverter}}" HorizontalAlignment="Stretch" Command="{Binding InAppAdsClickRelay}" />
                 </StackPanel>
             </PivotItem>
             <PivotItem x:Uid="SettingsAbout" Header="ABOUT">
