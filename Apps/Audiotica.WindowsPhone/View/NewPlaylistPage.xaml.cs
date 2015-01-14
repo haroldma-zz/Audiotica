@@ -18,6 +18,8 @@ namespace Audiotica.View
         public NewPlaylistPage()
         {
             InitializeComponent();
+            Bar = BottomAppBar;
+            BottomAppBar = null;
         }
 
         private async void AppBarButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
@@ -45,7 +47,7 @@ namespace Audiotica.View
                     
                     var playlist = await App.Locator.CollectionService.CreatePlaylistAsync(name);
                     CurtainPrompt.Show("PlaylistCreateSuccess".FromLanguageResource(), playlist.Name);
-                    Frame.GoBack();
+                    App.Navigator.GoBack();
                 }
             }
 
