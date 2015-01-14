@@ -9,6 +9,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Windows.Storage;
 using Windows.UI.Core;
+using Windows.UI.StartScreen;
 using Windows.UI.Xaml.Media.Imaging;
 using Audiotica.Core.Common;
 using Audiotica.Core.Utilities;
@@ -223,6 +224,13 @@ namespace Audiotica.Data.Collection.RunTime
                     {
                         Albums.Remove(song.Album);
                         song.Artist.Albums.Remove(song.Album);
+
+                        var tileId = "album." + song.AlbumId;
+                        if (SecondaryTile.Exists(tileId))
+                        {
+                            var secondaryTile = new SecondaryTile(tileId);
+                            secondaryTile.RequestDeleteAsync();
+                        }
                     });
                 }
             }
@@ -233,7 +241,16 @@ namespace Audiotica.Data.Collection.RunTime
                 if (song.Artist.Songs.Count == 0)
                 {
                     await _sqlService.DeleteItemAsync(song.Artist);
-                    await _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => Artists.Remove(song.Artist));
+                    await _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                    {
+                        Artists.Remove(song.Artist);
+                        var tileId = "artist." + song.ArtistId;
+                        if (SecondaryTile.Exists(tileId))
+                        {
+                            var secondaryTile = new SecondaryTile(tileId);
+                            secondaryTile.RequestDeleteAsync();
+                        }
+                    });
                 }
             }
 
