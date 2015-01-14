@@ -257,13 +257,29 @@ namespace Audiotica
 
         private async Task WarnAboutCrashAsync(string title, Exception e)
         {
+            var stacktrace = e.StackTrace;
+
+            if (stacktrace.Contains("TaskAwaiter"))
+            {
+                try
+                {
+                    stacktrace = e.StackTraceEx();
+                }
+                catch
+                {
+                }
+            }
+
+            const string emailTo = "help@audiotica.fm";
+            const string emailSubject = "Audiotica crash report";
+            var emailBody = "I encountered a problem with Audiotica...\r\n\r\n" + e.Message + "\r\n\r\nDetails:\r\n" + stacktrace;
+            var url = "mailto:?to=" + emailTo + "&subject=" + emailSubject + "&body=" + Uri.EscapeDataString(emailBody);
+
             if (await MessageBox.ShowAsync(
-                   "There was a problem with the application. Please contact support with details on what you were doing.",
+                   "There was a problem with the application. Do you want to send a crash report so the developer can fix it?",
                    title, MessageBoxButton.OkCancel) == MessageBoxResult.Ok)
             {
-                Launcher.LaunchUriAsync(
-                    new Uri("mailto:help@audiotica.fm?subject=Crashing Error&body=\n\n" + e.Message +
-                            e.StackTrace));
+                await Launcher.LaunchUriAsync(new Uri(url));
             }
             
             //made it so far, no need to save the crash details
@@ -299,17 +315,17 @@ namespace Audiotica
             {
                 try
                 {
-                    await Locator.SqlService.InitializeAsync().ConfigureAwait(false);
-                    await Locator.BgSqlService.InitializeAsync().ConfigureAwait(false);
+                    await Locator.SqlService.InitializeAsync().Log().ConfigureAwait(false);
+                    await Locator.BgSqlService.InitializeAsync().Log().ConfigureAwait(false);
 
                     Locator.CollectionService.LibraryLoaded += (sender, args) => 
                         DispatcherHelper.RunAsync(() => Locator.Download.LoadDownloads());
 
-                    await Locator.CollectionService.LoadLibraryAsync().ConfigureAwait(false);                     
+                    await Locator.CollectionService.LoadLibraryAsync().Log().ConfigureAwait(false);                     
                 }
                 catch (Exception ex)
                 {
-                    EasyTracker.GetTracker().SendException(ex.Message + " " + ex.StackTrace, true);
+                    EasyTracker.GetTracker().SendException(ex.Message + " " + ex.StackTraceEx(), true);
                     DispatcherHelper.RunAsync(() => CurtainPrompt.ShowError("AppErrorBooting".FromLanguageResource()));
                 }
 

@@ -62,37 +62,37 @@ namespace Audiotica.View
             App.Navigator.GoTo<SpotifyArtistPage, ZoomInTransition>("name." + artist.Name);
         }
 
-        private void AppBarButton_Click_1(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        private void AppBarButton_Click_1(object sender, RoutedEventArgs e)
         {
             Launcher.LaunchUriAsync(new Uri("mailto:help@audiotica.fm"));
         }
 
-        private void AppBarButton_Click_2(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        private void AppBarButton_Click_2(object sender, RoutedEventArgs e)
         {
             DataTransferManager.ShowShareUI();
         }
 
-        private void SongButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        private void SongButton_Click(object sender, RoutedEventArgs e)
         {
             App.Navigator.GoTo<CollectionPage, ZoomInTransition>(0);
         }
 
-        private void ArtistButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        private void ArtistButton_Click(object sender, RoutedEventArgs e)
         {
             App.Navigator.GoTo<CollectionPage, ZoomInTransition>(1);
         }
 
-        private void AlbumButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        private void AlbumButton_Click(object sender, RoutedEventArgs e)
         {
             App.Navigator.GoTo<CollectionPage, ZoomInTransition>(2);
         }
 
-        private void PlaylistButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        private void PlaylistButton_Click(object sender, RoutedEventArgs e)
         {
             App.Navigator.GoTo<CollectionPage, ZoomInTransition>(3);
         }
 
-        private void SearchButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        private void SearchButton_Click(object sender, RoutedEventArgs e)
         {
             App.Navigator.GoTo<SearchPage, ZoomInTransition>(null);
         }
