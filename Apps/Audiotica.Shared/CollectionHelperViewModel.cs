@@ -161,7 +161,10 @@ namespace Audiotica
             {
                 var album = entry as Album;
                 var albumSongs = album.Songs.ToList();
-                albumSongs.Reverse();
+
+                //when inserting we need to reverse the list to keep the order
+                if (App.Locator.Settings.AddToInsert)
+                    albumSongs.Reverse();
 
                 album.AddableTo.Clear();
                 album.AddableTo.Add(new AddableCollectionItem
@@ -184,7 +187,10 @@ namespace Audiotica
             {
                 var artist = entry as Artist;
                 var artistSongs = artist.Songs.ToList();
-                artistSongs.Reverse();
+
+                //when inserting we need to reverse the list to keep the order
+                if (App.Locator.Settings.AddToInsert)
+                    artistSongs.Reverse();
 
                 artist.AddableTo.Clear();
                 artist.AddableTo.Add(new AddableCollectionItem
