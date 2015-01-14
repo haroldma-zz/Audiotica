@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Windows.Foundation.Collections;
 using Windows.Media.Playback;
 using Windows.Storage;
+using Windows.UI.StartScreen;
 using Windows.UI.Xaml.Media.Imaging;
 using Audiotica.Core;
 using Audiotica.Core.Common;
@@ -427,5 +428,62 @@ namespace Audiotica
         }
 
         #endregion
+
+        public static async Task<bool> PinToggleAsync(Artist artist)
+        {
+            bool created;
+            var id = "artist." + artist.Id;
+
+            if (!SecondaryTile.Exists(id))
+            {
+                 created = await CreatePin(id, artist.Name, "artists/" + artist.Id,
+                    string.Format(CollectionConstant.ArtistsArtworkPath, artist.Id));
+            }
+            else
+            {
+                var secondaryTile = new SecondaryTile(id);
+                created = !await secondaryTile.RequestDeleteAsync();
+            }
+
+            return created;
+        }
+
+        public static async Task<bool> PinToggleAsync(Album album)
+        {
+            bool created;
+            var id = "album." + album.Id;
+
+            if (!SecondaryTile.Exists(id))
+            {
+                created = await CreatePin(id, album.Name, "albums/" + album.Id,
+                   string.Format(CollectionConstant.ArtworkPath, album.Id));
+            }
+            else
+            {
+                var secondaryTile = new SecondaryTile(id);
+                created = !await secondaryTile.RequestDeleteAsync();
+            }
+
+            return created;
+        }
+
+        private static async Task<bool> CreatePin(string id, string displayName, string arguments, string artwork)
+        {
+            var tileActivationArguments = arguments;
+            var image =
+                new Uri(CollectionConstant.LocalStorageAppPath + artwork);
+
+            var secondaryTile = new SecondaryTile(id,
+                displayName,
+                tileActivationArguments,
+                image,
+                TileSize.Square150x150)
+            {
+                ShortName = displayName
+            };
+            secondaryTile.VisualElements.ShowNameOnSquare150x150Logo = true;
+
+            return await secondaryTile.RequestCreateAsync();
+        }
     }
 }

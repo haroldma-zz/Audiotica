@@ -40,19 +40,14 @@ namespace Audiotica.View
             Messenger.Default.Register<bool>(this, "artist-coll-sim", SimUpdate);
             Messenger.Default.Register<bool>(this, "artist-coll-pin", ToggleAppBarButton);
 
-            ToggleAppBarButton(!SecondaryTile.Exists(ArtistTileId));
+            ToggleAppBarButton(SecondaryTile.Exists("artist." + Vm.Artist.Id));
         }
 
         private CollectionArtistViewModel Vm { get { return DataContext as CollectionArtistViewModel; } }
 
-        private string ArtistTileId
+        private void ToggleAppBarButton(bool isPinned)
         {
-            get { return "artist." + Vm.Artist.Id; }
-        }
-
-        private void ToggleAppBarButton(bool showPinButton)
-        {
-            if (showPinButton)
+            if (!isPinned)
             {
                 PinUnpinAppBarButton.Label = "Pin";
                 PinUnpinAppBarButton.Icon = new SymbolIcon(Symbol.Pin);
@@ -106,33 +101,7 @@ namespace Audiotica.View
 
         private async void PinUnpinAppBarButton_OnClick(object sender, RoutedEventArgs e)
         {
-            bool showPinButton;
-            if (!SecondaryTile.Exists(ArtistTileId))
-            {
-                var displayName = Vm.Artist.Name;
-                var tileActivationArguments = "artists/" + Vm.Artist.Id;
-                var image =
-                    new Uri(CollectionConstant.LocalStorageAppPath +
-                            string.Format(CollectionConstant.ArtistsArtworkPath, Vm.Artist.Id));
-
-                var secondaryTile = new SecondaryTile(ArtistTileId,
-                    displayName,
-                    tileActivationArguments,
-                    image,
-                    TileSize.Square150x150)
-                {
-                    ShortName = displayName
-                };
-                secondaryTile.VisualElements.ShowNameOnSquare150x150Logo = true;
-
-                showPinButton = !await secondaryTile.RequestCreateAsync();
-            }
-            else
-            {
-                var secondaryTile = new SecondaryTile(ArtistTileId);
-                showPinButton = await secondaryTile.RequestDeleteAsync();
-            }
-            ToggleAppBarButton(showPinButton);
+            ToggleAppBarButton(await CollectionHelper.PinToggleAsync(Vm.Artist));
         }
     }
 }

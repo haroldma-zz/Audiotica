@@ -118,4 +118,9 @@
             </interactivity:Interaction.Behaviors>
         </ListView>
     </Grid>
+    <Page.BottomAppBar>
+        <CommandBar>
+            <AppBarButton x:Name="PinUnpinAppBarButton" Label="Pin" Icon="Pin" Click="PinUnpinAppBarButton_OnClick" />
+        </CommandBar>
+    </Page.BottomAppBar>
 </audiotica:PageBase>

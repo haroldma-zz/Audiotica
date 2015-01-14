@@ -157,6 +157,26 @@ namespace Audiotica
                 }
             }
 
+            else if (e.Arguments.StartsWith("albums/"))
+            {
+                if (Navigator.CurrentPage is CollectionAlbumPage)
+                    Navigator.GoBack();
+
+                var id = int.Parse(e.Arguments.Replace("albums/", ""));
+
+                if (Locator.CollectionService.Albums.FirstOrDefault(p => p.Id == id) != null)
+                    Navigator.GoTo<CollectionAlbumPage, ZoomInTransition>(id);
+                else if (!Locator.CollectionService.IsLibraryLoaded)
+                {
+                    UiBlockerUtility.Block("Loading collection...");
+                    Locator.CollectionService.LibraryLoaded += (sender, args) =>
+                    {
+                        UiBlockerUtility.Unblock();
+                        Navigator.GoTo<CollectionAlbumPage, ZoomInTransition>(id);
+                    };
+                }
+            }
+
             // Ensure the current window is active
             Window.Current.Activate();
 
