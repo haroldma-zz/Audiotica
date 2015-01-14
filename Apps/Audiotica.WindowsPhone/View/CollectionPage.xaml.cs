@@ -172,7 +172,22 @@ namespace Audiotica.View
             App.Navigator.GoTo<NewPlaylistPage, ZoomOutTransition>(null);
         }
 
-        private async void ImportButtonBase_OnClick(object sender, RoutedEventArgs e)
+        private void ImportButtonBase_OnClick(object sender, RoutedEventArgs e)
+        {
+            if (!App.Locator.CollectionService.IsLibraryLoaded)
+            {
+                UiBlockerUtility.Block("Loading collection...");
+                App.Locator.CollectionService.LibraryLoaded += (o, args) =>
+                {
+                    UiBlockerUtility.Unblock();
+                    Import();
+                };
+            }
+            else
+                Import();
+        }
+
+        private async void Import()
         {
             UiBlockerUtility.Block("Scanning...");
             var localMusic = await LocalMusicHelper.GetFilesInMusic();

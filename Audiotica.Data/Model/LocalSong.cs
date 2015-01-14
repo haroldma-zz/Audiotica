@@ -56,7 +56,7 @@ namespace Audiotica.Data.Model
             if (string.IsNullOrEmpty(text))
                 return null;
             //[^0-9a-zA-Z]+
-            return Regex.Replace(text, @"\s+", " ");
+            return Regex.Replace(text, @"\s+", " ").Trim();
         }
 
         public string Id { get; set; }
