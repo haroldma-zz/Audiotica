@@ -14,11 +14,19 @@
 
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <Pivot x:Uid="SearchPivot" Title="SEARCH" HeaderTemplate="{StaticResource PivotHeaderTemplate}">
+        <ProgressBar IsIndeterminate="{Binding IsLoading}" Visibility="{Binding IsLoading, Converter={StaticResource VisibilityConverter}}" />
+        <TextBox x:Uid="SearchBox" PlaceholderText="search" Name="SearchTextBox" Grid.Row="1" Text="{Binding SearchTerm, Mode=TwoWay}" GotFocus="SearchTextBox_GotFocus" Margin="15,30,15,0">
+            <interactivity:Interaction.Behaviors>
+                <Core:EventTriggerBehavior EventName="KeyDown">
+                    <Core:InvokeCommandAction Command="{Binding KeyDownRelayCommand}" />
+                </Core:EventTriggerBehavior>
+            </interactivity:Interaction.Behaviors>
+        </TextBox>
+        <Pivot Grid.Row="2" HeaderTemplate="{StaticResource PivotHeaderTemplate}" Margin="0,-20,0,0">
             <PivotItem x:Uid="PivotSongs" Header="SONGS">
                 <ListView IsItemClickEnabled="True"
                           ItemsSource="{Binding Tracks}"
@@ -75,103 +83,5 @@
                 </ListView>
             </PivotItem>
         </Pivot>
-        <ProgressBar IsIndeterminate="{Binding IsLoading}" Visibility="{Binding IsLoading, Converter={StaticResource VisibilityConverter}}" Grid.Row="1" />
-        <TextBox x:Uid="SearchBox" PlaceholderText="search" Name="SearchTextBox" Grid.Row="2" Text="{Binding SearchTerm, Mode=TwoWay}" Height="60" FontSize="25" GotFocus="SearchTextBox_GotFocus">
-            <TextBox.Resources>
-                <x:Double x:Key="TextControlThemeMinWidth">51</x:Double>
-                <x:Double x:Key="TextControlThemeMinHeight">34</x:Double>
-                <Thickness x:Key="TextControlBorderThemeThickness">2.5</Thickness>
-                <FontFamily x:Key="PhoneFontFamilyNormal">Segoe WP</FontFamily>
-                <x:Double x:Key="ContentControlFontSize">20.26</x:Double>
-                <Thickness x:Key="TextControlThemePadding">7,0.8,8,0</Thickness>
-                <Thickness x:Key="TextControlMarginThemeThickness">0</Thickness>
-                <Thickness x:Key="TextControlHeaderMarginThemeThickness">0</Thickness>
-                <SolidColorBrush x:Key="TextBoxDisabledBackgroundThemeBrush" Color="Transparent"/>
-                <x:Double x:Key="TextControlBorderThemeOpacity">0.8</x:Double>
-                <Style x:Key="TextBoxStyle1" TargetType="TextBox">
-                    <Setter Property="MinWidth" Value="{ThemeResource TextControlThemeMinWidth}"/>
-                    <Setter Property="MinHeight" Value="{ThemeResource TextControlThemeMinHeight}"/>
-                    <Setter Property="Foreground" Value="{ThemeResource TextBoxForegroundThemeBrush}"/>
-                    <Setter Property="SelectionHighlightColor" Value="{ThemeResource TextSelectionHighlightColorThemeBrush}"/>
-                    <Setter Property="Background" Value="{ThemeResource TextBoxBackgroundThemeBrush}"/>
-                    <Setter Property="BorderBrush" Value="{ThemeResource TextBoxBorderThemeBrush}"/>
-                    <Setter Property="BorderThickness" Value="{ThemeResource TextControlBorderThemeThickness}"/>
-                    <Setter Property="FontFamily" Value="{ThemeResource PhoneFontFamilyNormal}"/>
-                    <Setter Property="FontSize" Value="{ThemeResource ContentControlFontSize}"/>
-                    <Setter Property="TextWrapping" Value="NoWrap"/>
-                    <Setter Property="ScrollViewer.HorizontalScrollMode" Value="Auto"/>
-                    <Setter Property="ScrollViewer.VerticalScrollMode" Value="Auto"/>
-                    <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Hidden"/>
-                    <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Hidden"/>
-                    <Setter Property="ScrollViewer.IsDeferredScrollingEnabled" Value="False"/>
-                    <Setter Property="Padding" Value="10,.8,10,0"/>
-                    <Setter Property="Margin" Value="{ThemeResource TextControlMarginThemeThickness}"/>
-                    <Setter Property="VerticalAlignment" Value="Top"/>
-                    <Setter Property="Template">
-                        <Setter.Value>
-                            <ControlTemplate TargetType="TextBox">
-                                <Grid Background="Transparent">
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="Auto"/>
-                                        <RowDefinition Height="*"/>
-                                    </Grid.RowDefinitions>
-                                    <VisualStateManager.VisualStateGroups>
-                                        <VisualStateGroup x:Name="CommonStates">
-                                            <VisualState x:Name="Disabled">
-                                                <Storyboard>
-                                                    <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Background" Storyboard.TargetName="BorderElement">
-                                                        <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource TextBoxDisabledBackgroundThemeBrush}"/>
-                                                    </ObjectAnimationUsingKeyFrames>
-                                                    <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="BorderBrush" Storyboard.TargetName="BorderElement">
-                                                        <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource TextBoxDisabledBorderThemeBrush}"/>
-                                                    </ObjectAnimationUsingKeyFrames>
-                                                    <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Foreground" Storyboard.TargetName="ContentElement">
-                                                        <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource TextBoxDisabledForegroundThemeBrush}"/>
-                                                    </ObjectAnimationUsingKeyFrames>
-                                                    <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Foreground" Storyboard.TargetName="PlaceholderTextContentPresenter">
-                                                        <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource TextBoxDisabledForegroundThemeBrush}"/>
-                                                    </ObjectAnimationUsingKeyFrames>
-                                                    <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Foreground" Storyboard.TargetName="HeaderContentPresenter">
-                                                        <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource TextBoxDisabledHeaderForegroundThemeBrush}"/>
-                                                    </ObjectAnimationUsingKeyFrames>
-                                                </Storyboard>
-                                            </VisualState>
-                                            <VisualState x:Name="Normal">
-                                                <Storyboard>
-                                                    <DoubleAnimation Duration="0" To="{ThemeResource TextControlBorderThemeOpacity}" Storyboard.TargetProperty="Opacity" Storyboard.TargetName="BorderElement"/>
-                                                </Storyboard>
-                                            </VisualState>
-                                            <VisualState x:Name="Focused">
-                                                <Storyboard>
-                                                    <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="BorderBrush" Storyboard.TargetName="BorderElement">
-                                                        <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource TextSelectionHighlightColorThemeBrush}"/>
-                                                    </ObjectAnimationUsingKeyFrames>
-                                                    <DoubleAnimation Duration="0" To="0" Storyboard.TargetProperty="Opacity" Storyboard.TargetName="PlaceholderTextContentPresenter"/>
-                                                    <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Background" Storyboard.TargetName="BorderElement">
-                                                        <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource TextBoxFocusedBackgroundThemeBrush}"/>
-                                                    </ObjectAnimationUsingKeyFrames>
-                                                </Storyboard>
-                                            </VisualState>
-                                        </VisualStateGroup>
-                                    </VisualStateManager.VisualStateGroups>
-                                    <Border x:Name="BorderElement" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Grid.Row="1"/>
-                                    <ContentPresenter x:Name="HeaderContentPresenter" ContentTemplate="{TemplateBinding HeaderTemplate}" Content="{TemplateBinding Header}" Margin="{ThemeResource TextControlHeaderMarginThemeThickness}" Grid.Row="0" Style="{StaticResource HeaderContentPresenterStyle}"/>
-                                    <ScrollViewer x:Name="ContentElement" AutomationProperties.AccessibilityView="Raw" HorizontalScrollMode="{TemplateBinding ScrollViewer.HorizontalScrollMode}" HorizontalScrollBarVisibility="{TemplateBinding ScrollViewer.HorizontalScrollBarVisibility}" IsTabStop="False" IsHorizontalRailEnabled="{TemplateBinding ScrollViewer.IsHorizontalRailEnabled}" IsVerticalRailEnabled="{TemplateBinding ScrollViewer.IsVerticalRailEnabled}" IsDeferredScrollingEnabled="{TemplateBinding ScrollViewer.IsDeferredScrollingEnabled}" Margin="{TemplateBinding BorderThickness}" MinHeight="{ThemeResource TextControlThemeMinHeight}" Padding="{TemplateBinding Padding}" Grid.Row="1" VerticalScrollBarVisibility="{TemplateBinding ScrollViewer.VerticalScrollBarVisibility}" VerticalScrollMode="{TemplateBinding ScrollViewer.VerticalScrollMode}" ZoomMode="Disabled" VerticalAlignment="Center"/>
-                                    <ContentControl x:Name="PlaceholderTextContentPresenter" Content="{TemplateBinding PlaceholderText}" Foreground="{ThemeResource TextBoxPlaceholderTextThemeBrush}" FontSize="{TemplateBinding FontSize}" IsTabStop="False" Margin="{TemplateBinding BorderThickness}" Padding="{TemplateBinding Padding}" Grid.Row="1" VerticalAlignment="Center"/>
-                                </Grid>
-                            </ControlTemplate>
-                        </Setter.Value>
-                    </Setter>
-                </Style>
-            </TextBox.Resources>
-            <TextBox.Style>
-                <StaticResource ResourceKey="TextBoxStyle1"/>
-            </TextBox.Style>
-            <interactivity:Interaction.Behaviors>
-                <Core:EventTriggerBehavior EventName="KeyDown">
-                    <Core:InvokeCommandAction Command="{Binding KeyDownRelayCommand}" />
-                </Core:EventTriggerBehavior>
-            </interactivity:Interaction.Behaviors>
-        </TextBox>
     </Grid>
 </audiotica:PageBase>

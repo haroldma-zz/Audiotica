@@ -215,10 +215,17 @@ namespace Audiotica.Data.Service.RunTime
                         if (songNode.Attributes.Contains("data-duration"))
                         {
                             var duration = songNode.Attributes["data-duration"].Value;
-                            var seconds = int.Parse(duration.Substring(duration.Length - 2, 2));
-                            var minutes = int.Parse(duration.Remove(duration.Length - 3));
 
-                            song.Duration = new TimeSpan(0, 0, minutes, seconds);
+                            if (duration.Contains(":"))
+                            {
+                                var seconds = int.Parse(duration.Substring(duration.Length - 2, 2));
+                                var minutes = int.Parse(duration.Remove(duration.Length - 3));
+                                song.Duration = new TimeSpan(0, 0, minutes, seconds);
+                            }
+                            else
+                            {
+                                song.Duration = new TimeSpan(0, 0, 0, int.Parse(duration));
+                            }
                         }
 
                         var songTitle = songNode.Descendants("div")
@@ -481,8 +488,13 @@ namespace Audiotica.Data.Service.RunTime
 
         private List<WebSong> FilterByTypeAndMatch(IEnumerable<WebSong> songs, string title, string artist)
         {
+            //just in case a song is "acoustic version"
+            var cleanTile = title.Replace("(acoustic)", "");
+
             var filterSongs = songs.Where(p =>
             {
+                title = title.Replace(" )", ")").Replace("( ", "(");
+
                 var isCorrectType = IsCorrectType(title, p.Title, "mix")
                                     && IsCorrectType(title, p.Title, "cover")
                                     && IsCorrectType(title, p.Title, "live")
@@ -491,12 +503,8 @@ namespace Audiotica.Data.Service.RunTime
                                     && IsCorrectType(title, p.Title, "acapella")
                                     && IsCorrectType(title, p.Title, "acoustic");
 
-                //just in case a song is "acoustic version"
-                if (title.Contains("acoustic") && isCorrectType)
-                    title = title.Replace("(acoustic)", "");
-
-                var isCorrectTitle = p.Title.ToLower().Contains(title.ToLower())
-                                     || title.ToLower().Contains(p.Title.ToLower());
+                var isCorrectTitle = p.Title.ToLower().Contains(cleanTile.ToLower())
+                                     || cleanTile.ToLower().Contains(p.Title.ToLower());
                 var isCorrectArtist = p.Artist != null
                     ? p.Artist.ToLower().Contains(artist.ToLower())
                       || artist.ToLower().Contains(p.Artist.ToLower()) 
@@ -506,7 +514,7 @@ namespace Audiotica.Data.Service.RunTime
                 return isCorrectType
                        && isCorrectTitle
                        && isCorrectArtist;
-            }).ToList();
+            }).OrderBy(p => p.Duration.Minutes).ToList();
 
             /*all the filter songs are candidates for being a match
              *but to improve it we can get how long do most songs last
@@ -520,8 +528,17 @@ namespace Audiotica.Data.Service.RunTime
 
         private bool IsCorrectType(string title, string songTitle, string type)
         {
-            var isSupposedType = title.ToLower().Contains(type);
-            var isType = songTitle.ToLower().Contains(type);
+            title = title.ToLower();
+            songTitle = songTitle.ToLower();
+
+            var isSupposedType = title.Contains(" " + type)
+                || title.Contains(type + " ")
+                || title.Contains(type + ")")
+                || title.Contains("(" + type);
+            var isType = songTitle.Contains(" " + type)
+                || songTitle.Contains(type + " ") 
+                || songTitle.Contains(type+")")
+                || songTitle.Contains("(" + type);
             return isSupposedType && isType || !isSupposedType && !isType;
         }
 

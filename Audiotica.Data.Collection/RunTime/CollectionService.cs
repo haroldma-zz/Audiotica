@@ -368,7 +368,7 @@ namespace Audiotica.Data.Collection.RunTime
 
                 var orderedAlbumSong = song.Album.Songs.ToList();
                 orderedAlbumSong.Add(song);
-                orderedAlbumSong.Sort((p, m) => p.TrackNumber.CompareTo(m.TrackNumber));
+                orderedAlbumSong = orderedAlbumSong.OrderBy(p => p.TrackNumber).ToList();
 
                 var index = orderedAlbumSong.IndexOf(song);
                 song.Album.Songs.Insert(index, song);
@@ -379,7 +379,7 @@ namespace Audiotica.Data.Collection.RunTime
 
                 var orderedArtistSong = song.Artist.Songs.ToList();
                 orderedArtistSong.Add(song);
-                orderedArtistSong.Sort((p, m) => String.Compare(p.Name, m.Name, StringComparison.Ordinal));
+                orderedArtistSong = orderedArtistSong.OrderBy(p => p.Name).ToList();
 
                 index = orderedArtistSong.IndexOf(song);
                 song.Artist.Songs.Insert(index, song);
@@ -391,11 +391,11 @@ namespace Audiotica.Data.Collection.RunTime
                 if (!song.Artist.Albums.Contains(song.Album))
                 {
                     var orderedArtistAlbum = song.Artist.Albums.ToList();
-                    orderedArtistAlbum.Add(album);
-                    orderedArtistAlbum.Sort((p, m) => String.Compare(p.Name, m.Name, StringComparison.Ordinal));
+                    orderedArtistAlbum.Add(song.Album);
+                    orderedArtistAlbum = orderedArtistAlbum.OrderBy(p => p.Name).ToList();
 
-                    index = orderedArtistAlbum.IndexOf(album);
-                    song.Artist.Albums.Insert(index, album);
+                    index = orderedArtistAlbum.IndexOf(song.Album);
+                    song.Artist.Albums.Insert(index, song.Album);
                 }
 
                 #endregion
