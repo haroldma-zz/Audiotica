@@ -15,6 +15,8 @@ namespace Audiotica.View
         public CollectionAlbumPage()
         {
             InitializeComponent();
+            Bar = BottomAppBar;
+            BottomAppBar = null;
         }
 
         public override void NavigatedTo(object e)
