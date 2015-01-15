@@ -29,7 +29,7 @@ namespace Audiotica.Data.Service.RunTime
         private const string TokenPath = UsersPath + "/token";
         private const string MatchPath = BaseApiPath + "match?title={0}&artist={1}&limit={2}";
 
-        private string _authenticationToke;
+        private string _authenticationToken;
 
         public AudioticaService()
         {
@@ -37,7 +37,7 @@ namespace Audiotica.Data.Service.RunTime
             if (cred == null) return;
 
             cred.RetrievePassword();
-            _authenticationToke = cred.Password;
+            _authenticationToken = cred.Password;
 
             CurrentUser = AppSettingsHelper.Read<AudioticaUser>("AudioticaCloudUser");
         }
@@ -49,11 +49,9 @@ namespace Audiotica.Data.Service.RunTime
             var httpClient = new HttpClient();
 
             var token = ":" + AppToken;
-            if (_authenticationToke != null)
-                token = _authenticationToke;
-            token = Convert.ToBase64String(Encoding.UTF8.GetBytes(token));
+            token = _authenticationToken ?? Convert.ToBase64String(Encoding.UTF8.GetBytes(token));
 
-            if (_authenticationToke != null)
+            if (_authenticationToken != null)
                 httpClient.DefaultRequestHeaders.Add("X-ZUMO-AUTH", token);
             else
                 httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", token);
@@ -69,7 +67,7 @@ namespace Audiotica.Data.Service.RunTime
             {
                 var resp = await client.GetAsync(url).ConfigureAwait(false);
                 var json = await resp.Content.ReadAsStringAsync().ConfigureAwait(false);
-                var httpData = await json.DeserializeAsync<BaseAudioticaResponse<T>>().ConfigureAwait(false);
+                var httpData = await json.DeserializeAsync<BaseAudioticaResponse<T>>().ConfigureAwait(false) ?? new BaseAudioticaResponse<T>();
 
                 httpData.Success = resp.IsSuccessStatusCode;
 
@@ -90,7 +88,7 @@ namespace Audiotica.Data.Service.RunTime
                 {
                     var resp = await client.PostAsync(url, content).ConfigureAwait(false);
                     var json = await resp.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    var httpData = await json.DeserializeAsync<BaseAudioticaResponse<T>>().ConfigureAwait(false);
+                    var httpData = await json.DeserializeAsync<BaseAudioticaResponse<T>>().ConfigureAwait(false) ?? new BaseAudioticaResponse<T>();
 
                     httpData.Success = resp.IsSuccessStatusCode;
 
@@ -114,7 +112,7 @@ namespace Audiotica.Data.Service.RunTime
             if (!resp.Success)
                 return resp;
 
-            _authenticationToke = resp.Data.AuthenticationToken;
+            _authenticationToken = resp.Data.AuthenticationToken;
             CurrentUser = resp.Data.User;
 
             AppSettingsHelper.WriteAsJson("AudioticaCloudUser", CurrentUser);
@@ -151,7 +149,7 @@ namespace Audiotica.Data.Service.RunTime
             return resp;
         }
 
-        public async Task<BaseAudioticaResponse<List<WebSong>>> GetMatches(string title, string artist, int limit = 1)
+        public async Task<BaseAudioticaResponse<List<WebSong>>> GetMatchesAsync(string title, string artist, int limit = 1)
         {
             var resp = await GetAsync<List<WebSong>>(string.Format(MatchPath, 
                 Uri.EscapeDataString(title), Uri.EscapeDataString(artist), limit));
