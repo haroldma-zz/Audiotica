@@ -56,6 +56,7 @@ namespace Audiotica.ViewModel
                 SimpleIoc.Default.Register<ISongDownloadService>(() => new SongDownloadService(CollectionService, SqlService, DispatcherHelper.UIDispatcher));
             }
 
+            SimpleIoc.Default.Register<AudioticaService>();
             SimpleIoc.Default.Register<SpotifyWebApi>();
             SimpleIoc.Default.Register<CollectionCommandHelper>();
             SimpleIoc.Default.Register<AudioPlayerHelper>();
@@ -107,6 +108,11 @@ namespace Audiotica.ViewModel
         public SpotifyWebApi Spotify
         {
             get { return ServiceLocator.Current.GetInstance<SpotifyWebApi>(); }
+        }
+
+        public AudioticaService AudioticaCloud
+        {
+            get { return ServiceLocator.Current.GetInstance<AudioticaService>(); }
         }
 
         public AdMediatorBar Ads

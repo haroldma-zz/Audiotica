@@ -34,6 +34,7 @@ namespace Audiotica.View
             App.Navigator.AddPage(new DeveloperPage());
             App.Navigator.AddPage(new LastFmPage());
             App.Navigator.AddPage(new AboutPage());
+            App.Navigator.AddPage(new CloudPage());
         }
 
         private bool IsRestore()

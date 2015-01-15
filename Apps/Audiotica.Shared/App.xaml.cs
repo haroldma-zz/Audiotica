@@ -23,8 +23,6 @@ using Audiotica.View;
 using Audiotica.ViewModel;
 using GalaSoft.MvvmLight.Threading;
 using GoogleAnalytics;
-using Microsoft.WindowsAzure.MobileServices;
-using MyToolkit.Paging.Handlers;
 
 #endregion
 
@@ -47,16 +45,6 @@ namespace Audiotica
 
         #region Properties
 
-        public static MobileServiceClient MobileService = new MobileServiceClient(
-            "http://localhost:48065", 
-            "LOCALTESTING"
-            );
-        // Use this constructor instead after publishing to the cloud
-        // public static MobileServiceClient MobileService = new MobileServiceClient(
-        //      "https://audiotica-cloud.azure-mobile.net/",
-        //      "AypzKLKRIDPGkXXzCGYGqjJNliXTwp74"
-        //);
-
         public static Navigator Navigator { get; set; }
 
         public static ViewModelLocator Locator
@@ -71,8 +59,8 @@ namespace Audiotica
             get
             {
                 return IsDebugging
-                ? CurrentAppSimulator.LicenseInformation
-                : CurrentApp.LicenseInformation;
+                    ? CurrentAppSimulator.LicenseInformation
+                    : CurrentApp.LicenseInformation;
             }
         }
 
@@ -165,7 +153,7 @@ namespace Audiotica
                     Locator.CollectionService.LibraryLoaded += (sender, args) =>
                     {
                         UiBlockerUtility.Unblock();
-                        Navigator.GoTo<CollectionArtistPage,ZoomInTransition>(id);
+                        Navigator.GoTo<CollectionArtistPage, ZoomInTransition>(id);
                     };
                 }
             }
@@ -272,16 +260,17 @@ namespace Audiotica
 
             const string emailTo = "help@audiotica.fm";
             const string emailSubject = "Audiotica crash report";
-            var emailBody = "I encountered a problem with Audiotica...\r\n\r\n" + e.Message + "\r\n\r\nDetails:\r\n" + stacktrace;
+            var emailBody = "I encountered a problem with Audiotica...\r\n\r\n" + e.Message + "\r\n\r\nDetails:\r\n" +
+                            stacktrace;
             var url = "mailto:?to=" + emailTo + "&subject=" + emailSubject + "&body=" + Uri.EscapeDataString(emailBody);
 
             if (await MessageBox.ShowAsync(
-                   "There was a problem with the application. Do you want to send a crash report so the developer can fix it?",
-                   title, MessageBoxButton.OkCancel) == MessageBoxResult.Ok)
+                "There was a problem with the application. Do you want to send a crash report so the developer can fix it?",
+                title, MessageBoxButton.OkCancel) == MessageBoxResult.Ok)
             {
                 await Launcher.LaunchUriAsync(new Uri(url));
             }
-            
+
             //made it so far, no need to save the crash details
             AppSettingsHelper.Write("CrashingException", null);
         }
@@ -318,10 +307,10 @@ namespace Audiotica
                     await Locator.SqlService.InitializeAsync().ConfigureAwait(false);
                     await Locator.BgSqlService.InitializeAsync().ConfigureAwait(false);
 
-                    Locator.CollectionService.LibraryLoaded += (sender, args) => 
+                    Locator.CollectionService.LibraryLoaded += (sender, args) =>
                         DispatcherHelper.RunAsync(() => Locator.Download.LoadDownloads());
 
-                    await Locator.CollectionService.LoadLibraryAsync().ConfigureAwait(false);                     
+                    await Locator.CollectionService.LoadLibraryAsync().ConfigureAwait(false);
                 }
                 catch (Exception ex)
                 {

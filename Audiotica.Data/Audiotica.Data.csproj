@@ -54,6 +54,7 @@
     <Compile Include="Model\LocalSong.cs" />
     <Compile Include="Model\Mp3ClanRoot.cs" />
     <Compile Include="Service\Interfaces\IDeezerService.cs" />
+    <Compile Include="Service\RunTime\AudioticaService.cs" />
     <Compile Include="Service\RunTime\DeezerService.cs" />
     <Compile Include="Spotify\AlbumType.cs" />
     <Compile Include="Spotify\Models\BasicModel.cs" />

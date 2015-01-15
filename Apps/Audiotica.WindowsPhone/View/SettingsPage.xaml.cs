@@ -38,5 +38,10 @@ namespace Audiotica.View
         {
             App.Navigator.GoTo<AboutPage, ZoomInTransition>(null);
         }
+
+        private void CloudButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            App.Navigator.GoTo<CloudPage, ZoomInTransition>(null);
+        }
     }
 }
