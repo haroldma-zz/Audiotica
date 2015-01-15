@@ -2,13 +2,13 @@
 
 using System;
 using System.Collections.Generic;
-using System.Dynamic;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using Audiotica.Core.Utilities;
-using Newtonsoft.Json;
+using Audiotica.Data.Model;
+using Audiotica.Data.Model.AudioticaCloud;
 using Newtonsoft.Json.Linq;
 
 #endregion
@@ -27,6 +27,20 @@ namespace Audiotica.Data.Service.RunTime
 
         private const string UsersPath = BaseApiPath + "users";
         private const string TokenPath = UsersPath + "/token";
+        private const string MatchPath = BaseApiPath + "match?title={0}&artist={1}&limit={2}";
+
+        private string _authenticationToke;
+
+        public AudioticaService()
+        {
+            var cred = CredentialHelper.GetCredentials("AudioticaCloud");
+            if (cred == null) return;
+
+            cred.RetrievePassword();
+            _authenticationToke = cred.Password;
+
+            CurrentUser = AppSettingsHelper.Read<AudioticaUser>("AudioticaCloudUser");
+        }
 
         public AudioticaUser CurrentUser { get; set; }
 
@@ -35,11 +49,11 @@ namespace Audiotica.Data.Service.RunTime
             var httpClient = new HttpClient();
 
             var token = ":" + AppToken;
-            if (CurrentUser != null)
-                token = CurrentUser.AuthenticationToken;
+            if (_authenticationToke != null)
+                token = _authenticationToke;
             token = Convert.ToBase64String(Encoding.UTF8.GetBytes(token));
 
-            if (CurrentUser != null)
+            if (_authenticationToke != null)
                 httpClient.DefaultRequestHeaders.Add("X-ZUMO-AUTH", token);
             else
                 httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", token);
@@ -47,25 +61,47 @@ namespace Audiotica.Data.Service.RunTime
             return httpClient;
         }
 
-        private async Task<HttpResult<T>> PostAsync<T>(string url, Dictionary<string, string> data)
+        #region Helper methods
+
+        private async Task<BaseAudioticaResponse<T>> GetAsync<T>(string url)
+        {
+            using (var client = CreateHttpClient())
+            {
+                var resp = await client.GetAsync(url).ConfigureAwait(false);
+                var json = await resp.Content.ReadAsStringAsync().ConfigureAwait(false);
+                var httpData = await json.DeserializeAsync<BaseAudioticaResponse<T>>().ConfigureAwait(false);
+
+                httpData.Success = resp.IsSuccessStatusCode;
+
+                return httpData;
+            }
+        }
+
+        private async Task<BaseAudioticaResponse> PostAsync(string url, Dictionary<string, string> data)
+        {
+            return await PostAsync<object>(url, data).ConfigureAwait(false) as BaseAudioticaResponse;
+        }
+
+        private async Task<BaseAudioticaResponse<T>> PostAsync<T>(string url, Dictionary<string, string> data)
         {
             using (var client = CreateHttpClient())
             {
                 using (var content = new FormUrlEncodedContent(data))
                 {
-                    var resp = await client.PostAsync(url, content);
-                    var json = await resp.Content.ReadAsStringAsync();
-                    var httpData = await json.DeserializeAsync<T>();
-                    return new HttpResult<T>
-                    {
-                        Data = httpData,
-                        Success = resp.IsSuccessStatusCode
-                    };
+                    var resp = await client.PostAsync(url, content).ConfigureAwait(false);
+                    var json = await resp.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    var httpData = await json.DeserializeAsync<BaseAudioticaResponse<T>>().ConfigureAwait(false);
+
+                    httpData.Success = resp.IsSuccessStatusCode;
+
+                    return httpData;
                 }
             }
         }
 
-        public async Task<BaseAudioticaResponse<bool>> LoginAsync(string username, string password)
+        #endregion
+
+        public async Task<BaseAudioticaResponse> LoginAsync(string username, string password)
         {
             var data = new Dictionary<string, string>
             {
@@ -73,29 +109,22 @@ namespace Audiotica.Data.Service.RunTime
                 {"password", password}
             };
 
-            var resp = await PostAsync<JToken>(TokenPath, data);
+            var resp = await PostAsync<LoginResponse>(TokenPath, data);
 
             if (!resp.Success)
-                return new BaseAudioticaResponse<bool>
-                {
-                    Message = resp.Data == null ? null : resp.Data.Value<string>("message")
-                };
+                return resp;
 
-            CurrentUser = new AudioticaUser
-            {
-                AuthenticationToken = resp.Data.Value<string>("authenticationToken"),
-                UserId = resp.Data.SelectToken("user").Value<string>("userId")
-            };
-            CredentialHelper.SaveCredentials("AudioticaCloud", CurrentUser.UserId,
-                CurrentUser.AuthenticationToken);
+            _authenticationToke = resp.Data.AuthenticationToken;
+            CurrentUser = resp.Data.User;
 
-            return new BaseAudioticaResponse<bool>
-            {
-                Data = true
-            };
+            AppSettingsHelper.WriteAsJson("AudioticaCloudUser", CurrentUser);
+            CredentialHelper.SaveCredentials("AudioticaCloud", resp.Data.User.Id,
+                resp.Data.AuthenticationToken);
+
+            return resp as BaseAudioticaResponse;
         }
 
-        public async Task<BaseAudioticaResponse<bool>> RegisterAsync(string username, string password, string email)
+        public async Task<BaseAudioticaResponse> RegisterAsync(string username, string password, string email)
         {
             var data = new Dictionary<string, string>
             {
@@ -104,45 +133,29 @@ namespace Audiotica.Data.Service.RunTime
                 {"password", password}
             };
 
-            var resp = await PostAsync<JToken>(UsersPath, data);
-
-            if (!resp.Success)
-                return new BaseAudioticaResponse<bool>
-                {
-                    Message = resp.Data == null ? null : resp.Data.Value<string>("message")
-                };
-
-            return new BaseAudioticaResponse<bool>
-            {
-                Data = true
-            };
+            var resp = await PostAsync(UsersPath, data);
+            return resp;
         }
-    }
 
-    public class AudioticaUser
-    {
-        public string AuthenticationToken { get; set; }
+        public async Task<BaseAudioticaResponse<AudioticaUser>> GetProfile()
+        {
+            var resp = await GetAsync<AudioticaUser>(UsersPath);
 
-        public string UserId { get; set; }
+            if (resp.Success)
+            {
+                //keping the user object updated
+                CurrentUser = resp.Data;
+                AppSettingsHelper.WriteAsJson("AudioticaCloudUser", CurrentUser);
+            }
 
-        public string Username { get; set; }
-    }
+            return resp;
+        }
 
-    public class BaseAudioticaResponse<T> : BaseAudioticaResponse
-    {
-        [JsonProperty(PropertyName = "data")]
-        public T Data { get; set; }
-    }
-
-    public class BaseAudioticaResponse
-    {
-        [JsonProperty(PropertyName = "message")]
-        public string Message { get; set; }
-    }
-
-    public class HttpResult<T>
-    {
-        public bool Success { get; set; }
-        public T Data { get; set; }
+        public async Task<BaseAudioticaResponse<List<WebSong>>> GetMatches(string title, string artist, int limit = 1)
+        {
+            var resp = await GetAsync<List<WebSong>>(string.Format(MatchPath, 
+                Uri.EscapeDataString(title), Uri.EscapeDataString(artist), limit));
+            return resp;
+        }
     }
 }

@@ -41,6 +41,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ApiKeys.cs" />
+    <Compile Include="Model\AudioticaCloud\AudioticaUser.cs" />
+    <Compile Include="Model\AudioticaCloud\BaseAudioticaResponse.cs" />
     <Compile Include="Model\Deezer\DeezerAlbum.cs" />
     <Compile Include="Model\Deezer\DeezerArtist.cs" />
     <Compile Include="Model\Deezer\DeezerPageResponse.cs" />
