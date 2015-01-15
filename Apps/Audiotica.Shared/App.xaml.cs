@@ -23,6 +23,7 @@ using Audiotica.View;
 using Audiotica.ViewModel;
 using GalaSoft.MvvmLight.Threading;
 using GoogleAnalytics;
+using Microsoft.WindowsAzure.MobileServices;
 using MyToolkit.Paging.Handlers;
 
 #endregion
@@ -45,6 +46,16 @@ namespace Audiotica
         #endregion
 
         #region Properties
+
+        public static MobileServiceClient MobileService = new MobileServiceClient(
+            "http://localhost:48065", 
+            "LOCALTESTING"
+            );
+        // Use this constructor instead after publishing to the cloud
+        // public static MobileServiceClient MobileService = new MobileServiceClient(
+        //      "https://audiotica-cloud.azure-mobile.net/",
+        //      "AypzKLKRIDPGkXXzCGYGqjJNliXTwp74"
+        //);
 
         public static Navigator Navigator { get; set; }
 

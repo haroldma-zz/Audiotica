@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
+using Windows.Foundation;
 using Windows.Phone.UI.Input;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -23,6 +24,7 @@ namespace Audiotica.View
         private List<ICommandBarElement> _reorderModeCommands;
         private List<ICommandBarElement> _selectionModeCommands;
         private List<ICommandBarElement> _originalCommands;
+        private TypedEventHandler<ListViewBase, ContainerContentChangingEventArgs> _delegate;
 
         public CollectionPlaylistPage()
         {
@@ -147,5 +149,44 @@ namespace Audiotica.View
             bar.PrimaryCommands.AddRange(_reorderModeCommands);
         }
 
+
+        private void ItemListView_ContainerContentChanging(ListViewBase sender, ContainerContentChangingEventArgs args)
+        {
+            var songViewer = args.ItemContainer.ContentTemplateRoot as SongViewer;
+
+            if (songViewer == null)
+                return;
+
+            if (args.InRecycleQueue)
+            {
+                songViewer.ClearData();
+            }
+            else switch (args.Phase)
+                {
+                    case 0:
+                        songViewer.ShowPlaceholder((args.Item as PlaylistSong).Song, playlistMode:true);
+                        args.RegisterUpdateCallback(ContainerContentChangingDelegate);
+                        break;
+                    case 1:
+                        songViewer.ShowTitle();
+                        args.RegisterUpdateCallback(ContainerContentChangingDelegate);
+                        break;
+                    case 2:
+                        songViewer.ShowRest();
+                        break;
+                }
+
+            // For imporved performance, set Handled to true since app is visualizing the data item 
+            args.Handled = true;
+        }
+
+        /// <summary>
+        ///     Managing delegate creation to ensure we instantiate a single instance for
+        ///     optimal performance.
+        /// </summary>
+        private TypedEventHandler<ListViewBase, ContainerContentChangingEventArgs> ContainerContentChangingDelegate
+        {
+            get { return _delegate ?? (_delegate = ItemListView_ContainerContentChanging); }
+        }
     }
 }

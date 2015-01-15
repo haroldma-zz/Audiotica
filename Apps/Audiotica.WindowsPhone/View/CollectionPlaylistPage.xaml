@@ -29,6 +29,8 @@
                         Text="It's empty in here. Go and find a song, album or artist, tap and hold it, then select this playlist." Style="{StaticResource SubtleTextBlockStyle}" />
             <ListView x:Name="SongList" Padding="0,20,0,0"
                       IsItemClickEnabled="True"
+                      ShowsScrollingPlaceholders="True"
+                      ContainerContentChanging="ItemListView_ContainerContentChanging"
                       ItemsSource="{Binding Playlist.Songs}">
                 <ListView.ItemTemplate>
                     <DataTemplate>

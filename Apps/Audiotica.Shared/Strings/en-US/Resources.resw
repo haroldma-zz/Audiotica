@@ -420,7 +420,7 @@
     <comment>uppercase on purpose</comment>
   </data>
   <data name="SettingsAboutBlock.Text" xml:space="preserve">
-    <value>A fully complete and open source alternative to Xbox Music.  Using Spotify and Last.FM for metadata with countless other websites for audio, making it able find any song.</value>
+    <value>A fully complete and open source alternative to Xbox Music.  Using Spotify and Last.FM for metadata with countless other websites for audio, making it able to find any song.</value>
   </data>
   <data name="SettingsAboutBlog.Content" xml:space="preserve">
     <value>Blog</value>

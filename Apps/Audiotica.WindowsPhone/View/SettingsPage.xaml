@@ -5,77 +5,104 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:audiotica="using:Audiotica"
-    xmlns:common="using:Audiotica.Core.Common"
     mc:Ignorable="d"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
-    DataContext="{Binding Source={StaticResource Locator}, Path=Settings}">
+    DataContext="{Binding Settings, Source={StaticResource Locator}}"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-    <Grid>
-        <Pivot x:Uid="SettingsPivot" Title="SETTINGS+MORE" HeaderTemplate="{StaticResource PivotHeaderTemplate}">
-            <PivotItem x:Uid="SettingsApp" Header="APP">
-                <ScrollViewer>
-                    <StackPanel>
-                        <StackPanel>
-                            <ToggleSwitch x:Uid="SettingsToggleAds" Header="Ads" IsEnabled="{Binding IsAdsEnabled}"
-                                      IsOn="{Binding Advertisements, Mode=TwoWay}" />
-                            <ToggleSwitch x:Uid="SettingsToggleWallpaper" Header="Album Art Wallpaper"
-                                      IsOn="{Binding WallpaperArt, Mode=TwoWay}" />
-                            <ToggleSwitch Header="On &quot;Add To Queue&quot; Insert"
-                                      IsOn="{Binding AddToInsert, Mode=TwoWay}" />
-                        </StackPanel>
-                        <StackPanel Visibility="{Binding DevMode, Converter={StaticResource VisibilityConverter}}" VerticalAlignment="Top" Margin="0,50,0,0">
-                            <TextBlock Text="Developer Options" Style="{StaticResource TitleTextBlockStyle}" Margin="0,0,0,10" FontSize="24" />
-                            <ToggleSwitch Header="Simulate First Run" IsOn="{Binding SimulateFirstRun, Mode=TwoWay}" />
-                            <ToggleSwitch Header="Simulate Update" IsOn="{Binding SimulateUpdate, Mode=TwoWay}" />
-                            <ToggleSwitch Header="Frame Rate Counter" IsOn="{Binding FrameRateCounter, Mode=TwoWay}" />
-                            <ToggleSwitch Header="Redraw Regions" IsOn="{Binding RedrawRegions, Mode=TwoWay}" />
-                        </StackPanel>
-                    </StackPanel>
-                </ScrollViewer>
-            </PivotItem>
-            <PivotItem x:Uid="SettingsLastFM" Header="LAST.FM">
-                <StackPanel>
-                    <StackPanel.Resources>
-                        <common:BoolToStringConverter x:Uid="SettingsLastFMLoggedIn" x:Key="IsLoggedInConverter" 
-                                                      TrueContent="Logout" FalseContent="Login"/>
-                    </StackPanel.Resources>
-                    <TextBox x:Uid="SettingsLastFMUsername" Header="Username" IsEnabled="{Binding IsLoggedIn,Converter={StaticResource BoolToOppositeConverter}}" Text="{Binding LastFmUsername, Mode=TwoWay}" />
-                    <PasswordBox x:Uid="SettingsLastFMPassword" Header="Password" IsEnabled="{Binding IsLoggedIn, Converter={StaticResource BoolToOppositeConverter}}" Password="{Binding LastFmPassword, Mode=TwoWay}" />
-                    <Button Content="{Binding IsLoggedIn, Converter={StaticResource IsLoggedInConverter}}" Command="{Binding LoginClickRelay}" HorizontalAlignment="Stretch" Margin="0,0,0,20" />
-                    <ToggleSwitch x:Uid="SettingsLastFMScrobble" Header="Scrobble" IsOn="{Binding Scrobble, Mode=TwoWay}" IsEnabled="{Binding IsLoggedIn}" />
-                </StackPanel>
-            </PivotItem>
-            <PivotItem Header="STORE">
-                <StackPanel>
-                    <Button Content="Remove Ads" IsEnabled="{Binding IsAdsEnabled, Converter={StaticResource BoolToOppositeConverter}}" HorizontalAlignment="Stretch" Command="{Binding InAppAdsClickRelay}" />
-                </StackPanel>
-            </PivotItem>
-            <PivotItem x:Uid="SettingsAbout" Header="ABOUT">
-                <ScrollViewer>
-                    <Grid>
+    <Grid Margin="0,25,0,0">
+        <Grid.Resources>
+            <Style x:Key="SettingsSubtitleStyle" TargetType="TextBlock">
+                <Setter Property="FontWeight" Value="Light" />
+                <Setter Property="Foreground" Value="#89FFFFFF" />
+                <Setter Property="FontSize" Value="16" />
+                <Setter Property="TextWrapping" Value="Wrap" />
+            </Style>
+        </Grid.Resources>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!-- Title Panel -->
+        <StackPanel Grid.Row="0" Margin="19,0,0,0">
+            <TextBlock Text="SETTINGS" Style="{ThemeResource TitleTextBlockStyle}" Margin="0,12,0,0" FontSize="24"
+                       FontWeight="Bold" />
+        </StackPanel>
+        <ScrollViewer Grid.Row="1" Padding="0,20,0,0" Margin="19,9.5,19,0">
+            <StackPanel>
+                <Button Style="{StaticResource PlainButtonStyle}" FontFamily="Global User Interface">
+                    <Grid Margin="0,0,0,10">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
-                            <RowDefinition Height="*" />
+                            <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
-                        <StackPanel VerticalAlignment="Top">
-                            <Image Height="100" Source="ms-appx:///Assets/Logo.png" />
-                            <TextBlock x:Uid="SettingsAboutBlock"
-                                       Text="A fully complete and open source alternative to Xbox Music.  Using Spotify and Last.FM for metadata with countless other websites for audio, making it able find any song."
-                                       FontSize="20" TextWrapping="Wrap" Margin="0,0,0,20" />
-                            <HyperlinkButton Content="@Audiotica" NavigateUri="http://twitter.com/audiotica" FontSize="25"
-                                             Foreground="{StaticResource PhoneAccentBrush}" />
-                            <HyperlinkButton Content="/r/audioticawp" NavigateUri="http://reddit.com/r/AudioticaWP"
-                                             FontSize="25" Foreground="{StaticResource PhoneAccentBrush}" />
-                            <HyperlinkButton x:Uid="SettingsAboutGithub" Content="Source code at Github"
-                                             NavigateUri="http://github.com/zumicts/Audiotica" FontSize="25"
-                                             Foreground="{StaticResource PhoneAccentBrush}" />
-                        </StackPanel>
-                        <HyperlinkButton Grid.Row="1" Command="{Binding DeveloperModeClickRelay}" Content="{Binding Version}"
-                                         HorizontalAlignment="Right" FontSize="20" VerticalAlignment="Bottom"
-                                         Margin="0,20,0,5" />
+                        <TextBlock Text="AUDIOTICA CLOUD" FontWeight="Bold" FontSize="22" />
+                        <TextBlock Grid.Row="1"
+                                   Text="Take advantage of faster matching, syncing and more." 
+                                   Style="{StaticResource SettingsSubtitleStyle}"/>
                     </Grid>
-                </ScrollViewer>
-            </PivotItem>
-        </Pivot>
+                </Button>
+                <Button Click="ApplicationButton_OnClick" Style="{StaticResource PlainButtonStyle}">
+                    <Grid Margin="0,10">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <TextBlock Text="APPLICATION" FontWeight="Bold" FontSize="22" />
+                        <TextBlock Grid.Row="1"
+                                   Text="Configure advertisements, collection wallpaper and accent color." 
+                                   Style="{StaticResource SettingsSubtitleStyle}" />
+                    </Grid>
+                </Button>
+                <Button Click="SettingsButton_OnClick" Style="{StaticResource PlainButtonStyle}">
+                    <Grid Margin="0,10">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <TextBlock Text="PLAYER" FontWeight="Bold" FontSize="22" />
+                        <TextBlock Grid.Row="1"
+                                   Text="Customize those minor details that make a difference." 
+                                   Style="{StaticResource SettingsSubtitleStyle}"/>
+                    </Grid>
+                </Button>
+                <Button Click="DeveloperButton_OnClick" Visibility="{Binding DevMode, Converter={StaticResource VisibilityConverter}}" Style="{StaticResource PlainButtonStyle}">
+                    <Grid Margin="0,10">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <TextBlock Text="/DEVELOPER/OPTIONS" FontWeight="Bold" FontSize="22" />
+                        <TextBlock Grid.Row="1"
+                                   Text="Super secret tools for all the geeky devs." 
+                                   Style="{StaticResource SettingsSubtitleStyle}"/>
+                    </Grid>
+                </Button>
+                <Button Click="LastFmButton_OnClick" Style="{StaticResource PlainButtonStyle}">
+                    <Grid Margin="0,10">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <TextBlock Text="LAST.FM" FontWeight="Bold" FontSize="22" />
+                        <TextBlock Grid.Row="1"
+                                   Text="Scrobble and get recommendations with your Last.FM account."
+                                   Style="{StaticResource SettingsSubtitleStyle}"/>
+                    </Grid>
+                </Button>
+                <Button Click="AboutButton_OnClick" Style="{StaticResource PlainButtonStyle}">
+                    <Grid Margin="0,10">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <TextBlock Text="ABOUT" FontWeight="Bold" FontSize="22" />
+                        <TextBlock Grid.Row="1"
+                                   Text="Details about the current version."
+                                   Style="{StaticResource SettingsSubtitleStyle}"/>
+                    </Grid>
+                </Button>
+            </StackPanel>
+        </ScrollViewer>
     </Grid>
 </audiotica:PageBase>

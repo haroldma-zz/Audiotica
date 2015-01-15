@@ -19,14 +19,16 @@ namespace Audiotica
 
         private Song _song;
         private bool _queueMode;
+        private bool _playlistMode;
 
         /// <summary> 
         /// This method visualizes the placeholder state of the data item. When  
         /// showing a placehlder, we set the opacity of other elements to zero 
         /// so that stale data is not visible to the end user.
         /// </summary> 
-        public void ShowPlaceholder(Song song, bool queueMode = false)
+        public void ShowPlaceholder(Song song, bool queueMode = false, bool playlistMode = false)
         {
+            _playlistMode = playlistMode;
             _queueMode = queueMode;
             DownloadOptionGrid.Visibility = Visibility.Collapsed;
             DownloadProgressGrid.Visibility = Visibility.Collapsed;
@@ -78,6 +80,7 @@ namespace Audiotica
         public void ClearData()
         {
             _queueMode = true;
+            _playlistMode = true;
             _song = null;
             SongNameTextBlock.ClearValue(TextBlock.TextProperty);
             ArtistAlbumNameTextBlock.ClearValue(TextBlock.TextProperty);
@@ -88,7 +91,7 @@ namespace Audiotica
 
         private void Song_OnHolding(object sender, HoldingRoutedEventArgs e)
         {
-            if (!_queueMode)
+            if (!_queueMode && !_playlistMode)
             {
                 FlyoutBase.ShowAttachedFlyout(RootGrid);
             }

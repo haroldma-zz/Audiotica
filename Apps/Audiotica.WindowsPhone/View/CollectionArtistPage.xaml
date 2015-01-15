@@ -19,7 +19,7 @@
         </Grid.Background>
         <Pivot x:Name="ArtistPivot" Title="{Binding Artist.Name, Converter={StaticResource UpperCaseConverter}}" HeaderTemplate="{StaticResource PivotHeaderTemplate}">
             <PivotItem x:Uid="PivotSongs" Header="SONGS">
-                <ListView ContainerContentChanging="ItemListView_ContainerContentChanging" IsItemClickEnabled="True" ItemsSource="{Binding Artist.Songs}">
+                <ListView ShowsScrollingPlaceholders="True" ContainerContentChanging="ItemListView_ContainerContentChanging" IsItemClickEnabled="True" ItemsSource="{Binding Artist.Songs}">
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <audiotica:SongViewer />

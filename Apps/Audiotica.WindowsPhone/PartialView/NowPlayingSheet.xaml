@@ -349,7 +349,7 @@
                 </Grid>
             </PivotItem>
             <PivotItem Header="QUEUE">
-                <ListView ContainerContentChanging="ItemListView_ContainerContentChanging" Name="CurrentQueueView" ItemsSource="{Binding CollectionService.CurrentPlaybackQueue}" ItemContainerStyle="{StaticResource SelectionListViewItemStyle}" Padding="0,0,0,20" SelectionChanged="CurrentQueueView_SelectionChanged">
+                <ListView ShowsScrollingPlaceholders="True" ContainerContentChanging="ItemListView_ContainerContentChanging" Name="CurrentQueueView" ItemsSource="{Binding CollectionService.CurrentPlaybackQueue}" ItemContainerStyle="{StaticResource SelectionListViewItemStyle}" Padding="0,0,0,20" SelectionChanged="CurrentQueueView_SelectionChanged">
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <audiotica:SongViewer />

@@ -1,8 +1,8 @@
 ﻿#region
 
-using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 using Audiotica.Core.Utilities;
+using Audiotica.View.Setting;
 
 #endregion
 
@@ -10,16 +10,11 @@ namespace Audiotica.View
 {
     public sealed partial class RootPage
     {
-        private bool IsRestore()
-        {
-            return StorageHelper.FileExistsAsync("_current_restore.autcp").Result;
-        }
-
         public RootPage()
         {
             InitializeComponent();
             App.Navigator = new Navigator(this, LayoutRoot);
-            
+
             if (AppVersionHelper.IsFirstRun)
                 App.Navigator.AddPage(new FirstRunPage());
             else if (IsRestore())
@@ -34,6 +29,16 @@ namespace Audiotica.View
             App.Navigator.AddPage(new SpotifyArtistPage());
             App.Navigator.AddPage(new SearchPage());
             App.Navigator.AddPage(new SettingsPage());
+            App.Navigator.AddPage(new ApplicationPage());
+            App.Navigator.AddPage(new PlayerPage());
+            App.Navigator.AddPage(new DeveloperPage());
+            App.Navigator.AddPage(new LastFmPage());
+            App.Navigator.AddPage(new AboutPage());
+        }
+
+        private bool IsRestore()
+        {
+            return StorageHelper.FileExistsAsync("_current_restore.autcp").Result;
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
