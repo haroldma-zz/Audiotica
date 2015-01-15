@@ -56,7 +56,7 @@ namespace Audiotica.ViewModel
 
                 // ReSharper disable once ExplicitCallerInfoArgument
                 RaisePropertyChanged("IsAdsEnabled");
-                CurtainPrompt.Show("You can now go the app pivot to disable ads.");
+                CurtainPrompt.Show("You can now disabled advertisements!");
 
                 var transaction = new Transaction(ProductConstants.InAppAdvertisements, (long) (1.99*1000000));
                 EasyTracker.GetTracker().SendTransaction(transaction);

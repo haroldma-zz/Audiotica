@@ -293,7 +293,7 @@ namespace Audiotica
 
             if (RootFrame != null) return;
 
-            RootFrame = new Frame();
+            RootFrame = new Frame() {Style = Resources["AppFrame"] as Style};
             Window.Current.Content = RootFrame;
             DispatcherHelper.Initialize();
         }
