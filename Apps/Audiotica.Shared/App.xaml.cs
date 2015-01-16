@@ -258,7 +258,7 @@ namespace Audiotica
         {
             var stacktrace = e.StackTrace;
 
-            const string emailTo = "help@audiotica.fm";
+            const string emailTo = "badbug@audiotica.fm";
             const string emailSubject = "Audiotica crash report";
             var emailBody = "I encountered a problem with Audiotica...\r\n\r\n" + e.Message + "\r\n\r\nDetails:\r\n" +
                             stacktrace;
