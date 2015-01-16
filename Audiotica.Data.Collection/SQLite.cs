@@ -1013,7 +1013,11 @@ namespace SQLite
 		public void Commit ()
 		{
 			if (Interlocked.Exchange (ref _transactionDepth, 0) != 0) {
-				Execute ("commit");
+			    try
+			    {
+			        Execute("commit");
+			    }
+                catch { }
 			}
 			// Do nothing on a commit with no open transaction
 		}

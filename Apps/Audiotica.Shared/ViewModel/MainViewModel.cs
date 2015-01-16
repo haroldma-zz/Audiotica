@@ -146,7 +146,7 @@ namespace Audiotica.ViewModel
             try
             {
                 var rec = await _service.GetRecommendedArtistsAsync(limit: 10);
-                RecommendedArtists = rec.Content;
+                RecommendedArtists = rec.Content.ToList();
             }
             catch
             {

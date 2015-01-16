@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Audiotica.Core.Common;
@@ -98,7 +99,11 @@ namespace Audiotica.Data.Service.RunTime
                 if (!await GetSessionTokenAsync())
                     return LastFmApiError.BadAuth;
 
-            var resp = await _trackApi.UpdateNowPlayingAsync(new Scrobble(artist, album, name, played, duration, albumArtist));
+            var resp = await _trackApi.UpdateNowPlayingAsync(new Scrobble(artist, album, name, played)
+            {
+                Duration = duration,
+                AlbumArtist = albumArtist
+            });
             return resp.Error;
         }
 
@@ -109,7 +114,11 @@ namespace Audiotica.Data.Service.RunTime
                 if (!await GetSessionTokenAsync())
                     return LastFmApiError.BadAuth;
             
-            var resp = await _trackApi.ScrobbleAsync(new Scrobble(artist, album, name, played, duration, albumArtist));
+            var resp = await _trackApi.ScrobbleAsync(new Scrobble(artist, album, name, played)
+            {
+                Duration = duration,
+                AlbumArtist = albumArtist
+            });
             return resp.Error;
         }
 
@@ -240,14 +249,14 @@ namespace Audiotica.Data.Service.RunTime
         {
             var resp = await _artistApi.GetSimilarArtistsAsync(name, true, limit);
             ThrowIfError(resp);
-            return resp.Content;
+            return resp.Content.ToList();
         }
 
         public async Task<List<LastTrack>> GetSimilarTracksAsync(string name, string artistName, int limit = 30)
         {
             var resp = await _trackApi.GetSimilarTracksAsync(name, artistName, true, limit);
             ThrowIfError(resp);
-            return resp.Content;
+            return resp.Content.ToList();
         }
 
         public async Task<bool> AuthenticaAsync(string username, string password)

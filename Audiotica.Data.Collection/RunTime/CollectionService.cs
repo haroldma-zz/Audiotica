@@ -511,12 +511,19 @@ namespace Audiotica.Data.Collection.RunTime
 
         private async Task<bool> GetArtworkAsync(string filePath, Stream stream)
         {
-            using (var fileStream = await
-                (await StorageHelper.CreateFileAsync(filePath, option: CreationCollisionOption.ReplaceExisting))
-                    .OpenStreamForWriteAsync())
+            try
             {
-                await stream.CopyToAsync(fileStream);
-                return true;
+                using (var fileStream = await
+                    (await StorageHelper.CreateFileAsync(filePath, option: CreationCollisionOption.ReplaceExisting))
+                        .OpenStreamForWriteAsync())
+                {
+                    await stream.CopyToAsync(fileStream);
+                    return true;
+                }
+            }
+            catch
+            {
+                return false;
             }
         }
 
@@ -645,7 +652,7 @@ namespace Audiotica.Data.Collection.RunTime
             if (insert)
             {
                 next = PlaybackQueue[normalIndex];
-                if (next.PrevId != 0)
+                if (next.PrevId != 0 && _lookupMap.ContainsKey(shuffleNext.PrevId))
                     prev = _lookupMap[next.PrevId];
             }
             else
@@ -660,7 +667,7 @@ namespace Audiotica.Data.Collection.RunTime
                 else
                 {
                     shuffleNext = ShufflePlaybackQueue[shuffleIndex];
-                    if (shuffleNext.ShufflePrevId != 0)
+                    if (shuffleNext.ShufflePrevId != 0 && _lookupMap.ContainsKey(shuffleNext.ShufflePrevId))
                         shufflePrev = _lookupMap[shuffleNext.ShufflePrevId];
                 }
             }
@@ -671,7 +678,7 @@ namespace Audiotica.Data.Collection.RunTime
                     shuffleIndex = rnd.Next(1, ShufflePlaybackQueue.Count - 1);
                     shuffleNext = ShufflePlaybackQueue.ElementAt(shuffleIndex);
 
-                    if (shuffleNext.ShufflePrevId != 0)
+                    if (shuffleNext.ShufflePrevId != 0 && _lookupMap.ContainsKey(shuffleNext.ShufflePrevId))
                         shufflePrev = _lookupMap[shuffleNext.ShufflePrevId];
                 }
                 else

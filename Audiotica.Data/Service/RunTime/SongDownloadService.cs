@@ -55,7 +55,8 @@ namespace Audiotica.Data.Service.RunTime
             }
             catch
             {
-                throw new Exception("Failed to get downloads.");
+                //failed silently
+                return;
             }
 
             //no downloads? exit!
@@ -195,6 +196,7 @@ namespace Audiotica.Data.Service.RunTime
         public async Task StartDownloadAsync(Song song)
         {
             song.SongState = SongState.Downloading;
+
             await _sqlService.UpdateItemAsync(song).ConfigureAwait(false);
             try
             {
@@ -212,8 +214,9 @@ namespace Audiotica.Data.Service.RunTime
                 if (e.Message.Contains("there is not enough space on the disk"))
                     _dispatcher.RunAsync(CoreDispatcherPriority.Normal,
                         () => CurtainPrompt.ShowError("Not enough disk space to download."));
-                
-                song.SongState = SongState.None;
+
+                _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                    song.SongState = SongState.None);
                 _sqlService.UpdateItemAsync(song).ConfigureAwait(false);
             }
         }
