@@ -91,6 +91,9 @@ namespace Audiotica
 
         public void PlaySong(QueueSong song)
         {
+            if (song == null)
+                return;
+
             if (_isShutdown)
                 AddMediaPlayerEventHandlers();
 

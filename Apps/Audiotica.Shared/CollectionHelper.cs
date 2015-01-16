@@ -236,7 +236,7 @@ namespace Audiotica
 
         public static async Task PlaySongsAsync(Song song, List<Song> songs)
         {
-            if (songs.Count == 0) return;
+            if (song == null || songs == null || songs.Count == 0) return;
 
             var skip = songs.IndexOf(song);
             var ordered = songs.Skip(skip).ToList();
@@ -278,6 +278,10 @@ namespace Audiotica
                 App.Locator.AudioPlayerHelper.PlaySong(queueSong);
 
                 await Task.Delay(500).ConfigureAwait(false);
+
+                if (!_currentlyPreparing)
+                    return;
+
                 App.Locator.SqlService.DbConnection.BeginTransaction();
                 for (var index = 1; index < ordered.Count; index++)
                 {
