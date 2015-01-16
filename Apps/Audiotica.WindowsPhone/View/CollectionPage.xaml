@@ -58,7 +58,7 @@
                 <DataTemplate>
                     <Image
                         Opacity=".2"
-                        Source="{Binding Artwork}" />
+                        Source="{Binding SmallArtwork}" />
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
@@ -248,7 +248,7 @@
                                                 </MenuFlyout>
                                             </FlyoutBase.AttachedFlyout>
                                             <Grid Background="{StaticResource PhoneAccentBrush}" Margin="0,0,0,5">
-                                                <Image Source="{Binding Artwork}" Height="115" Width="115"
+                                                <Image Source="{Binding MediumArtwork}" Height="115" Width="115"
                                                        Stretch="UniformToFill" />
                                                 <AppBarButton Icon="Play" IsCompact="True" Margin="0,-10,10,0"
                                                               Command="{Binding DataContext.Commands.EntryPlayClickCommand, ElementName=Page}"

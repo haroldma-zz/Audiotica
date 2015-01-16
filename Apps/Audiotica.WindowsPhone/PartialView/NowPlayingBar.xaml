@@ -162,7 +162,7 @@
                                     <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
-                                <Image Stretch="UniformToFill" Source="{Binding Song.Album.Artwork}" Width="70"
+                                <Image Stretch="UniformToFill" Source="{Binding Song.Album.MediumArtwork}" Width="70"
                                    Margin="0,0,10,0" Height="70" />
                                 <StackPanel VerticalAlignment="Center" Grid.Column="1">
                                     <TextBlock Text="{Binding Song.Name}" FontSize="22"
@@ -189,15 +189,15 @@
                      Maximum="{Binding Duration, Converter={StaticResource TimespanToDoubleConverter}, Mode=TwoWay}"
                      IsIndeterminate="{Binding IsLoading, Mode=TwoWay}" />
         </Grid>
-        <Grid Name="TabGrid" Visibility="Collapsed" Grid.Row="1">
-            <Grid.Background>
-                <ImageBrush AlignmentY="Top" Opacity=".5" ImageSource="{Binding CurrentQueue.Song.Artist.Artwork}" Stretch="UniformToFill" />
-            </Grid.Background>
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="5">
-                <AppBarToggleButton IsChecked="{Binding IsShuffle, Mode=TwoWay}" Icon="Shuffle" IsCompact="True" />
-                <AppBarToggleButton IsChecked="{Binding IsRepeat, Mode=TwoWay}" Icon="RepeatAll" IsCompact="True" />
-                <AppBarButton Icon="FullScreen" IsCompact="True" Click="AppBarButton_Click" />
-            </StackPanel>
-        </Grid>
+<!--        <Grid Name="TabGrid" Visibility="Collapsed" Grid.Row="1">-->
+<!--            <Grid.Background>-->
+<!--                <ImageBrush AlignmentY="Top" Opacity=".5" ImageSource="{Binding CurrentQueue.Song.Artist.Artwork}" Stretch="UniformToFill" />-->
+<!--            </Grid.Background>-->
+<!--            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="5">-->
+<!--                <AppBarToggleButton IsChecked="{Binding IsShuffle, Mode=TwoWay}" Icon="Shuffle" IsCompact="True" />-->
+<!--                <AppBarToggleButton IsChecked="{Binding IsRepeat, Mode=TwoWay}" Icon="RepeatAll" IsCompact="True" />-->
+<!--                <AppBarButton Icon="FullScreen" IsCompact="True" Click="AppBarButton_Click" />-->
+<!--            </StackPanel>-->
+<!--        </Grid>-->
     </Grid>
 </UserControl>

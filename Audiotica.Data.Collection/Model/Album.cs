@@ -16,6 +16,8 @@ namespace Audiotica.Data.Collection.Model
     public class Album : BaseEntry
     {
         private BitmapImage _artwork;
+        private BitmapImage _smallArtwork;
+        private BitmapImage _mediumArtwork;
 
         public Album()
         {
@@ -40,6 +42,10 @@ namespace Audiotica.Data.Collection.Model
 
         [Ignore]
         public BitmapImage Artwork { get { return _artwork; } set { Set(ref _artwork, value); } }
+        [Ignore]
+        public BitmapImage SmallArtwork { get { return _smallArtwork; } set { Set(ref _smallArtwork, value); } }
+        [Ignore]
+        public BitmapImage MediumArtwork { get { return _mediumArtwork; } set { Set(ref _mediumArtwork, value); } }
 
         [Ignore]
         public Artist PrimaryArtist { get; set; }

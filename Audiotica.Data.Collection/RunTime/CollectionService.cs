@@ -12,7 +12,6 @@ using Windows.Storage;
 using Windows.Storage.FileProperties;
 using Windows.UI.Core;
 using Windows.UI.StartScreen;
-using Windows.UI.Xaml;
 using Windows.UI.Xaml.Media.Imaging;
 using Audiotica.Core.Common;
 using Audiotica.Core.Utilities;
@@ -30,6 +29,7 @@ namespace Audiotica.Data.Collection.RunTime
         private readonly CoreDispatcher _dispatcher;
         private readonly Dictionary<long, QueueSong> _lookupMap = new Dictionary<long, QueueSong>();
         private readonly ISqlService _sqlService;
+        private int _scaledImageSize;
 
         public CollectionService(ISqlService sqlService, ISqlService bgSqlService, CoreDispatcher dispatcher)
         {
@@ -69,7 +69,6 @@ namespace Audiotica.Data.Collection.RunTime
         public OptimizedObservableCollection<QueueSong> PlaybackQueue { get; private set; }
         public OptimizedObservableCollection<QueueSong> ShufflePlaybackQueue { get; private set; }
 
-        private int _scaledImageSize;
         public int ScaledImageSize
         {
             get
@@ -139,22 +138,33 @@ namespace Audiotica.Data.Collection.RunTime
                 album.PrimaryArtist = artists.FirstOrDefault(p => p.Id == album.PrimaryArtistId);
 
                 if (isForeground)
-                    _dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
+                    _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                     {
                         var artworkPath = string.Format(CollectionConstant.ArtworkPath, album.Id);
                         if (album.HasArtwork)
                         {
-                            using (
-                                var thumbSthream =
-                                    await (await StorageHelper.GetFileAsync(artworkPath)).GetThumbnailAsync(
-                                        ThumbnailMode.SingleItem, (uint)ScaledImageSize))
-                            {
-                                album.Artwork = new BitmapImage();
-                                album.Artwork.SetSourceAsync(thumbSthream).AsTask().ConfigureAwait(false);
-                            }
+                            album.Artwork =
+                                    new BitmapImage(new Uri(CollectionConstant.LocalStorageAppPath + artworkPath))
+                                    {
+                                        DecodePixelHeight = ScaledImageSize
+                                    };
+                            album.MediumArtwork =
+                                    new BitmapImage(new Uri(CollectionConstant.LocalStorageAppPath + artworkPath))
+                                    {
+                                        DecodePixelHeight = ScaledImageSize / 2
+                                    };
+                            album.SmallArtwork =
+                                    new BitmapImage(new Uri(CollectionConstant.LocalStorageAppPath + artworkPath))
+                                    {
+                                        DecodePixelHeight = 50
+                                    };
                         }
                         else
+                        {
                             album.Artwork = CollectionConstant.MissingArtworkImage;
+                            album.MediumArtwork = CollectionConstant.MissingArtworkImage;
+                            album.SmallArtwork = CollectionConstant.MissingArtworkImage;
+                        }
                     }).AsTask().Wait();
             }
 
@@ -420,13 +430,33 @@ namespace Audiotica.Data.Collection.RunTime
 
                 //set it
                 await _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-                    song.Album.Artwork =
-                        song.Album.HasArtwork
-                            ? new BitmapImage(new Uri(CollectionConstant.LocalStorageAppPath + albumFilePath))
-                            {
-                                DecodePixelHeight = ScaledImageSize
-                            }
-                            : CollectionConstant.MissingArtworkImage);
+                {
+                    if (album.HasArtwork)
+                    {
+                        var artworkPath = string.Format(CollectionConstant.ArtworkPath, album.Id);
+                        album.Artwork =
+                                new BitmapImage(new Uri(CollectionConstant.LocalStorageAppPath + artworkPath))
+                                {
+                                    DecodePixelHeight = ScaledImageSize
+                                };
+                        album.MediumArtwork =
+                                new BitmapImage(new Uri(CollectionConstant.LocalStorageAppPath + artworkPath))
+                                {
+                                    DecodePixelHeight = ScaledImageSize / 2
+                                };
+                        album.SmallArtwork =
+                                new BitmapImage(new Uri(CollectionConstant.LocalStorageAppPath + artworkPath))
+                                {
+                                    DecodePixelHeight = 50
+                                };
+                    }
+                    else
+                    {
+                        album.Artwork = CollectionConstant.MissingArtworkImage;
+                        album.MediumArtwork = CollectionConstant.MissingArtworkImage;
+                        album.SmallArtwork = CollectionConstant.MissingArtworkImage;
+                    }
+                });
 
                 #endregion
             }
