@@ -501,6 +501,7 @@ namespace Audiotica.Data.Service.RunTime
                                     && IsCorrectType(title, p.Title, "snipped")
                                     && IsCorrectType(title, p.Title, "preview")
                                     && IsCorrectType(title, p.Title, "acapella")
+                                    && IsCorrectType(title, p.Title, "radio")
                                     && IsCorrectType(title, p.Title, "acoustic");
 
                 var isCorrectTitle = p.Title.ToLower().Contains(cleanTile.ToLower())

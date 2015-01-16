@@ -137,7 +137,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <SDKReference Include="SQLite.WP81, Version=3.8.7.3">
+    <SDKReference Include="SQLite.WP81, Version=3.8.7.4">
       <Name>SQLite for Windows Phone 8.1</Name>
     </SDKReference>
   </ItemGroup>
