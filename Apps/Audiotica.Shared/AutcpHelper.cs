@@ -74,7 +74,8 @@ namespace Audiotica
                         else if (item.IsOfType(StorageItemTypes.Folder))
                         {
                             var name = (item as StorageFolder).Name;
-                            if (name == "SOMA" || name == "Logs" || name == "AdMediator")
+                            if (name == "SOMA" || name == "Logs" || name == "AdMediator"
+                                || name == "artists")
                                 continue;
 
                             files.AddRange(await (item as StorageFolder).GetFilesAsync());

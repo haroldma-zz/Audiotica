@@ -25,6 +25,7 @@ namespace Audiotica.Data.Collection.DesignTime
 
         public bool IsLibraryLoaded { get; private set; }
         public event EventHandler LibraryLoaded;
+        public int ScaledImageSize { get; private set; }
         public OptimizedObservableCollection<Song> Songs { get; set; }
         public OptimizedObservableCollection<Album> Albums { get; set; }
         public OptimizedObservableCollection<Artist> Artists { get; set; }

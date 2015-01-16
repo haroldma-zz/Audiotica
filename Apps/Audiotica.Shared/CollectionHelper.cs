@@ -8,6 +8,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Windows.Storage;
 using Windows.UI.StartScreen;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Media.Imaging;
 using Audiotica.Core.Common;
 using Audiotica.Core.Utilities;
@@ -201,7 +202,10 @@ namespace Audiotica
 
                     await DispatcherHelper.RunAsync(() =>
                         artist.Artwork =
-                            new BitmapImage(new Uri(CollectionConstant.LocalStorageAppPath + artistFilePath)));
+                            new BitmapImage(new Uri(CollectionConstant.LocalStorageAppPath + artistFilePath))
+                            {
+                                DecodePixelHeight = App.Locator.CollectionService.ScaledImageSize
+                            });
                 }
                 catch
                 {

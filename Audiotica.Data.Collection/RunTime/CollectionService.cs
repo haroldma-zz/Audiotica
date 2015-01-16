@@ -7,9 +7,12 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Windows.Graphics.Display;
 using Windows.Storage;
+using Windows.Storage.FileProperties;
 using Windows.UI.Core;
 using Windows.UI.StartScreen;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Media.Imaging;
 using Audiotica.Core.Common;
 using Audiotica.Core.Utilities;
@@ -66,6 +69,45 @@ namespace Audiotica.Data.Collection.RunTime
         public OptimizedObservableCollection<QueueSong> PlaybackQueue { get; private set; }
         public OptimizedObservableCollection<QueueSong> ShufflePlaybackQueue { get; private set; }
 
+        private int _scaledImageSize;
+        public int ScaledImageSize
+        {
+            get
+            {
+                if (_scaledImageSize != 0)
+                    return _scaledImageSize;
+
+                _scaledImageSize = 200;
+                double factor = 1;
+
+                var scaledFactor = DisplayInformation.GetForCurrentView().ResolutionScale;
+                switch (scaledFactor)
+                {
+                    case ResolutionScale.Scale120Percent:
+                        factor = 1.2;
+                        break;
+                    case ResolutionScale.Scale140Percent:
+                        factor = 1.4;
+                        break;
+                    case ResolutionScale.Scale150Percent:
+                        factor = 1.5;
+                        break;
+                    case ResolutionScale.Scale160Percent:
+                        factor = 1.6;
+                        break;
+                    case ResolutionScale.Scale180Percent:
+                        factor = 1.8;
+                        break;
+                    case ResolutionScale.Scale225Percent:
+                        factor = 2.25;
+                        break;
+                }
+
+                _scaledImageSize = (int) (_scaledImageSize*factor);
+                return _scaledImageSize;
+            }
+        }
+
         public void LoadLibrary(bool loadEssentials = false)
         {
             if (IsLibraryLoaded)
@@ -97,12 +139,22 @@ namespace Audiotica.Data.Collection.RunTime
                 album.PrimaryArtist = artists.FirstOrDefault(p => p.Id == album.PrimaryArtistId);
 
                 if (isForeground)
-                    _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                    _dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
                     {
                         var artworkPath = string.Format(CollectionConstant.ArtworkPath, album.Id);
-                        album.Artwork = album.HasArtwork
-                            ? new BitmapImage(new Uri(CollectionConstant.LocalStorageAppPath + artworkPath))
-                            : CollectionConstant.MissingArtworkImage;
+                        if (album.HasArtwork)
+                        {
+                            using (
+                                var thumbSthream =
+                                    await (await StorageHelper.GetFileAsync(artworkPath)).GetThumbnailAsync(
+                                        ThumbnailMode.SingleItem, (uint)ScaledImageSize))
+                            {
+                                album.Artwork = new BitmapImage();
+                                album.Artwork.SetSourceAsync(thumbSthream).AsTask().ConfigureAwait(false);
+                            }
+                        }
+                        else
+                            album.Artwork = CollectionConstant.MissingArtworkImage;
                     }).AsTask().Wait();
             }
 
@@ -125,6 +177,9 @@ namespace Audiotica.Data.Collection.RunTime
                         var artworkPath = string.Format(CollectionConstant.ArtistsArtworkPath, artist.Id);
                         artist.Artwork = artist.HasArtwork
                             ? new BitmapImage(new Uri(CollectionConstant.LocalStorageAppPath + artworkPath))
+                            {
+                                DecodePixelHeight = ScaledImageSize
+                            }
                             : null;
                     }).AsTask().Wait();
             }
@@ -368,6 +423,9 @@ namespace Audiotica.Data.Collection.RunTime
                     song.Album.Artwork =
                         song.Album.HasArtwork
                             ? new BitmapImage(new Uri(CollectionConstant.LocalStorageAppPath + albumFilePath))
+                            {
+                                DecodePixelHeight = ScaledImageSize
+                            }
                             : CollectionConstant.MissingArtworkImage);
 
                 #endregion

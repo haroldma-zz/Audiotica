@@ -19,6 +19,8 @@ namespace Audiotica.Data.Collection
         bool IsLibraryLoaded { get; }
         event EventHandler LibraryLoaded;
 
+        int ScaledImageSize { get; }
+
         OptimizedObservableCollection<Song> Songs { get; set; }
         OptimizedObservableCollection<Album> Albums { get; set; }
         OptimizedObservableCollection<Artist> Artists { get; set; }

@@ -63,6 +63,10 @@ namespace Audiotica.View
 
             StatusBarHelper.HideStatus();
             CurtainPrompt.Show("Finish restoring.");
+            App.Locator.CollectionService.LibraryLoaded += async (sender, args) =>
+            {
+                await CollectionHelper.DownloadArtistsArtworkAsync(false);
+            };
             (Application.Current as App).BootAppServicesAsync();
             App.Navigator.GoTo<HomePage, ZoomOutTransition>(null);
         }
