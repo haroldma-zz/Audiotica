@@ -38,7 +38,11 @@ namespace Audiotica.Data.Collection.Model
         public SongState SongState
         {
             get { return _songState; }
-            set { Set(ref _songState, value); }
+            set
+            {
+                _songState = value;
+                OnPropertyChanged();
+            }
         }
 
         public int PlayCount { get; set; }
@@ -70,7 +74,11 @@ namespace Audiotica.Data.Collection.Model
         public BackgroundDownload Download
         {
             get { return _download; }
-            set { Set(ref _download, value); }
+            set
+            {
+                _download = value;
+                OnPropertyChanged();
+            }
         }
 
         [Ignore]

@@ -2,12 +2,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
 using Windows.Globalization.Collation;
-using Audiotica.Core.Utilities;
-using MyToolkit.Collections;
 
 #endregion
 
@@ -48,15 +45,7 @@ namespace Audiotica.Core.Common
         /// <returns>Theitems source for a LongListSelector</returns>
         public static List<AlphaKeyGroup<T>> CreateGroups(CharacterGroupings slg)
         {
-            var list = new List<AlphaKeyGroup<T>>();
-
-            foreach (CharacterGrouping key in slg)
-            {
-                if (string.IsNullOrWhiteSpace(key.Label) == false)
-                    list.Add(new AlphaKeyGroup<T>(key.Label));
-            }
-
-            return list;
+            return (from key in slg where string.IsNullOrWhiteSpace(key.Label) == false select new AlphaKeyGroup<T>(key.Label)).ToList();
         }
 
         /// <summary>
@@ -67,7 +56,8 @@ namespace Audiotica.Core.Common
         /// <param name="getKey">A delegate to get the key from an item.</param>
         /// <param name="sort">Will sort the data if true.</param>
         /// <returns>An items source for a LongListSelector</returns>
-        public static OptimizedObservableCollection<AlphaKeyGroup<T>> CreateGroups(IEnumerable<T> items, CultureInfo ci, GetKeyDelegate getKey,
+        public static OptimizedObservableCollection<AlphaKeyGroup<T>> CreateGroups(IEnumerable<T> items, CultureInfo ci,
+            GetKeyDelegate getKey,
             bool sort)
         {
             var slg = new CharacterGroupings();
@@ -75,7 +65,7 @@ namespace Audiotica.Core.Common
 
             foreach (T item in items)
             {
-                var index = "";
+                string index;
 
                 var lookUp = getKey(item);
 

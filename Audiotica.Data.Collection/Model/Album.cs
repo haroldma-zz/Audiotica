@@ -41,11 +41,32 @@ namespace Audiotica.Data.Collection.Model
         public OptimizedObservableCollection<Song> Songs { get; set; }
 
         [Ignore]
-        public BitmapImage Artwork { get { return _artwork; } set { Set(ref _artwork, value); } }
+        public BitmapImage Artwork { get { return _artwork; }
+            set
+            {
+                _artwork = value;
+                OnPropertyChanged();
+            } }
         [Ignore]
-        public BitmapImage SmallArtwork { get { return _smallArtwork; } set { Set(ref _smallArtwork, value); } }
+        public BitmapImage SmallArtwork
+        {
+            get { return _smallArtwork; }
+            set
+            {
+                _smallArtwork = value;
+                OnPropertyChanged();
+            }
+        }
         [Ignore]
-        public BitmapImage MediumArtwork { get { return _mediumArtwork; } set { Set(ref _mediumArtwork, value); } }
+        public BitmapImage MediumArtwork
+        {
+            get { return _mediumArtwork; }
+            set
+            {
+                _mediumArtwork = value;
+                OnPropertyChanged();
+            }
+        }
 
         [Ignore]
         public Artist PrimaryArtist { get; set; }

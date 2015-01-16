@@ -10,7 +10,6 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Audiotica.Core.Common;
-using Audiotica.Core.Exceptions;
 using Audiotica.Core.Utilities;
 using Audiotica.Data.Service.Interfaces;
 using Audiotica.Data.Spotify.Models;
@@ -19,7 +18,6 @@ using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Threading;
 using IF.Lastfm.Core.Api.Helpers;
 using IF.Lastfm.Core.Objects;
-using MyToolkit.Multimedia;
 
 #endregion
 
@@ -35,12 +33,12 @@ namespace Audiotica.ViewModel
         private Paging<FullArtist> _artistsResponse;
         private bool _isLoading;
         private RelayCommand<KeyRoutedEventArgs> _keyDownRelayCommand;
+        private PageResponse<LastTrack> _lastTrackResponse;
+        private IncrementalObservableCollection<LastTrack> _lastTracksCollection;
         private string _searchTerm;
         private RelayCommand<ItemClickEventArgs> _songClickRelayCommand;
         private IncrementalObservableCollection<FullTrack> _tracksCollection;
         private Paging<FullTrack> _tracksResponse;
-        private IncrementalObservableCollection<LastTrack> _lastTracksCollection;
-        private PageResponse<LastTrack> _lastTrackResponse;
 
         public SearchViewModel(IScrobblerService service, ISpotifyService spotify)
         {
@@ -178,7 +176,7 @@ namespace Audiotica.ViewModel
                                 Artists.Add(lastArtist);
                         });
                     }),
-                     Task.Run(async () =>
+                    Task.Run(async () =>
                     {
                         _lastTrackResponse = await _service.SearchTracksAsync(term);
                         await DispatcherHelper.RunAsync(() =>
@@ -210,7 +208,7 @@ namespace Audiotica.ViewModel
             //Close the keyboard
             ((Page) ((Grid) ((TextBox) e.OriginalSource).Parent).Parent).Focus(
                 FocusState.Keyboard);
-            
+
             var term = ((TextBox) e.OriginalSource).Text;
 
             term = term.Trim();
@@ -233,10 +231,10 @@ namespace Audiotica.ViewModel
             }
             else
             {
-                ((TextBox)e.OriginalSource).IsEnabled = false;
+                ((TextBox) e.OriginalSource).IsEnabled = false;
                 IsLoading = true;
                 await SearchAsync(term);
-                ((TextBox)e.OriginalSource).IsEnabled = true;
+                ((TextBox) e.OriginalSource).IsEnabled = true;
                 IsLoading = false;
             }
         }
@@ -335,7 +333,7 @@ namespace Audiotica.ViewModel
 
                         return new LoadMoreItemsResult
                         {
-                            Count = (uint)resp.Content.Count
+                            Count = (uint) resp.Content.Count
                         };
                     }
                     catch

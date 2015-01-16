@@ -2,28 +2,28 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Windows.Graphics.Display;
 using Windows.Storage;
-using Windows.Storage.FileProperties;
 using Windows.UI.Core;
 using Windows.UI.StartScreen;
 using Windows.UI.Xaml.Media.Imaging;
 using Audiotica.Core.Common;
 using Audiotica.Core.Utilities;
 using Audiotica.Data.Collection.Model;
-using GalaSoft.MvvmLight;
 using TagLib;
 
 #endregion
 
 namespace Audiotica.Data.Collection.RunTime
 {
-    public class CollectionService : ObservableObject, ICollectionService
+    public class CollectionService : INotifyPropertyChanged, ICollectionService
     {
         private readonly ISqlService _bgSqlService;
         private readonly CoreDispatcher _dispatcher;
@@ -144,20 +144,20 @@ namespace Audiotica.Data.Collection.RunTime
                         if (album.HasArtwork)
                         {
                             album.Artwork =
-                                    new BitmapImage(new Uri(CollectionConstant.LocalStorageAppPath + artworkPath))
-                                    {
-                                        DecodePixelHeight = ScaledImageSize
-                                    };
+                                new BitmapImage(new Uri(CollectionConstant.LocalStorageAppPath + artworkPath))
+                                {
+                                    DecodePixelHeight = ScaledImageSize
+                                };
                             album.MediumArtwork =
-                                    new BitmapImage(new Uri(CollectionConstant.LocalStorageAppPath + artworkPath))
-                                    {
-                                        DecodePixelHeight = ScaledImageSize / 2
-                                    };
+                                new BitmapImage(new Uri(CollectionConstant.LocalStorageAppPath + artworkPath))
+                                {
+                                    DecodePixelHeight = ScaledImageSize/2
+                                };
                             album.SmallArtwork =
-                                    new BitmapImage(new Uri(CollectionConstant.LocalStorageAppPath + artworkPath))
-                                    {
-                                        DecodePixelHeight = 50
-                                    };
+                                new BitmapImage(new Uri(CollectionConstant.LocalStorageAppPath + artworkPath))
+                                {
+                                    DecodePixelHeight = 50
+                                };
                         }
                         else
                         {
@@ -240,7 +240,7 @@ namespace Audiotica.Data.Collection.RunTime
 
         public void ShuffleModeChanged()
         {
-            RaisePropertyChanged(() => CurrentPlaybackQueue);
+            OnPropertyChanged("CurrentPlaybackQueue");
         }
 
         public bool SongAlreadyExists(string providerId, string name, string album, string artist)
@@ -435,20 +435,20 @@ namespace Audiotica.Data.Collection.RunTime
                     {
                         var artworkPath = string.Format(CollectionConstant.ArtworkPath, song.Album.Id);
                         song.Album.Artwork =
-                                new BitmapImage(new Uri(CollectionConstant.LocalStorageAppPath + artworkPath))
-                                {
-                                    DecodePixelHeight = ScaledImageSize
-                                };
+                            new BitmapImage(new Uri(CollectionConstant.LocalStorageAppPath + artworkPath))
+                            {
+                                DecodePixelHeight = ScaledImageSize
+                            };
                         song.Album.MediumArtwork =
-                                new BitmapImage(new Uri(CollectionConstant.LocalStorageAppPath + artworkPath))
-                                {
-                                    DecodePixelHeight = ScaledImageSize / 2
-                                };
+                            new BitmapImage(new Uri(CollectionConstant.LocalStorageAppPath + artworkPath))
+                            {
+                                DecodePixelHeight = ScaledImageSize/2
+                            };
                         song.Album.SmallArtwork =
-                                new BitmapImage(new Uri(CollectionConstant.LocalStorageAppPath + artworkPath))
-                                {
-                                    DecodePixelHeight = 50
-                                };
+                            new BitmapImage(new Uri(CollectionConstant.LocalStorageAppPath + artworkPath))
+                            {
+                                DecodePixelHeight = 50
+                            };
                     }
                     else
                     {
@@ -1050,5 +1050,13 @@ namespace Audiotica.Data.Collection.RunTime
         }
 
         #endregion
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChangedEventHandler handler = PropertyChanged;
+            if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
+        }
     }
 }

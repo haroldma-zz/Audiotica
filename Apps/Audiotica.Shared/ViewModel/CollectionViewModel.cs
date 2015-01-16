@@ -1,30 +1,19 @@
 ﻿#region
 
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Globalization;
 using System.Linq;
-using System.Threading.Tasks;
 using Windows.Globalization.Collation;
-using Windows.Graphics.Display;
-using Windows.Storage.Pickers;
-using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Media;
-using Audiotica.Core;
 using Audiotica.Core.Common;
-using Audiotica.Core.Utilities;
 using Audiotica.Data.Collection;
 using Audiotica.Data.Collection.Model;
 using Audiotica.Data.Collection.SqlHelper;
-using Audiotica.View;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Threading;
-using MyToolkit.Utilities;
 
 #endregion
 
@@ -32,8 +21,8 @@ namespace Audiotica.ViewModel
 {
     public class CollectionViewModel : ViewModelBase
     {
-        private readonly ICollectionService _service;
         private readonly CollectionCommandHelper _commands;
+        private readonly ICollectionService _service;
         private ObservableCollection<AlphaKeyGroup<Album>> _sortedAlbums;
         private ObservableCollection<AlphaKeyGroup<Artist>> _sortedArtists;
         private ObservableCollection<AlphaKeyGroup<Song>> _sortedSongs;
@@ -76,15 +65,15 @@ namespace Audiotica.ViewModel
                 switch (arg.Action)
                 {
                     case NotifyCollectionChangedAction.Reset:
-                            if (sender is OptimizedObservableCollection<Song>)
-                                SortedSongs = AlphaKeyGroup<Song>.CreateGroups(Service.Songs.ToList(),
-                                    CultureInfo.CurrentCulture, i => i.Name, true);
-                            else if (sender is OptimizedObservableCollection<Album>)
-                                SortedAlbums = AlphaKeyGroup<Album>.CreateGroups(Service.Albums.ToList(),
-                                    CultureInfo.CurrentCulture, i => i.Name, true);
-                            else if (sender is OptimizedObservableCollection<Artist>)
-                                SortedArtists = AlphaKeyGroup<Artist>.CreateGroups(Service.Artists.ToList(),
-                                    CultureInfo.CurrentCulture, i => i.Name, true);
+                        if (sender is OptimizedObservableCollection<Song>)
+                            SortedSongs = AlphaKeyGroup<Song>.CreateGroups(Service.Songs.ToList(),
+                                CultureInfo.CurrentCulture, i => i.Name, true);
+                        else if (sender is OptimizedObservableCollection<Album>)
+                            SortedAlbums = AlphaKeyGroup<Album>.CreateGroups(Service.Albums.ToList(),
+                                CultureInfo.CurrentCulture, i => i.Name, true);
+                        else if (sender is OptimizedObservableCollection<Artist>)
+                            SortedArtists = AlphaKeyGroup<Artist>.CreateGroups(Service.Artists.ToList(),
+                                CultureInfo.CurrentCulture, i => i.Name, true);
                         return;
                     case NotifyCollectionChangedAction.Add:
                         item = (BaseEntry) arg.NewItems[0];
@@ -156,9 +145,10 @@ namespace Audiotica.ViewModel
                 sortedGroups.Remove(group);
                 sortedGroups.Insert(groupIndex, group);
             }
-            catch { }
+            catch
+            {
+            }
         }
-
 
         #endregion
 

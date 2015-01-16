@@ -8,7 +8,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.Storage;
 using Audiotica.Core.Exceptions;
-using Audiotica.Core.Utilities;
 using Audiotica.Data.Collection.Model;
 using Audiotica.Data.Model;
 using TagLib;
@@ -23,9 +22,9 @@ namespace Audiotica
         private static async Task RetriveFilesInFolder(List<StorageFile> list, StorageFolder parent)
         {
             list.AddRange((await parent.GetFilesAsync()).Where(p => p.FileType == ".wma" || p.FileType == ".mp3"));
-            
+
             //avoiding DRM folder of xbox music
-            foreach (var folder in (await parent.GetFoldersAsync()).Where(folder => 
+            foreach (var folder in (await parent.GetFoldersAsync()).Where(folder =>
                 folder.Name != "Xbox Music" && folder.Name != "Subscription Cache" && folder.Name != "Podcasts"))
             {
                 await RetriveFilesInFolder(list, folder);
@@ -56,9 +55,9 @@ namespace Audiotica
             return new Artist
             {
                 ProviderId = "local." + track.ArtistId,
-                Name = (string.IsNullOrEmpty(track.AlbumArtist) 
-                ? track.ArtistName
-                : track.AlbumArtist).Trim()
+                Name = (string.IsNullOrEmpty(track.AlbumArtist)
+                    ? track.ArtistName
+                    : track.AlbumArtist).Trim()
             };
         }
 
@@ -98,7 +97,7 @@ namespace Audiotica
                 .Replace(@"Music\", "")
                 //using forward slashes
                 .Replace("\\", "/");
-            
+
             if (App.Locator.CollectionService.SongAlreadyExists(audioPath))
             {
                 return SavingError.AlreadyExists;
@@ -111,7 +110,7 @@ namespace Audiotica
             Tag tags = null;
             if (file.FileType == ".mp3")
             {
-                bool tryAsM4a = false;
+                var tryAsM4A = false;
                 var fileStream = await file.OpenStreamForReadAsync();
                 File tagFile = null;
                 try
@@ -120,10 +119,10 @@ namespace Audiotica
                 }
                 catch (Exception e)
                 {
-                    tryAsM4a = e is CorruptFileException;
+                    tryAsM4A = e is CorruptFileException;
                 }
 
-                if (tryAsM4a)
+                if (tryAsM4A)
                 {
                     //need to reopen (when it fails to open it disposes of the stream
                     fileStream = await file.OpenStreamForReadAsync();
@@ -161,7 +160,7 @@ namespace Audiotica
                 {
                     FilePath = audioPath,
                     Genre = tags.FirstGenre,
-                    TrackNumber = (int)tags.Track,
+                    TrackNumber = (int) tags.Track,
                 };
             }
 
@@ -177,7 +176,7 @@ namespace Audiotica
             }
 
 
-            if (App.Locator.CollectionService.SongAlreadyExists(song.ProviderId, 
+            if (App.Locator.CollectionService.SongAlreadyExists(song.ProviderId,
                 track.Title, track.AlbumName, track.ArtistName))
             {
                 return SavingError.AlreadyExists;
@@ -186,7 +185,7 @@ namespace Audiotica
             try
             {
                 await App.Locator.CollectionService.AddSongAsync(song, tags)
-                        .ConfigureAwait(false);
+                    .ConfigureAwait(false);
                 return SavingError.None;
             }
             catch (NetworkException)

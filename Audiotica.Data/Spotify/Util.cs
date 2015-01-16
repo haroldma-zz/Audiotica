@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reactive.Linq;
 using System.Reflection;
 
 namespace Audiotica.Data.Spotify
@@ -18,8 +17,7 @@ namespace Audiotica.Data.Spotify
             .Select(f => f.GetCustomAttributes(typeof(StringAttribute), false).FirstOrDefault())
             .Cast<StringAttribute>();
 
-            var list = new List<String>();
-            attributes.ToObservable().Subscribe(x => list.Add(x.Text));
+            var list = attributes.Select(x => x.Text).ToList();
             return string.Join(separator, list);
         }
         public static string GetAlbumValue(this AlbumType en, String separator)
@@ -32,8 +30,7 @@ namespace Audiotica.Data.Spotify
             .Select(f => f.GetCustomAttributes(typeof(StringAttribute), false).FirstOrDefault())
             .Cast<StringAttribute>();
 
-            var list = new List<String>();
-            attributes.ToObservable().Subscribe((element) => list.Add(element.Text));
+            var list = attributes.Select(x => x.Text).ToList();
             return string.Join(separator, list);
         }
     }

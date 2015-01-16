@@ -27,7 +27,11 @@ namespace Audiotica.Data.Collection.Model
         public BitmapImage Artwork
         {
             get { return _artwork; }
-            set { Set(ref _artwork, value); }
+            set
+            {
+                _artwork = value;
+                OnPropertyChanged();
+            }
         }
 
         [Ignore]
