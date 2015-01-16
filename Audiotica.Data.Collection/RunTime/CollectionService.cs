@@ -431,20 +431,20 @@ namespace Audiotica.Data.Collection.RunTime
                 //set it
                 await _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                 {
-                    if (album.HasArtwork)
+                    if (song.Album.HasArtwork)
                     {
-                        var artworkPath = string.Format(CollectionConstant.ArtworkPath, album.Id);
-                        album.Artwork =
+                        var artworkPath = string.Format(CollectionConstant.ArtworkPath, song.Album.Id);
+                        song.Album.Artwork =
                                 new BitmapImage(new Uri(CollectionConstant.LocalStorageAppPath + artworkPath))
                                 {
                                     DecodePixelHeight = ScaledImageSize
                                 };
-                        album.MediumArtwork =
+                        song.Album.MediumArtwork =
                                 new BitmapImage(new Uri(CollectionConstant.LocalStorageAppPath + artworkPath))
                                 {
                                     DecodePixelHeight = ScaledImageSize / 2
                                 };
-                        album.SmallArtwork =
+                        song.Album.SmallArtwork =
                                 new BitmapImage(new Uri(CollectionConstant.LocalStorageAppPath + artworkPath))
                                 {
                                     DecodePixelHeight = 50
@@ -452,9 +452,9 @@ namespace Audiotica.Data.Collection.RunTime
                     }
                     else
                     {
-                        album.Artwork = CollectionConstant.MissingArtworkImage;
-                        album.MediumArtwork = CollectionConstant.MissingArtworkImage;
-                        album.SmallArtwork = CollectionConstant.MissingArtworkImage;
+                        song.Album.Artwork = CollectionConstant.MissingArtworkImage;
+                        song.Album.MediumArtwork = CollectionConstant.MissingArtworkImage;
+                        song.Album.SmallArtwork = CollectionConstant.MissingArtworkImage;
                     }
                 });
 
