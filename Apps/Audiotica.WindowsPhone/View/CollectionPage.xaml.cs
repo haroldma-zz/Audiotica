@@ -94,8 +94,8 @@ namespace Audiotica.View
 
         private void CollectionPivot_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            (Bar as CommandBar).ClosedDisplayMode =
-                CollectionPivot.SelectedIndex == 3 ? AppBarClosedDisplayMode.Compact : AppBarClosedDisplayMode.Minimal;
+            (Bar as CommandBar).Visibility =
+                CollectionPivot.SelectedIndex == 3 ? Visibility.Visible : Visibility.Collapsed;
         }
 
         private void ButtonBase_OnClick(object sender, RoutedEventArgs e)

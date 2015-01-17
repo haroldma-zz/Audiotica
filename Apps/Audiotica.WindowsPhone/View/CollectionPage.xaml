@@ -332,7 +332,7 @@
         </Pivot>
     </Grid>
     <Page.BottomAppBar>
-        <CommandBar ClosedDisplayMode="Minimal">
+        <CommandBar Visibility="Collapsed">
             <AppBarButton x:Uid="CollectionAppBarNewPlaylist" Icon="Add" Label="New Playlist" Click="ButtonBase_OnClick" />
         </CommandBar>
     </Page.BottomAppBar>
