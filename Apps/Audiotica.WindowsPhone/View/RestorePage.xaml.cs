@@ -2,6 +2,7 @@
 
 using System;
 using System.IO;
+using System.Threading.Tasks;
 using Windows.Storage;
 using Windows.UI.Xaml;
 using Audiotica.Core.Common;
@@ -21,9 +22,20 @@ namespace Audiotica.View
         public override async void NavigatedTo(object parameter)
         {
             base.NavigatedTo(parameter);
-            StatusBarHelper.ShowStatus("Restoring (this may take a bit)...");
+            
+            var reset = AppSettingsHelper.Read<bool>("FactoryReset");
 
-            var file = await StorageHelper.GetFileAsync("_current_restore.autcp");
+            var startingMsg = "Restoring (this may take a bit)...";
+            var finishMsg = "Finish restoring.";
+            if (reset)
+            {
+                startingMsg = "Factory resetting...";
+                finishMsg = "Finish factory resetting.";
+            }
+
+            StatusBarHelper.ShowStatus(startingMsg);
+
+            var file = reset ? null : await StorageHelper.GetFileAsync("_current_restore.autcp");
 
             //delete artowkr and mp3s
             var artworkFolder = await StorageHelper.GetFolderAsync("artworks");
@@ -45,28 +57,38 @@ namespace Audiotica.View
                 await songFolder.DeleteAsync();
             }
 
-            using (var stream = await file.OpenStreamForWriteAsync())
+            if (!reset)
             {
-                await AutcpFormatHelper.UnpackBackup(ApplicationData.Current.LocalFolder, stream);
+                using (var stream = await file.OpenStreamForWriteAsync())
+                {
+                    await AutcpFormatHelper.UnpackBackup(ApplicationData.Current.LocalFolder, stream);
+                }
 
-                var coll = await StorageHelper.GetFileAsync("collection.bksqldb");
-                var player = await StorageHelper.GetFileAsync("player.bksqldb");
-                await coll.CopyAndReplaceAsync(await StorageHelper.GetFileAsync("collection.sqldb"));
-                await player.CopyAndReplaceAsync(await StorageHelper.GetFileAsync("player.sqldb"));
+                await file.DeleteAsync();
 
-                //cleanup
-                await StorageHelper.DeleteFileAsync("collection.bksqldb");
-                await StorageHelper.DeleteFileAsync("player.bksqldb");
+                App.Locator.CollectionService.LibraryLoaded += async (sender, args) =>
+                {
+                    await CollectionHelper.DownloadArtistsArtworkAsync(false);
+                };
+            }
+            else
+            {
+                AppSettingsHelper.Write("FactoryReset", false);
             }
 
-            await file.DeleteAsync();
+            //on factory reset these files are created (empty)
+            var coll = await StorageHelper.GetFileAsync("collection.bksqldb");
+            var player = await StorageHelper.GetFileAsync("player.bksqldb");
+            await coll.CopyAndReplaceAsync(await StorageHelper.GetFileAsync("collection.sqldb"));
+            await player.CopyAndReplaceAsync(await StorageHelper.GetFileAsync("player.sqldb"));
+
+            //cleanup
+            await StorageHelper.DeleteFileAsync("collection.bksqldb");
+            await StorageHelper.DeleteFileAsync("player.bksqldb");
 
             StatusBarHelper.HideStatus();
-            CurtainPrompt.Show("Finish restoring.");
-            App.Locator.CollectionService.LibraryLoaded += async (sender, args) =>
-            {
-                await CollectionHelper.DownloadArtistsArtworkAsync(false);
-            };
+            CurtainPrompt.Show(finishMsg);
+            
             (Application.Current as App).BootAppServicesAsync();
             App.Navigator.GoTo<HomePage, ZoomOutTransition>(null);
         }

@@ -308,6 +308,7 @@ namespace Audiotica.WindowsPhone.Player
         {
             _bgSql.Dispose();
             _sql.Dispose();
+            _historySql.Dispose();
         }
 
         private int GetCurrentId()

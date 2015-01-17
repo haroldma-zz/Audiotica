@@ -126,7 +126,8 @@ namespace Audiotica
         {
             CreateRootFrame();
 
-            var restore = await StorageHelper.FileExistsAsync("_current_restore.autcp");
+            var restore = AppSettingsHelper.Read<bool>("FactoryReset")
+            || await StorageHelper.FileExistsAsync("_current_restore.autcp");
 
             if (RootFrame.Content == null)
             {
