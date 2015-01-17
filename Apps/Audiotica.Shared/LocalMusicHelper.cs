@@ -78,6 +78,10 @@ namespace Audiotica
             if (!string.IsNullOrEmpty(track.ArtistId))
             {
                 song.Artist = track.ToArtist();
+                if (string.IsNullOrEmpty(song.ArtistName))
+                {
+                    song.ArtistName = song.Artist.Name;
+                }
             }
 
             if (!string.IsNullOrEmpty(track.AlbumId))
