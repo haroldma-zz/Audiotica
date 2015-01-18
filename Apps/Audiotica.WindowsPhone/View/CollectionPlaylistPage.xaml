@@ -9,6 +9,7 @@
     xmlns:audiotica="using:Audiotica"
     xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
     xmlns:core="using:Microsoft.Xaml.Interactions.Core"
+    xmlns:qKit="using:QKit"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
     DataContext="{Binding Source={StaticResource Locator}, Path=CollectionPlaylist}">
@@ -27,7 +28,7 @@
             <TextBlock
                         Visibility="{Binding Playlist.Songs.Count, Converter={StaticResource EmptyListToVisibilityConverter}}"
                         Text="It's empty in here. Go and find a song, album or artist, tap and hold it, then select this playlist." Style="{StaticResource SubtleTextBlockStyle}" />
-            <ListView x:Name="SongList" Padding="0,20,0,0"
+            <qKit:MultiSelectListView x:Name="SongList" Padding="0,20,0,0"
                       IsItemClickEnabled="True"
                       ShowsScrollingPlaceholders="True"
                       ContainerContentChanging="ItemListView_ContainerContentChanging"
@@ -53,7 +54,7 @@
                         <core:InvokeCommandAction Command="{Binding SongClickRelayCommand}" />
                     </core:EventTriggerBehavior>
                 </interactivity:Interaction.Behaviors>
-            </ListView>
+            </qKit:MultiSelectListView>
         </Grid>
     </Grid>
     <Page.BottomAppBar>
