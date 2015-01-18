@@ -123,8 +123,8 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <SDKReference Include="SQLite.WP81, Version=3.8.7.4">
-      <Name>SQLite for Windows Phone 8.1</Name>
+    <SDKReference Include="SQLite.WP81, Version=3.8.8">
+      <Name>SQLite for Windows Phone 8.1 %28SQLite.WP81, Version=3.8.8%29</Name>
     </SDKReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '12.0' ">
