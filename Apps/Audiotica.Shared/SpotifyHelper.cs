@@ -96,7 +96,7 @@ namespace Audiotica
                 return SavingError.NoMatch;
 
             preparedSong.ArtistName = fullTrack != null
-                ? string.Join(",", fullTrack.Artists.Select(p => p.Name)) : artist.Name;
+                ? string.Join(", ", fullTrack.Artists.Select(p => p.Name)) : artist.Name;
             preparedSong.Album = album.ToAlbum();
             preparedSong.Artist = album.Artist.ToArtist();
             preparedSong.Album.PrimaryArtist = preparedSong.Artist;
