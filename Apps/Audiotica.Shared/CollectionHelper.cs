@@ -13,6 +13,7 @@ using Windows.UI.Xaml.Media.Imaging;
 using Audiotica.Core.Common;
 using Audiotica.Core.Utilities;
 using Audiotica.Data.Collection.Model;
+using Audiotica.Data.Collection.RunTime;
 using Audiotica.Data.Spotify.Models;
 using GalaSoft.MvvmLight.Threading;
 using IF.Lastfm.Core.Objects;
@@ -438,6 +439,8 @@ namespace Audiotica
         public static async Task MigrateAsync()
         {
             var songs = App.Locator.CollectionService.Songs.Where(p => p.SongState == SongState.Downloaded).ToList();
+            var importedSongs = App.Locator.CollectionService.Songs.Where(p =>
+                p.SongState == SongState.Local && !p.AudioUrl.Substring(1).StartsWith(":")).ToList();
             var songsFolder = await StorageHelper.GetFolderAsync("songs");
 
             if (songs.Count != 0 && songsFolder != null)
@@ -464,11 +467,26 @@ namespace Audiotica
                     {
                     }
                 }
-                UiBlockerUtility.Unblock();
             }
+
+            if (importedSongs.Count > 0)
+            {
+                UiBlockerUtility.Block("Deleting outdated song imports...");
+                foreach (var importedSong in importedSongs)
+                {
+                    await App.Locator.CollectionService.DeleteSongAsync(importedSong);
+                }
+            }
+
+            UiBlockerUtility.Unblock();
 
             if (songsFolder != null)
                 await songsFolder.DeleteAsync();
+
+            if (importedSongs.Count > 0)
+            {
+                CurtainPrompt.Show("You'll need to re-scan, since some imported songs were outdated.");
+            }
         }
 
         public static async Task<bool> PinToggleAsync(Artist artist)

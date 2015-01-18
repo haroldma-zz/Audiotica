@@ -20,12 +20,12 @@ namespace Audiotica.Data.Model
             AlbumName = CleanText(album);
             AlbumArtist = CleanText(albumArtist);
 
-            if (!string.IsNullOrEmpty(Title))
-                Id = Convert.ToBase64String(Encoding.UTF8.GetBytes(Title.ToLower()));
             if (!string.IsNullOrEmpty(ArtistName) || !string.IsNullOrEmpty(AlbumArtist))
                 ArtistId = Convert.ToBase64String(Encoding.UTF8.GetBytes((AlbumArtist ?? ArtistName).ToLower()));
             if (!string.IsNullOrEmpty(AlbumName))
                 AlbumId = Convert.ToBase64String(Encoding.UTF8.GetBytes(AlbumName.ToLower()));
+            if (!string.IsNullOrEmpty(Title))
+                Id = Convert.ToBase64String(Encoding.UTF8.GetBytes(Title.ToLower())) + ArtistId + AlbumId;
         }
 
         public LocalSong(MusicProperties musicProps)
@@ -40,12 +40,12 @@ namespace Audiotica.Data.Model
             Genre = musicProps.Genre.FirstOrDefault();
             TrackNumber = (int)musicProps.TrackNumber;
 
-            if (!string.IsNullOrEmpty(Title))
-                Id = Convert.ToBase64String(Encoding.UTF8.GetBytes(Title.ToLower()));
             if (!string.IsNullOrEmpty(ArtistName) || !string.IsNullOrEmpty(AlbumArtist))
                 ArtistId = Convert.ToBase64String(Encoding.UTF8.GetBytes((AlbumArtist ?? ArtistName).ToLower()));
             if (!string.IsNullOrEmpty(AlbumName))
                 AlbumId = Convert.ToBase64String(Encoding.UTF8.GetBytes(AlbumName.ToLower()));
+            if (!string.IsNullOrEmpty(Title))
+                Id = Convert.ToBase64String(Encoding.UTF8.GetBytes(Title.ToLower())) + ArtistId + AlbumId;
 
             if (musicProps.Rating > 1)
                 HeartState = HeartState.Like;
