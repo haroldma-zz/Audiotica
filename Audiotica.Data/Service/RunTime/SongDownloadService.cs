@@ -5,12 +5,10 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Windows.Networking.BackgroundTransfer;
 using Windows.Storage;
 using Windows.UI.Core;
-using Audiotica.Core;
 using Audiotica.Core.Common;
 using Audiotica.Core.Utilities;
 using Audiotica.Data.Collection;
@@ -25,9 +23,9 @@ namespace Audiotica.Data.Service.RunTime
     {
         #region Private Fields
 
+        private readonly CoreDispatcher _dispatcher;
         private readonly ICollectionService _service;
         private readonly ISqlService _sqlService;
-        private readonly CoreDispatcher _dispatcher;
 
         #endregion
 
@@ -77,7 +75,7 @@ namespace Audiotica.Data.Service.RunTime
         }
 
         /// <summary>
-        /// Use as callback of every downloads progress
+        ///     Use as callback of every downloads progress
         /// </summary>
         private void DownloadProgress(DownloadOperation download)
         {
@@ -85,7 +83,8 @@ namespace Audiotica.Data.Service.RunTime
             _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
             {
                 //Get the associated song BackgroundDownload
-                var songDownload = ActiveDownloads.FirstOrDefault(p => p.Download.DownloadOperation.Guid == download.Guid);
+                var songDownload =
+                    ActiveDownloads.FirstOrDefault(p => p.Download.DownloadOperation.Guid == download.Guid);
 
                 if (songDownload == null)
                     return;
@@ -105,7 +104,7 @@ namespace Audiotica.Data.Service.RunTime
         }
 
         /// <summary>
-        /// Call internally to report a finished BackgroundDownload
+        ///     Call internally to report a finished BackgroundDownload
         /// </summary>
         private async Task DownloadFinishedForAsync(Song song)
         {
@@ -117,13 +116,18 @@ namespace Audiotica.Data.Service.RunTime
         }
 
         /// <summary>
-        /// Hanbdles a single BackgroundDownload for a song.
+        ///     Hanbdles a single BackgroundDownload for a song.
         /// </summary>
         private async void HandleDownload(Song song, DownloadOperation download, bool start)
         {
             song.Download = new BackgroundDownload(download);
             ActiveDownloads.Add(song);
             Debug.WriteLine("Added {0} to active downloads", song.Name);
+
+            var path = "Audiotica/" + song.Album.PrimaryArtist.Name + "/" + song.Album.Name;
+            var filename = string.Format("{0}.mp3", song.Name);
+            if (song.ArtistName != song.Album.PrimaryArtist.Name)
+                filename = song.ArtistName + "-" + filename;
 
             try
             {
@@ -148,7 +152,9 @@ namespace Audiotica.Data.Service.RunTime
                 else
                 {
                     Debug.WriteLine("Download status code for {0} is bad :/", song.Name);
-                    throw new Exception();
+                    song.SongState = SongState.None;
+                    _sqlService.UpdateItem(song);
+                    StorageHelper.DeleteFileAsync(path + filename, KnownFolders.MusicLibrary).Wait();
                 }
             }
             catch
@@ -157,7 +163,7 @@ namespace Audiotica.Data.Service.RunTime
 
                 song.SongState = SongState.None;
                 _sqlService.UpdateItem(song);
-                StorageHelper.DeleteFileAsync(string.Format("songs/{0}.mp3", song.Id)).Wait();
+                StorageHelper.DeleteFileAsync(path + filename, KnownFolders.MusicLibrary).Wait();
             }
             finally
             {
@@ -200,8 +206,22 @@ namespace Audiotica.Data.Service.RunTime
             await _sqlService.UpdateItemAsync(song).ConfigureAwait(false);
             try
             {
+                var path = "Audiotica/" + song.Album.PrimaryArtist.Name + "/" + song.Album.Name + "/";
+                var filename = string.Format("{0}.mp3", song.Name);
+                if (song.ArtistName != song.Album.PrimaryArtist.Name)
+                    filename = song.ArtistName + "-" + filename;
+
+                if (await StorageHelper.FileExistsAsync(path + "/" + filename, KnownFolders.MusicLibrary))
+                {
+                    _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => song.SongState = SongState.None);
+                    _sqlService.UpdateItemAsync(song).ConfigureAwait(false);
+                    return;
+                }
+
                 var destinationFile =
-                    await StorageHelper.CreateFileAsync(string.Format("songs/{0}.mp3", song.Id)).ConfigureAwait(false);
+                    await
+                        StorageHelper.CreateFileAsync(path + "/" + filename, KnownFolders.MusicLibrary)
+                            .ConfigureAwait(false);
 
                 var downloader = new BackgroundDownloader();
                 var download = downloader.CreateDownload(new Uri(song.AudioUrl), destinationFile);

@@ -13,6 +13,7 @@ using Windows.UI.Xaml.Media.Imaging;
 using Audiotica.Core.Common;
 using Audiotica.Core.Utilities;
 using Audiotica.Data.Collection.Model;
+using Audiotica.Data.Collection.RunTime;
 using Audiotica.Data.Spotify.Models;
 using GalaSoft.MvvmLight.Threading;
 using IF.Lastfm.Core.Objects;
@@ -434,6 +435,59 @@ namespace Audiotica
         }
 
         #endregion
+
+        public static async Task MigrateAsync()
+        {
+            var songs = App.Locator.CollectionService.Songs.Where(p => p.SongState == SongState.Downloaded).ToList();
+            var importedSongs = App.Locator.CollectionService.Songs.Where(p =>
+                p.SongState == SongState.Local && !p.AudioUrl.Substring(1).StartsWith(":")).ToList();
+            var songsFolder = await StorageHelper.GetFolderAsync("songs");
+
+            if (songs.Count != 0 && songsFolder != null)
+            {
+                UiBlockerUtility.Block("Migrating downloaded songs to SD card...");
+                foreach (var song in songs)
+                {
+                    try
+                    {
+                        var path = "Audiotica/" + song.Album.PrimaryArtist.Name + "/" + song.Album.Name;
+                        var filename = string.Format("{0}.mp3", song.Name);
+                        if (song.ArtistName != song.Album.PrimaryArtist.Name)
+                            filename = song.ArtistName + "-" + filename;
+
+                        var file = await StorageHelper.GetIfFileExistsAsync(string.Format("songs/{0}.mp3", song.Id));
+                        var destFileExists = await StorageHelper.FileExistsAsync(path + filename, KnownFolders.MusicLibrary);
+
+                        if (file == null || destFileExists) continue;
+
+                        var folder = await StorageHelper.EnsureFolderExistsAsync(path, KnownFolders.MusicLibrary);
+                        await file.CopyAsync(folder, filename, NameCollisionOption.ReplaceExisting);
+                    }
+                    catch
+                    {
+                    }
+                }
+            }
+
+            if (importedSongs.Count > 0)
+            {
+                UiBlockerUtility.Block("Deleting outdated song imports...");
+                foreach (var importedSong in importedSongs)
+                {
+                    await App.Locator.CollectionService.DeleteSongAsync(importedSong);
+                }
+            }
+
+            UiBlockerUtility.Unblock();
+
+            if (songsFolder != null)
+                await songsFolder.DeleteAsync();
+
+            if (importedSongs.Count > 0)
+            {
+                CurtainPrompt.Show("You'll need to re-scan, since some imported songs were outdated.");
+            }
+        }
 
         public static async Task<bool> PinToggleAsync(Artist artist)
         {

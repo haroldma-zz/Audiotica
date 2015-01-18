@@ -152,6 +152,7 @@ namespace Audiotica.WindowsPhone.Player
                 if (_queueManager != null)
                 {
                     QueueManager.TrackChanged -= playList_TrackChanged;
+                    QueueManager.Dispose();
                     _queueManager = null;
                 }
                 BackgroundMediaPlayer.Shutdown(); // shutdown media pipeline

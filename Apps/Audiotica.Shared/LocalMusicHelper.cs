@@ -25,7 +25,8 @@ namespace Audiotica
 
             //avoiding DRM folder of xbox music
             foreach (var folder in (await parent.GetFoldersAsync()).Where(folder =>
-                folder.Name != "Xbox Music" && folder.Name != "Subscription Cache" && folder.Name != "Podcasts"))
+                folder.Name != "Xbox Music" && folder.Name != "Subscription Cache" && folder.Name != "Podcasts"
+                && folder.Name != "Audiotica"))
             {
                 await RetriveFilesInFolder(list, folder);
             }
@@ -78,6 +79,10 @@ namespace Audiotica
             if (!string.IsNullOrEmpty(track.ArtistId))
             {
                 song.Artist = track.ToArtist();
+                if (string.IsNullOrEmpty(song.ArtistName))
+                {
+                    song.ArtistName = song.Artist.Name;
+                }
             }
 
             if (!string.IsNullOrEmpty(track.AlbumId))
@@ -90,13 +95,7 @@ namespace Audiotica
 
         public static async Task<SavingError> SaveTrackAsync(StorageFile file)
         {
-            var audioPath = file.Path.Substring(3)
-                //local path
-                .Replace(@"Data\Users\Public\Music\", "")
-                //external path
-                .Replace(@"Music\", "")
-                //using forward slashes
-                .Replace("\\", "/");
+            var audioPath = file.Path;
 
             if (App.Locator.CollectionService.SongAlreadyExists(audioPath))
             {

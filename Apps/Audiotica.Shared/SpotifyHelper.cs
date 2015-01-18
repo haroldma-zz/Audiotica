@@ -67,7 +67,19 @@ namespace Audiotica
                 return SavingError.AlreadyExists;
             }
 
-            var artist = track is FullTrack ? (track as FullTrack).Artist : track.Artist;
+            var fullTrack = track as FullTrack;
+            if (fullTrack == null)
+            {
+                try
+                {
+                    fullTrack = await App.Locator.Spotify.GetTrack(track.Id);
+                }
+                catch
+                {
+                }
+            }
+
+            var artist = fullTrack != null ? fullTrack.Artist : track.Artist;
 
             string url;
 
@@ -83,7 +95,8 @@ namespace Audiotica
             if (string.IsNullOrEmpty(url))
                 return SavingError.NoMatch;
 
-            preparedSong.ArtistName = artist.Name;
+            preparedSong.ArtistName = fullTrack != null
+                ? string.Join(", ", fullTrack.Artists.Select(p => p.Name)) : artist.Name;
             preparedSong.Album = album.ToAlbum();
             preparedSong.Artist = album.Artist.ToArtist();
             preparedSong.Album.PrimaryArtist = preparedSong.Artist;
