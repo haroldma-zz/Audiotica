@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<VoiceCommands xmlns="http://schemas.microsoft.com/voicecommands/1.1">
+  <CommandSet xml:lang="en-US">
+    <CommandPrefix>Audiotica</CommandPrefix>
+    <Example> Open the App </Example>
+
+    <Command Name="Open">
+      <Example> Open </Example>
+      <ListenFor> Audiotic Open </ListenFor>
+      <ListenFor> Open Audiotica </ListenFor>
+      <Feedback> Opening the best music app... </Feedback>
+      <Navigate />
+    </Command>
+
+    	
+  </CommandSet>
+</VoiceCommands>
+
+<!-- Example -->
+<!--
+
+    The preceding example demonstrates a hypothetical game called 'Contoso ROD3O!' which defines two
+    Commands that a user can say to either start a new game or replay one of three levels in the game.  
+    To initiate the PlayGame command, a user can say "Contoso Rodeo play  a new game" or "Contoso Rodeo
+    play new game". Either phrase will start a new game. To initiate the second Command, a user can say
+    "Contoso Rodeo replay level one", "Contoso Rodeo replay level two", or "Contoso Rodeo replay level 
+    three".
+    The second Command demonstrates how to use a PhraseList with a Command. PhraseLists can be updated 
+    dynamically by the application (e.g., if a user unlocks a new level or game or feature, you might 
+    want to allow the user to give commands for newfeatures after voice commands are already registered.)
+    The third Command demonstrates how the {*} sequence can parallel another command to recognize speech
+    that is not defined in the CommandSet.
+
+  Note:
+
+      [and] Indicates that "and" is optional. Making connecting words like this optional
+            can help both "Contoso Rodeo, play new game" and "open Contoso Rodeo and play
+            a new game" feel natural to speak.
+                 
+      {number} Defined separately from the Command, mapping to "one" or "two" or "three".
+
+-->

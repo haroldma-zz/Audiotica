@@ -84,6 +84,8 @@ namespace Audiotica
             Current.DebugSettings.EnableRedrawRegions = AppSettingsHelper.Read<bool>("RedrawRegions");
         }
 
+        
+
         private void HardwareButtonsOnBackPressed(object sender, BackPressedEventArgs e)
         {
             if (UiBlockerUtility.IsBlocking)
@@ -121,9 +123,12 @@ namespace Audiotica
 
             Window.Current.Activate();
         }
-
+        
+           
+        
         protected override async void OnLaunched(LaunchActivatedEventArgs e)
         {
+                        
             CreateRootFrame();
 
             var restore = await StorageHelper.FileExistsAsync("_current_restore.autcp");
