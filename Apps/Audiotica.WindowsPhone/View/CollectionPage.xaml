@@ -6,6 +6,7 @@
     xmlns:audiotica="using:Audiotica"
     xmlns:interactivity="using:Microsoft.Xaml.Interactivity" xmlns:core="using:Microsoft.Xaml.Interactions.Core"
     xmlns:controls="using:MyToolkit.Controls"
+    xmlns:qKit="using:QKit"
     Name="Page"
     x:Class="Audiotica.View.CollectionPage"
     mc:Ignorable="d"
@@ -30,6 +31,18 @@
 
             <DataTemplate x:Key="GroupHeaderTemplate">
                 <Border Background="Transparent" Padding="0,0,0,15">
+                    <Border Background="{StaticResource PhoneAccentBrush}"
+                        Width="50" Height="50" Margin="0,0,18,0" HorizontalAlignment="Left">
+                        <TextBlock Text="{Binding Key}" Foreground="{StaticResource PhoneForegroundBrush}"
+                               FontSize="35" Padding="6,6,6,0"
+                               FontFamily="{StaticResource PhoneFontFamilySemiLight}" HorizontalAlignment="Left"
+                               VerticalAlignment="Bottom" />
+                    </Border>
+                </Border>
+            </DataTemplate>
+
+            <DataTemplate x:Key="GroupHeaderForMultiTemplate">
+                <Border Background="Transparent" Padding="0,0,0,15" Margin="20,0,0,0">
                     <Border Background="{StaticResource PhoneAccentBrush}"
                         Width="50" Height="50" Margin="0,0,18,0" HorizontalAlignment="Left">
                         <TextBlock Text="{Binding Key}" Foreground="{StaticResource PhoneForegroundBrush}"
@@ -72,9 +85,9 @@
                         x:Uid="CollectionEmpty"
                         Visibility="{Binding Service.Songs.Count, Converter={StaticResource EmptyListToVisibilityConverter}}"
                         Text="It seems you haven't saved any music yet." Style="{StaticResource SubtleTextBlockStyle}" />
-                    <SemanticZoom>
+                    <SemanticZoom Margin="-20,0,0,0">
                         <SemanticZoom.ZoomedInView>
-                            <ListView ContainerContentChanging="ItemListView_ContainerContentChanging" IsItemClickEnabled="True"
+                            <qKit:MultiSelectListView ContainerContentChanging="ItemListView_ContainerContentChanging" IsItemClickEnabled="True"
                                       ItemsSource="{Binding Source={StaticResource SongGroups}}"
                                       Padding="0,0,0,25">
                                 <ListView.ItemTemplate>
@@ -84,14 +97,14 @@
                                 </ListView.ItemTemplate>
                                 <ListView.GroupStyle>
                                     <GroupStyle HidesIfEmpty="True"
-                                                HeaderTemplate="{StaticResource GroupHeaderTemplate}" />
+                                                HeaderTemplate="{StaticResource GroupHeaderForMultiTemplate}" />
                                 </ListView.GroupStyle>
                                 <interactivity:Interaction.Behaviors>
                                     <core:EventTriggerBehavior EventName="ItemClick">
                                         <core:InvokeCommandAction Command="{Binding SongClickCommand}" />
                                     </core:EventTriggerBehavior>
                                 </interactivity:Interaction.Behaviors>
-                            </ListView>
+                            </qKit:MultiSelectListView>
                         </SemanticZoom.ZoomedInView>
                         <SemanticZoom.ZoomedOutView>
                             <GridView Background="#BF000000" Padding="15,10,0,0"
