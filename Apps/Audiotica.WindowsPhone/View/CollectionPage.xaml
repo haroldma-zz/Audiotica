@@ -85,11 +85,11 @@
                         x:Uid="CollectionEmpty"
                         Visibility="{Binding Service.Songs.Count, Converter={StaticResource EmptyListToVisibilityConverter}}"
                         Text="It seems you haven't saved any music yet." Style="{StaticResource SubtleTextBlockStyle}" />
-                    <SemanticZoom Margin="-20,0,0,0">
+                    <SemanticZoom Margin="-19,0,0,0">
                         <SemanticZoom.ZoomedInView>
-                            <qKit:MultiSelectListView ContainerContentChanging="ItemListView_ContainerContentChanging" IsItemClickEnabled="True"
+                            <qKit:MultiSelectListView x:Name="SongList" ContainerContentChanging="ItemListView_ContainerContentChanging" IsItemClickEnabled="True"
                                       ItemsSource="{Binding Source={StaticResource SongGroups}}"
-                                      Padding="0,0,0,25">
+                                      Padding="0,0,0,25" SelectionModeChanged="MultiSelectListView_SelectionModeChanged">
                                 <ListView.ItemTemplate>
                                     <DataTemplate>
                                         <audiotica:SongViewer />

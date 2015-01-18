@@ -16,7 +16,11 @@ namespace Audiotica.View
 {
     public sealed partial class CollectionPage
     {
+        private readonly List<ICommandBarElement> _selectionModeCommands;
+        private readonly List<ICommandBarElement> _selectionSecondaryModeCommands;
         private TypedEventHandler<ListViewBase, ContainerContentChangingEventArgs> _delegate;
+        private List<ICommandBarElement> _originalCommands;
+        private List<ICommandBarElement> _originalSecondaryCommands;
 
         public CollectionPage()
         {
@@ -24,6 +28,38 @@ namespace Audiotica.View
             Bar = BottomAppBar;
             BottomAppBar = null;
             Loaded += (sender, args) => LoadWallpaperArt();
+
+            var playButton = new AppBarButton
+            {
+                Icon = new SymbolIcon(Symbol.Play),
+                Label = "play"
+            };
+            var enqueueButton = new AppBarButton
+            {
+                Icon = new SymbolIcon(Symbol.Add),
+                Label = "enqueue"
+            };
+            _selectionModeCommands = new List<ICommandBarElement>
+            {
+                enqueueButton,
+                playButton
+            };
+
+            var addToButton = new AppBarButton
+            {
+                Icon = new SymbolIcon(Symbol.Play),
+                Label = "add to playlist..."
+            };
+            var deleteButton = new AppBarButton
+            {
+                Icon = new SymbolIcon(Symbol.Add),
+                Label = "delete"
+            };
+            _selectionSecondaryModeCommands = new List<ICommandBarElement>
+            {
+                addToButton,
+                deleteButton
+            };
         }
 
         /// <summary>
@@ -38,6 +74,12 @@ namespace Audiotica.View
         public override void NavigatedTo(object parameter)
         {
             base.NavigatedTo(parameter);
+
+            if (_originalCommands == null)
+                _originalCommands = (Bar as CommandBar).PrimaryCommands.ToList();
+            if (_originalSecondaryCommands == null)
+                _originalSecondaryCommands = (Bar as CommandBar).SecondaryCommands.ToList();
+
             if (parameter == null) return;
 
             LoadWallpaperArt();
@@ -132,6 +174,21 @@ namespace Audiotica.View
 
             // For imporved performance, set Handled to true since app is visualizing the data item 
             args.Handled = true;
+        }
+
+        private async void MultiSelectListView_SelectionModeChanged(object sender, RoutedEventArgs e)
+        {
+            await UiBlockerUtility.BlockNavigation(false);
+            SongList.SelectedIndex = -1;
+
+            var bar = Bar as CommandBar;
+            bar.Visibility = Visibility.Visible;
+            SongList.IsItemClickEnabled = false;
+
+            bar.PrimaryCommands.Clear();
+            bar.PrimaryCommands.AddRange(_selectionModeCommands);
+            bar.SecondaryCommands.Clear();
+            bar.SecondaryCommands.AddRange(_selectionSecondaryModeCommands);
         }
     }
 }
