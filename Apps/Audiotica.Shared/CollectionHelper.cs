@@ -453,12 +453,12 @@ namespace Audiotica
                             filename = song.ArtistName + "-" + filename;
 
                         var file = await StorageHelper.GetIfFileExistsAsync(string.Format("songs/{0}.mp3", song.Id));
+                        var destFileExists = await StorageHelper.FileExistsAsync(path + filename, KnownFolders.MusicLibrary);
 
-                        if (file == null) continue;
+                        if (file == null || destFileExists) continue;
 
                         var folder = await StorageHelper.EnsureFolderExistsAsync(path, KnownFolders.MusicLibrary);
-
-                        await file.CopyAsync(folder, filename);
+                        await file.CopyAsync(folder, filename, NameCollisionOption.ReplaceExisting);
                     }
                     catch
                     {
