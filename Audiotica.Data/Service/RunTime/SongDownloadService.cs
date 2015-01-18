@@ -125,6 +125,11 @@ namespace Audiotica.Data.Service.RunTime
             ActiveDownloads.Add(song);
             Debug.WriteLine("Added {0} to active downloads", song.Name);
 
+            var path = "Audiotica/" + song.Album.PrimaryArtist.Name + "/" + song.Album.Name;
+            var filename = string.Format("{0}.mp3", song.Name);
+            if (song.ArtistName != song.Album.PrimaryArtist.Name)
+                filename = song.ArtistName + "-" + filename;
+
             try
             {
                 var progressCallback = new Progress<DownloadOperation>(DownloadProgress);
@@ -148,7 +153,9 @@ namespace Audiotica.Data.Service.RunTime
                 else
                 {
                     Debug.WriteLine("Download status code for {0} is bad :/", song.Name);
-                    throw new Exception();
+                    song.SongState = SongState.None;
+                    _sqlService.UpdateItem(song);
+                    StorageHelper.DeleteFileAsync(path + filename, KnownFolders.MusicLibrary).Wait();
                 }
             }
             catch
@@ -157,7 +164,7 @@ namespace Audiotica.Data.Service.RunTime
 
                 song.SongState = SongState.None;
                 _sqlService.UpdateItem(song);
-                StorageHelper.DeleteFileAsync(string.Format("songs/{0}.mp3", song.Id)).Wait();
+                StorageHelper.DeleteFileAsync(path + filename, KnownFolders.MusicLibrary).Wait();
             }
             finally
             {
@@ -200,8 +207,12 @@ namespace Audiotica.Data.Service.RunTime
             await _sqlService.UpdateItemAsync(song).ConfigureAwait(false);
             try
             {
+                var path = "Audiotica/" + song.Album.PrimaryArtist.Name + "/" + song.Album.Name + "/";
+                var filename = string.Format("{0}.mp3", song.Name);
+                if (song.ArtistName != song.Album.PrimaryArtist.Name)
+                    filename = song.ArtistName + "-" + filename;
                 var destinationFile =
-                    await StorageHelper.CreateFileAsync(string.Format("songs/{0}.mp3", song.Id)).ConfigureAwait(false);
+                    await StorageHelper.CreateFileAsync(path + "/" + filename, KnownFolders.MusicLibrary).ConfigureAwait(false);
 
                 var downloader = new BackgroundDownloader();
                 var download = downloader.CreateDownload(new Uri(song.AudioUrl), destinationFile);

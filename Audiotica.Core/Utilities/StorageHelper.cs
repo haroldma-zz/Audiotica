@@ -120,12 +120,17 @@ namespace Audiotica.Core.Utilities
 
         public static async Task<bool> DeleteFileAsync(string path, StorageStrategy location = StorageStrategy.Local)
         {
-            var file = await GetIfFileExistsAsync(path, GetFolderFromStrategy(location)).ConfigureAwait(false);
+            return await DeleteFileAsync(path, GetFolderFromStrategy(location));
+        }
+
+        public static async Task<bool> DeleteFileAsync(string path, StorageFolder folder)
+        {
+            var file = await GetIfFileExistsAsync(path, folder).ConfigureAwait(false);
 
             if (file != null)
                 await file.DeleteAsync();
 
-            return !(await FileExistsAsync(path, location).ConfigureAwait(false));
+            return !(await FileExistsAsync(path, folder).ConfigureAwait(false));
         }
 
         public static async Task<StorageFolder> GetFolderAsync(string path,
@@ -201,7 +206,7 @@ namespace Audiotica.Core.Utilities
         public static async Task<StorageFile> CreateFileAsync(string path, StorageFolder folder,
             CreationCollisionOption option = CreationCollisionOption.OpenIfExists)
         {
-            if (path.StartsWith("/"))
+            if (path.StartsWith("/") || path.StartsWith("\\"))
                 path = path.Substring(1);
             var parts = path.Split('/');
 

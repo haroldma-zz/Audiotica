@@ -13,8 +13,6 @@ using Audiotica.Core.Utilities;
 using Audiotica.Data.Collection;
 using Audiotica.Data.Collection.Model;
 using Audiotica.Data.Collection.RunTime;
-using Audiotica.Data.Service.RunTime;
-using IF.Lastfm.Core.Api.Enums;
 
 #endregion
 
@@ -45,7 +43,7 @@ namespace Audiotica.WindowsPhone.Player
             };
             _historySql = new SqlService(historyConfig);
             _historySql.Initialize();
-            
+
             var bgDbTypes = new List<Type>
             {
                 typeof (QueueSong),
@@ -92,10 +90,7 @@ namespace Audiotica.WindowsPhone.Player
         /// </summary>
         public QueueSong CurrentTrack
         {
-            get
-            {
-                return _currentTrack ?? (_currentTrack = GetCurrentQueueSong());
-            }
+            get { return _currentTrack ?? (_currentTrack = GetCurrentQueueSong()); }
         }
 
         /// <summary>
@@ -106,6 +101,10 @@ namespace Audiotica.WindowsPhone.Player
         #endregion
 
         #region MediaPlayer Handlers
+
+        private readonly SqlService _historySql;
+        private readonly ScrobblerHelper _scrobbler;
+        private int _retryCount;
 
         /// <summary>
         ///     Handler for state changed event of Media Player
@@ -182,10 +181,6 @@ namespace Audiotica.WindowsPhone.Player
             _retryCount++;
         }
 
-        private int _retryCount;
-        private readonly ScrobblerHelper _scrobbler;
-        private SqlService _historySql;
-
         #endregion
 
         #region Playlist command handlers
@@ -208,9 +203,27 @@ namespace Audiotica.WindowsPhone.Player
             {
                 var isLocal = track.Song.SongState == SongState.Local;
 
-                StorageFile file = null;
+                StorageFolder folder;
+                string filename;
 
-                file = isLocal ? StorageHelper.GetFileAsync(track.Song.AudioUrl, KnownFolders.MusicLibrary).Result : StorageHelper.GetFileAsync(string.Format("songs/{0}.mp3", track.SongId)).Result;
+                if (isLocal)
+                {
+                    var path = track.Song.AudioUrl;
+                    path = path.Remove(path.LastIndexOf("\\", StringComparison.Ordinal));
+
+                    filename = track.Song.AudioUrl.Replace(path, "");
+                    folder = StorageFolder.GetFolderFromPathAsync(path).AsTask().Result;
+                }
+                else
+                {
+                    var path = "Audiotica/" + track.Song.Album.PrimaryArtist.Name + "/" + track.Song.Album.Name;
+                    filename = string.Format("{0}.mp3", track.Song.Name);
+                    if (track.Song.ArtistName != track.Song.Album.PrimaryArtist.Name)
+                        filename = track.Song.ArtistName + "-" + filename;
+                    folder = StorageHelper.GetFolderAsync(path, KnownFolders.MusicLibrary).Result;
+                }
+
+                var file = StorageHelper.GetFileAsync(filename, folder).Result;
 
                 if (file != null)
                 {
@@ -274,7 +287,9 @@ namespace Audiotica.WindowsPhone.Player
                     _sql.UpdateItem(queue.Song);
                 }
             }
-            catch { }
+            catch
+            {
+            }
             await _historySql.DeleteItemAsync(item);
         }
 
@@ -304,6 +319,11 @@ namespace Audiotica.WindowsPhone.Player
 
         #endregion
 
+        private bool IsShuffle
+        {
+            get { return AppSettingsHelper.Read<bool>("Shuffle"); }
+        }
+
         public void Dispose()
         {
             _bgSql.Dispose();
@@ -324,18 +344,19 @@ namespace Audiotica.WindowsPhone.Player
         private QueueSong GetQueueSong(Expression<Func<QueueSong, bool>> expression)
         {
             var queue = _bgSql.SelectWhere(expression);
-            
+
             if (queue == null) return null;
 
             var song = _sql.SelectWhere<Song>(p => p.Id == queue.SongId);
             var artist = _sql.SelectWhere<Artist>(p => p.Id == song.ArtistId);
+            var album = _sql.SelectWhere<Album>(p => p.Id == song.AlbumId);
 
             song.Artist = artist;
+            song.Album = album;
+            song.Album.PrimaryArtist = artist;
             queue.Song = song;
             return queue;
         }
-
-        private bool IsShuffle { get { return AppSettingsHelper.Read<bool>("Shuffle"); } }
 
         public QueueSong GetQueueSongById(int id)
         {
