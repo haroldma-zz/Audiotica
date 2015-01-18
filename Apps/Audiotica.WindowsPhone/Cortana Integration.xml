@@ -7,12 +7,20 @@
 
     <Command Name="Open">
       <Example> Open </Example>
-      <ListenFor> Audiotic Open </ListenFor>
+      <ListenFor> Audiotica Open </ListenFor>
       <ListenFor> Open Audiotica </ListenFor>
       <Feedback> Opening the best music app... </Feedback>
       <Navigate />
     </Command>
 
+    <Command Name="Albums">
+      <Example>Open my albums</Example>
+      <ListenFor>Open My Albums</ListenFor>
+      <ListenFor>View My Albums</ListenFor>
+      <ListenFor>Show My Albums</ListenFor>
+      <Feedback>Opening your albums...</Feedback>
+      <Navigate Target="/AlbumPage.xaml"/>
+    </Command>
     	
   </CommandSet>
 </VoiceCommands>
