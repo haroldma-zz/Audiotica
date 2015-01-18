@@ -36,8 +36,10 @@ namespace Audiotica
                                     option: CreationCollisionOption.ReplaceExisting);
                         using (var stream = await file.OpenStreamForWriteAsync())
                         {
-                            var original = entry.Open();
-                            await original.CopyToAsync(stream);
+                            using (var original = entry.Open())
+                            {
+                                await original.CopyToAsync(stream);
+                            }
                         }
                     }
                     catch { }

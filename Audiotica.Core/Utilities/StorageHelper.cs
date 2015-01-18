@@ -58,7 +58,11 @@ namespace Audiotica.Core.Utilities
             }
         }
 
-        private static async Task<StorageFile> GetIfFileExistsAsync(string path, StorageFolder folder)
+        public static async Task<StorageFile> GetIfFileExistsAsync(string path, StorageStrategy strategy = StorageStrategy.Local)
+        {
+            return await GetIfFileExistsAsync(path, GetFolderFromStrategy(strategy)).ConfigureAwait(false);
+        }
+        public static async Task<StorageFile> GetIfFileExistsAsync(string path, StorageFolder folder)
         {
             var parts = path.Split('/');
 

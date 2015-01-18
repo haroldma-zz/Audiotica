@@ -26,12 +26,8 @@ namespace Audiotica.View
             var reset = AppSettingsHelper.Read<bool>("FactoryReset");
 
             var startingMsg = "Restoring (this may take a bit)...";
-            var finishMsg = "Finish restoring.";
             if (reset)
-            {
                 startingMsg = "Factory resetting...";
-                finishMsg = "Finish factory resetting.";
-            }
 
             StatusBarHelper.ShowStatus(startingMsg);
 
@@ -68,7 +64,11 @@ namespace Audiotica.View
 
                 App.Locator.CollectionService.LibraryLoaded += async (sender, args) =>
                 {
-                    await CollectionHelper.DownloadArtistsArtworkAsync(false);
+                    await Task.WhenAll(new[]
+                    {
+                        CollectionHelper.MigrateAsync(),
+                        CollectionHelper.DownloadArtistsArtworkAsync(false)
+                    });
                 };
             }
             else
@@ -87,7 +87,6 @@ namespace Audiotica.View
             await StorageHelper.DeleteFileAsync("player.bksqldb");
 
             StatusBarHelper.HideStatus();
-            CurtainPrompt.Show(finishMsg);
             
             (Application.Current as App).BootAppServicesAsync();
             App.Navigator.GoTo<HomePage, ZoomOutTransition>(null);

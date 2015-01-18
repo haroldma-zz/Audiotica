@@ -435,6 +435,42 @@ namespace Audiotica
 
         #endregion
 
+        public static async Task MigrateAsync()
+        {
+            var songs = App.Locator.CollectionService.Songs.Where(p => p.SongState == SongState.Downloaded).ToList();
+            var songsFolder = await StorageHelper.GetFolderAsync("songs");
+
+            if (songs.Count != 0 && songsFolder != null)
+            {
+                UiBlockerUtility.Block("Migrating downloaded songs to SD card...");
+                foreach (var song in songs)
+                {
+                    try
+                    {
+                        var path = "Audiotica/" + song.Album.PrimaryArtist.Name + "/" + song.Album.Name;
+                        var filename = string.Format("{0}.mp3", song.Name);
+                        if (song.ArtistName != song.Album.PrimaryArtist.Name)
+                            filename = song.ArtistName + "-" + filename;
+
+                        var file = await StorageHelper.GetIfFileExistsAsync(string.Format("songs/{0}.mp3", song.Id));
+
+                        if (file == null) continue;
+
+                        var folder = await StorageHelper.EnsureFolderExistsAsync(path, KnownFolders.MusicLibrary);
+
+                        await file.CopyAsync(folder, filename);
+                    }
+                    catch
+                    {
+                    }
+                }
+                UiBlockerUtility.Unblock();
+            }
+
+            if (songsFolder != null)
+                await songsFolder.DeleteAsync();
+        }
+
         public static async Task<bool> PinToggleAsync(Artist artist)
         {
             bool created;

@@ -569,12 +569,6 @@ namespace Audiotica.Data.Collection.RunTime
                 {
                 }
             }
-
-            var mp3Folder = await StorageHelper.GetFolderAsync("songs");
-
-            if (mp3Folder == null) return;
-
-            await mp3Folder.DeleteAsync();
         }
 
         #region Playback Queue
