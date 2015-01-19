@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.Foundation;
+using Windows.Phone.UI.Input;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Audiotica.Core.Utilities;
@@ -136,6 +137,9 @@ namespace Audiotica.View
 
         private void CollectionPivot_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            if (SongList != null && SongList.SelectionMode != ListViewSelectionMode.None)
+                SongList.SelectionMode = ListViewSelectionMode.None;
+
             (Bar as CommandBar).Visibility =
                 CollectionPivot.SelectedIndex == 3 ? Visibility.Visible : Visibility.Collapsed;
         }
@@ -178,17 +182,37 @@ namespace Audiotica.View
 
         private void MultiSelectListView_SelectionModeChanged(object sender, RoutedEventArgs e)
         {
-            UiBlockerUtility.BlockNavigation(false);
-            SongList.SelectedIndex = -1;
-
             var bar = Bar as CommandBar;
-            bar.Visibility = Visibility.Visible;
-            SongList.IsItemClickEnabled = false;
+            if (SongList.SelectionMode == ListViewSelectionMode.Multiple)
+            {
+                HardwareButtons.BackPressed += HardwareButtonsOnBackPressed;
+                UiBlockerUtility.BlockNavigation(false);
+                SongList.SelectedIndex = -1;
 
-            bar.PrimaryCommands.Clear();
-            bar.PrimaryCommands.AddRange(_selectionModeCommands);
-            bar.SecondaryCommands.Clear();
-            bar.SecondaryCommands.AddRange(_selectionSecondaryModeCommands);
+                bar.Visibility = Visibility.Visible;
+                SongList.IsItemClickEnabled = false;
+
+                bar.PrimaryCommands.Clear();
+                bar.PrimaryCommands.AddRange(_selectionModeCommands);
+                bar.SecondaryCommands.Clear();
+                bar.SecondaryCommands.AddRange(_selectionSecondaryModeCommands);
+            }
+            else
+            {
+                HardwareButtons.BackPressed -= HardwareButtonsOnBackPressed;
+                UiBlockerUtility.Unblock();
+                SongList.IsItemClickEnabled = true;
+                bar.PrimaryCommands.Clear();
+                bar.PrimaryCommands.AddRange(_originalCommands);
+                bar.SecondaryCommands.Clear();
+            }
+        }
+
+        private void HardwareButtonsOnBackPressed(object sender, BackPressedEventArgs e)
+        {
+            SongList.SelectionMode = ListViewSelectionMode.None;
+            (Bar as CommandBar).Visibility =
+                CollectionPivot.SelectedIndex == 3 ? Visibility.Visible : Visibility.Collapsed;
         }
     }
 }
