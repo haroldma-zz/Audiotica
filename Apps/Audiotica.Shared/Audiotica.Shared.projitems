@@ -15,6 +15,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)AppBarHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AutcpHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CollectionHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CollectionHelperViewModel.cs" />
@@ -26,12 +27,14 @@
     <Compile Include="$(MSBuildThisFileDirectory)ProductConstans.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SavingError.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LocalMusicHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SongDownloadService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SongViewer.xaml.cs">
       <DependentUpon>SongViewer.xaml</DependentUpon>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)SpotifyHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ShowFlyoutAction.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SongStateConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)StreamFileAbstraction.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SuspensionManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PageTransition.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TransitionHelper.cs" />

@@ -445,6 +445,7 @@ namespace Audiotica
 
             if (songs.Count != 0 && songsFolder != null)
             {
+                App.Locator.SqlService.DbConnection.BeginTransaction();
                 UiBlockerUtility.Block("Migrating downloaded songs to SD card...");
                 foreach (var song in songs)
                 {
@@ -455,27 +456,31 @@ namespace Audiotica
                         if (song.ArtistName != song.Album.PrimaryArtist.Name)
                             filename = song.ArtistName + "-" + filename;
 
-                        var file = await StorageHelper.GetIfFileExistsAsync(string.Format("songs/{0}.mp3", song.Id));
-                        var destFileExists = await StorageHelper.FileExistsAsync(path + filename, KnownFolders.MusicLibrary);
-
-                        if (file == null || destFileExists) continue;
+                        var file = await StorageHelper.GetFileAsync(string.Format("songs/{0}.mp3", song.Id));
 
                         var folder = await StorageHelper.EnsureFolderExistsAsync(path, KnownFolders.MusicLibrary);
                         await file.CopyAsync(folder, filename, NameCollisionOption.ReplaceExisting);
+
+                        song.AudioUrl = Path.Combine(folder.Path, filename);
+                        await App.Locator.SqlService.UpdateItemAsync(song);
                     }
                     catch
                     {
                     }
                 }
+
+                App.Locator.SqlService.DbConnection.Commit();
             }
 
             if (importedSongs.Count > 0)
             {
                 UiBlockerUtility.Block("Deleting outdated song imports...");
+                App.Locator.SqlService.DbConnection.BeginTransaction();
                 foreach (var importedSong in importedSongs)
                 {
                     await App.Locator.CollectionService.DeleteSongAsync(importedSong);
                 }
+                App.Locator.SqlService.DbConnection.Commit();
             }
 
             UiBlockerUtility.Unblock();

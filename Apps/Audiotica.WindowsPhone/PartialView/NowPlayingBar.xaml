@@ -168,7 +168,7 @@
                                     <TextBlock Text="{Binding Song.Name}" FontSize="22"
                                            TextTrimming="CharacterEllipsis" FontWeight="Bold"
                                            FontFamily="Global User Interface" />
-                                    <TextBlock Text="{Binding Song.Artist.Name}" FontSize="16" FontWeight="Thin"
+                                    <TextBlock Text="{Binding Song.ArtistName}" FontSize="16" FontWeight="Thin"
                                            Foreground="#89FFFFFF"
                                            TextTrimming="CharacterEllipsis" />
                                 </StackPanel>

@@ -42,6 +42,7 @@
   <ItemGroup>
     <Compile Include="DesignTime\DesignCollectionService.cs" />
     <Compile Include="DesignTime\DesignSqlService.cs" />
+    <Compile Include="ISongDownloadService.cs" />
     <Compile Include="Model\HistoryEntry.cs" />
     <Compile Include="Model\BackgroundDownload.cs" />
     <Compile Include="SqlHelper\BaseEntry.cs" />

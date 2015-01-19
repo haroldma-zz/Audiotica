@@ -201,29 +201,7 @@ namespace Audiotica.WindowsPhone.Player
             }
             else
             {
-                var isLocal = track.Song.SongState == SongState.Local;
-
-                StorageFolder folder;
-                string filename;
-
-                if (isLocal)
-                {
-                    var path = track.Song.AudioUrl;
-                    path = path.Remove(path.LastIndexOf("\\", StringComparison.Ordinal));
-
-                    filename = track.Song.AudioUrl.Replace(path, "");
-                    folder = StorageFolder.GetFolderFromPathAsync(path).AsTask().Result;
-                }
-                else
-                {
-                    var path = "Audiotica/" + track.Song.Album.PrimaryArtist.Name + "/" + track.Song.Album.Name;
-                    filename = string.Format("{0}.mp3", track.Song.Name);
-                    if (track.Song.ArtistName != track.Song.Album.PrimaryArtist.Name)
-                        filename = track.Song.ArtistName + "-" + filename;
-                    folder = StorageHelper.GetFolderAsync(path, KnownFolders.MusicLibrary).Result;
-                }
-
-                var file = StorageHelper.GetFileAsync(filename, folder).Result;
+                var file = StorageFile.GetFileFromPathAsync(track.Song.AudioUrl).AsTask().Result;
 
                 if (file != null)
                 {
@@ -233,13 +211,7 @@ namespace Audiotica.WindowsPhone.Player
                     }
                     catch
                     {
-                        if (!isLocal)
-                        {
-                            //corrupt download, perhaps
-                            track.Song.SongState = SongState.None;
-                            _sql.UpdateItem(track.Song);
-                            file.DeleteAsync().AsTask().Wait();
-                        }
+                        SkipToNext();
                     }
                 }
                 else if (CurrentTrack.NextId != 0 && CurrentTrack.PrevId != 0)

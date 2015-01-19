@@ -18,7 +18,7 @@ namespace Audiotica
 
             _currentSheet = new NowPlayingSheet();
 
-            await UiBlockerUtility.BlockNavigation();
+            UiBlockerUtility.BlockNavigation();
 
             ModalSheetUtility.Show(_currentSheet);
 

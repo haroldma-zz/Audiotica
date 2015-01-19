@@ -115,9 +115,9 @@ namespace Audiotica.View
             HardwareButtons.BackPressed -= HardwareButtonsOnBackPressed;
         }
 
-        private async void ToMultiMode()
+        private void ToMultiMode()
         {
-            await UiBlockerUtility.BlockNavigation(false);
+            UiBlockerUtility.BlockNavigation(false);
             SongList.SelectedIndex = -1;
 
             var bar = Bar as CommandBar;

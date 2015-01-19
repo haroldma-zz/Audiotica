@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.Networking.BackgroundTransfer;
@@ -13,22 +14,14 @@ using Audiotica.Core.Common;
 using Audiotica.Core.Utilities;
 using Audiotica.Data.Collection;
 using Audiotica.Data.Collection.Model;
-using Audiotica.Data.Service.Interfaces;
+using TagLib;
 
 #endregion
 
-namespace Audiotica.Data.Service.RunTime
+namespace Audiotica
 {
     public class SongDownloadService : ISongDownloadService
     {
-        #region Private Fields
-
-        private readonly CoreDispatcher _dispatcher;
-        private readonly ICollectionService _service;
-        private readonly ISqlService _sqlService;
-
-        #endregion
-
         #region Constructor
 
         public SongDownloadService(ICollectionService service, ISqlService sqlService, CoreDispatcher dispatcher)
@@ -37,6 +30,14 @@ namespace Audiotica.Data.Service.RunTime
             _sqlService = sqlService;
             _dispatcher = dispatcher;
         }
+
+        #endregion
+
+        #region Private Fields
+
+        private readonly CoreDispatcher _dispatcher;
+        private readonly ICollectionService _service;
+        private readonly ISqlService _sqlService;
 
         #endregion
 
@@ -110,7 +111,55 @@ namespace Audiotica.Data.Service.RunTime
         {
             Debug.WriteLine("Download finished for {0}", song.Name);
 
-            //Update the IsDownloading property
+            #region update id3 tags
+
+            try
+            {
+                var file = song.Download.DownloadOperation.ResultFile;
+                using (var fileStream = await file.OpenStreamForWriteAsync())
+                {
+                    var tagFile = File.Create(new SimpleFileAbstraction(file.Name, fileStream, fileStream));
+                    var newTags = tagFile.GetTag(TagTypes.Id3v2, true);
+
+                    newTags.Title = song.Name;
+
+                    if (song.Artist.ProviderId != "autc.unknown")
+                        newTags.Performers = song.ArtistName.Split(',').Select(p => p.Trim()).ToArray();
+
+                    newTags.Album = song.Album.Name;
+                    newTags.AlbumArtists = new []{song.Album.PrimaryArtist.Name};
+
+                    if (!string.IsNullOrEmpty(song.Album.Genre))
+                        newTags.Genres = song.Album.Genre.Split(',').Select(p => p.Trim()).ToArray();
+
+                    newTags.Track = (uint)song.TrackNumber;
+
+                    newTags.Comment = "Downloaded with Audiotica - http://audiotica.fm";
+
+                    if (song.Album.HasArtwork)
+                    {
+                        var albumFilePath = string.Format(CollectionConstant.ArtworkPath, song.Album.Id);
+                        var artworkFile = await StorageHelper.GetFileAsync(albumFilePath);
+
+                        using (var artworkStream = await artworkFile.OpenStreamForReadAsync())
+                        {
+                            newTags.Pictures = new IPicture[]
+                            {
+                                new Picture(new SimpleFileAbstraction(artworkFile.Name, artworkStream, artworkStream))
+                            };
+                        }
+                    }
+
+                    await Task.Run(() => tagFile.Save());
+                }
+            }
+            catch
+            {
+            }
+
+            #endregion
+
+            song.AudioUrl = song.Download.DownloadOperation.ResultFile.Path;
             song.SongState = SongState.Downloaded;
             await _sqlService.UpdateItemAsync(song);
         }
@@ -211,16 +260,9 @@ namespace Audiotica.Data.Service.RunTime
                 if (song.ArtistName != song.Album.PrimaryArtist.Name)
                     filename = song.ArtistName + "-" + filename;
 
-                if (await StorageHelper.FileExistsAsync(path + "/" + filename, KnownFolders.MusicLibrary))
-                {
-                    _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => song.SongState = SongState.None);
-                    _sqlService.UpdateItemAsync(song).ConfigureAwait(false);
-                    return;
-                }
-
                 var destinationFile =
                     await
-                        StorageHelper.CreateFileAsync(path + "/" + filename, KnownFolders.MusicLibrary)
+                        StorageHelper.CreateFileAsync(path + "/" + filename, KnownFolders.MusicLibrary, CreationCollisionOption.ReplaceExisting)
                             .ConfigureAwait(false);
 
                 var downloader = new BackgroundDownloader();

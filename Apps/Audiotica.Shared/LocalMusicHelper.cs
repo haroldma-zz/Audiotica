@@ -25,8 +25,7 @@ namespace Audiotica
 
             //avoiding DRM folder of xbox music
             foreach (var folder in (await parent.GetFoldersAsync()).Where(folder =>
-                folder.Name != "Xbox Music" && folder.Name != "Subscription Cache" && folder.Name != "Podcasts"
-                && folder.Name != "Audiotica"))
+                folder.Name != "Xbox Music" && folder.Name != "Subscription Cache" && folder.Name != "Podcasts"))
             {
                 await RetriveFilesInFolder(list, folder);
             }
@@ -155,7 +154,7 @@ namespace Audiotica
             }
             else
             {
-                track = new LocalSong(tags.Title, tags.JoinedPerformers, tags.Album, tags.FirstAlbumArtist)
+                track = new LocalSong(tags.Title, tags.JoinedPerformers.Replace(";", ","), tags.Album, tags.FirstAlbumArtist)
                 {
                     FilePath = audioPath,
                     Genre = tags.FirstGenre,

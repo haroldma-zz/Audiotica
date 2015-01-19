@@ -176,9 +176,9 @@ namespace Audiotica.View
             args.Handled = true;
         }
 
-        private async void MultiSelectListView_SelectionModeChanged(object sender, RoutedEventArgs e)
+        private void MultiSelectListView_SelectionModeChanged(object sender, RoutedEventArgs e)
         {
-            await UiBlockerUtility.BlockNavigation(false);
+            UiBlockerUtility.BlockNavigation(false);
             SongList.SelectedIndex = -1;
 
             var bar = Bar as CommandBar;

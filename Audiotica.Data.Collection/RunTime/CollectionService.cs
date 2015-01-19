@@ -235,7 +235,9 @@ namespace Audiotica.Data.Collection.RunTime
 
         public bool SongAlreadyExists(string localSongPath)
         {
-            return Songs.FirstOrDefault(p => p.SongState == SongState.Local && p.AudioUrl == localSongPath) != null;
+            return Songs.FirstOrDefault(p => 
+                (p.SongState == SongState.Local || p.SongState == SongState.Downloaded)
+                && localSongPath == p.AudioUrl) != null;
         }
 
         public void ShuffleModeChanged()
