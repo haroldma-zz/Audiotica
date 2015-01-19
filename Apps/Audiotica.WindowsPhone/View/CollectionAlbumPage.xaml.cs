@@ -127,11 +127,13 @@ namespace Audiotica.View
             {
                 PinUnpinAppBarButton.Label = "Pin";
                 PinUnpinAppBarButton.Icon = new SymbolIcon(Symbol.Pin);
+                Bar.ClosedDisplayMode = AppBarClosedDisplayMode.Compact;
             }
             else
             {
                 PinUnpinAppBarButton.Label = "Unpin";
                 PinUnpinAppBarButton.Icon = new SymbolIcon(Symbol.UnPin);
+                Bar.ClosedDisplayMode = AppBarClosedDisplayMode.Minimal;
             }
         }
 
