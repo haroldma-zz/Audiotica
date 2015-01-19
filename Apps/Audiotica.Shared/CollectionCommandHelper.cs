@@ -82,23 +82,6 @@ namespace Audiotica
             await CollectionHelper.AddToQueueAsync(songs, ignoreInsertMode);
         }
 
-        private void ExitIfArtistEmpty(Artist artist)
-        {
-            if (App.Navigator.CurrentPage is CollectionArtistPage && artist.Songs.Count == 0)
-            {
-                App.Navigator.GoBack();
-            }
-        }
-
-        private void ExitIfAlbumEmpty(Album album)
-        {
-            if (App.Navigator.CurrentPage is CollectionAlbumPage && album.Songs.Count == 0)
-            {
-                App.Navigator.GoBack();
-            }
-            ExitIfArtistEmpty(album.PrimaryArtist);
-        }
-
         #region Command Execute
 
         private async void EntryPlayClickExecute(BaseEntry item)
@@ -171,65 +154,9 @@ namespace Audiotica
 
         #region Queue
 
-        private async void DeleteClickExecute(BaseEntry item)
+        public async void DeleteClickExecute(BaseEntry item)
         {
-            var name = "unknown";
-
-            try
-            {
-                if (item is Song)
-                {
-                    var song = item as Song;
-                    name = song.Name;
-
-                    await _service.DeleteSongAsync(song);
-                    ExitIfAlbumEmpty(song.Album);
-                }
-
-                else if (item is Playlist)
-                {
-                    var playlist = item as Playlist;
-                    name = playlist.Name;
-
-                    await _service.DeletePlaylistAsync(playlist);
-                }
-
-                else if (item is Artist)
-                {
-                    var artist = item as Artist;
-                    name = artist.Name;
-
-                    _service.Artists.Remove(artist);
-
-                    await Task.WhenAll(artist.Songs.ToList().Select(song => Task.WhenAll(new List<Task>
-                    {
-                        _service.DeleteSongAsync(song)
-                    })));
-
-                    ExitIfArtistEmpty(artist);
-                }
-
-                else if (item is Album)
-                {
-                    var album = item as Album;
-                    name = album.Name;
-
-                    _service.Albums.Remove(album);
-
-                    await Task.WhenAll(album.Songs.ToList().Select(song => Task.WhenAll(new List<Task>
-                    {
-                        _service.DeleteSongAsync(song)
-                    })));
-
-                    ExitIfAlbumEmpty(album);
-                }
-
-                CurtainPrompt.Show("EntryDeletingSuccess".FromLanguageResource(), name);
-            }
-            catch
-            {
-                CurtainPrompt.ShowError("EntryDeletingError".FromLanguageResource(), name);
-            }
+            await CollectionHelper.DeleteEntryAsync(item);
         }
 
         #endregion

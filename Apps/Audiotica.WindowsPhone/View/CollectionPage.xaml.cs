@@ -81,16 +81,13 @@ namespace Audiotica.View
                 Icon = new SymbolIcon(Symbol.Add),
                 Label = "delete"
             };
-            deleteButton.Click += (o, p) =>
+            deleteButton.Click += async (o, p) =>
             {
-                var songs = SongList.SelectedItems.Select(m => m as Song).ToList();
-                if (songs.Count == 0) return;
+                var tasks = SongList.SelectedItems.Select(m => CollectionHelper.DeleteEntryAsync(m as Song, false)).ToList();
+                if (tasks.Count == 0) return;
 
                 SongList.SelectionMode = ListViewSelectionMode.None;
-                foreach (var song in songs)
-                {
-                    App.Locator.Collection.Commands.DeleteClickCommand.Execute(song);
-                }
+                await Task.WhenAll(tasks);
             };
             _selectionSecondaryModeCommands = new List<ICommandBarElement>
             {

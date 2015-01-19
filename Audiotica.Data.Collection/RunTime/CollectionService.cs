@@ -264,6 +264,10 @@ namespace Audiotica.Data.Collection.RunTime
 
         public async Task DeleteSongAsync(Song song)
         {
+            var queueSong = PlaybackQueue.FirstOrDefault(p => p.SongId == song.Id);
+            if (queueSong != null)
+                await DeleteFromQueueAsync(queueSong);
+
             // remove it from artist, albums and playlists songs
             var playlists = Playlists.Where(p => p.Songs.Count(pp => pp.SongId == song.Id) > 0).ToList();
 

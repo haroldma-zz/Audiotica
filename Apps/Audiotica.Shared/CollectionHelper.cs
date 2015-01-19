@@ -16,7 +16,9 @@ using Audiotica.Core.Common;
 using Audiotica.Core.Utilities;
 using Audiotica.Data.Collection.Model;
 using Audiotica.Data.Collection.RunTime;
+using Audiotica.Data.Collection.SqlHelper;
 using Audiotica.Data.Spotify.Models;
+using Audiotica.View;
 using GalaSoft.MvvmLight.Threading;
 using IF.Lastfm.Core.Objects;
 
@@ -394,6 +396,23 @@ namespace Audiotica
 
         #region Heper methods
 
+        private static void ExitIfArtistEmpty(Artist artist)
+        {
+            if (App.Navigator.CurrentPage is CollectionArtistPage && artist.Songs.Count == 0)
+            {
+                App.Navigator.GoBack();
+            }
+        }
+
+        private static void ExitIfAlbumEmpty(Album album)
+        {
+            if (App.Navigator.CurrentPage is CollectionAlbumPage && album.Songs.Count == 0)
+            {
+                App.Navigator.GoBack();
+            }
+            ExitIfArtistEmpty(album.PrimaryArtist);
+        }
+
         private static void ShowResults(SavingError result, string trackName)
         {
             switch (result)
@@ -491,6 +510,107 @@ namespace Audiotica
         }
 
         #endregion
+
+        public static async Task DeleteEntryAsync(BaseEntry item, bool showSuccessMessage = true)
+        {
+            var name = "unknown";
+
+            try
+            {
+                if (item is Song)
+                {
+                    var song = item as Song;
+                    name = song.Name;
+
+                    var playbackQueue = App.Locator.CollectionService.PlaybackQueue;
+                    var queue = playbackQueue.FirstOrDefault(p => p.SongId == song.Id);
+
+                    if (queue != null)
+                    {
+                        if (playbackQueue.Count == 1)
+                            await App.Locator.AudioPlayerHelper.ShutdownPlayerAsync();
+                        else
+                            App.Locator.AudioPlayerHelper.NextSong();
+                    }
+
+                    await App.Locator.CollectionService.DeleteSongAsync(song);
+                    ExitIfAlbumEmpty(song.Album);
+                }
+
+                else if (item is Playlist)
+                {
+                    var playlist = item as Playlist;
+                    name = playlist.Name;
+
+                    await App.Locator.CollectionService.DeletePlaylistAsync(playlist);
+                }
+
+                else if (item is Artist)
+                {
+                    var artist = item as Artist;
+                    name = artist.Name;
+
+                    App.Locator.CollectionService.Artists.Remove(artist);
+
+                    var artistSongs = artist.Songs.ToList();
+                    var taskList = new List<Task>();
+
+                    foreach (var song in artistSongs)
+                    {
+                        var playbackQueue = App.Locator.CollectionService.PlaybackQueue;
+                        var queue = playbackQueue.FirstOrDefault(p => p.SongId == song.Id);
+
+                        if (queue != null)
+                        {
+                            if (playbackQueue.Count == 1)
+                                await App.Locator.AudioPlayerHelper.ShutdownPlayerAsync();
+                            else
+                                App.Locator.AudioPlayerHelper.NextSong();
+                        }
+
+                        taskList.Add(App.Locator.CollectionService.DeleteSongAsync(song));
+                    }
+
+                    ExitIfArtistEmpty(artist);
+                }
+
+                else if (item is Album)
+                {
+                    var album = item as Album;
+                    name = album.Name;
+
+                    App.Locator.CollectionService.Albums.Remove(album);
+
+                    var albumSongs = album.Songs.ToList();
+                    var taskList = new List<Task>();
+
+                    foreach (var song in albumSongs)
+                    {
+                        var playbackQueue = App.Locator.CollectionService.PlaybackQueue;
+                        var queue = playbackQueue.FirstOrDefault(p => p.SongId == song.Id);
+
+                        if (queue != null)
+                        {
+                            if (playbackQueue.Count == 1)
+                                await App.Locator.AudioPlayerHelper.ShutdownPlayerAsync();
+                            else
+                                App.Locator.AudioPlayerHelper.NextSong();
+                        }
+
+                        taskList.Add(App.Locator.CollectionService.DeleteSongAsync(song));
+                    }
+
+                    ExitIfAlbumEmpty(album);
+                }
+
+                if (showSuccessMessage)
+                    CurtainPrompt.Show("EntryDeletingSuccess".FromLanguageResource(), name);
+            }
+            catch
+            {
+                CurtainPrompt.ShowError("EntryDeletingError".FromLanguageResource(), name);
+            }
+        }
 
         public static async Task MigrateAsync()
         {
