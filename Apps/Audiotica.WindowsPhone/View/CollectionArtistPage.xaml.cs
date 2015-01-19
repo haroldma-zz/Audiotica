@@ -1,6 +1,9 @@
 ﻿#region
 
+using System.Collections.Generic;
+using System.Linq;
 using Windows.Foundation;
+using Windows.Phone.UI.Input;
 using Windows.UI.StartScreen;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -16,6 +19,8 @@ namespace Audiotica.View
 {
     public sealed partial class CollectionArtistPage
     {
+        private readonly List<ICommandBarElement> _selectionModeCommands;
+        private readonly List<ICommandBarElement> _selectionSecondaryModeCommands;
         private readonly PivotItem _bioPivotItem;
         private readonly PivotItem _similarPivotItem;
         private TypedEventHandler<ListViewBase, ContainerContentChangingEventArgs> _delegate;
@@ -27,6 +32,74 @@ namespace Audiotica.View
             BottomAppBar = null;
             _bioPivotItem = BioPivot;
             _similarPivotItem = SimilarPivot;
+
+            var playButton = new AppBarButton
+            {
+                Icon = new SymbolIcon(Symbol.Play),
+                Label = "play",
+            };
+            playButton.Click += async (o, p) =>
+            {
+                var songs = SongList.SelectedItems.Select(m => m as Song).ToList();
+                if (songs.Count == 0) return;
+
+                SongList.SelectionMode = ListViewSelectionMode.None;
+                await CollectionHelper.PlaySongsAsync(songs, forceClear: true);
+            };
+            var enqueueButton = new AppBarButton
+            {
+                Icon = new SymbolIcon(Symbol.Add),
+                Label = "enqueue"
+            };
+            enqueueButton.Click += async (o, p) =>
+            {
+                var songs = SongList.SelectedItems.Select(m => m as Song).ToList();
+                if (songs.Count == 0) return;
+
+                SongList.SelectionMode = ListViewSelectionMode.None;
+                await CollectionHelper.AddToQueueAsync(songs);
+            };
+
+            _selectionModeCommands = new List<ICommandBarElement>
+            {
+                enqueueButton,
+                playButton
+            };
+
+            var addToButton = new AppBarButton
+            {
+                Icon = new SymbolIcon(Symbol.Play),
+                Label = "add to playlist..."
+            };
+            addToButton.Click += (o, p) =>
+            {
+                var songs = SongList.SelectedItems.Select(m => m as Song).ToList();
+                if (songs.Count == 0) return;
+
+                SongList.SelectionMode = ListViewSelectionMode.None;
+                CollectionHelper.AddToPlaylistDialog(songs);
+            };
+            var deleteButton = new AppBarButton
+            {
+                Icon = new SymbolIcon(Symbol.Add),
+                Label = "delete"
+            };
+            deleteButton.Click += (o, p) =>
+            {
+                var songs = SongList.SelectedItems.Select(m => m as Song).ToList();
+                if (songs.Count == 0) return;
+
+                SongList.SelectionMode = ListViewSelectionMode.None;
+                foreach (var song in songs)
+                {
+                    App.Locator.Collection.Commands.DeleteClickCommand.Execute(song);
+                }
+            };
+            _selectionSecondaryModeCommands = new List<ICommandBarElement>
+            {
+                addToButton,
+                deleteButton
+            };
         }
 
         private CollectionArtistViewModel Vm
@@ -145,6 +218,40 @@ namespace Audiotica.View
 
             // For imporved performance, set Handled to true since app is visualizing the data item 
             args.Handled = true;
+        }
+
+        private void MultiSelectListView_SelectionModeChanged(object sender, RoutedEventArgs e)
+        {
+            var bar = Bar as CommandBar;
+            if (SongList.SelectionMode == ListViewSelectionMode.Multiple)
+            {
+                HardwareButtons.BackPressed += HardwareButtonsOnBackPressed;
+                UiBlockerUtility.BlockNavigation(false);
+                SongList.SelectedIndex = -1;
+
+                SongList.IsItemClickEnabled = false;
+
+                AppBarHelper.SaveState(bar);
+                AppBarHelper.SwitchState(bar, _selectionModeCommands, _selectionSecondaryModeCommands);
+            }
+            else
+            {
+                HardwareButtons.BackPressed -= HardwareButtonsOnBackPressed;
+                UiBlockerUtility.Unblock();
+                SongList.IsItemClickEnabled = true;
+
+                AppBarHelper.RestorePreviousState(bar);
+            }
+        }
+
+        private void HardwareButtonsOnBackPressed(object sender, BackPressedEventArgs e)
+        {
+            SongList.SelectionMode = ListViewSelectionMode.None;
+        }
+
+        private void ArtistPivot_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            SongList.SelectionMode = ListViewSelectionMode.None;
         }
     }
 }
