@@ -22,7 +22,6 @@ namespace Audiotica.Data.Collection.RunTime
         public SqlService(SqlServiceConfig config)
         {
             _config = config;
-            DbConnection = new SQLiteConnection(config.Path);
         }
 
         public SQLiteConnection DbConnection { get; set; }
@@ -34,6 +33,7 @@ namespace Audiotica.Data.Collection.RunTime
 
         public void Initialize()
         {
+            DbConnection = new SQLiteConnection(_config.Path);
             var cmd = new SQLiteCommand(DbConnection) {CommandText = "PRAGMA user_version"};
             var sqlVersion = cmd.ExecuteScalar<int>();
 

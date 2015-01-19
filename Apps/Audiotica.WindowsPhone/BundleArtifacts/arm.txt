@@ -1,4 +1,4 @@
-MainPackage=C:\Users\Harry\Documents\GitHub\Audiotica\Apps\Audiotica.WindowsPhone\bin\ARM\Release\Audiotica.WindowsPhone_1501.15.15.1_Bundle\Audiotica.WindowsPhone_1501.15.15.1_ARM.appx
-SymbolPackage=C:\Users\Harry\Documents\GitHub\Audiotica\Apps\Audiotica.WindowsPhone\AppPackages\Audiotica.WindowsPhone_1501.15.15.1_Test\Audiotica.WindowsPhone_1501.15.15.1_ARM.appxsym
-ResourcePack=C:\Users\Harry\Documents\GitHub\Audiotica\Apps\Audiotica.WindowsPhone\bin\ARM\Release\Audiotica.WindowsPhone_1501.15.15.1_Bundle\Audiotica.WindowsPhone_1501.15.15.1_scale-100.appx
-ResourcePack=C:\Users\Harry\Documents\GitHub\Audiotica\Apps\Audiotica.WindowsPhone\bin\ARM\Release\Audiotica.WindowsPhone_1501.15.15.1_Bundle\Audiotica.WindowsPhone_1501.15.15.1_scale-140.appx
+MainPackage=C:\Users\Harry\Documents\GitHub\Audiotica\Apps\Audiotica.WindowsPhone\bin\ARM\Release\Audiotica.WindowsPhone_1501.17.11.39_Bundle\Audiotica.WindowsPhone_1501.17.11.39_ARM.appx
+SymbolPackage=C:\Users\Harry\Documents\GitHub\Audiotica\Apps\Audiotica.WindowsPhone\AppPackages\Audiotica.WindowsPhone_1501.17.11.39_Test\Audiotica.WindowsPhone_1501.17.11.39_ARM.appxsym
+ResourcePack=C:\Users\Harry\Documents\GitHub\Audiotica\Apps\Audiotica.WindowsPhone\bin\ARM\Release\Audiotica.WindowsPhone_1501.17.11.39_Bundle\Audiotica.WindowsPhone_1501.17.11.39_scale-100.appx
+ResourcePack=C:\Users\Harry\Documents\GitHub\Audiotica\Apps\Audiotica.WindowsPhone\bin\ARM\Release\Audiotica.WindowsPhone_1501.17.11.39_Bundle\Audiotica.WindowsPhone_1501.17.11.39_scale-140.appx

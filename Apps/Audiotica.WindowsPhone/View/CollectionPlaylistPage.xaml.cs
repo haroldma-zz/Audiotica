@@ -14,6 +14,7 @@ using Audiotica.Core.Utilities;
 using Audiotica.Data.Collection.Model;
 using Audiotica.ViewModel;
 using GalaSoft.MvvmLight.Messaging;
+using QKit;
 
 #endregion
 
@@ -114,11 +115,18 @@ namespace Audiotica.View
             HardwareButtons.BackPressed -= HardwareButtonsOnBackPressed;
         }
 
-        private void ToMultiMode()
+        private async void ToMultiMode()
         {
+            await UiBlockerUtility.BlockNavigation(false);
+            SongList.SelectedIndex = -1;
+
             var bar = Bar as CommandBar;
             SongList.IsItemClickEnabled = false;
-            SongList.SelectionMode = ListViewSelectionMode.Multiple;
+
+// ReSharper disable once RedundantCheckBeforeAssignment
+            if (SongList.SelectionMode != ListViewSelectionMode.Multiple)
+                SongList.SelectionMode = ListViewSelectionMode.Multiple;
+
             bar.PrimaryCommands.Clear();
             bar.PrimaryCommands.AddRange(_selectionModeCommands);
         }
@@ -135,8 +143,6 @@ namespace Audiotica.View
 
         private void SelectAppBarButton_Click(object sender, RoutedEventArgs e)
         {
-            UiBlockerUtility.BlockNavigation(false);
-            SongList.SelectedIndex = -1;
             ToMultiMode();
         }
 
@@ -187,6 +193,14 @@ namespace Audiotica.View
         private TypedEventHandler<ListViewBase, ContainerContentChangingEventArgs> ContainerContentChangingDelegate
         {
             get { return _delegate ?? (_delegate = ItemListView_ContainerContentChanging); }
+        }
+
+        private void SongList_SelectionModeChanged(object sender, RoutedEventArgs e)
+        {
+            var mode = (sender as MultiSelectListView).SelectionMode;
+
+            if (mode == ListViewSelectionMode.Multiple)
+                ToMultiMode();
         }
     }
 }

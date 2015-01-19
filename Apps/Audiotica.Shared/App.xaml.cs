@@ -10,6 +10,7 @@ using Windows.ApplicationModel.Activation;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.ApplicationModel.Store;
 using Windows.Phone.UI.Input;
+using Windows.Storage;
 using Windows.System;
 using Windows.UI.Popups;
 using Windows.UI.ViewManagement;
@@ -18,6 +19,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 using Audiotica.Core.Common;
 using Audiotica.Core.Utilities;
+using Audiotica.Data.Collection.Model;
 using Audiotica.Data.Service.RunTime;
 using Audiotica.View;
 using Audiotica.ViewModel;
@@ -31,7 +33,7 @@ namespace Audiotica
     public sealed partial class App
     {
         public static bool IsDebugging = Debugger.IsAttached;
-        public static bool IsProduction = true;
+        public static bool IsProduction = false;
 
         #region Fields
 
@@ -84,6 +86,8 @@ namespace Audiotica
             Current.DebugSettings.EnableRedrawRegions = AppSettingsHelper.Read<bool>("RedrawRegions");
         }
 
+        
+
         private void HardwareButtonsOnBackPressed(object sender, BackPressedEventArgs e)
         {
             if (UiBlockerUtility.IsBlocking)
@@ -121,12 +125,16 @@ namespace Audiotica
 
             Window.Current.Activate();
         }
-
+        
+           
+        
         protected override async void OnLaunched(LaunchActivatedEventArgs e)
         {
+                        
             CreateRootFrame();
 
-            var restore = await StorageHelper.FileExistsAsync("_current_restore.autcp");
+            var restore = AppSettingsHelper.Read<bool>("FactoryReset")
+            || await StorageHelper.FileExistsAsync("_current_restore.autcp");
 
             if (RootFrame.Content == null)
             {
@@ -189,6 +197,11 @@ namespace Audiotica
 
             var dataManager = DataTransferManager.GetForCurrentView();
             dataManager.DataRequested += DataTransferManagerOnDataRequested;
+
+            if (AppVersionHelper.JustUpdated)
+                OnUpdate();
+            else if (AppVersionHelper.IsFirstRun)
+                AppSettingsHelper.WriteAsJson("LastRunVersion", AppVersionHelper.CurrentVersion);
         }
 
         #endregion
@@ -207,21 +220,25 @@ namespace Audiotica
                 await WarnAboutCrashAsync("Application Crashed", crash);
             else
                 await ReviewReminderAsync();
+        }
 
-            #region On update
-
-            if (!AppVersionHelper.JustUpdated) return;
-
-            CurtainPrompt.Show(2500, "AppUpdated".FromLanguageResource(), AppVersionHelper.CurrentVersion);
-
+        private async void OnUpdate()
+        { 
             //download missing artwork for artist
             if (Locator.CollectionService.IsLibraryLoaded)
-                CollectionHelper.DownloadArtistsArtworkAsync();
+            {
+                await CollectionHelper.MigrateAsync();
+                await CollectionHelper.DownloadArtistsArtworkAsync();
+                AppSettingsHelper.WriteAsJson("LastRunVersion", AppVersionHelper.CurrentVersion);
+            }
             else
                 Locator.CollectionService.LibraryLoaded +=
-                    async (o, args) => CollectionHelper.DownloadArtistsArtworkAsync();
-
-            #endregion
+                    async (o, args) =>
+                    {
+                        await CollectionHelper.MigrateAsync();
+                        await CollectionHelper.DownloadArtistsArtworkAsync();
+                        AppSettingsHelper.WriteAsJson("LastRunVersion", AppVersionHelper.CurrentVersion);
+                    };
         }
 
         private void OnVisibleBoundsChanged(ApplicationView sender, object args)

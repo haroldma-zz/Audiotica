@@ -332,13 +332,8 @@
         </Pivot>
     </Grid>
     <Page.BottomAppBar>
-        <CommandBar ClosedDisplayMode="Minimal">
+        <CommandBar Visibility="Collapsed">
             <AppBarButton x:Uid="CollectionAppBarNewPlaylist" Icon="Add" Label="New Playlist" Click="ButtonBase_OnClick" />
-            <CommandBar.SecondaryCommands>
-                <AppBarButton Label="import music from phone" Click="ImportButtonBase_OnClick"/>
-                <AppBarButton Label="backup collection" Click="BackupButtonBase_OnClick" />
-                <AppBarButton Label="restore collection" Click="RestoreButtonBase_OnClick" />
-            </CommandBar.SecondaryCommands>
         </CommandBar>
     </Page.BottomAppBar>
 </audiotica:PageBase>

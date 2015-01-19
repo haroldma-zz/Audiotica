@@ -37,6 +37,23 @@ namespace Audiotica.View
             await CollectionHelper.SaveTrackAsync(chartTrack);
         }
 
+        protected override async void OnNavigatedTo(NavigationEventArgs e)
+        {
+            if (e.NavigationMode == NavigationMode.New)
+            {
+                var storageFile = await Windows.Storage.StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///ContosoWidgets.xml"));
+                await Windows.Media.SpeechRecognition.VoiceCommandManager.InstallCommandSetsFromStorageFileAsync(storageFile);
+            }
+
+            // TODO: If your application contains multiple pages, ensure that you are
+            // handling the hardware Back button by registering for the
+            // Windows.Phone.UI.Input.HardwareButtons.BackPressed event.
+            // If you are using the NavigationHelper provided by some templates,
+            // this event is handled for you.
+        }
+
+
+
         private void Grid_Tapped(object sender, TappedRoutedEventArgs e)
         {
             var artist = ((Grid) sender).DataContext as LastArtist;
