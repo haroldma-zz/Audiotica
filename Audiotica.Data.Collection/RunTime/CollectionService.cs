@@ -633,7 +633,7 @@ namespace Audiotica.Data.Collection.RunTime
             if (insert)
             {
                 next = PlaybackQueue[normalIndex];
-                if (next.PrevId != 0 && _lookupMap.ContainsKey(shuffleNext.PrevId))
+                if (next.PrevId != 0 && _lookupMap.ContainsKey(next.PrevId))
                     prev = _lookupMap[next.PrevId];
             }
             else
@@ -984,7 +984,7 @@ namespace Audiotica.Data.Collection.RunTime
             #endregion
 
             await _sqlService.DeleteItemAsync(songToRemove);
-            playlist.Songs.Remove(songToRemove);
+            _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => playlist.Songs.Remove(songToRemove));
         }
 
         private async void LoadPlaylists()

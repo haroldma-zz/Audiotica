@@ -250,8 +250,8 @@ namespace Audiotica
 
             var playbackQueue = App.Locator.CollectionService.PlaybackQueue.ToList();
 
-            var sameLength = _currentlyPreparing || songs.Count == playbackQueue.Count ||
-                             playbackQueue.Count == MaxMassPlayQueueCount;
+            var sameLength = _currentlyPreparing || songs.Count < playbackQueue.Count ||
+                             playbackQueue.Count >= MaxMassPlayQueueCount;
             var containsSong = playbackQueue.FirstOrDefault(p => p.SongId == song.Id) != null;
             var createQueue = !sameLength
                               || !containsSong;

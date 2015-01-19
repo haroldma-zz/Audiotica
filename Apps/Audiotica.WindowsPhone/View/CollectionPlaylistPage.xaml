@@ -32,7 +32,7 @@
                       IsItemClickEnabled="True"
                       ShowsScrollingPlaceholders="True"
                       ContainerContentChanging="ItemListView_ContainerContentChanging"
-                      ItemsSource="{Binding Playlist.Songs}" SelectionModeChanged="SongList_SelectionModeChanged">
+                      ItemsSource="{Binding Playlist.Songs}" SelectionModeChanged="SongList_SelectionModeChanged" Margin="-20,0,0,0">
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <StackPanel Margin="0,0,0,15">
