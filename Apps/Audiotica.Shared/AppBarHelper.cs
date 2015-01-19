@@ -22,11 +22,17 @@ namespace Audiotica
 
         public static void RestorePreviousState(CommandBar appBar)
         {
-            appBar.PrimaryCommands.Clear();
-            appBar.PrimaryCommands.AddRange(_originalCommands);
+            if (_originalCommands != null)
+            {
+                appBar.PrimaryCommands.Clear();
+                appBar.PrimaryCommands.AddRange(_originalCommands);
+            }
 
-            appBar.SecondaryCommands.Clear();
-            appBar.SecondaryCommands.AddRange(_originalSecondaryCommands);
+            if (_originalSecondaryCommands != null)
+            {
+                appBar.SecondaryCommands.Clear();
+                appBar.SecondaryCommands.AddRange(_originalSecondaryCommands);
+            }
         }
 
         public static void SwitchState(CommandBar appBar, IEnumerable<ICommandBarElement> primary,
