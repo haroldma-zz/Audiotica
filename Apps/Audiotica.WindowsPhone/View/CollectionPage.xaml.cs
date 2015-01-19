@@ -22,8 +22,6 @@ namespace Audiotica.View
         private readonly List<ICommandBarElement> _selectionModeCommands;
         private readonly List<ICommandBarElement> _selectionSecondaryModeCommands;
         private TypedEventHandler<ListViewBase, ContainerContentChangingEventArgs> _delegate;
-        private List<ICommandBarElement> _originalCommands;
-        private List<ICommandBarElement> _originalSecondaryCommands;
 
         public CollectionPage()
         {
@@ -113,11 +111,6 @@ namespace Audiotica.View
         public override void NavigatedTo(object parameter)
         {
             base.NavigatedTo(parameter);
-
-            if (_originalCommands == null)
-                _originalCommands = (Bar as CommandBar).PrimaryCommands.ToList();
-            if (_originalSecondaryCommands == null)
-                _originalSecondaryCommands = (Bar as CommandBar).SecondaryCommands.ToList();
 
             if (parameter == null) return;
 
@@ -230,21 +223,18 @@ namespace Audiotica.View
                 bar.Visibility = Visibility.Visible;
                 SongList.IsItemClickEnabled = false;
 
-                bar.PrimaryCommands.Clear();
-                bar.PrimaryCommands.AddRange(_selectionModeCommands);
-                bar.SecondaryCommands.Clear();
-                bar.SecondaryCommands.AddRange(_selectionSecondaryModeCommands);
+                AppBarHelper.SaveState(bar);
+                AppBarHelper.SwitchState(bar, _selectionModeCommands, _selectionSecondaryModeCommands);
             }
             else
             {
                 HardwareButtons.BackPressed -= HardwareButtonsOnBackPressed;
                 UiBlockerUtility.Unblock();
                 SongList.IsItemClickEnabled = true;
-                bar.PrimaryCommands.Clear();
-                bar.PrimaryCommands.AddRange(_originalCommands);
-                bar.SecondaryCommands.Clear();
                 (Bar as CommandBar).Visibility =
                 CollectionPivot.SelectedIndex == 3 ? Visibility.Visible : Visibility.Collapsed;
+
+                AppBarHelper.RestorePreviousState(bar);
             }
         }
 

@@ -24,7 +24,6 @@ namespace Audiotica.View
     {
         private List<ICommandBarElement> _reorderModeCommands;
         private List<ICommandBarElement> _selectionModeCommands;
-        private List<ICommandBarElement> _originalCommands;
         private TypedEventHandler<ListViewBase, ContainerContentChangingEventArgs> _delegate;
 
         public CollectionPlaylistPage()
@@ -85,19 +84,12 @@ namespace Audiotica.View
 
         private void HardwareButtonsOnBackPressed(object sender, BackPressedEventArgs e)
         {
-            if (SongList.SelectionMode != ListViewSelectionMode.Multiple &&
-                SongList.ReorderMode != ListViewReorderMode.Enabled) return;
             ToSingleMode();
         }
 
         public override void NavigatedTo(object parameter)
         {
             base.NavigatedTo(parameter);
-
-            if (_originalCommands == null)
-                _originalCommands = (Bar as CommandBar).PrimaryCommands.ToList();
-            else
-                ToSingleMode();
 
             var id = parameter as int?;
 
@@ -127,8 +119,8 @@ namespace Audiotica.View
             if (SongList.SelectionMode != ListViewSelectionMode.Multiple)
                 SongList.SelectionMode = ListViewSelectionMode.Multiple;
 
-            bar.PrimaryCommands.Clear();
-            bar.PrimaryCommands.AddRange(_selectionModeCommands);
+            AppBarHelper.SaveState(bar);
+            AppBarHelper.SwitchState(bar, _selectionModeCommands);
         }
 
         private void ToSingleMode()
@@ -137,8 +129,7 @@ namespace Audiotica.View
             var bar = Bar as CommandBar;
             SongList.IsItemClickEnabled = true;
             SongList.SelectionMode = ListViewSelectionMode.None;
-            bar.PrimaryCommands.Clear();
-            bar.PrimaryCommands.AddRange(_originalCommands);
+            AppBarHelper.RestorePreviousState(bar);
         }
 
         private void SelectAppBarButton_Click(object sender, RoutedEventArgs e)
@@ -151,8 +142,8 @@ namespace Audiotica.View
             var bar = Bar as CommandBar;
             SongList.IsItemClickEnabled = false;
             SongList.ReorderMode = ListViewReorderMode.Enabled;
-            bar.PrimaryCommands.Clear();
-            bar.PrimaryCommands.AddRange(_reorderModeCommands);
+            AppBarHelper.SaveState(bar);
+            AppBarHelper.SwitchState(bar, _reorderModeCommands);
         }
 
 
