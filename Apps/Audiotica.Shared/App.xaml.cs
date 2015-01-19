@@ -25,6 +25,7 @@ using Audiotica.View;
 using Audiotica.ViewModel;
 using GalaSoft.MvvmLight.Threading;
 using GoogleAnalytics;
+using MyToolkit.Paging.Handlers;
 
 #endregion
 
@@ -86,11 +87,15 @@ namespace Audiotica
             Current.DebugSettings.EnableRedrawRegions = AppSettingsHelper.Read<bool>("RedrawRegions");
         }
 
+        public static event EventHandler<BackPressedEventArgs> SupressBackEvent;
+
         private void HardwareButtonsOnBackPressed(object sender, BackPressedEventArgs e)
         {
-            if (UiBlockerUtility.IsBlocking)
+            if (UiBlockerUtility.SupressBackEvents)
             {
                 e.Handled = true;
+                if (SupressBackEvent != null)
+                    SupressBackEvent(this, e);
             }
             else if (Navigator.GoBack())
             {

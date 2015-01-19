@@ -24,18 +24,8 @@
             </Grid.ColumnDefinitions>
             <FlyoutBase.AttachedFlyout>
                 <MenuFlyout>
-                    <MenuFlyoutItem x:Uid="MenuItemAddTo" Text="Add to" Click="AddToMenuFlyoutItem_OnClick">
-                        <FlyoutBase.AttachedFlyout>
-                            <ListPickerFlyout x:Name="Picker"
-                                              DisplayMemberPath="Name"
-                                              ItemsSource="{Binding AddableTo}" ItemsPicked="Picker_OnItemsPicked" />
-                        </FlyoutBase.AttachedFlyout>
-                        <interactivity:Interaction.Behaviors>
-                            <core:EventTriggerBehavior EventName="Click">
-                                <local:ShowFlyoutAction />
-                            </core:EventTriggerBehavior>
-                        </interactivity:Interaction.Behaviors>
-                    </MenuFlyoutItem>
+                    <MenuFlyoutItem Text="Add to Queue..." Click="MenuFlyoutItem_Click" />
+                    <MenuFlyoutItem Text="Add to Playlist..." Click="AddToMenuFlyoutItem_OnClick" />
                     <MenuFlyoutItem x:Uid="MenuItemDelete" Text="Delete"
                                     Foreground="Red" Click="DeleteMenuFlyoutItem_OnClick" />
                 </MenuFlyout>

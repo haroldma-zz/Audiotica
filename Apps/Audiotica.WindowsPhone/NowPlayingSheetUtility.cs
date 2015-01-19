@@ -22,13 +22,13 @@ namespace Audiotica
 
             ModalSheetUtility.Show(_currentSheet);
 
-            HardwareButtons.BackPressed += HardwareButtonsOnBackPressed;
+            App.SupressBackEvent += HardwareButtonsOnBackPressed;
         }
 
         private static void HardwareButtonsOnBackPressed(object sender, BackPressedEventArgs e)
         {
             UiBlockerUtility.Unblock();
-            HardwareButtons.BackPressed -= HardwareButtonsOnBackPressed;
+            App.SupressBackEvent -= HardwareButtonsOnBackPressed;
             CloseNowPlaying();
         }
 

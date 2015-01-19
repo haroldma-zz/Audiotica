@@ -1,0 +1,49 @@
+﻿<UserControl
+    x:Class="Audiotica.Controls.PlaylistPicker"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Audiotica.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    d:DesignHeight="300"
+    d:DesignWidth="400">
+
+    <Border
+        Background="Black"
+        HorizontalAlignment="Stretch"
+        VerticalAlignment="Stretch"
+        Padding="25,35,25,0">
+        <Border.Child>
+            <ListView
+                x:Name="PlaylistPickerListView"
+                IsItemClickEnabled="True">
+                <ListView.ItemContainerStyle>
+                    <Style
+                        TargetType="ListViewItem">
+                        <Style.Setters>
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                        </Style.Setters>
+                    </Style>
+                </ListView.ItemContainerStyle>
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Vertical"
+                            Background="Transparent">
+                            <TextBlock Text="{Binding Name}" FontSize="22"
+                                                       TextTrimming="CharacterEllipsis"
+                                                       FontFamily="Global User Interface" />
+                            <TextBlock FontSize="16"
+                                                       TextTrimming="CharacterEllipsis" Foreground="#89FFFFFF"
+                                                       FontFamily="Global User Interface">
+                                                <Run Text="{Binding Songs.Count}" />
+                                                <Run
+                                                    Text="{Binding Songs.Count, Converter={StaticResource SongToPluralConverter}}" />
+                            </TextBlock>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </Border.Child>
+    </Border>
+</UserControl>

@@ -18,8 +18,11 @@
     <Compile Include="$(MSBuildThisFileDirectory)AppBarHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AutcpHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CollectionHelper.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)CollectionHelperViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CollectionCommandHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ContinuationManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controls\PlaylistPicker.xaml.cs">
+      <DependentUpon>PlaylistPicker.xaml</DependentUpon>
+    </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)ModalSheetUtility.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)NavigationHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Navigator.cs" />
@@ -68,6 +71,10 @@
     <PRIResource Include="$(MSBuildThisFileDirectory)Strings\en-US\Resources.resw" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="$(MSBuildThisFileDirectory)Controls\PlaylistPicker.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="$(MSBuildThisFileDirectory)SongViewer.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

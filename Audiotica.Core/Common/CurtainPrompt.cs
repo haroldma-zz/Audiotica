@@ -242,6 +242,7 @@ namespace Audiotica.Core.Common
             //Animate transition
             var verticalExtendAnimation = new DoubleAnimation
             {
+                EnableDependentAnimation = true,
                 From = _popup.VerticalOffset,
                 To = _popup.VerticalOffset + 25,
                 Duration = new Duration(TimeSpan.FromMilliseconds(200))

@@ -6,10 +6,12 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Windows.Phone.UI.Input;
 using Windows.Storage;
 using Windows.UI.StartScreen;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Media.Imaging;
+using Audiotica.Controls;
 using Audiotica.Core.Common;
 using Audiotica.Core.Utilities;
 using Audiotica.Data.Collection.Model;
@@ -225,17 +227,17 @@ namespace Audiotica
         private const int MaxMassPlayQueueCount = 100;
         public const double MaxPlayQueueCount = 2000;
 
-        public static async Task PlaySongsAsync(List<Song> songs, bool random = false)
+        public static async Task PlaySongsAsync(List<Song> songs, bool random = false, bool forceClear = false)
         {
             if (songs.Count == 0) return;
 
             var index = random ? (songs.Count == 1 ? 0 : new Random().Next(0, songs.Count - 1)) : 0;
             var song = songs[index];
 
-            await PlaySongsAsync(song, songs);
+            await PlaySongsAsync(song, songs, forceClear);
         }
 
-        public static async Task PlaySongsAsync(Song song, List<Song> songs)
+        public static async Task PlaySongsAsync(Song song, List<Song> songs, bool forceClear = false)
         {
             if (song == null || songs == null || songs.Count == 0) return;
 
@@ -253,8 +255,8 @@ namespace Audiotica
             var sameLength = _currentlyPreparing || songs.Count < playbackQueue.Count ||
                              playbackQueue.Count >= MaxMassPlayQueueCount;
             var containsSong = playbackQueue.FirstOrDefault(p => p.SongId == song.Id) != null;
-            var createQueue = !sameLength
-                              || !containsSong;
+            var createQueue = forceClear || (!sameLength
+                              || !containsSong);
 
             if (_currentlyPreparing && createQueue)
             {
@@ -297,8 +299,62 @@ namespace Audiotica
             }
         }
 
+        public static void AddToPlaylistDialog(List<Song> songs)
+        {
+            UiBlockerUtility.BlockNavigation();
+            var picker = new PlaylistPicker(songs)
+            {
+                Action = async playlist =>
+                {
+                    App.SupressBackEvent -= AppOnSupressBackEvent;
+                    UiBlockerUtility.Unblock();
+                    ModalSheetUtility.Hide();
+                    for (var i = 0; i < songs.Count; i++)
+                    {
+                        var song = songs[i];
+
+                        //only add if is not there already
+                        if (playlist.Songs.FirstOrDefault(p => p.SongId == song.Id) == null)
+                            await App.Locator.CollectionService.AddToPlaylistAsync(playlist, song).ConfigureAwait(false);
+
+                        if (App.Locator.Player.CurrentQueue != null || !App.Locator.Settings.AddToInsert) continue;
+
+                        songs.RemoveAt(0);
+                        songs.Reverse();
+                        songs.Insert(0, song);
+                    }
+                }
+            };
+
+            App.SupressBackEvent += AppOnSupressBackEvent;
+            ModalSheetUtility.Show(picker);
+        }
+
+        private static void AppOnSupressBackEvent(object sender, BackPressedEventArgs backPressedEventArgs)
+        {
+            App.SupressBackEvent -= AppOnSupressBackEvent;
+            UiBlockerUtility.Unblock();
+            ModalSheetUtility.Hide();
+        }
+
+        public static async Task AddToQueueAsync(List<Song> songs, bool ignoreInsertMode = false)
+        {
+            for (var i = 0; i < songs.Count; i++)
+            {
+                var song = songs[i];
+                var playIfNotActive = i == (App.Locator.Settings.AddToInsert
+                                            && App.Locator.Player.CurrentQueue != null
+                    ? songs.Count - 1
+                    : 0);
+
+                //the last song insert it into the shuffle list (the others shuffle them around)
+                await AddToQueueAsync(song, i == songs.Count - 1,
+                    playIfNotActive, i == 0, ignoreInsertMode).ConfigureAwait(false);
+            }
+        }
+
         public static async Task AddToQueueAsync(Song song, bool shuffleInsert = true, bool playIfNotActive = true,
-            bool clearIfNotActive = true)
+            bool clearIfNotActive = true, bool ignoreInsertMode = false)
         {
             if (_currentlyPreparing)
             {
@@ -322,7 +378,7 @@ namespace Audiotica
                     await App.Locator.CollectionService.DeleteFromQueueAsync(queueToRemove).ConfigureAwait(false);
                 }
 
-            var insert = AppSettingsHelper.Read("AddToInsert", true, SettingsStrategy.Roaming);
+            var insert = AppSettingsHelper.Read("AddToInsert", true, SettingsStrategy.Roaming) && !ignoreInsertMode;
 
             var queueSong = await App.Locator.CollectionService.AddToQueueAsync(song,
                 insert ? App.Locator.Player.CurrentQueue : null, shuffleInsert).ConfigureAwait(false);

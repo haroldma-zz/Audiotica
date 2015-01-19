@@ -8,8 +8,10 @@ using Windows.Foundation;
 using Windows.Phone.UI.Input;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Audiotica.Controls;
 using Audiotica.Core.Utilities;
 using Audiotica.Data.Collection.Model;
+using Audiotica.Data.Collection.SqlHelper;
 
 #endregion
 
@@ -33,13 +35,30 @@ namespace Audiotica.View
             var playButton = new AppBarButton
             {
                 Icon = new SymbolIcon(Symbol.Play),
-                Label = "play"
+                Label = "play",
+            };
+            playButton.Click += async (o, p) =>
+            {
+                var songs = SongList.SelectedItems.Select(m => m as Song).ToList();
+                if (songs.Count == 0) return;
+
+                SongList.SelectionMode = ListViewSelectionMode.None;
+                await CollectionHelper.PlaySongsAsync(songs, forceClear:true);
             };
             var enqueueButton = new AppBarButton
             {
                 Icon = new SymbolIcon(Symbol.Add),
                 Label = "enqueue"
             };
+            enqueueButton.Click += async (o, p) =>
+            {
+                var songs = SongList.SelectedItems.Select(m => m as Song).ToList();
+                if (songs.Count == 0) return;
+
+                SongList.SelectionMode = ListViewSelectionMode.None;
+                await CollectionHelper.AddToQueueAsync(songs);
+            };
+
             _selectionModeCommands = new List<ICommandBarElement>
             {
                 enqueueButton,
@@ -51,10 +70,29 @@ namespace Audiotica.View
                 Icon = new SymbolIcon(Symbol.Play),
                 Label = "add to playlist..."
             };
+            addToButton.Click += (o, p) =>
+            {
+                var songs = SongList.SelectedItems.Select(m => m as Song).ToList();
+                if (songs.Count == 0) return;
+
+                SongList.SelectionMode = ListViewSelectionMode.None;
+                CollectionHelper.AddToPlaylistDialog(songs);
+            };
             var deleteButton = new AppBarButton
             {
                 Icon = new SymbolIcon(Symbol.Add),
                 Label = "delete"
+            };
+            deleteButton.Click += (o, p) =>
+            {
+                var songs = SongList.SelectedItems.Select(m => m as Song).ToList();
+                if (songs.Count == 0) return;
+
+                SongList.SelectionMode = ListViewSelectionMode.None;
+                foreach (var song in songs)
+                {
+                    App.Locator.Collection.Commands.DeleteClickCommand.Execute(song);
+                }
             };
             _selectionSecondaryModeCommands = new List<ICommandBarElement>
             {
@@ -205,14 +243,14 @@ namespace Audiotica.View
                 bar.PrimaryCommands.Clear();
                 bar.PrimaryCommands.AddRange(_originalCommands);
                 bar.SecondaryCommands.Clear();
+                (Bar as CommandBar).Visibility =
+                CollectionPivot.SelectedIndex == 3 ? Visibility.Visible : Visibility.Collapsed;
             }
         }
 
         private void HardwareButtonsOnBackPressed(object sender, BackPressedEventArgs e)
         {
             SongList.SelectionMode = ListViewSelectionMode.None;
-            (Bar as CommandBar).Visibility =
-                CollectionPivot.SelectedIndex == 3 ? Visibility.Visible : Visibility.Collapsed;
         }
     }
 }

@@ -1,7 +1,7 @@
-﻿using System;
+﻿#region
+
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Windows.UI.Xaml.Controls;
 using Audiotica.Core.Common;
@@ -9,19 +9,21 @@ using Audiotica.Core.Utilities;
 using Audiotica.Data.Collection;
 using Audiotica.Data.Collection.Model;
 using Audiotica.Data.Collection.SqlHelper;
-using Audiotica.Data.Service.Interfaces;
 using Audiotica.View;
 using GalaSoft.MvvmLight.Command;
+
+#endregion
 
 namespace Audiotica
 {
     public class CollectionCommandHelper
     {
+        private readonly ISongDownloadService _downloadService;
         private readonly ICollectionService _service;
         private readonly ISqlService _sqlService;
-        private readonly ISongDownloadService _downloadService;
 
-        public CollectionCommandHelper(ICollectionService service, ISqlService sqlService, ISongDownloadService downloadService)
+        public CollectionCommandHelper(ICollectionService service, ISqlService sqlService,
+            ISongDownloadService downloadService)
         {
             _service = service;
             _sqlService = sqlService;
@@ -30,21 +32,54 @@ namespace Audiotica
             CreateCommand();
         }
 
+        public RelayCommand<BaseEntry> AddToPlaylistCommand { get; set; }
+        public RelayCommand<BaseEntry> AddToQueueCommand { get; set; }
+
         private void CreateCommand()
         {
             ArtistClickCommand = new RelayCommand<ItemClickEventArgs>(ArtistClickExecute);
             AlbumClickCommand = new RelayCommand<ItemClickEventArgs>(AlbumClickExecute);
             PlaylistClickCommand = new RelayCommand<ItemClickEventArgs>(PlaylistClickExecute);
 
-            AddToClickCommand = new RelayCommand<BaseEntry>(AddToClickExecute);
+            AddToQueueCommand = new RelayCommand<BaseEntry>(AddToQueueExecute);
+            AddToPlaylistCommand = new RelayCommand<BaseEntry>(AddToPlaylistExecute);
 
             DeleteClickCommand = new RelayCommand<BaseEntry>(DeleteClickExecute);
             DownloadClickCommand = new RelayCommand<Song>(DownloadClickExecute);
             CancelClickCommand = new RelayCommand<Song>(CancelClickExecute);
 
             EntryPlayClickCommand = new RelayCommand<BaseEntry>(EntryPlayClickExecute);
+        }
 
-            ItemPickedCommand = new RelayCommand<AddableCollectionItem>(ItemPickedExecute);
+        private void AddToPlaylistExecute(BaseEntry baseEntry)
+        {
+            List<Song> songs;
+
+            if (baseEntry is Artist)
+                songs = (baseEntry as Artist).Songs.ToList();
+            else
+                songs = (baseEntry as Album).Songs.ToList();
+
+            CollectionHelper.AddToPlaylistDialog(songs);
+        }
+
+        private async void AddToQueueExecute(BaseEntry baseEntry)
+        {
+            List<Song> songs;
+            var ignoreInsertMode = true;
+
+            if (baseEntry is Artist)
+                songs = (baseEntry as Artist).Songs.ToList();
+            else
+                songs = (baseEntry as Album).Songs.ToList();
+
+            if (App.Locator.Settings.AddToInsert && App.Locator.Player.IsPlayerActive)
+            {
+                songs.Reverse();
+                ignoreInsertMode = false;
+            }
+
+            await CollectionHelper.AddToQueueAsync(songs, ignoreInsertMode);
         }
 
         private void ExitIfArtistEmpty(Artist artist)
@@ -136,110 +171,6 @@ namespace Audiotica
 
         #region Queue
 
-        private void AddToClickExecute(BaseEntry entry)
-        {
-            _addable = new List<Song>();
-
-            if (entry is Song)
-            {
-                var song = entry as Song;
-                song.AddableTo.Clear();
-                song.AddableTo.Add(new AddableCollectionItem
-                {
-                    Name = "NowPlayingName".FromLanguageResource()
-                });
-                song.AddableTo.AddRange(_service
-                    .Playlists.Where(p => p.Songs.Count(pp => pp.SongId == song.Id) == 0)
-                    .Select(p => new AddableCollectionItem
-                    {
-                        Playlist = p,
-                        Name = p.Name
-                    }));
-                _addable.Add(song);
-            }
-            else if (entry is Album)
-            {
-                var album = entry as Album;
-                var albumSongs = album.Songs.ToList();
-
-                //when inserting we need to reverse the list to keep the order
-                if (App.Locator.Settings.AddToInsert && App.Locator.Player.CurrentQueue != null)
-                    albumSongs.Reverse();
-
-                album.AddableTo.Clear();
-                album.AddableTo.Add(new AddableCollectionItem
-                {
-                    Name = "NowPlayingName".FromLanguageResource()
-                });
-
-                album.AddableTo.AddRange(_service
-                    .Playlists.Where(p => p.Songs.Count(pp => 
-                        albumSongs.FirstOrDefault(t => t.Id == pp.SongId) != null) == 0)
-                    .Select(p => new AddableCollectionItem
-                    {
-                        Playlist = p,
-                        Name = p.Name
-                    }));
-                _addable.AddRange(albumSongs);
-            }
-
-            else if (entry is Artist)
-            {
-                var artist = entry as Artist;
-                var artistSongs = artist.Songs.ToList();
-
-                //when inserting we need to reverse the list to keep the order
-                if (App.Locator.Settings.AddToInsert && App.Locator.Player.CurrentQueue != null)
-                    artistSongs.Reverse();
-
-                artist.AddableTo.Clear();
-                artist.AddableTo.Add(new AddableCollectionItem
-                {
-                    Name = "NowPlayingName".FromLanguageResource()
-                });
-
-                artist.AddableTo.AddRange(_service
-                    .Playlists.Where(p => p.Songs.Count(pp =>
-                        artistSongs.FirstOrDefault(t => t.Id == pp.SongId) != null) == 0)
-                    .Select(p => new AddableCollectionItem
-                    {
-                        Playlist = p,
-                        Name = p.Name
-                    }));
-                _addable.AddRange(artistSongs);
-            }
-        }
-
-        private List<Song> _addable;
-
-        private async void ItemPickedExecute(AddableCollectionItem item)
-        {
-            for (var i = 0; i < _addable.Count; i++)
-            {
-                var song = _addable[i];
-                var playIfNotActive = i == (App.Locator.Settings.AddToInsert 
-                && App.Locator.Player.CurrentQueue != null ? _addable.Count - 1 : 0);
-
-                if (item.Playlist != null)
-                {
-                    //only add if is not there already
-                    if (item.Playlist.Songs.FirstOrDefault(p => p.SongId == song.Id) == null)
-                        await _service.AddToPlaylistAsync(item.Playlist, song).ConfigureAwait(false);
-                }
-
-                else
-                    //the last song insert it into the shuffle list (the others shuffle them around)
-                    await CollectionHelper.AddToQueueAsync(song, i == _addable.Count - 1, 
-                        playIfNotActive, i == 0).ConfigureAwait(false);
-
-                if (App.Locator.Player.CurrentQueue != null || !App.Locator.Settings.AddToInsert) continue;
-
-                _addable.RemoveAt(0);
-                _addable.Reverse();
-                _addable.Insert(0, song);
-            }
-        }
-
         private async void DeleteClickExecute(BaseEntry item)
         {
             var name = "unknown";
@@ -318,12 +249,8 @@ namespace Audiotica
 
         public RelayCommand<Song> DownloadClickCommand { get; set; }
 
-
-        public RelayCommand<BaseEntry> AddToClickCommand { get; set; }
-
         public RelayCommand<BaseEntry> DeleteClickCommand { get; set; }
 
-        public RelayCommand<AddableCollectionItem> ItemPickedCommand { get; set; }
 
         public RelayCommand<BaseEntry> EntryPlayClickCommand { get; set; }
 
