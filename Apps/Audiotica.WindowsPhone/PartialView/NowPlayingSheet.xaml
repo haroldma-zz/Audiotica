@@ -316,7 +316,7 @@
                                Source="{Binding CurrentQueue.Song.Album.Artwork}" />
                     </Border>
                     <StackPanel Grid.Row="1" Margin="0,10,0,0">
-                        <TextBlock FontSize="30" Text="{Binding CurrentQueue.Song.Name}" />
+                        <TextBlock FontSize="30" Text="{Binding CurrentQueue.Song.Name}" TextTrimming="CharacterEllipsis" />
                         <TextBlock FontSize="24" Text="{Binding CurrentQueue.Song.Artist.Name}" FontWeight="Thin" Foreground="#89FFFFFF"
                                    TextTrimming="CharacterEllipsis" TextWrapping="Wrap"/>
                         <TextBlock FontSize="24" Text="{Binding CurrentQueue.Song.Album.Name}" FontWeight="Thin" Foreground="#89FFFFFF"
