@@ -724,7 +724,7 @@ namespace Audiotica.Data.Collection.RunTime
             }
 
             //Add the new queue entry to the collection and map
-            _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+            await _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
             {
                 if (insert)
                     PlaybackQueue.Insert(normalIndex, newQueue);
