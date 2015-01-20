@@ -695,32 +695,32 @@ namespace Audiotica.Data.Collection.RunTime
             };
 
             //Add it to the database
-            await _bgSqlService.InsertAsync(newQueue);
+            await _bgSqlService.InsertAsync(newQueue).ConfigureAwait(false);
 
             if (next != null)
             {
                 //Update the prev id of the queue that was replaced
                 next.PrevId = newQueue.Id;
-                await _bgSqlService.UpdateItemAsync(next);
+                await _bgSqlService.UpdateItemAsync(next).ConfigureAwait(false);
             }
 
             if (prev != null)
             {
                 //Update the next id of the previous tail
                 prev.NextId = newQueue.Id;
-                await _bgSqlService.UpdateItemAsync(prev);
+                await _bgSqlService.UpdateItemAsync(prev).ConfigureAwait(false);
             }
 
             if (shuffleNext != null)
             {
                 shuffleNext.ShufflePrevId = newQueue.Id;
-                await _bgSqlService.UpdateItemAsync(shuffleNext);
+                await _bgSqlService.UpdateItemAsync(shuffleNext).ConfigureAwait(false);
             }
 
             if (shufflePrev != null)
             {
                 shufflePrev.ShuffleNextId = newQueue.Id;
-                await _bgSqlService.UpdateItemAsync(shufflePrev);
+                await _bgSqlService.UpdateItemAsync(shufflePrev).ConfigureAwait(false);
             }
 
             //Add the new queue entry to the collection and map
@@ -740,7 +740,7 @@ namespace Audiotica.Data.Collection.RunTime
                     _lookupMap.Remove(newQueue.Id);
 
                 _lookupMap.Add(newQueue.Id, newQueue);
-            });
+            }).AsTask().ConfigureAwait(false);
 
             return newQueue;
         }
