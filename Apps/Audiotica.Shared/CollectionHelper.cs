@@ -313,12 +313,22 @@ namespace Audiotica
             {
                 CurtainPrompt.Show("SongSavingFindingMp3".FromLanguageResource(), chartTrack.Name);
                 var track = await App.Locator.Spotify.GetTrack(chartTrack.track_id);
-                var album = await App.Locator.Spotify.GetAlbum(track.Album.Id);
 
-                var result = await SaveTrackAsync(track, album, false, false);
+                if (track != null)
+                {
+                    var album = await App.Locator.Spotify.GetAlbum(track.Album.Id);
 
-                handle.Data.Add("SavingError", result.ToString());
-                return result;
+                    var result = await SaveTrackAsync(track, album, false, false);
+
+                    handle.Data.Add("SavingError", result.ToString());
+                    return result;
+                }
+                else
+                {
+                    ShowResults(SavingError.Network, chartTrack.Name);
+                    handle.Data.Add("SavingError", "Network");
+                    return SavingError.Network;
+                }
             }
         }
 

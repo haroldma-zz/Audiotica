@@ -266,23 +266,33 @@ namespace Audiotica
 
         private async Task WarnAboutCrashAsync(string title, Exception e)
         {
-            var stacktrace = e.StackTrace;
-
-            const string emailTo = "badbug@audiotica.fm";
-            const string emailSubject = "Audiotica crash report";
-            var emailBody = "I encountered a problem with Audiotica...\r\n\r\n" + e.Message + "\r\n\r\nDetails:\r\n" +
-                            stacktrace;
-            var url = "mailto:?to=" + emailTo + "&subject=" + emailSubject + "&body=" + Uri.EscapeDataString(emailBody);
-
-            if (await MessageBox.ShowAsync(
-                "There was a problem with the application. Do you want to send a crash report so the developer can fix it?",
-                title, MessageBoxButton.OkCancel) == MessageBoxResult.Ok)
+            try
             {
-                await Launcher.LaunchUriAsync(new Uri(url));
-            }
+                var stacktrace = e.StackTrace;
 
-            //made it so far, no need to save the crash details
-            AppSettingsHelper.Write("CrashingException", null);
+                const string emailTo = "badbug@audiotica.fm";
+                const string emailSubject = "Audiotica crash report";
+                var emailBody = "I encountered a problem with Audiotica (v" + AppVersionHelper.CurrentVersion +
+                                ")...\r\n\r\n" + e.Message + "\r\n\r\nDetails:\r\n" +
+                                stacktrace;
+                var url = "mailto:?to=" + emailTo + "&subject=" + emailSubject + "&body=" +
+                          Uri.EscapeDataString(emailBody);
+
+                if (await MessageBox.ShowAsync(
+                    "There was a problem with the application. Do you want to send a crash report so the developer can fix it?",
+                    title, MessageBoxButton.OkCancel) == MessageBoxResult.Ok)
+                {
+                    await Launcher.LaunchUriAsync(new Uri(url));
+                }
+
+                //made it so far, no need to save the crash details
+                AppSettingsHelper.Write("CrashingException", null);
+
+            }
+            catch (UnauthorizedAccessException)
+            {
+                //occurs when there is a dialog already opened
+            }
         }
 
         private void DataTransferManagerOnDataRequested(DataTransferManager sender, DataRequestedEventArgs e)
@@ -352,7 +362,7 @@ namespace Audiotica
 
             var result = await md.ShowAsync();
 
-            if (result.Label == rate)
+            if (result != null && result.Label == rate)
             {
                 Insights.Track("Review Reminder", "Accepted", "True");
                 Launcher.LaunchUriAsync(new Uri("ms-windows-store:reviewapp?appid=" + CurrentApp.AppId));

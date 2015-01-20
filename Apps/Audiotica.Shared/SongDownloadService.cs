@@ -63,12 +63,11 @@ namespace Audiotica
 
             foreach (var download in downloads)
             {
-                //Get id from the results file
-                var id = int.Parse(download.ResultFile.Name.Substring(0,
-                    download.ResultFile.Name.IndexOf(".", StringComparison.Ordinal)));
+                //Get the absolute uri from the results file
+                var path = Path.Combine(download.ResultFile.Path, download.ResultFile.Name);
 
-                //With that id get the song
-                var songEntry = _service.Songs.First(p => p.Id == id);
+                //With the uri get the song
+                var songEntry = _service.Songs.First(p => p.AudioUrl == path);
 
                 Debug.WriteLine("Handling downoad for {0}", songEntry.Name);
                 HandleDownload(songEntry, download, false);
