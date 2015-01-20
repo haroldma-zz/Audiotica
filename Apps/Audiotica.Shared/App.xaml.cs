@@ -266,33 +266,25 @@ namespace Audiotica
 
         private async Task WarnAboutCrashAsync(string title, Exception e)
         {
-            try
+            var stacktrace = e.StackTrace;
+
+            const string emailTo = "badbug@audiotica.fm";
+            const string emailSubject = "Audiotica crash report";
+            var emailBody = "I encountered a problem with Audiotica (v" + AppVersionHelper.CurrentVersion +
+                            ")...\r\n\r\n" + e.Message + "\r\n\r\nDetails:\r\n" +
+                            stacktrace;
+            var url = "mailto:?to=" + emailTo + "&subject=" + emailSubject + "&body=" +
+                      Uri.EscapeDataString(emailBody);
+
+            if (await MessageBox.ShowAsync(
+                "There was a problem with the application. Do you want to send a crash report so the developer can fix it?",
+                title, MessageBoxButton.OkCancel) == MessageBoxResult.Ok)
             {
-                var stacktrace = e.StackTrace;
-
-                const string emailTo = "badbug@audiotica.fm";
-                const string emailSubject = "Audiotica crash report";
-                var emailBody = "I encountered a problem with Audiotica (v" + AppVersionHelper.CurrentVersion +
-                                ")...\r\n\r\n" + e.Message + "\r\n\r\nDetails:\r\n" +
-                                stacktrace;
-                var url = "mailto:?to=" + emailTo + "&subject=" + emailSubject + "&body=" +
-                          Uri.EscapeDataString(emailBody);
-
-                if (await MessageBox.ShowAsync(
-                    "There was a problem with the application. Do you want to send a crash report so the developer can fix it?",
-                    title, MessageBoxButton.OkCancel) == MessageBoxResult.Ok)
-                {
-                    await Launcher.LaunchUriAsync(new Uri(url));
-                }
-
-                //made it so far, no need to save the crash details
-                AppSettingsHelper.Write("CrashingException", null);
-
+                await Launcher.LaunchUriAsync(new Uri(url));
             }
-            catch (UnauthorizedAccessException)
-            {
-                //occurs when there is a dialog already opened
-            }
+
+            //made it so far, no need to save the crash details
+            AppSettingsHelper.Write("CrashingException", null);
         }
 
         private void DataTransferManagerOnDataRequested(DataTransferManager sender, DataRequestedEventArgs e)

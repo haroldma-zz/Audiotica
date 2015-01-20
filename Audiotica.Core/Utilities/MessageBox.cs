@@ -43,7 +43,7 @@ namespace Audiotica.Core.Utilities
             {
                 await md.ShowAsync();
             }
-            catch { }
+            catch (UnauthorizedAccessException) { }
             return result;
         }
 
