@@ -39,7 +39,11 @@ namespace Audiotica.Core.Utilities
                     cmd => result = MessageBoxResult.Cancel));
                 md.CancelCommandIndex = (uint) md.Commands.Count - 1;
             }
-            await md.ShowAsync();
+            try
+            {
+                await md.ShowAsync();
+            }
+            catch { }
             return result;
         }
 
