@@ -4,6 +4,7 @@
 using System;
 using System.Diagnostics;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
@@ -271,7 +272,7 @@ namespace Audiotica
             const string emailSubject = "Audiotica crash report";
             var emailBody = "I encountered a problem with Audiotica...\r\n\r\n" + e.Message + "\r\n\r\nDetails:\r\n" +
                             stacktrace;
-            var url = "mailto:?to=" + emailTo + "&subject=" + emailSubject + "&body=" + Uri.EscapeDataString(emailBody);
+            var url = "mailto:?to=" + emailTo + "&subject=" + emailSubject + "&body=" + WebUtility.UrlEncode(emailBody);
 
             if (await MessageBox.ShowAsync(
                 "There was a problem with the application. Do you want to send a crash report so the developer can fix it?",
