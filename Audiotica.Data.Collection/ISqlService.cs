@@ -15,7 +15,7 @@ namespace Audiotica.Data.Collection
     {
         SQLiteConnection DbConnection { get; }
 
-        void Initialize();
+        void Initialize(bool walMode = true);
         Task InitializeAsync();
 
         bool Insert(BaseEntry entry);

@@ -18,8 +18,6 @@ namespace Audiotica
     public static class AutcpFormatHelper
     {
         public const int FormatVersion = 2;
-
-        //Original autcp version doesn't use WAL, so make it unusable for them
         public const int FormatCompatabilityVersion = 2;
 
         private const int FileHeaderSize = 37;
@@ -33,9 +31,15 @@ namespace Audiotica
                 {
                     try
                     {
+                        var name = entry.FullName;
+
+                        //compatability with Autcp v1
+                        if (name.Contains(".bksqldb"))
+                            name = name.Replace(".bksqldb", ".sqldb");
+
                         var file =
                             await
-                                StorageHelper.CreateFileAsync(entry.FullName,
+                                StorageHelper.CreateFileAsync(name,
                                     option: CreationCollisionOption.ReplaceExisting);
                         using (var stream = await file.OpenStreamForWriteAsync())
                         {
@@ -71,7 +75,6 @@ namespace Audiotica
                         {
                             var file = (item as StorageFile);
                             if (file.FileType == ".autcp"
-                                || file.FileType.StartsWith(".sqldb")
                                 || file.Name.ToLower().StartsWith("xam")
                                 || file.Name.StartsWith("_"))
                                 continue;

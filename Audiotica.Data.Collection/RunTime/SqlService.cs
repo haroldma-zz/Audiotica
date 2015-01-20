@@ -32,17 +32,17 @@ namespace Audiotica.Data.Collection.RunTime
             GC.Collect();
         }
 
-        public void Initialize()
+        public void Initialize(bool walMode = true)
         {
             DbConnection = new SQLiteConnection(_config.Path);
             var sqlVersion = DbConnection.ExecuteScalar<int>("PRAGMA user_version");
             if (sqlVersion == _config.CurrentVersion) return;
 
+            //using wal so the player and app can access the db without worrying about it being locked
+            DbConnection.ExecuteScalar<string>("PRAGMA journal_mode = " + (walMode ? "WAL" : "DELETE"));
+
             if (_config.OnUpdate != null)
                 _config.OnUpdate(DbConnection, sqlVersion);
-
-            //using wal so the player and app can access the db without worrying about it being locked
-            DbConnection.ExecuteScalar<string>("PRAGMA journal_mode = WAL");
 
             /*
              * Callback function is invoked once for each DELETE, INSERT, or UPDATE operation. 

@@ -137,15 +137,10 @@ namespace Audiotica.View.Setting
                 return;
             }
 
-
             UiBlockerUtility.Block("Preparing...");
-
-            /*
-             * Sinces WAL keeps the latest changes in a seperate file
-             * we need to manually do a checkpoint to empty them out.
-             * Deleting the wals file is difficult but this is enough.
-             */
-            App.Locator.SqlService.DbConnection.ExecuteScalar<string>("PRAGMA wal_checkpoint");
+            App.Locator.AudioPlayerHelper.FullShutdown();
+            App.Locator.SqlService.Dispose();
+            App.Locator.BgSqlService.Dispose();
 
             using (var stream = await file.OpenStreamForReadAsync())
             {
@@ -189,21 +184,9 @@ namespace Audiotica.View.Setting
             {
                 UiBlockerUtility.Block("Backing up (this may take a bit)...");
 
-                //do a checkpoint
-                App.Locator.SqlService.DbConnection.ExecuteScalar<string>("PRAGMA wal_checkpoint");
 
-                //vacuum
-                App.Locator.SqlService.DbConnection.ExecuteScalar<string>("VACUUM");
-
-                //this includes all database files (excludes wals related, hence the checkpoint)
-                var dbs = (await ApplicationData.Current.LocalFolder.GetFilesAsync())
-                    .Where(p => p.FileType == ".sqldb");
-
-                foreach (var db in dbs)
-                {
-                    var empty = await StorageHelper.GetFileAsync(db.Name.Replace(".sqldb", ".bksqldb"));
-                    await db.CopyAndReplaceAsync(empty);
-                }
+                App.Locator.SqlService.Dispose();
+                App.Locator.BgSqlService.Dispose();
 
                 try
                 {
@@ -219,6 +202,8 @@ namespace Audiotica.View.Setting
                     CurtainPrompt.ShowError("Problem creating backup.");
                 }
 
+                App.Locator.SqlService.Initialize();
+                App.Locator.BgSqlService.Initialize();
                 UiBlockerUtility.Unblock();
             }
             CurtainPrompt.Show("Backup completed.");

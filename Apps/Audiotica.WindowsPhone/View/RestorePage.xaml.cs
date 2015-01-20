@@ -73,22 +73,15 @@ namespace Audiotica.View
                 }
                 else
                 {
+                    var dbs = (await ApplicationData.Current.LocalFolder.GetFilesAsync())
+                    .Where(p => p.FileType == ".sqldb").ToList();
+
+                    foreach (var db in dbs)
+                    {
+                        await db.DeleteAsync();
+                    }
+
                     AppSettingsHelper.Write("FactoryReset", false);
-                }
-
-                var dbBackup = (await ApplicationData.Current.LocalFolder.GetFilesAsync())
-                    .Where(p => p.FileType == ".bksqldb").ToList();
-
-                foreach (var db in dbBackup)
-                {
-                    var dest = await StorageHelper.GetFileAsync(db.Name.Replace(".bksqldb", ".sqldb"));
-                    await db.CopyAndReplaceAsync(dest);
-                }
-
-                //cleanup
-                foreach (var db in dbBackup)
-                {
-                    await db.DeleteAsync();
                 }
 
                 StatusBarHelper.HideStatus();

@@ -20,7 +20,7 @@ namespace Audiotica.Data.Collection.DesignTime
 
         public SQLiteConnection DbConnection { get; private set; }
 
-        public void Initialize()
+        public void Initialize(bool walMode = true)
         {
             throw new NotImplementedException();
         }
