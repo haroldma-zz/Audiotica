@@ -267,6 +267,7 @@ namespace Audiotica
 
         private async void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
+            Insights.Report(e.Exception);
             e.Handled = true;
             //just in case it crashes, save it
             AppSettingsHelper.WriteAsJson("CrashingException", e.Exception);

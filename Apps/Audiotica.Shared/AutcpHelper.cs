@@ -69,6 +69,7 @@ namespace Audiotica
                             var file = (item as StorageFile);
                             if (file.FileType == ".autcp"
                                 || file.FileType == ".sqldb"
+                                || file.Name.ToLower().StartsWith("xam")
                                 || file.Name.StartsWith("_"))
                                 continue;
                             files.Add(file);

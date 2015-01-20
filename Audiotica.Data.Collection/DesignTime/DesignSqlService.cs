@@ -60,7 +60,7 @@ namespace Audiotica.Data.Collection.DesignTime
             throw new NotImplementedException();
         }
 
-        public T SelectWhere<T>(Expression<Func<T, bool>> expression) where T : new()
+        public T SelectFirst<T>(Func<T, bool> expression) where T : new()
         {
             throw new NotImplementedException();
         }

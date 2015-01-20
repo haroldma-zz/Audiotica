@@ -27,7 +27,7 @@ namespace Audiotica.Data.Collection
         Task<bool> UpdateItemAsync(BaseEntry item);
 
 
-        T SelectWhere<T>(Expression<Func<T, bool>> expression) where T : new();
+        T SelectFirst<T>(Func<T, bool> expression) where T : new();
         List<T> SelectAll<T>() where T : new();
         Task<List<T>> SelectAllAsync<T>() where T : new();
 

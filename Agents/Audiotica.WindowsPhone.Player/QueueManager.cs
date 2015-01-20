@@ -38,7 +38,7 @@ namespace Audiotica.WindowsPhone.Player
             var historyConfig = new SqlServiceConfig
             {
                 Tables = historyDbTypes,
-                CurrentVersion = 1,
+                CurrentVersion = 2,
                 Path = "history.sqldb"
             };
             _historySql = new SqlService(historyConfig);
@@ -51,7 +51,7 @@ namespace Audiotica.WindowsPhone.Player
             var bgConfig = new SqlServiceConfig
             {
                 Tables = bgDbTypes,
-                CurrentVersion = 3,
+                CurrentVersion = 4,
                 Path = "player.sqldb"
             };
             _bgSql = new SqlService(bgConfig);
@@ -67,7 +67,7 @@ namespace Audiotica.WindowsPhone.Player
             var config = new SqlServiceConfig
             {
                 Tables = dbTypes,
-                CurrentVersion = 7,
+                CurrentVersion = 8,
                 Path = "collection.sqldb"
             };
 
@@ -313,15 +313,15 @@ namespace Audiotica.WindowsPhone.Player
             return GetQueueSongById(GetCurrentId());
         }
 
-        private QueueSong GetQueueSong(Expression<Func<QueueSong, bool>> expression)
+        private QueueSong GetQueueSong(Func<QueueSong, bool> expression)
         {
-            var queue = _bgSql.SelectWhere(expression);
+            var queue = _bgSql.SelectFirst(expression);
 
             if (queue == null) return null;
 
-            var song = _sql.SelectWhere<Song>(p => p.Id == queue.SongId);
-            var artist = _sql.SelectWhere<Artist>(p => p.Id == song.ArtistId);
-            var album = _sql.SelectWhere<Album>(p => p.Id == song.AlbumId);
+            var song = _sql.SelectFirst<Song>(p => p.Id == queue.SongId);
+            var artist = _sql.SelectFirst<Artist>(p => p.Id == song.ArtistId);
+            var album = _sql.SelectFirst<Album>(p => p.Id == song.AlbumId);
 
             song.Artist = artist;
             song.Album = album;

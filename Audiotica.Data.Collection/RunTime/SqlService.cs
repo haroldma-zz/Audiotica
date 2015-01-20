@@ -34,13 +34,27 @@ namespace Audiotica.Data.Collection.RunTime
         public void Initialize()
         {
             DbConnection = new SQLiteConnection(_config.Path);
-            var cmd = new SQLiteCommand(DbConnection) {CommandText = "PRAGMA user_version"};
-            var sqlVersion = cmd.ExecuteScalar<int>();
-
+            var sqlVersion = DbConnection.ExecuteScalar<int>("PRAGMA user_version");
             if (sqlVersion == _config.CurrentVersion) return;
 
             if (_config.OnUpdate != null)
                 _config.OnUpdate(DbConnection, sqlVersion);
+
+            //make sure journaling happens in memory (less expensive)
+            DbConnection.ExecuteScalar<string>("PRAGMA journal_mode = MEMORY");
+
+            /*
+             * Callback function is invoked once for each DELETE, INSERT, or UPDATE operation. 
+             * The argument is the number of rows that were changed
+             * Turning this off will give a small speed boost 
+             */
+            DbConnection.ExecuteScalar<string>("PRAGMA count_changes = OFF");
+
+            //Data integrity is not a top priority, performance is.
+            DbConnection.ExecuteScalar<string>("PRAGMA synchronous = OFF");
+
+            DbConnection.ExecuteScalar<string>("PRAGMA foreign_keys = ON");
+
             CreateTablesIfNotExists();
         }
 
@@ -133,16 +147,16 @@ namespace Audiotica.Data.Collection.RunTime
             return new List<T>();
         }
 
-        public T SelectWhere<T>(Expression<Func<T, bool>> expression) where T : new()
+        public T SelectFirst<T>(Func<T, bool> expression) where T : new()
         {
             try
             {
-                return DbConnection.Table<T>().Where(expression).FirstOrDefault();
+                return DbConnection.Table<T>().FirstOrDefault(expression);
             }
             catch (SQLiteException e)
             {
                 if (e.Result == SQLite3.Result.Busy)
-                    return SelectWhere(expression);
+                    return SelectFirst(expression);
             }
             catch
             {
@@ -155,8 +169,7 @@ namespace Audiotica.Data.Collection.RunTime
             return Task.Run(() =>
             {
                 DbConnection.DeleteAll<T>();
-                var cmd = new SQLiteCommand(DbConnection) { CommandText = "DELETE FROM sqlite_sequence  WHERE name = '" + typeof(T).Name + "'" };
-                cmd.ExecuteNonQuery();
+                DbConnection.Execute("DELETE FROM sqlite_sequence  WHERE name = '" + typeof(T).Name + "'");
             });
         }
 
@@ -180,8 +193,7 @@ namespace Audiotica.Data.Collection.RunTime
 
         private void UpdateDbVersion(double version)
         {
-            var cmd = new SQLiteCommand(DbConnection) { CommandText = "PRAGMA user_version = " + version };
-            cmd.ExecuteNonQuery();
+            DbConnection.Execute("PRAGMA user_version = " + version);
         }
     }
 

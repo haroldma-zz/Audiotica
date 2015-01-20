@@ -112,11 +112,20 @@ namespace Audiotica.Data.Collection.RunTime
             if (IsLibraryLoaded)
                 return;
 
+            /*
+             * Sqlite makes a transaction to create a shared lock
+             * Wrapping it in one single transactions assures it is only lock and release once
+             */
+            _sqlService.DbConnection.BeginTransaction();
+
             var songs = _sqlService.SelectAll<Song>().OrderByDescending(p => p.Id).ToList();
             var artists = _sqlService.SelectAll<Artist>().OrderByDescending(p => p.Id).ToList();
             var albums = new List<Album>();
             if (!loadEssentials)
                 albums = _sqlService.SelectAll<Album>().OrderByDescending(p => p.Id).ToList();
+
+            //Let go of the lock
+            _sqlService.DbConnection.Commit();
 
             var isForeground = _dispatcher != null;
 
@@ -235,7 +244,7 @@ namespace Audiotica.Data.Collection.RunTime
 
         public bool SongAlreadyExists(string localSongPath)
         {
-            return Songs.FirstOrDefault(p => 
+            return Songs.FirstOrDefault(p =>
                 (p.SongState == SongState.Local || p.SongState == SongState.Downloaded)
                 && localSongPath == p.AudioUrl) != null;
         }

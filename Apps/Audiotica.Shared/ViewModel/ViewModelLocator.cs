@@ -88,7 +88,7 @@ namespace Audiotica.ViewModel
             return new SqlServiceConfig()
             {
                 Tables = dbTypes,
-                CurrentVersion = 7,
+                CurrentVersion = 8,
                 Path = "collection.sqldb"
             };
         }
@@ -101,7 +101,7 @@ namespace Audiotica.ViewModel
             return new SqlServiceConfig()
             {
                 Tables = dbTypes,
-                CurrentVersion = 3,
+                CurrentVersion = 4,
                 Path = "player.sqldb"
             };
         }
