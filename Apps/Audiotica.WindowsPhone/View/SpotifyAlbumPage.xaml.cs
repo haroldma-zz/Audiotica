@@ -21,6 +21,7 @@ namespace Audiotica.View
 
         public override void NavigatedTo(object parameter)
         {
+            base.NavigatedTo(parameter);
             var album = parameter as string;
 
             if (album == null) return;

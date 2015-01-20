@@ -26,6 +26,7 @@ using Audiotica.ViewModel;
 using GalaSoft.MvvmLight.Threading;
 using GoogleAnalytics;
 using MyToolkit.Paging.Handlers;
+using Xamarin;
 
 #endregion
 
@@ -79,6 +80,7 @@ namespace Audiotica
             Suspending += OnSuspending;
             Resuming += OnResuming;
             UnhandledException += OnUnhandledException;
+
             AppVersionHelper.OnLaunched();
             EasyTracker.GetTracker().AppVersion =
                 AppVersionHelper.CurrentVersion + (IsProduction ? "" : "-beta");
@@ -138,6 +140,7 @@ namespace Audiotica
 
             if (RootFrame.Content == null)
             {
+                Insights.Initialize("38cc9488b4e09fd2c316617d702838ca43a473d4");
                 RootFrame.Navigated += RootFrame_FirstNavigated;
 
                 //MainPage is always in rootFrame so we don't have to worry about restoring the navigation state on resume
@@ -319,23 +322,26 @@ namespace Audiotica
         {
             if (!_init)
             {
-                try
+                using (var handle = Insights.TrackTime("Boot App Services"))
                 {
-                    await Locator.SqlService.InitializeAsync().ConfigureAwait(false);
-                    await Locator.BgSqlService.InitializeAsync().ConfigureAwait(false);
+                    try
+                    {
+                        await Locator.SqlService.InitializeAsync().ConfigureAwait(false);
+                        await Locator.BgSqlService.InitializeAsync().ConfigureAwait(false);
+                        await Locator.CollectionService.LoadLibraryAsync().ConfigureAwait(false);
+                        handle.Data.Add("SongCount", Locator.CollectionService.Songs.Count.ToString());
 
-                    Locator.CollectionService.LibraryLoaded += (sender, args) =>
                         DispatcherHelper.RunAsync(() => Locator.Download.LoadDownloads());
+                    }
+                    catch (Exception ex)
+                    {
+                        Insights.Report(ex, "Where", "Booting App Services");
+                        DispatcherHelper.RunAsync(
+                            () => CurtainPrompt.ShowError("AppErrorBooting".FromLanguageResource()));
+                    }
 
-                    await Locator.CollectionService.LoadLibraryAsync().ConfigureAwait(false);
+                    _init = true;
                 }
-                catch (Exception ex)
-                {
-                    EasyTracker.GetTracker().SendException(ex.Message + " " + ex.StackTrace, true);
-                    DispatcherHelper.RunAsync(() => CurtainPrompt.ShowError("AppErrorBooting".FromLanguageResource()));
-                }
-
-                _init = true;
             }
             Locator.AudioPlayerHelper.OnAppActive();
         }
@@ -358,7 +364,12 @@ namespace Audiotica
 
             if (result.Label == rate)
             {
+                Insights.Track("Review Reminder", "Accepted", "True");
                 Launcher.LaunchUriAsync(new Uri("ms-windows-store:reviewapp?appid=" + CurrentApp.AppId));
+            }
+            else
+            {
+                Insights.Track("Review Reminder", "Accepted", "False");
             }
         }
     }

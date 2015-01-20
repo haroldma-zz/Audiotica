@@ -35,6 +35,7 @@ namespace Audiotica.View
             App.Navigator.AddPage(new LastFmPage());
             App.Navigator.AddPage(new AboutPage());
             App.Navigator.AddPage(new CloudPage());
+            App.Navigator.AddPage(new CollectionStatisticsPage());
             App.Navigator.AddPage(new Setting.CollectionPage());
         }
 

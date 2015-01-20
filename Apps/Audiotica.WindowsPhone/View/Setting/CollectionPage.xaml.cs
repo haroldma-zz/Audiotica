@@ -10,6 +10,7 @@ using Windows.Storage.Pickers;
 using Windows.UI.Xaml;
 using Audiotica.Core.Common;
 using Audiotica.Core.Utilities;
+using Xamarin;
 
 #endregion
 
@@ -39,38 +40,45 @@ namespace Audiotica.View.Setting
 
         private async void Import()
         {
-            UiBlockerUtility.Block("Scanning...");
-            var localMusic = await LocalMusicHelper.GetFilesInMusicAsync();
-            var failedCount = 0;
-
-            App.Locator.CollectionService.Songs.SuppressEvents = true;
-            App.Locator.CollectionService.Artists.SuppressEvents = true;
-            App.Locator.CollectionService.Albums.SuppressEvents = true;
-
-            App.Locator.SqlService.DbConnection.BeginTransaction();
-            for (var i = 0; i < localMusic.Count; i++)
+            using (var handle = Insights.TrackTime("Import Music"))
             {
-                StatusBarHelper.ShowStatus(string.Format("Importing {0} of {1} items", i + 1, localMusic.Count),
-                    (double) i/localMusic.Count);
-                try
+                UiBlockerUtility.Block("Scanning...");
+                var localMusic = await LocalMusicHelper.GetFilesInMusicAsync();
+                handle.Data.Add("TotalCount", localMusic.Count.ToString());
+                var failedCount = 0;
+
+                App.Locator.CollectionService.Songs.SuppressEvents = true;
+                App.Locator.CollectionService.Artists.SuppressEvents = true;
+                App.Locator.CollectionService.Albums.SuppressEvents = true;
+
+                App.Locator.SqlService.DbConnection.BeginTransaction();
+                for (var i = 0; i < localMusic.Count; i++)
                 {
-                    await LocalMusicHelper.SaveTrackAsync(localMusic[i]);
+                    StatusBarHelper.ShowStatus(string.Format("Importing {0} of {1} items", i + 1, localMusic.Count),
+                        (double) i/localMusic.Count);
+                    try
+                    {
+                        await LocalMusicHelper.SaveTrackAsync(localMusic[i]);
+                    }
+                    catch
+                    {
+                        failedCount++;
+                    }
                 }
-                catch
+                App.Locator.SqlService.DbConnection.Commit();
+
+                App.Locator.CollectionService.Songs.Reset();
+                App.Locator.CollectionService.Artists.Reset();
+                App.Locator.CollectionService.Albums.Reset();
+
+                UiBlockerUtility.Unblock();
+
+                if (failedCount > 0)
                 {
-                    failedCount++;
+                    CurtainPrompt.ShowError("Couldn't import {0} song(s).", failedCount);
+                    handle.Data.Add("Failed", failedCount.ToString());
                 }
             }
-            App.Locator.SqlService.DbConnection.Commit();
-
-            App.Locator.CollectionService.Songs.Reset();
-            App.Locator.CollectionService.Artists.Reset();
-            App.Locator.CollectionService.Albums.Reset();
-
-            UiBlockerUtility.Unblock();
-
-            if (failedCount > 0)
-                CurtainPrompt.ShowError("Couldn't import {0} song(s).", failedCount);
             await CollectionHelper.DownloadArtistsArtworkAsync();
         }
 
@@ -165,23 +173,34 @@ namespace Audiotica.View.Setting
                 return;
             }
 
-            UiBlockerUtility.Block("Backing up (this may take a bit)...");
-
-            await StorageHelper.DeleteFileAsync("collection.bksqldb");
-            await StorageHelper.DeleteFileAsync("player.bksqldb");
-
-            var sqlFile = await StorageHelper.GetFileAsync("collection.sqldb");
-            var playerSqlFile = await StorageHelper.GetFileAsync("player.sqldb");
-            await sqlFile.CopyAsync(ApplicationData.Current.LocalFolder, "collection.bksqldb");
-            await playerSqlFile.CopyAsync(ApplicationData.Current.LocalFolder, "player.bksqldb");
-
-            var data = await AutcpFormatHelper.CreateBackup(ApplicationData.Current.LocalFolder);
-            using (var stream = await file.OpenStreamForWriteAsync())
+            using (Insights.TrackTime("Create Backup"))
             {
-                await stream.WriteAsync(data, 0, data.Length);
-            }
-            UiBlockerUtility.Unblock();
+                UiBlockerUtility.Block("Backing up (this may take a bit)...");
 
+                await StorageHelper.DeleteFileAsync("collection.bksqldb");
+                await StorageHelper.DeleteFileAsync("player.bksqldb");
+
+                var sqlFile = await StorageHelper.GetFileAsync("collection.sqldb");
+                var playerSqlFile = await StorageHelper.GetFileAsync("player.sqldb");
+                await sqlFile.CopyAsync(ApplicationData.Current.LocalFolder, "collection.bksqldb");
+                await playerSqlFile.CopyAsync(ApplicationData.Current.LocalFolder, "player.bksqldb");
+
+                try
+                {
+                    var data = await AutcpFormatHelper.CreateBackup(ApplicationData.Current.LocalFolder);
+                    using (var stream = await file.OpenStreamForWriteAsync())
+                    {
+                        await stream.WriteAsync(data, 0, data.Length);
+                    }
+                }
+                catch (Exception e)
+                {
+                    Insights.Report(e, "Where", "Creating Backup");
+                    CurtainPrompt.ShowError("Problem creating backup.");
+                }
+
+                UiBlockerUtility.Unblock();
+            }
             CurtainPrompt.Show("Backup completed.");
         }
 

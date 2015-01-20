@@ -7,6 +7,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 using Audiotica.View;
 using GoogleAnalytics;
+using Xamarin;
 
 #endregion
 
@@ -44,6 +45,7 @@ namespace Audiotica
                 pageName = App.Navigator.CurrentPage.ToString();
                 pageName = pageName.Remove(0, pageName.LastIndexOf(".", StringComparison.Ordinal) + 1);
             }
+            Insights.Track("Navigated To " + pageName);
             EasyTracker.GetTracker().SendView(pageName);
         }
 

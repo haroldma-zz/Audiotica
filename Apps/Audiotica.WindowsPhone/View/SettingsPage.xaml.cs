@@ -48,5 +48,10 @@ namespace Audiotica.View
         {
             App.Navigator.GoTo<Setting.CollectionPage, ZoomInTransition>(null);
         }
+
+        private void StatisticsButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            App.Navigator.GoTo<CollectionStatisticsPage, ZoomInTransition>(null);
+        }
     }
 }

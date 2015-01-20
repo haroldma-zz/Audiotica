@@ -15,6 +15,7 @@ using Audiotica.View;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using IF.Lastfm.Core.Api.Enums;
+using Xamarin;
 
 #endregion
 
@@ -87,6 +88,7 @@ namespace Audiotica
                 _service.ShuffleModeChanged();
                 RaisePropertyChanged();
                 AudioPlayerHelper.OnShuffleChanged();
+                Insights.Track("Shuffle", "Enabled", value ? "True" : "False");
             }
         }
 

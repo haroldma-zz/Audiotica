@@ -72,6 +72,7 @@ namespace Audiotica.ViewModel
             SimpleIoc.Default.Register<SpotifyAlbumViewModel>();
             SimpleIoc.Default.Register<SpotifyArtistViewModel>();
             SimpleIoc.Default.Register<SettingsViewModel>();
+            SimpleIoc.Default.Register<CollectionStatisticsViewModel>();
         }
 
         private SqlServiceConfig GetForegroundConfig()
@@ -162,6 +163,11 @@ namespace Audiotica.ViewModel
         public SearchViewModel Search
         {
             get { return ServiceLocator.Current.GetInstance<SearchViewModel>(); }
+        }
+
+        public CollectionStatisticsViewModel Statistics
+        {
+            get { return ServiceLocator.Current.GetInstance<CollectionStatisticsViewModel>(); }
         }
 
         public SettingsViewModel Settings

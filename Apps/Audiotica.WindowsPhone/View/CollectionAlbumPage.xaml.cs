@@ -111,6 +111,7 @@ namespace Audiotica.View
         public override void NavigatedTo(object e)
         {
             base.NavigatedTo(e);
+            base.NavigatedTo(e);
             var id = e as int?;
 
             if (id == null) return;

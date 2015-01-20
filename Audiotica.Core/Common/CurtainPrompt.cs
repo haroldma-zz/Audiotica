@@ -288,14 +288,8 @@ namespace Audiotica.Core.Common
 
         private void grid_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
         {
-            //Stop the timer
-            try
-            {
+            if (_timer != null)
                 _timer.Stop();
-            }
-            catch
-            {
-            }
         }
 
         private void grid_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)

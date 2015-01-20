@@ -152,7 +152,8 @@ namespace Audiotica.ViewModel
 
         public bool IsAdsEnabled
         {
-            get { return App.LicenseInformation.ProductLicenses[ProductConstants.InAppAdvertisements].IsActive; }
+            get { return !App.IsProduction 
+                || App.LicenseInformation.ProductLicenses[ProductConstants.InAppAdvertisements].IsActive; }
         }
 
         public string Version
