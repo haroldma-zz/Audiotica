@@ -17,7 +17,10 @@ namespace Audiotica
 {
     public static class AutcpFormatHelper
     {
-        public const int FormatVersion = 1;
+        public const int FormatVersion = 2;
+
+        //Original autcp version doesn't use WAL, so make it unusable for them
+        public const int FormatCompatabilityVersion = 2;
 
         private const int FileHeaderSize = 37;
 
@@ -68,7 +71,7 @@ namespace Audiotica
                         {
                             var file = (item as StorageFile);
                             if (file.FileType == ".autcp"
-                                || file.FileType == ".sqldb"
+                                || file.FileType.StartsWith(".sqldb")
                                 || file.Name.ToLower().StartsWith("xam")
                                 || file.Name.StartsWith("_"))
                                 continue;
@@ -111,8 +114,8 @@ namespace Audiotica
             var fileHeader = new AutcpFileHeader
             {
                 signature = Encoding.UTF8.GetBytes("AUTCP"),
-                version = 1,
-                compatability = 1
+                version = FormatVersion,
+                compatability = FormatCompatabilityVersion
             };
 
             return WriteFileHeader(stream, fileHeader);

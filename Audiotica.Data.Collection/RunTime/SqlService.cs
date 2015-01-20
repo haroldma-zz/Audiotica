@@ -29,6 +29,7 @@ namespace Audiotica.Data.Collection.RunTime
         public void Dispose()
         {
             DbConnection.Dispose();
+            GC.Collect();
         }
 
         public void Initialize()

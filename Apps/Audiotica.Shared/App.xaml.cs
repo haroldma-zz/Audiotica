@@ -219,29 +219,16 @@ namespace Audiotica
             OnVisibleBoundsChanged(null, null);
 
             var crash = AppSettingsHelper.ReadJsonAs<Exception>("CrashingException");
-            if (crash != null)
+            if (crash != null && !AppVersionHelper.JustUpdated)
                 await WarnAboutCrashAsync("Application Crashed", crash);
             else
                 await ReviewReminderAsync();
         }
 
         private async void OnUpdate()
-        { 
+        {
             //download missing artwork for artist
-            if (Locator.CollectionService.IsLibraryLoaded)
-            {
-                await CollectionHelper.MigrateAsync();
-                await CollectionHelper.DownloadArtistsArtworkAsync();
-                AppSettingsHelper.WriteAsJson("LastRunVersion", AppVersionHelper.CurrentVersion);
-            }
-            else
-                Locator.CollectionService.LibraryLoaded +=
-                    async (o, args) =>
-                    {
-                        await CollectionHelper.MigrateAsync();
-                        await CollectionHelper.DownloadArtistsArtworkAsync();
-                        AppSettingsHelper.WriteAsJson("LastRunVersion", AppVersionHelper.CurrentVersion);
-                    };
+            await CollectionHelper.DownloadArtistsArtworkAsync();
         }
 
         private void OnVisibleBoundsChanged(ApplicationView sender, object args)
@@ -268,6 +255,7 @@ namespace Audiotica
         private async void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
             Insights.Report(e.Exception);
+            UiBlockerUtility.Unblock();
             e.Handled = true;
             //just in case it crashes, save it
             AppSettingsHelper.WriteAsJson("CrashingException", e.Exception);

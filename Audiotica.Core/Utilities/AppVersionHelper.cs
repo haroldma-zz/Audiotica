@@ -40,6 +40,7 @@ namespace Audiotica.Core.Utilities
                 IsFirstRun = true;
             else if (AppSettingsHelper.Read<bool>("SimulateUpdate"))
                 JustUpdated = true;
+            AppSettingsHelper.WriteAsJson("LastRunVersion", CurrentVersion);
         }
     }
 }

@@ -89,7 +89,20 @@ namespace Audiotica.ViewModel
             {
                 Tables = dbTypes,
                 CurrentVersion = 8,
-                Path = "collection.sqldb"
+                Path = "collection.sqldb",
+                OnUpdate = async (connection, d) =>
+                {
+                    if (d == 0) return;
+
+                    if (d < 8)
+                    {
+                        if (App.Locator.CollectionService.IsLibraryLoaded)
+                            await CollectionHelper.MigrateAsync();
+                        else
+                            App.Locator.CollectionService.LibraryLoaded += (sender, args) =>
+                                CollectionHelper.MigrateAsync();
+                    }
+                }
             };
         }
         private SqlServiceConfig GetBackgroundConfig()

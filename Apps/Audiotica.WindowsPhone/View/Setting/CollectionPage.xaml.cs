@@ -4,10 +4,14 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Windows.ApplicationModel.Activation;
+using Windows.Foundation.Collections;
+using Windows.Media.Playback;
 using Windows.Storage;
 using Windows.Storage.Pickers;
 using Windows.UI.Xaml;
+using Audiotica.Core;
 using Audiotica.Core.Common;
 using Audiotica.Core.Utilities;
 using Xamarin;
@@ -134,7 +138,15 @@ namespace Audiotica.View.Setting
             }
 
 
-            StatusBarHelper.ShowStatus("Preparing...");
+            UiBlockerUtility.Block("Preparing...");
+
+            /*
+             * Sinces WAL keeps the latest changes in a seperate file
+             * we need to manually do a checkpoint to empty them out.
+             * Deleting the wals file is difficult but this is enough.
+             */
+            App.Locator.SqlService.DbConnection.ExecuteScalar<string>("PRAGMA wal_checkpoint");
+
             using (var stream = await file.OpenStreamForReadAsync())
             {
                 if (AutcpFormatHelper.ValidateHeader(stream))
@@ -147,13 +159,13 @@ namespace Audiotica.View.Setting
                         await stream.CopyToAsync(restoreStream);
                     }
 
-                    StatusBarHelper.HideStatus();
+                    UiBlockerUtility.Unblock();
+
                     await
                         MessageBox.ShowAsync(
                             "To finish applying the restore the app will close. Next time you start the app, it will finish restoring.",
                             "Application Restart Required");
 
-                    App.Locator.AudioPlayerHelper.FullShutdown();
                     Application.Current.Exit();
                 }
                 else
@@ -177,13 +189,21 @@ namespace Audiotica.View.Setting
             {
                 UiBlockerUtility.Block("Backing up (this may take a bit)...");
 
-                await StorageHelper.DeleteFileAsync("collection.bksqldb");
-                await StorageHelper.DeleteFileAsync("player.bksqldb");
+                //do a checkpoint
+                App.Locator.SqlService.DbConnection.ExecuteScalar<string>("PRAGMA wal_checkpoint");
 
-                var sqlFile = await StorageHelper.GetFileAsync("collection.sqldb");
-                var playerSqlFile = await StorageHelper.GetFileAsync("player.sqldb");
-                await sqlFile.CopyAsync(ApplicationData.Current.LocalFolder, "collection.bksqldb");
-                await playerSqlFile.CopyAsync(ApplicationData.Current.LocalFolder, "player.bksqldb");
+                //vacuum
+                App.Locator.SqlService.DbConnection.ExecuteScalar<string>("VACUUM");
+
+                //this includes all database files (excludes wals related, hence the checkpoint)
+                var dbs = (await ApplicationData.Current.LocalFolder.GetFilesAsync())
+                    .Where(p => p.FileType == ".sqldb");
+
+                foreach (var db in dbs)
+                {
+                    var empty = await StorageHelper.GetFileAsync(db.Name.Replace(".sqldb", ".bksqldb"));
+                    await db.CopyAndReplaceAsync(empty);
+                }
 
                 try
                 {

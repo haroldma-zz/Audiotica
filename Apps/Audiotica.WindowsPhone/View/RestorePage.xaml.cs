@@ -2,6 +2,7 @@
 
 using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Windows.Storage;
 using Windows.UI.Xaml;
@@ -67,11 +68,7 @@ namespace Audiotica.View
 
                     App.Locator.CollectionService.LibraryLoaded += async (sender, args) =>
                     {
-                        await Task.WhenAll(new[]
-                        {
-                            CollectionHelper.MigrateAsync(),
-                            CollectionHelper.DownloadArtistsArtworkAsync(false)
-                        });
+                        await CollectionHelper.DownloadArtistsArtworkAsync(false);
                     };
                 }
                 else
@@ -79,15 +76,20 @@ namespace Audiotica.View
                     AppSettingsHelper.Write("FactoryReset", false);
                 }
 
-                //on factory reset these files are created (empty)
-                var coll = await StorageHelper.GetFileAsync("collection.bksqldb");
-                var player = await StorageHelper.GetFileAsync("player.bksqldb");
-                await coll.CopyAndReplaceAsync(await StorageHelper.GetFileAsync("collection.sqldb"));
-                await player.CopyAndReplaceAsync(await StorageHelper.GetFileAsync("player.sqldb"));
+                var dbBackup = (await ApplicationData.Current.LocalFolder.GetFilesAsync())
+                    .Where(p => p.FileType == ".bksqldb").ToList();
+
+                foreach (var db in dbBackup)
+                {
+                    var dest = await StorageHelper.GetFileAsync(db.Name.Replace(".bksqldb", ".sqldb"));
+                    await db.CopyAndReplaceAsync(dest);
+                }
 
                 //cleanup
-                await StorageHelper.DeleteFileAsync("collection.bksqldb");
-                await StorageHelper.DeleteFileAsync("player.bksqldb");
+                foreach (var db in dbBackup)
+                {
+                    await db.DeleteAsync();
+                }
 
                 StatusBarHelper.HideStatus();
             }
