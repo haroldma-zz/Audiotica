@@ -17,8 +17,8 @@
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
-                <TextBlock Text="TIME SPENT LISTENING TO MUSIC" FontSize="50" TextWrapping="Wrap" />
-                <TextBlock Foreground="{StaticResource PhoneAccentBrush}" Grid.Row="1" FontSize="40"
+                <TextBlock Text="TIME SPENT LISTENING TO MUSIC" FontSize="35" TextWrapping="Wrap" />
+                <TextBlock Foreground="{StaticResource PhoneAccentBrush}" Grid.Row="1" FontSize="30"
                            TextWrapping="Wrap">
                     <Run Text="{Binding TotalHours}" />
                     <Run Text=" HOURS" />
@@ -27,13 +27,13 @@
                     <Run Text=" MINUTES" />
                 </TextBlock>
             </Grid>
-            <Grid>
+            <Grid Margin="0,20,0,0">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
-                <TextBlock Text="COLLECTION SIZE" FontSize="50" TextWrapping="Wrap" />
-                <TextBlock Foreground="{StaticResource PhoneAccentBrush}" Grid.Row="1" FontSize="40"
+                <TextBlock Text="COLLECTION SIZE" FontSize="35" TextWrapping="Wrap" />
+                <TextBlock Foreground="{StaticResource PhoneAccentBrush}" Grid.Row="1" FontSize="30"
                            TextWrapping="Wrap">
                     <Run Text="{Binding Service.Songs.Count}" />
                     <Run Text=" SONGS" />
@@ -45,7 +45,7 @@
                     <Run Text=" ARTISTS" />
                 </TextBlock>
             </Grid>
-            <TextBlock Text="YOUR FAVORITE ARTISTS" FontSize="50" TextWrapping="Wrap" />
+            <TextBlock Text="YOUR FAVORITE ARTISTS" FontSize="35" TextWrapping="Wrap" Margin="0,20,0,0" />
             <ListView ItemsSource="{Binding TopArtists}">
                 <ListView.ItemTemplate>
                     <DataTemplate>
