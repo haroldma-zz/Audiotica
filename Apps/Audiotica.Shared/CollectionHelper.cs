@@ -152,15 +152,18 @@ namespace Audiotica
                     {
                         try
                         {
-                            var path = "Audiotica/" + song.Album.PrimaryArtist.Name + "/" + song.Album.Name;
-                            var filename = string.Format("{0}.mp3", song.Name);
+                            var path = "Audiotica/" + 
+                                song.Album.PrimaryArtist.Name.CleanForFileName() + "/" + 
+                                song.Album.Name.CleanForFileName();
+                            var filename = string.Format("{0}.mp3", song.Name.CleanForFileName());
+
                             if (song.ArtistName != song.Album.PrimaryArtist.Name)
-                                filename = song.ArtistName + "-" + filename;
+                                filename = song.ArtistName.CleanForFileName() + "-" + filename;
 
                             var file = await StorageHelper.GetFileAsync(string.Format("songs/{0}.mp3", song.Id));
 
                             var folder = await StorageHelper.EnsureFolderExistsAsync(path, KnownFolders.MusicLibrary);
-                            await file.CopyAsync(folder, filename, NameCollisionOption.ReplaceExisting);
+                            await file.MoveAsync(folder, filename, NameCollisionOption.ReplaceExisting);
 
                             song.AudioUrl = Path.Combine(folder.Path, filename);
                             await App.Locator.SqlService.UpdateItemAsync(song);

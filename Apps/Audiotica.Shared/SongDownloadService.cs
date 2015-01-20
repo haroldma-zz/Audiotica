@@ -173,11 +173,13 @@ namespace Audiotica
             ActiveDownloads.Add(song);
             Debug.WriteLine("Added {0} to active downloads", song.Name);
 
-            var path = "Audiotica/" + song.Album.PrimaryArtist.Name + "/" + song.Album.Name;
-            var filename = string.Format("{0}.mp3", song.Name);
-            if (song.ArtistName != song.Album.PrimaryArtist.Name)
-                filename = song.ArtistName + "-" + filename;
+            var path = "Audiotica/" +
+                                song.Album.PrimaryArtist.Name.CleanForFileName() + "/" +
+                                song.Album.Name.CleanForFileName();
+            var filename = string.Format("{0}.mp3", song.Name.CleanForFileName());
 
+            if (song.ArtistName != song.Album.PrimaryArtist.Name)
+                filename = song.ArtistName.CleanForFileName() + "-" + filename;
             try
             {
                 var progressCallback = new Progress<DownloadOperation>(DownloadProgress);
@@ -255,10 +257,13 @@ namespace Audiotica
             await _sqlService.UpdateItemAsync(song).ConfigureAwait(false);
             try
             {
-                var path = "Audiotica/" + song.Album.PrimaryArtist.Name + "/" + song.Album.Name + "/";
-                var filename = string.Format("{0}.mp3", song.Name);
+                var path = "Audiotica/" +
+                                song.Album.PrimaryArtist.Name.CleanForFileName() + "/" +
+                                song.Album.Name.CleanForFileName();
+                var filename = string.Format("{0}.mp3", song.Name.CleanForFileName());
+
                 if (song.ArtistName != song.Album.PrimaryArtist.Name)
-                    filename = song.ArtistName + "-" + filename;
+                    filename = song.ArtistName.CleanForFileName() + "-" + filename;
 
                 var destinationFile =
                     await
