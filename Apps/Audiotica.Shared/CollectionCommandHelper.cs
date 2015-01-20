@@ -107,7 +107,7 @@ namespace Audiotica
             }
 
             if (queueSongs != null)
-                await CollectionHelper.PlaySongsAsync(queueSongs);
+                await CollectionHelper.PlaySongsAsync(queueSongs, forceClear: true);
         }
 
         #region Navigatings

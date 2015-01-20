@@ -40,8 +40,8 @@ namespace Audiotica.Data.Collection.RunTime
             if (_config.OnUpdate != null)
                 _config.OnUpdate(DbConnection, sqlVersion);
 
-            //make sure journaling happens in memory (less expensive)
-            DbConnection.ExecuteScalar<string>("PRAGMA journal_mode = MEMORY");
+            //using wal so the player and app can access the db without worrying about it being locked
+            DbConnection.ExecuteScalar<string>("PRAGMA journal_mode = WAL");
 
             /*
              * Callback function is invoked once for each DELETE, INSERT, or UPDATE operation. 

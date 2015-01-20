@@ -3,6 +3,7 @@
 using System;
 using Windows.Phone.UI.Input;
 using Audiotica.PartialView;
+using Xamarin;
 
 #endregion
 
@@ -12,7 +13,7 @@ namespace Audiotica
     {
         private static NowPlayingSheet _currentSheet;
 
-        public static async void OpenNowPlaying()
+        public static void OpenNowPlaying()
         {
             if (_currentSheet != null) return;
 
@@ -23,6 +24,8 @@ namespace Audiotica
             ModalSheetUtility.Show(_currentSheet);
 
             App.SupressBackEvent += HardwareButtonsOnBackPressed;
+
+            Insights.Track("Opened Now Playing");
         }
 
         private static void HardwareButtonsOnBackPressed(object sender, BackPressedEventArgs e)
@@ -38,6 +41,8 @@ namespace Audiotica
 
             ModalSheetUtility.Hide(_currentSheet);
             _currentSheet = null;
+
+            Insights.Track("Closed Now Playing");
         }
     }
 }

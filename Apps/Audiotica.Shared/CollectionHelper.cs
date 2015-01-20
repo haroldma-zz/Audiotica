@@ -610,8 +610,8 @@ namespace Audiotica
                 //cancel the previous
                 _currentlyPreparing = false;
 
-                //split second for it to stop
-                await Task.Delay(500);
+                //wait for it to stop
+                await Task.Delay(50);
             }
 
             if (!createQueue)
@@ -628,11 +628,6 @@ namespace Audiotica
                     await App.Locator.CollectionService.ClearQueueAsync().ConfigureAwait(false);
                     var queueSong = await App.Locator.CollectionService.AddToQueueAsync(song).ConfigureAwait(false);
                     App.Locator.AudioPlayerHelper.PlaySong(queueSong);
-
-                    await Task.Delay(250).ConfigureAwait(false);
-
-                    if (!_currentlyPreparing)
-                        return;
 
                     App.Locator.SqlService.DbConnection.BeginTransaction();
                     for (var index = 1; index < ordered.Count; index++)

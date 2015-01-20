@@ -723,32 +723,26 @@ namespace Audiotica.Data.Collection.RunTime
                 await _bgSqlService.UpdateItemAsync(shufflePrev);
             }
 
-            try
+            //Add the new queue entry to the collection and map
+            _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
             {
-                //Add the new queue entry to the collection and map
-                await _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-                {
-                    if (insert)
-                        PlaybackQueue.Insert(normalIndex, newQueue);
-                    else
-                        PlaybackQueue.Add(newQueue);
+                if (insert)
+                    PlaybackQueue.Insert(normalIndex, newQueue);
+                else
+                    PlaybackQueue.Add(newQueue);
 
-                    if (shuffleLastAdd)
-                        ShufflePlaybackQueue.Add(newQueue);
-                    else
-                        ShufflePlaybackQueue.Insert(shuffleIndex, newQueue);
+                if (shuffleLastAdd)
+                    ShufflePlaybackQueue.Add(newQueue);
+                else
+                    ShufflePlaybackQueue.Insert(shuffleIndex, newQueue);
 
-                    if (_lookupMap.ContainsKey(newQueue.Id))
-                        _lookupMap.Remove(newQueue.Id);
+                if (_lookupMap.ContainsKey(newQueue.Id))
+                    _lookupMap.Remove(newQueue.Id);
 
-                    _lookupMap.Add(newQueue.Id, newQueue);
-                });
-                return newQueue;
-            }
-            catch
-            {
-                return null;
-            }
+                _lookupMap.Add(newQueue.Id, newQueue);
+            });
+
+            return newQueue;
         }
 
         public Task MoveQueueFromToAsync(int oldIndex, int newIndex)
