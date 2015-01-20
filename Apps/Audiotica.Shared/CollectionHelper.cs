@@ -441,6 +441,8 @@ namespace Audiotica
             {
                 {"Type", "Spotify"},
                 {"ProviderId", album.Id},
+                {"Name", album.Name},
+                {"AritstName", album.Artist.Name},
                 {"TotalCount", album.Tracks.Items.Count.ToString()}
             }))
             {
