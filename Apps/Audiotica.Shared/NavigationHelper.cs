@@ -71,7 +71,7 @@ namespace Audiotica
 #if WINDOWS_PHONE_APP
         private void HardwareButtonsOnBackPressed(object sender, BackPressedEventArgs backPressedEventArgs)
         {
-            if (UiBlockerUtility.IsBlocking)
+            if (UiBlockerUtility.SupressBackEvents)
             {
                 backPressedEventArgs.Handled = true;
             }

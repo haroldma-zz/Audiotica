@@ -112,11 +112,20 @@ namespace Audiotica.Data.Collection.RunTime
             if (IsLibraryLoaded)
                 return;
 
+            /*
+             * Sqlite makes a transaction to create a shared lock
+             * Wrapping it in one single transactions assures it is only lock and release once
+             */
+            _sqlService.DbConnection.BeginTransaction();
+
             var songs = _sqlService.SelectAll<Song>().OrderByDescending(p => p.Id).ToList();
             var artists = _sqlService.SelectAll<Artist>().OrderByDescending(p => p.Id).ToList();
             var albums = new List<Album>();
             if (!loadEssentials)
                 albums = _sqlService.SelectAll<Album>().OrderByDescending(p => p.Id).ToList();
+
+            //Let go of the lock
+            _sqlService.DbConnection.Commit();
 
             var isForeground = _dispatcher != null;
 
@@ -235,7 +244,9 @@ namespace Audiotica.Data.Collection.RunTime
 
         public bool SongAlreadyExists(string localSongPath)
         {
-            return Songs.FirstOrDefault(p => p.SongState == SongState.Local && p.AudioUrl == localSongPath) != null;
+            return Songs.FirstOrDefault(p =>
+                (p.SongState == SongState.Local || p.SongState == SongState.Downloaded)
+                && localSongPath == p.AudioUrl) != null;
         }
 
         public void ShuffleModeChanged()
@@ -262,6 +273,10 @@ namespace Audiotica.Data.Collection.RunTime
 
         public async Task DeleteSongAsync(Song song)
         {
+            var queueSong = PlaybackQueue.FirstOrDefault(p => p.SongId == song.Id);
+            if (queueSong != null)
+                await DeleteFromQueueAsync(queueSong);
+
             // remove it from artist, albums and playlists songs
             var playlists = Playlists.Where(p => p.Songs.Count(pp => pp.SongId == song.Id) > 0).ToList();
 
@@ -569,27 +584,6 @@ namespace Audiotica.Data.Collection.RunTime
                 {
                 }
             }
-
-            var mp3Folder = await StorageHelper.GetFolderAsync("songs");
-
-            if (mp3Folder == null) return;
-
-            var songs = await mp3Folder.GetFilesAsync();
-
-            foreach (var file in from file in songs
-                let id = int.Parse(file.Name.Replace(".mp3", ""))
-                where Songs.Count(p => p.Id == id) == 0
-                select file)
-            {
-                try
-                {
-                    await file.DeleteAsync();
-                    Debug.WriteLine("Deleted file: {0}", file.Name);
-                }
-                catch
-                {
-                }
-            }
         }
 
         #region Playback Queue
@@ -652,7 +646,7 @@ namespace Audiotica.Data.Collection.RunTime
             if (insert)
             {
                 next = PlaybackQueue[normalIndex];
-                if (next.PrevId != 0 && _lookupMap.ContainsKey(shuffleNext.PrevId))
+                if (next.PrevId != 0 && _lookupMap.ContainsKey(next.PrevId))
                     prev = _lookupMap[next.PrevId];
             }
             else
@@ -701,60 +695,54 @@ namespace Audiotica.Data.Collection.RunTime
             };
 
             //Add it to the database
-            await _bgSqlService.InsertAsync(newQueue);
+            await _bgSqlService.InsertAsync(newQueue).ConfigureAwait(false);
 
             if (next != null)
             {
                 //Update the prev id of the queue that was replaced
                 next.PrevId = newQueue.Id;
-                await _bgSqlService.UpdateItemAsync(next);
+                await _bgSqlService.UpdateItemAsync(next).ConfigureAwait(false);
             }
 
             if (prev != null)
             {
                 //Update the next id of the previous tail
                 prev.NextId = newQueue.Id;
-                await _bgSqlService.UpdateItemAsync(prev);
+                await _bgSqlService.UpdateItemAsync(prev).ConfigureAwait(false);
             }
 
             if (shuffleNext != null)
             {
                 shuffleNext.ShufflePrevId = newQueue.Id;
-                await _bgSqlService.UpdateItemAsync(shuffleNext);
+                await _bgSqlService.UpdateItemAsync(shuffleNext).ConfigureAwait(false);
             }
 
             if (shufflePrev != null)
             {
                 shufflePrev.ShuffleNextId = newQueue.Id;
-                await _bgSqlService.UpdateItemAsync(shufflePrev);
+                await _bgSqlService.UpdateItemAsync(shufflePrev).ConfigureAwait(false);
             }
 
-            try
+            //Add the new queue entry to the collection and map
+            await _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
             {
-                //Add the new queue entry to the collection and map
-                await _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-                {
-                    if (insert)
-                        PlaybackQueue.Insert(normalIndex, newQueue);
-                    else
-                        PlaybackQueue.Add(newQueue);
+                if (insert)
+                    PlaybackQueue.Insert(normalIndex, newQueue);
+                else
+                    PlaybackQueue.Add(newQueue);
 
-                    if (shuffleLastAdd)
-                        ShufflePlaybackQueue.Add(newQueue);
-                    else
-                        ShufflePlaybackQueue.Insert(shuffleIndex, newQueue);
+                if (shuffleLastAdd)
+                    ShufflePlaybackQueue.Add(newQueue);
+                else
+                    ShufflePlaybackQueue.Insert(shuffleIndex, newQueue);
 
-                    if (_lookupMap.ContainsKey(newQueue.Id))
-                        _lookupMap.Remove(newQueue.Id);
+                if (_lookupMap.ContainsKey(newQueue.Id))
+                    _lookupMap.Remove(newQueue.Id);
 
-                    _lookupMap.Add(newQueue.Id, newQueue);
-                });
-                return newQueue;
-            }
-            catch
-            {
-                return null;
-            }
+                _lookupMap.Add(newQueue.Id, newQueue);
+            }).AsTask().ConfigureAwait(false);
+
+            return newQueue;
         }
 
         public Task MoveQueueFromToAsync(int oldIndex, int newIndex)
@@ -1003,7 +991,7 @@ namespace Audiotica.Data.Collection.RunTime
             #endregion
 
             await _sqlService.DeleteItemAsync(songToRemove);
-            playlist.Songs.Remove(songToRemove);
+            _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => playlist.Songs.Remove(songToRemove));
         }
 
         private async void LoadPlaylists()

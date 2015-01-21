@@ -17,7 +17,8 @@ namespace Audiotica
 {
     public static class AutcpFormatHelper
     {
-        public const int FormatVersion = 1;
+        public const int FormatVersion = 2;
+        public const int FormatCompatabilityVersion = 2;
 
         private const int FileHeaderSize = 37;
 
@@ -30,14 +31,22 @@ namespace Audiotica
                 {
                     try
                     {
+                        var name = entry.FullName;
+
+                        //compatability with Autcp v1
+                        if (name.Contains(".bksqldb"))
+                            name = name.Replace(".bksqldb", ".sqldb");
+
                         var file =
                             await
-                                StorageHelper.CreateFileAsync(entry.FullName,
+                                StorageHelper.CreateFileAsync(name,
                                     option: CreationCollisionOption.ReplaceExisting);
                         using (var stream = await file.OpenStreamForWriteAsync())
                         {
-                            var original = entry.Open();
-                            await original.CopyToAsync(stream);
+                            using (var original = entry.Open())
+                            {
+                                await original.CopyToAsync(stream);
+                            }
                         }
                     }
                     catch { }
@@ -66,7 +75,7 @@ namespace Audiotica
                         {
                             var file = (item as StorageFile);
                             if (file.FileType == ".autcp"
-                                || file.FileType == ".sqldb"
+                                || file.Name.ToLower().StartsWith("xam")
                                 || file.Name.StartsWith("_"))
                                 continue;
                             files.Add(file);
@@ -108,8 +117,8 @@ namespace Audiotica
             var fileHeader = new AutcpFileHeader
             {
                 signature = Encoding.UTF8.GetBytes("AUTCP"),
-                version = 1,
-                compatability = 1
+                version = FormatVersion,
+                compatability = FormatCompatabilityVersion
             };
 
             return WriteFileHeader(stream, fileHeader);

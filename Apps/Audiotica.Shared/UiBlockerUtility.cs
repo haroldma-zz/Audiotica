@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Windows.Phone.UI.Input;
 using Windows.UI;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
@@ -13,12 +14,13 @@ namespace Audiotica
     {
         private static Popup _popup;
         private static CommandBar _commandBar;
+        private static Visibility _commandPrevVisibility;
 
-        public static bool IsBlocking { get; private set; }
+        public static bool SupressBackEvents { get; private set; }
 
-        public static async Task BlockNavigation(bool hideNavBar = true)
+        public static void BlockNavigation(bool hideNavBar = true)
         {
-            IsBlocking = true;
+            SupressBackEvents = true;
 
             if (!hideNavBar) return;
 
@@ -26,9 +28,8 @@ namespace Audiotica
 
             if (_commandBar != null)
             {
+                _commandPrevVisibility = _commandBar.Visibility;
                 _commandBar.Visibility = Visibility.Collapsed;
-                //waiting for the appbar to hide
-                await Task.Delay(250);
             }
         }
 
@@ -57,11 +58,11 @@ namespace Audiotica
 
         public static void Unblock()
         {
-            IsBlocking = false;
+            SupressBackEvents = false;
 
             if (_commandBar != null)
             {
-                _commandBar.Visibility = Visibility.Visible;
+                _commandBar.Visibility = _commandPrevVisibility;
                 _commandBar = null;
             }
 

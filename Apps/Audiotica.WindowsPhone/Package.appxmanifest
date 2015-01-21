@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/2010/manifest" xmlns:m2="http://schemas.microsoft.com/appx/2013/manifest" xmlns:m3="http://schemas.microsoft.com/appx/2014/manifest" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest">
-  <Identity Name="3237Zumicts.Audiotica" Publisher="CN=E38C2EDA-A823-4D3D-BBB1-8F0B81FF4C7B" Version="1501.16.10.41" />
-  <mp:PhoneIdentity PhoneProductId="8754d06e-bb4e-41da-815a-3b66fe7fbb7c" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
+  <Identity Name="3237Zumicts.Audiotica" Publisher="CN=E38C2EDA-A823-4D3D-BBB1-8F0B81FF4C7B" Version="1501.21.19.38" />
+  <mp:PhoneIdentity PhoneProductId="5db45a08-ce25-452d-8a6c-11e4e0e4de90" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
     <DisplayName>Audiotica</DisplayName>
     <PublisherDisplayName>Zumicts Studio</PublisherDisplayName>

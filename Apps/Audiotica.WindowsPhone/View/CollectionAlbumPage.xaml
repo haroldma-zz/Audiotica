@@ -10,6 +10,7 @@
     Name="Page"
     xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
     xmlns:core="using:Microsoft.Xaml.Interactions.Core"
+    xmlns:qKit="using:QKit"
     DataContext="{Binding Source={StaticResource Locator}, Path=CollectionAlbum}">
 
     <Grid>
@@ -17,7 +18,8 @@
             <ImageBrush Opacity=".25" ImageSource="{Binding Album.PrimaryArtist.Artwork}" Stretch="UniformToFill" />
         </Grid.Background>
 
-        <ListView ShowsScrollingPlaceholders="True" ContainerContentChanging="ItemListView_ContainerContentChanging" IsItemClickEnabled="True" ItemsSource="{Binding Album.Songs}" Padding="15,25,15,20">
+        <qKit:MultiSelectListView x:Name="SongList" SelectionModeChanged="MultiSelectListView_SelectionModeChanged"
+            ContainerContentChanging="ItemListView_ContainerContentChanging" IsItemClickEnabled="True" ItemsSource="{Binding Album.Songs}" Padding="15,25,15,20" Margin="-20,0,0,0">
             <ListView.HeaderTemplate>
                 <DataTemplate>
                     <Grid Margin="0,10,0,20">
@@ -39,7 +41,7 @@
                     <core:InvokeCommandAction Command="{Binding SongClickRelayCommand}" />
                 </core:EventTriggerBehavior>
             </interactivity:Interaction.Behaviors>
-        </ListView>
+        </qKit:MultiSelectListView>
     </Grid>
     <Page.BottomAppBar>
         <CommandBar>

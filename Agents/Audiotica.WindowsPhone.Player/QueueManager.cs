@@ -13,26 +13,17 @@ using Audiotica.Core.Utilities;
 using Audiotica.Data.Collection;
 using Audiotica.Data.Collection.Model;
 using Audiotica.Data.Collection.RunTime;
-using Audiotica.Data.Service.RunTime;
-using IF.Lastfm.Core.Api.Enums;
 
 #endregion
 
 namespace Audiotica.WindowsPhone.Player
 {
-    internal class QueueManager : IDisposable
+    internal class QueueManager
     {
         #region Private members
 
-        private readonly ISqlService _bgSql;
-        private readonly MediaPlayer _mediaPlayer;
-        private readonly ISqlService _sql;
-        private QueueSong _currentTrack;
-
-        public QueueManager()
+        private SqlService CreateHistorySqlService()
         {
-            _scrobbler = new ScrobblerHelper();
-
             var historyDbTypes = new List<Type>
             {
                 typeof (HistoryEntry),
@@ -40,12 +31,16 @@ namespace Audiotica.WindowsPhone.Player
             var historyConfig = new SqlServiceConfig
             {
                 Tables = historyDbTypes,
-                CurrentVersion = 1,
+                CurrentVersion = 2,
                 Path = "history.sqldb"
             };
-            _historySql = new SqlService(historyConfig);
-            _historySql.Initialize();
-            
+            var sql = new SqlService(historyConfig);
+            sql.Initialize();
+            return sql;
+        }
+
+        private SqlService CreatePlayerSqlService()
+        {
             var bgDbTypes = new List<Type>
             {
                 typeof (QueueSong),
@@ -53,11 +48,16 @@ namespace Audiotica.WindowsPhone.Player
             var bgConfig = new SqlServiceConfig
             {
                 Tables = bgDbTypes,
-                CurrentVersion = 3,
+                CurrentVersion = 4,
                 Path = "player.sqldb"
             };
-            _bgSql = new SqlService(bgConfig);
-            _bgSql.Initialize();
+            var sql = new SqlService(bgConfig);
+            sql.Initialize();
+            return sql;
+        }
+
+        private SqlService CreateCollectionSqlService()
+        {
             var dbTypes = new List<Type>
             {
                 typeof (Artist),
@@ -69,12 +69,21 @@ namespace Audiotica.WindowsPhone.Player
             var config = new SqlServiceConfig
             {
                 Tables = dbTypes,
-                CurrentVersion = 7,
+                CurrentVersion = 8,
                 Path = "collection.sqldb"
             };
 
-            _sql = new SqlService(config);
-            _sql.Initialize();
+            var sql = new SqlService(config);
+            sql.Initialize();
+            return sql;
+        }
+
+        private readonly MediaPlayer _mediaPlayer;
+        private QueueSong _currentTrack;
+
+        public QueueManager()
+        {
+            _scrobbler = new ScrobblerHelper();
 
             _mediaPlayer = BackgroundMediaPlayer.Current;
             _mediaPlayer.MediaOpened += MediaPlayer_MediaOpened;
@@ -92,10 +101,7 @@ namespace Audiotica.WindowsPhone.Player
         /// </summary>
         public QueueSong CurrentTrack
         {
-            get
-            {
-                return _currentTrack ?? (_currentTrack = GetCurrentQueueSong());
-            }
+            get { return _currentTrack ?? (_currentTrack = GetCurrentQueueSong()); }
         }
 
         /// <summary>
@@ -106,6 +112,9 @@ namespace Audiotica.WindowsPhone.Player
         #endregion
 
         #region MediaPlayer Handlers
+
+        private readonly ScrobblerHelper _scrobbler;
+        private int _retryCount;
 
         /// <summary>
         ///     Handler for state changed event of Media Player
@@ -148,12 +157,19 @@ namespace Audiotica.WindowsPhone.Player
                 SongId = CurrentTrack.SongId
             };
 
-            await _historySql.InsertAsync(historyItem);
+            using (var historySql = CreateHistorySqlService())
+            {
+                await historySql.InsertAsync(historyItem);
+            }
 
             if (CurrentTrack.Song.Duration.Ticks != _mediaPlayer.NaturalDuration.Ticks)
             {
                 CurrentTrack.Song.Duration = _mediaPlayer.NaturalDuration;
-                await _sql.UpdateItemAsync(CurrentTrack.Song);
+
+                using (var sql = CreateCollectionSqlService())
+                {
+                    await sql.UpdateItemAsync(CurrentTrack.Song);
+                }
             }
 
             if (_scrobbler.IsScrobblingEnabled())
@@ -182,10 +198,6 @@ namespace Audiotica.WindowsPhone.Player
             _retryCount++;
         }
 
-        private int _retryCount;
-        private readonly ScrobblerHelper _scrobbler;
-        private SqlService _historySql;
-
         #endregion
 
         #region Playlist command handlers
@@ -206,11 +218,7 @@ namespace Audiotica.WindowsPhone.Player
             }
             else
             {
-                var isLocal = track.Song.SongState == SongState.Local;
-
-                StorageFile file = null;
-
-                file = isLocal ? StorageHelper.GetFileAsync(track.Song.AudioUrl, KnownFolders.MusicLibrary).Result : StorageHelper.GetFileAsync(string.Format("songs/{0}.mp3", track.SongId)).Result;
+                var file = StorageFile.GetFileFromPathAsync(track.Song.AudioUrl).AsTask().Result;
 
                 if (file != null)
                 {
@@ -220,13 +228,7 @@ namespace Audiotica.WindowsPhone.Player
                     }
                     catch
                     {
-                        if (!isLocal)
-                        {
-                            //corrupt download, perhaps
-                            track.Song.SongState = SongState.None;
-                            _sql.UpdateItem(track.Song);
-                            file.DeleteAsync().AsTask().Wait();
-                        }
+                        SkipToNext();
                     }
                 }
                 else if (CurrentTrack.NextId != 0 && CurrentTrack.PrevId != 0)
@@ -271,26 +273,38 @@ namespace Audiotica.WindowsPhone.Player
                     if (queue.Song.Duration.Ticks != _mediaPlayer.NaturalDuration.Ticks)
                         queue.Song.Duration = _mediaPlayer.NaturalDuration;
 
-                    _sql.UpdateItem(queue.Song);
+                    using (var sql = CreateCollectionSqlService())
+                    {
+                        sql.UpdateItem(queue.Song);
+                    }
                 }
             }
-            catch { }
-            await _historySql.DeleteItemAsync(item);
+            catch
+            {
+            }
+
+            using (var historySql = CreateHistorySqlService())
+            {
+                await historySql.DeleteItemAsync(item);
+            }
         }
 
         private HistoryEntry GetHistoryItem(QueueSong queue)
         {
-            var history = _historySql.SelectAll<HistoryEntry>();
-
-            //if null then the player has just been launched
-            if (queue == null)
+            using (var historySql = CreateHistorySqlService())
             {
-                //reset the incrementable Id of the table
-                _historySql.DeleteTableAsync<HistoryEntry>().Wait();
-                return null;
-            }
+                var history = historySql.SelectAll<HistoryEntry>();
 
-            return history.FirstOrDefault(p => p.SongId == queue.SongId);
+                //if null then the player has just been launched
+                if (queue == null)
+                {
+                    //reset the incrementable Id of the table
+                    historySql.DeleteTableAsync<HistoryEntry>().Wait();
+                    return null;
+                }
+
+                return history.FirstOrDefault(p => p.SongId == queue.SongId);
+            }
         }
 
         /// <summary>
@@ -304,10 +318,9 @@ namespace Audiotica.WindowsPhone.Player
 
         #endregion
 
-        public void Dispose()
+        private bool IsShuffle
         {
-            _bgSql.Dispose();
-            _sql.Dispose();
+            get { return AppSettingsHelper.Read<bool>("Shuffle"); }
         }
 
         private int GetCurrentId()
@@ -320,21 +333,27 @@ namespace Audiotica.WindowsPhone.Player
             return GetQueueSongById(GetCurrentId());
         }
 
-        private QueueSong GetQueueSong(Expression<Func<QueueSong, bool>> expression)
+        private QueueSong GetQueueSong(Func<QueueSong, bool> expression)
         {
-            var queue = _bgSql.SelectWhere(expression);
-            
-            if (queue == null) return null;
+            using (var bgSql = CreatePlayerSqlService())
+            {
+                var queue = bgSql.SelectFirst(expression);
 
-            var song = _sql.SelectWhere<Song>(p => p.Id == queue.SongId);
-            var artist = _sql.SelectWhere<Artist>(p => p.Id == song.ArtistId);
+                if (queue == null) return null;
+                using (var sql = CreateCollectionSqlService())
+                {
+                    var song = sql.SelectFirst<Song>(p => p.Id == queue.SongId);
+                    var artist = sql.SelectFirst<Artist>(p => p.Id == song.ArtistId);
+                    var album = sql.SelectFirst<Album>(p => p.Id == song.AlbumId);
 
-            song.Artist = artist;
-            queue.Song = song;
-            return queue;
+                    song.Artist = artist;
+                    song.Album = album;
+                    song.Album.PrimaryArtist = artist;
+                    queue.Song = song;
+                    return queue;
+                }
+            }
         }
-
-        private bool IsShuffle { get { return AppSettingsHelper.Read<bool>("Shuffle"); } }
 
         public QueueSong GetQueueSongById(int id)
         {

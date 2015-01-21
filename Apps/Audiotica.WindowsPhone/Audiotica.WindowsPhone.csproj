@@ -18,7 +18,7 @@
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
     <ExpressionBlendVersion>12.0.50716.0</ExpressionBlendVersion>
-    <NuGetPackageImportStamp>61a77be5</NuGetPackageImportStamp>
+    <NuGetPackageImportStamp>a2db9dd1</NuGetPackageImportStamp>
     <AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>
     <AppxBundle>Always</AppxBundle>
     <AppxBundlePlatforms>arm</AppxBundlePlatforms>
@@ -120,6 +120,9 @@
     <Compile Include="PlayerViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StatusBarHelper.cs" />
+    <Compile Include="View\CollectionStatisticsPage.xaml.cs">
+      <DependentUpon>CollectionStatisticsPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\FirstRunPage.xaml.cs">
       <DependentUpon>FirstRunPage.xaml</DependentUpon>
     </Compile>
@@ -140,6 +143,9 @@
     </Compile>
     <Compile Include="View\Setting\DeveloperPage.xaml.cs">
       <DependentUpon>DeveloperPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Setting\CollectionSettingsPage.xaml.cs">
+      <DependentUpon>CollectionSettingsPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Setting\PlayerPage.xaml.cs">
       <DependentUpon>PlayerPage.xaml</DependentUpon>
@@ -223,6 +229,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="View\CollectionStatisticsPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\FirstRunPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -248,6 +258,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="View\Setting\DeveloperPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\Setting\CollectionSettingsPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -336,14 +350,16 @@
     <Reference Include="IF.Lastfm.Core">
       <HintPath>..\..\packages\IF.Lastfm.Zumicts.0.3.3\lib\portable-net45+win+wpa81+wp80\IF.Lastfm.Core.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.AdMediator.WindowsPhone81.AdDuplex">
-      <HintPath>..\..\packages\Microsoft.AdMediator.WindowsPhone81.AdDuplex.1.0.11\lib\wpa\Microsoft.AdMediator.WindowsPhone81.AdDuplex.dll</HintPath>
+    <Reference Include="Microsoft.AdMediator.WindowsPhone81.AdDuplex, Version=1.0.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Microsoft.AdMediator.WindowsPhone81.AdDuplex.1.0.12\lib\wpa\Microsoft.AdMediator.WindowsPhone81.AdDuplex.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.AdMediator.WindowsPhone81.MicrosoftAdvertising">
-      <HintPath>..\..\packages\Microsoft.AdMediator.WindowsPhone81.MicrosoftAdvertising.1.0.12\lib\wpa\Microsoft.AdMediator.WindowsPhone81.MicrosoftAdvertising.dll</HintPath>
+      <HintPath>..\..\packages\Microsoft.AdMediator.WindowsPhone81.MicrosoftAdvertising.1.0.13\lib\wpa\Microsoft.AdMediator.WindowsPhone81.MicrosoftAdvertising.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.AdMediator.WindowsPhone81.Smaato">
-      <HintPath>..\..\packages\Microsoft.AdMediator.WindowsPhone81.Smaato.1.0.5\lib\wpa\Microsoft.AdMediator.WindowsPhone81.Smaato.dll</HintPath>
+    <Reference Include="Microsoft.AdMediator.WindowsPhone81.Smaato, Version=1.0.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Microsoft.AdMediator.WindowsPhone81.Smaato.1.0.6\lib\wpa\Microsoft.AdMediator.WindowsPhone81.Smaato.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Advertising.Mobile.Common">
       <HintPath>..\..\packages\Microsoft.Advertising.WindowsPhone.Xaml81.8.1.40505.0\lib\wpa81\Microsoft.Advertising.Mobile.Common.winmd</HintPath>
@@ -376,8 +392,12 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\Newtonsoft.Json.6.0.8\lib\portable-net40+sl5+wp80+win8+wpa81\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="SOMAWP81">
-      <HintPath>..\..\packages\SOMAW81_Package.1.1.6\lib\wpa81\SOMAWP81.dll</HintPath>
+    <Reference Include="QKit">
+      <HintPath>..\..\packages\QKit.0.4.1\lib\wpa81\QKit.dll</HintPath>
+    </Reference>
+    <Reference Include="SQLite-net">
+      <HintPath>..\..\packages\sqlite-net-pcl.1.0.9-alpha\lib\portable-net45+netcore45+wpa81+wp8+MonoAndroid1+MonoTouch1\SQLite-net.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System.Net.Http.Extensions">
       <HintPath>..\..\packages\Microsoft.Net.Http.2.2.28\lib\wpa81\System.Net.Http.Extensions.dll</HintPath>
@@ -387,10 +407,13 @@
     </Reference>
     <Reference Include="TagLib.Portable, Version=2.1.0.0, Culture=neutral, PublicKeyToken=db62eba44689b5b0, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\TagLib.Portable.1.0.2-pre\lib\portable-net45+win8+wpa81\TagLib.Portable.dll</HintPath>
+      <HintPath>..\..\packages\TagLib.Portable.Zumicts.1.0.3-pre\lib\portable-net45+win+wpa81+wp8+MonoAndroid10+xamarinios10+MonoTouch10\TagLib.Portable.dll</HintPath>
     </Reference>
     <Reference Include="WriteableBitmapEx.WinRT">
       <HintPath>..\..\packages\WriteableBitmapEx.1.0.14.0\lib\wpa81\WriteableBitmapEx.WinRT.dll</HintPath>
+    </Reference>
+    <Reference Include="Xamarin.Insights">
+      <HintPath>..\..\packages\Xamarin.Insights.1.8.3\lib\wpa\Xamarin.Insights.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -408,9 +431,6 @@
     <SDKReference Include="Microsoft.VCLibs, version=12.0">
       <Name>Microsoft Visual C++ 2013 Runtime Package for Windows Phone</Name>
     </SDKReference>
-    <SDKReference Include="SQLite.WP81, Version=3.8.7.4">
-      <Name>SQLite for Windows Phone 8.1</Name>
-    </SDKReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '12.0' ">
     <VisualStudioVersion>12.0</VisualStudioVersion>
@@ -427,8 +447,10 @@
     </PropertyGroup>
     <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
     <Error Condition="!Exists('..\..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets'))" />
+    <Error Condition="!Exists('..\..\packages\SQLitePCL.raw_basic.0.3.0-alpha\build\wpa81\SQLitePCL.raw_basic.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\SQLitePCL.raw_basic.0.3.0-alpha\build\wpa81\SQLitePCL.raw_basic.targets'))" />
   </Target>
   <Import Project="..\..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets" Condition="Exists('..\..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" />
+  <Import Project="..\..\packages\SQLitePCL.raw_basic.0.3.0-alpha\build\wpa81\SQLitePCL.raw_basic.targets" Condition="Exists('..\..\packages\SQLitePCL.raw_basic.0.3.0-alpha\build\wpa81\SQLitePCL.raw_basic.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

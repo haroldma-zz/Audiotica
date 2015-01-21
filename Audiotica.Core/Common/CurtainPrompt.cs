@@ -242,6 +242,7 @@ namespace Audiotica.Core.Common
             //Animate transition
             var verticalExtendAnimation = new DoubleAnimation
             {
+                EnableDependentAnimation = true,
                 From = _popup.VerticalOffset,
                 To = _popup.VerticalOffset + 25,
                 Duration = new Duration(TimeSpan.FromMilliseconds(200))
@@ -287,14 +288,8 @@ namespace Audiotica.Core.Common
 
         private void grid_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
         {
-            //Stop the timer
-            try
-            {
+            if (_timer != null)
                 _timer.Stop();
-            }
-            catch
-            {
-            }
         }
 
         private void grid_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)

@@ -31,7 +31,7 @@ namespace Audiotica.Data.Collection.Model
         //Artist prop is for the album (main), this one is specific to each song
         public string ArtistName { get; set; }
 
-        public long TrackNumber { get; set; }
+        public int TrackNumber { get; set; }
 
         public string AudioUrl { get; set; }
 
@@ -80,6 +80,8 @@ namespace Audiotica.Data.Collection.Model
                 OnPropertyChanged();
             }
         }
+
+        public string DownloadId { get; set; }
 
         [Ignore]
         public ObservableCollection<AddableCollectionItem> AddableTo { get; set; }

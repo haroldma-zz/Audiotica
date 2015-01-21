@@ -18,7 +18,7 @@ namespace Audiotica.PartialView
             Loaded += (sender, args) =>
             {
                 var ads = AppSettingsHelper.Read("Ads", true, SettingsStrategy.Roaming);
-                var owns = App.LicenseInformation.ProductLicenses[ProductConstants.InAppAdvertisements].IsActive;
+                var owns = App.Locator.Settings.IsAdsEnabled;
 
                 if (!owns && !ads)
                 {

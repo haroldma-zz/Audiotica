@@ -72,6 +72,7 @@ namespace Audiotica.ViewModel
             SimpleIoc.Default.Register<SpotifyAlbumViewModel>();
             SimpleIoc.Default.Register<SpotifyArtistViewModel>();
             SimpleIoc.Default.Register<SettingsViewModel>();
+            SimpleIoc.Default.Register<CollectionStatisticsViewModel>();
         }
 
         private SqlServiceConfig GetForegroundConfig()
@@ -87,8 +88,21 @@ namespace Audiotica.ViewModel
             return new SqlServiceConfig()
             {
                 Tables = dbTypes,
-                CurrentVersion = 7,
-                Path = "collection.sqldb"
+                CurrentVersion = 8,
+                Path = "collection.sqldb",
+                OnUpdate = async (connection, d) =>
+                {
+                    if (d == 0) return;
+
+                    if (d < 8)
+                    {
+                        if (App.Locator.CollectionService.IsLibraryLoaded)
+                            await CollectionHelper.MigrateAsync();
+                        else
+                            App.Locator.CollectionService.LibraryLoaded += (sender, args) =>
+                                CollectionHelper.MigrateAsync();
+                    }
+                }
             };
         }
         private SqlServiceConfig GetBackgroundConfig()
@@ -100,7 +114,7 @@ namespace Audiotica.ViewModel
             return new SqlServiceConfig()
             {
                 Tables = dbTypes,
-                CurrentVersion = 3,
+                CurrentVersion = 4,
                 Path = "player.sqldb"
             };
         }
@@ -162,6 +176,11 @@ namespace Audiotica.ViewModel
         public SearchViewModel Search
         {
             get { return ServiceLocator.Current.GetInstance<SearchViewModel>(); }
+        }
+
+        public CollectionStatisticsViewModel Statistics
+        {
+            get { return ServiceLocator.Current.GetInstance<CollectionStatisticsViewModel>(); }
         }
 
         public SettingsViewModel Settings

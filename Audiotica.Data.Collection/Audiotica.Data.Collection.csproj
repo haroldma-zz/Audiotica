@@ -42,6 +42,7 @@
   <ItemGroup>
     <Compile Include="DesignTime\DesignCollectionService.cs" />
     <Compile Include="DesignTime\DesignSqlService.cs" />
+    <Compile Include="ISongDownloadService.cs" />
     <Compile Include="Model\HistoryEntry.cs" />
     <Compile Include="Model\BackgroundDownload.cs" />
     <Compile Include="SqlHelper\BaseEntry.cs" />
@@ -70,7 +71,7 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="TagLib.Portable">
-      <HintPath>..\packages\TagLib.Portable.1.0.2-pre\lib\portable-net45+win8+wpa81\TagLib.Portable.dll</HintPath>
+      <HintPath>..\packages\TagLib.Portable.Zumicts.1.0.3-pre\lib\portable-net45+win+wpa81+wp8+MonoAndroid10+xamarinios10+MonoTouch10\TagLib.Portable.dll</HintPath>
     </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />

@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.ObjectModel;
 using System.Threading.Tasks;
-using Windows.Networking.BackgroundTransfer;
 using Audiotica.Data.Collection.Model;
-using GalaSoft.MvvmLight;
 
-namespace Audiotica.Data.Service.Interfaces
+namespace Audiotica.Data.Collection
 {
     public interface ISongDownloadService
     {

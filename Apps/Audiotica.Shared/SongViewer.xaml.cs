@@ -1,9 +1,12 @@
 ﻿#region
 
+using System;
+using Windows.Phone.UI.Input;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Input;
+using Audiotica.Controls;
 using Audiotica.Data.Collection.Model;
 
 #endregion
@@ -99,12 +102,32 @@ namespace Audiotica
 
         private void AddToMenuFlyoutItem_OnClick(object sender, RoutedEventArgs e)
         {
-            App.Locator.Collection.Commands.AddToClickCommand.Execute(_song);
+            UiBlockerUtility.BlockNavigation();
+            var picker = new PlaylistPicker(_song)
+            {
+                Action = async playlist =>
+                {
+                    App.SupressBackEvent -= AppOnSupressBackEvent;
+                    UiBlockerUtility.Unblock();
+                    ModalSheetUtility.Hide();
+                    await App.Locator.CollectionService.AddToPlaylistAsync(playlist, _song).ConfigureAwait(false);
+                }
+            };
+
+            App.SupressBackEvent += AppOnSupressBackEvent;
+            ModalSheetUtility.Show(picker);
         }
 
-        private void Picker_OnItemsPicked(ListPickerFlyout sender, ItemsPickedEventArgs args)
+        private async void MenuFlyoutItem_Click(object sender, RoutedEventArgs e)
         {
-            App.Locator.Collection.Commands.ItemPickedCommand.Execute(args.AddedItems[0]);
+            await CollectionHelper.AddToQueueAsync(_song);
+        }
+
+        private void AppOnSupressBackEvent(object sender, BackPressedEventArgs backPressedEventArgs)
+        {
+            App.SupressBackEvent -= AppOnSupressBackEvent;
+            UiBlockerUtility.Unblock();
+            ModalSheetUtility.Hide();
         }
 
         private void DeleteMenuFlyoutItem_OnClick(object sender, RoutedEventArgs e)

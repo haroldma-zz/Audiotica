@@ -22,7 +22,6 @@ namespace Audiotica.Data.Collection.RunTime
         public SqlService(SqlServiceConfig config)
         {
             _config = config;
-            DbConnection = new SQLiteConnection(config.Path);
         }
 
         public SQLiteConnection DbConnection { get; set; }
@@ -30,17 +29,33 @@ namespace Audiotica.Data.Collection.RunTime
         public void Dispose()
         {
             DbConnection.Dispose();
+            GC.Collect();
         }
 
-        public void Initialize()
+        public void Initialize(bool walMode = true)
         {
-            var cmd = new SQLiteCommand(DbConnection) {CommandText = "PRAGMA user_version"};
-            var sqlVersion = cmd.ExecuteScalar<int>();
-
+            DbConnection = new SQLiteConnection(_config.Path);
+            var sqlVersion = DbConnection.ExecuteScalar<int>("PRAGMA user_version");
             if (sqlVersion == _config.CurrentVersion) return;
+
+            //using wal so the player and app can access the db without worrying about it being locked
+            DbConnection.ExecuteScalar<string>("PRAGMA journal_mode = " + (walMode ? "WAL" : "DELETE"));
 
             if (_config.OnUpdate != null)
                 _config.OnUpdate(DbConnection, sqlVersion);
+
+            /*
+             * Callback function is invoked once for each DELETE, INSERT, or UPDATE operation. 
+             * The argument is the number of rows that were changed
+             * Turning this off will give a small speed boost 
+             */
+            DbConnection.ExecuteScalar<string>("PRAGMA count_changes = OFF");
+
+            //Data integrity is not a top priority, performance is.
+            DbConnection.ExecuteScalar<string>("PRAGMA synchronous = OFF");
+
+            DbConnection.ExecuteScalar<string>("PRAGMA foreign_keys = ON");
+
             CreateTablesIfNotExists();
         }
 
@@ -133,16 +148,16 @@ namespace Audiotica.Data.Collection.RunTime
             return new List<T>();
         }
 
-        public T SelectWhere<T>(Expression<Func<T, bool>> expression) where T : new()
+        public T SelectFirst<T>(Func<T, bool> expression) where T : new()
         {
             try
             {
-                return DbConnection.Table<T>().Where(expression).FirstOrDefault();
+                return DbConnection.Table<T>().FirstOrDefault(expression);
             }
             catch (SQLiteException e)
             {
                 if (e.Result == SQLite3.Result.Busy)
-                    return SelectWhere(expression);
+                    return SelectFirst(expression);
             }
             catch
             {
@@ -155,8 +170,7 @@ namespace Audiotica.Data.Collection.RunTime
             return Task.Run(() =>
             {
                 DbConnection.DeleteAll<T>();
-                var cmd = new SQLiteCommand(DbConnection) { CommandText = "DELETE FROM sqlite_sequence  WHERE name = '" + typeof(T).Name + "'" };
-                cmd.ExecuteNonQuery();
+                DbConnection.Execute("DELETE FROM sqlite_sequence  WHERE name = '" + typeof(T).Name + "'");
             });
         }
 
@@ -180,8 +194,7 @@ namespace Audiotica.Data.Collection.RunTime
 
         private void UpdateDbVersion(double version)
         {
-            var cmd = new SQLiteCommand(DbConnection) { CommandText = "PRAGMA user_version = " + version };
-            cmd.ExecuteNonQuery();
+            DbConnection.Execute("PRAGMA user_version = " + version);
         }
     }
 

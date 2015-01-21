@@ -17,7 +17,7 @@ namespace Audiotica.Core.Utilities
         public static async Task<IStorageItem> TryGetItemAsync(this StorageFolder folder,
             string name)
         {
-            var files = await folder.GetItemsAsync().AsTask().ConfigureAwait(false);
+            var files = (await folder.GetItemsAsync().AsTask().ConfigureAwait(false)).ToList();
             return files.FirstOrDefault(p => p.Name == name);
         }
     }

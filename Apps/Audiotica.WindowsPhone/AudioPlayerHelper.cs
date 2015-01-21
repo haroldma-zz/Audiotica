@@ -1,6 +1,7 @@
 ﻿#region
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Windows.Foundation.Collections;
 using Windows.Media.Playback;
@@ -8,6 +9,7 @@ using Audiotica.Core;
 using Audiotica.Core.Utilities;
 using Audiotica.Data.Collection.Model;
 using GalaSoft.MvvmLight.Threading;
+using Xamarin;
 
 #endregion
 
@@ -93,6 +95,13 @@ namespace Audiotica
         {
             if (song == null)
                 return;
+
+            Insights.Track("Play Song", new Dictionary<string, string>
+            {
+                {"Name",song.Song.Name},
+                {"ArtistName",song.Song.ArtistName},
+                {"ProviderId",song.Song.ProviderId}
+            });
 
             if (_isShutdown)
                 AddMediaPlayerEventHandlers();

@@ -35,11 +35,14 @@ namespace Audiotica.View
             App.Navigator.AddPage(new LastFmPage());
             App.Navigator.AddPage(new AboutPage());
             App.Navigator.AddPage(new CloudPage());
+            App.Navigator.AddPage(new CollectionStatisticsPage());
+            App.Navigator.AddPage(new Setting.CollectionSettingsPage());
         }
 
         private bool IsRestore()
         {
-            return StorageHelper.FileExistsAsync("_current_restore.autcp").Result;
+            return AppSettingsHelper.Read<bool>("FactoryReset") 
+                || StorageHelper.FileExistsAsync("_current_restore.autcp").Result;
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)

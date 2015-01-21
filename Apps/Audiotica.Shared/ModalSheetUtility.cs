@@ -13,24 +13,25 @@ namespace Audiotica
 {
     public static class ModalSheetUtility
     {
-        private static Page _page;
+        private static IModalSheetPage _sheet;
 
         public static void Show(IModalSheetPage sheet)
         {
-            if (_page != null) return;
+            if (_sheet != null) return;
 
+            _sheet = sheet;
             var size = App.RootFrame;
-            _page = sheet as Page;
+            var element = sheet as FrameworkElement;
 
-            _page.Width = size.ActualWidth;
-            _page.Height = size.ActualHeight;
+            element.Width = size.ActualWidth;
+            element.Height = size.ActualHeight;
             App.RootFrame.SizeChanged += PageOnSizeChanged;
 
             var popup = new Popup
             {
                 IsOpen = true,
-                Child = _page,
-                VerticalOffset = _page.Height
+                Child = element,
+                VerticalOffset = element.Height
             };
 
             #region Slide up animation
@@ -40,7 +41,7 @@ namespace Audiotica
                 EnableDependentAnimation = true,
                 From = popup.VerticalOffset,
                 To = 0,
-                Duration = new Duration(TimeSpan.FromMilliseconds(200))
+                Duration = new Duration(TimeSpan.FromMilliseconds(300))
             };
 
             var sb = new Storyboard();
@@ -52,15 +53,19 @@ namespace Audiotica
 
             #endregion
 
-             
             sheet.OnOpened(popup);
         }
 
         private static void PageOnSizeChanged(object sender, SizeChangedEventArgs sizeChangedEventArgs)
         {
             var size = App.RootFrame;
-            _page.Width = size.ActualWidth;
-            _page.Height = size.ActualHeight;
+            (_sheet as FrameworkElement).Width = size.ActualWidth;
+            (_sheet as FrameworkElement).Height = size.ActualHeight;
+        }
+
+        public static void Hide()
+        {
+            Hide(_sheet);
         }
 
         public static void Hide(IModalSheetPage sheet)
@@ -73,8 +78,8 @@ namespace Audiotica
             {
                 EnableDependentAnimation = true,
                 From = 0,
-                To = _page.Height,
-                Duration = new Duration(TimeSpan.FromMilliseconds(100))
+                To = (_sheet as FrameworkElement).Height,
+                Duration = new Duration(TimeSpan.FromMilliseconds(200))
             };
 
             var sb = new Storyboard();
@@ -86,7 +91,7 @@ namespace Audiotica
             {
                 sheet.Popup.IsOpen = false;
                 sheet.OnClosed();
-                _page = null;
+                _sheet = null;
             };
 
             sb.Begin();
@@ -100,5 +105,10 @@ namespace Audiotica
         Popup Popup { get; }
         void OnOpened(Popup popup);
         void OnClosed();
+    }
+
+    public interface IModalSheetPageWithAction<T> : IModalSheetPage
+    {
+        Action<T> Action { get; set; }
     }
 }

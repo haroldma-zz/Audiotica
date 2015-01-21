@@ -1,6 +1,10 @@
 ﻿#region
 
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Windows.Foundation;
+using Windows.Phone.UI.Input;
 using Windows.UI.StartScreen;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -14,6 +18,8 @@ namespace Audiotica.View
 {
     public sealed partial class CollectionAlbumPage
     {
+        private readonly List<ICommandBarElement> _selectionModeCommands;
+        private readonly List<ICommandBarElement> _selectionSecondaryModeCommands;
         private TypedEventHandler<ListViewBase, ContainerContentChangingEventArgs> _delegate;
 
         public CollectionAlbumPage()
@@ -21,6 +27,71 @@ namespace Audiotica.View
             InitializeComponent();
             Bar = BottomAppBar;
             BottomAppBar = null;
+
+            var playButton = new AppBarButton
+            {
+                Icon = new SymbolIcon(Symbol.Play),
+                Label = "play",
+            };
+            playButton.Click += async (o, p) =>
+            {
+                var songs = SongList.SelectedItems.Select(m => m as Song).ToList();
+                if (songs.Count == 0) return;
+
+                SongList.SelectionMode = ListViewSelectionMode.None;
+                await CollectionHelper.PlaySongsAsync(songs, forceClear: true);
+            };
+            var enqueueButton = new AppBarButton
+            {
+                Icon = new SymbolIcon(Symbol.Add),
+                Label = "enqueue"
+            };
+            enqueueButton.Click += async (o, p) =>
+            {
+                var songs = SongList.SelectedItems.Select(m => m as Song).ToList();
+                if (songs.Count == 0) return;
+
+                SongList.SelectionMode = ListViewSelectionMode.None;
+                await CollectionHelper.AddToQueueAsync(songs);
+            };
+
+            _selectionModeCommands = new List<ICommandBarElement>
+            {
+                enqueueButton,
+                playButton
+            };
+
+            var addToButton = new AppBarButton
+            {
+                Icon = new SymbolIcon(Symbol.Play),
+                Label = "add to playlist..."
+            };
+            addToButton.Click += (o, p) =>
+            {
+                var songs = SongList.SelectedItems.Select(m => m as Song).ToList();
+                if (songs.Count == 0) return;
+
+                SongList.SelectionMode = ListViewSelectionMode.None;
+                CollectionHelper.AddToPlaylistDialog(songs);
+            };
+            var deleteButton = new AppBarButton
+            {
+                Icon = new SymbolIcon(Symbol.Add),
+                Label = "delete"
+            };
+            deleteButton.Click += async (o, p) =>
+            {
+                var tasks = SongList.SelectedItems.Select(m => CollectionHelper.DeleteEntryAsync(m as Song, false)).ToList();
+                if (tasks.Count == 0) return;
+
+                SongList.SelectionMode = ListViewSelectionMode.None;
+                await Task.WhenAll(tasks);
+            };
+            _selectionSecondaryModeCommands = new List<ICommandBarElement>
+            {
+                addToButton,
+                deleteButton
+            };
         }
 
         private CollectionAlbumViewModel Vm
@@ -40,6 +111,7 @@ namespace Audiotica.View
         public override void NavigatedTo(object e)
         {
             base.NavigatedTo(e);
+            base.NavigatedTo(e);
             var id = e as int?;
 
             if (id == null) return;
@@ -56,11 +128,13 @@ namespace Audiotica.View
             {
                 PinUnpinAppBarButton.Label = "Pin";
                 PinUnpinAppBarButton.Icon = new SymbolIcon(Symbol.Pin);
+                Bar.ClosedDisplayMode = AppBarClosedDisplayMode.Compact;
             }
             else
             {
                 PinUnpinAppBarButton.Label = "Unpin";
                 PinUnpinAppBarButton.Icon = new SymbolIcon(Symbol.UnPin);
+                Bar.ClosedDisplayMode = AppBarClosedDisplayMode.Minimal;
             }
         }
 
@@ -98,6 +172,35 @@ namespace Audiotica.View
 
             // For imporved performance, set Handled to true since app is visualizing the data item 
             args.Handled = true;
+        }
+
+        private void MultiSelectListView_SelectionModeChanged(object sender, RoutedEventArgs e)
+        {
+            var bar = Bar as CommandBar;
+            if (SongList.SelectionMode == ListViewSelectionMode.Multiple)
+            {
+                HardwareButtons.BackPressed += HardwareButtonsOnBackPressed;
+                UiBlockerUtility.BlockNavigation(false);
+                SongList.SelectedIndex = -1;
+
+                SongList.IsItemClickEnabled = false;
+
+                AppBarHelper.SaveState(bar);
+                AppBarHelper.SwitchState(bar, _selectionModeCommands, _selectionSecondaryModeCommands);
+            }
+            else
+            {
+                HardwareButtons.BackPressed -= HardwareButtonsOnBackPressed;
+                UiBlockerUtility.Unblock();
+                SongList.IsItemClickEnabled = true;
+
+                AppBarHelper.RestorePreviousState(bar);
+            }
+        }
+
+        private void HardwareButtonsOnBackPressed(object sender, BackPressedEventArgs e)
+        {
+            SongList.SelectionMode = ListViewSelectionMode.None;
         }
     }
 }

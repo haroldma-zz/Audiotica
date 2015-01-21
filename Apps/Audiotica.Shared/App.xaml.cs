@@ -4,12 +4,14 @@
 using System;
 using System.Diagnostics;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.ApplicationModel.Store;
 using Windows.Phone.UI.Input;
+using Windows.Storage;
 using Windows.System;
 using Windows.UI.Popups;
 using Windows.UI.ViewManagement;
@@ -18,11 +20,14 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 using Audiotica.Core.Common;
 using Audiotica.Core.Utilities;
+using Audiotica.Data.Collection.Model;
 using Audiotica.Data.Service.RunTime;
 using Audiotica.View;
 using Audiotica.ViewModel;
 using GalaSoft.MvvmLight.Threading;
 using GoogleAnalytics;
+using MyToolkit.Paging.Handlers;
+using Xamarin;
 
 #endregion
 
@@ -76,6 +81,7 @@ namespace Audiotica
             Suspending += OnSuspending;
             Resuming += OnResuming;
             UnhandledException += OnUnhandledException;
+
             AppVersionHelper.OnLaunched();
             EasyTracker.GetTracker().AppVersion =
                 AppVersionHelper.CurrentVersion + (IsProduction ? "" : "-beta");
@@ -84,11 +90,15 @@ namespace Audiotica
             Current.DebugSettings.EnableRedrawRegions = AppSettingsHelper.Read<bool>("RedrawRegions");
         }
 
+        public static event EventHandler<BackPressedEventArgs> SupressBackEvent;
+
         private void HardwareButtonsOnBackPressed(object sender, BackPressedEventArgs e)
         {
-            if (UiBlockerUtility.IsBlocking)
+            if (UiBlockerUtility.SupressBackEvents)
             {
                 e.Handled = true;
+                if (SupressBackEvent != null)
+                    SupressBackEvent(this, e);
             }
             else if (Navigator.GoBack())
             {
@@ -126,10 +136,12 @@ namespace Audiotica
         {
             CreateRootFrame();
 
-            var restore = await StorageHelper.FileExistsAsync("_current_restore.autcp");
+            var restore = AppSettingsHelper.Read<bool>("FactoryReset")
+            || await StorageHelper.FileExistsAsync("_current_restore.autcp");
 
             if (RootFrame.Content == null)
             {
+                Insights.Initialize("38cc9488b4e09fd2c316617d702838ca43a473d4");
                 RootFrame.Navigated += RootFrame_FirstNavigated;
 
                 //MainPage is always in rootFrame so we don't have to worry about restoring the navigation state on resume
@@ -189,6 +201,11 @@ namespace Audiotica
 
             var dataManager = DataTransferManager.GetForCurrentView();
             dataManager.DataRequested += DataTransferManagerOnDataRequested;
+
+            if (AppVersionHelper.JustUpdated)
+                OnUpdate();
+            else if (AppVersionHelper.IsFirstRun)
+                AppSettingsHelper.WriteAsJson("LastRunVersion", AppVersionHelper.CurrentVersion);
         }
 
         #endregion
@@ -203,25 +220,16 @@ namespace Audiotica
             OnVisibleBoundsChanged(null, null);
 
             var crash = AppSettingsHelper.ReadJsonAs<Exception>("CrashingException");
-            if (crash != null)
+            if (crash != null && !AppVersionHelper.JustUpdated)
                 await WarnAboutCrashAsync("Application Crashed", crash);
             else
                 await ReviewReminderAsync();
+        }
 
-            #region On update
-
-            if (!AppVersionHelper.JustUpdated) return;
-
-            CurtainPrompt.Show(2500, "AppUpdated".FromLanguageResource(), AppVersionHelper.CurrentVersion);
-
+        private async void OnUpdate()
+        {
             //download missing artwork for artist
-            if (Locator.CollectionService.IsLibraryLoaded)
-                CollectionHelper.DownloadArtistsArtworkAsync();
-            else
-                Locator.CollectionService.LibraryLoaded +=
-                    async (o, args) => CollectionHelper.DownloadArtistsArtworkAsync();
-
-            #endregion
+            await CollectionHelper.DownloadArtistsArtworkAsync();
         }
 
         private void OnVisibleBoundsChanged(ApplicationView sender, object args)
@@ -247,6 +255,8 @@ namespace Audiotica
 
         private async void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
+            Insights.Report(e.Exception);
+            UiBlockerUtility.Unblock();
             e.Handled = true;
             //just in case it crashes, save it
             AppSettingsHelper.WriteAsJson("CrashingException", e.Exception);
@@ -260,9 +270,11 @@ namespace Audiotica
 
             const string emailTo = "badbug@audiotica.fm";
             const string emailSubject = "Audiotica crash report";
-            var emailBody = "I encountered a problem with Audiotica...\r\n\r\n" + e.Message + "\r\n\r\nDetails:\r\n" +
+            var emailBody = "I encountered a problem with Audiotica (v" + AppVersionHelper.CurrentVersion +
+                            ")...\r\n\r\n" + e.Message + "\r\n\r\nDetails:\r\n" +
                             stacktrace;
-            var url = "mailto:?to=" + emailTo + "&subject=" + emailSubject + "&body=" + Uri.EscapeDataString(emailBody);
+            var url = "mailto:?to=" + emailTo + "&subject=" + emailSubject + "&body=" +
+                      Uri.EscapeDataString(emailBody);
 
             if (await MessageBox.ShowAsync(
                 "There was a problem with the application. Do you want to send a crash report so the developer can fix it?",
@@ -302,23 +314,26 @@ namespace Audiotica
         {
             if (!_init)
             {
-                try
+                using (var handle = Insights.TrackTime("Boot App Services"))
                 {
-                    await Locator.SqlService.InitializeAsync().ConfigureAwait(false);
-                    await Locator.BgSqlService.InitializeAsync().ConfigureAwait(false);
+                    try
+                    {
+                        await Locator.SqlService.InitializeAsync().ConfigureAwait(false);
+                        await Locator.BgSqlService.InitializeAsync().ConfigureAwait(false);
+                        await Locator.CollectionService.LoadLibraryAsync().ConfigureAwait(false);
+                        handle.Data.Add("SongCount", Locator.CollectionService.Songs.Count.ToString());
 
-                    Locator.CollectionService.LibraryLoaded += (sender, args) =>
                         DispatcherHelper.RunAsync(() => Locator.Download.LoadDownloads());
+                    }
+                    catch (Exception ex)
+                    {
+                        Insights.Report(ex, "Where", "Booting App Services");
+                        DispatcherHelper.RunAsync(
+                            () => CurtainPrompt.ShowError("AppErrorBooting".FromLanguageResource()));
+                    }
 
-                    await Locator.CollectionService.LoadLibraryAsync().ConfigureAwait(false);
+                    _init = true;
                 }
-                catch (Exception ex)
-                {
-                    EasyTracker.GetTracker().SendException(ex.Message + " " + ex.StackTrace, true);
-                    DispatcherHelper.RunAsync(() => CurtainPrompt.ShowError("AppErrorBooting".FromLanguageResource()));
-                }
-
-                _init = true;
             }
             Locator.AudioPlayerHelper.OnAppActive();
         }
@@ -339,9 +354,14 @@ namespace Audiotica
 
             var result = await md.ShowAsync();
 
-            if (result.Label == rate)
+            if (result != null && result.Label == rate)
             {
+                Insights.Track("Review Reminder", "Accepted", "True");
                 Launcher.LaunchUriAsync(new Uri("ms-windows-store:reviewapp?appid=" + CurrentApp.AppId));
+            }
+            else
+            {
+                Insights.Track("Review Reminder", "Accepted", "False");
             }
         }
     }

@@ -136,24 +136,20 @@ namespace Audiotica.WindowsPhone.Player
             Debug.WriteLine("MyBackgroundAudioTask " + sender.Task.TaskId + " Cancel Requested...");
             try
             {
-                //save state
-                AppSettingsHelper.Write(PlayerConstants.Position,
-                    BackgroundMediaPlayer.Current.Position.ToString());
+                if (_queueManager != null)
+                {
+                    QueueManager.TrackChanged -= playList_TrackChanged;
+                    _queueManager = null;
+                }
+
                 AppSettingsHelper.Write(PlayerConstants.BackgroundTaskState,
                     PlayerConstants.BackgroundTaskCancelled);
-                AppSettingsHelper.Write(PlayerConstants.AppState,
-                    Enum.GetName(typeof (ForegroundAppStatus), _foregroundAppState));
 
                 _backgroundtaskrunning = false;
                 //unsubscribe event handlers
                 _systemmediatransportcontrol.ButtonPressed -= systemmediatransportcontrol_ButtonPressed;
                 _systemmediatransportcontrol.PropertyChanged -= systemmediatransportcontrol_PropertyChanged;
 
-                if (_queueManager != null)
-                {
-                    QueueManager.TrackChanged -= playList_TrackChanged;
-                    _queueManager = null;
-                }
                 BackgroundMediaPlayer.Shutdown(); // shutdown media pipeline
             }
             catch (Exception ex)

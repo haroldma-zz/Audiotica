@@ -9,7 +9,7 @@ Music player powered by LastFM, that uses Vk, YouTube, Soundcloud and other site
 
 ## Requirements
 
-The music library is powered by SQLite.  You'll need [WinRT 8.1](http://visualstudiogallery.msdn.microsoft.com/1d04f82f-2fe9-4727-a2f9-a2db127ddc9a), [WinPRT 8.1](http://visualstudiogallery.msdn.microsoft.com/5d97faf6-39e3-4048-a0bc-adde2af75d1b) and [Windows Ad Mediator](https://visualstudiogallery.msdn.microsoft.com/401703a0-263e-4949-8f0f-738305d6ef4b) installed in your computer.
+Most dependencies are obtained from Nuget and automatically restored on build.  The only external dependency you'll have install is the [Windows Ad Mediator](https://visualstudiogallery.msdn.microsoft.com/401703a0-263e-4949-8f0f-738305d6ef4b) SDK.
 
 ## Building
 

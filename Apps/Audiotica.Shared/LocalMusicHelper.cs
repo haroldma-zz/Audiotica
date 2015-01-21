@@ -78,6 +78,10 @@ namespace Audiotica
             if (!string.IsNullOrEmpty(track.ArtistId))
             {
                 song.Artist = track.ToArtist();
+                if (string.IsNullOrEmpty(song.ArtistName))
+                {
+                    song.ArtistName = song.Artist.Name;
+                }
             }
 
             if (!string.IsNullOrEmpty(track.AlbumId))
@@ -90,13 +94,7 @@ namespace Audiotica
 
         public static async Task<SavingError> SaveTrackAsync(StorageFile file)
         {
-            var audioPath = file.Path.Substring(3)
-                //local path
-                .Replace(@"Data\Users\Public\Music\", "")
-                //external path
-                .Replace(@"Music\", "")
-                //using forward slashes
-                .Replace("\\", "/");
+            var audioPath = file.Path;
 
             if (App.Locator.CollectionService.SongAlreadyExists(audioPath))
             {
@@ -156,7 +154,7 @@ namespace Audiotica
             }
             else
             {
-                track = new LocalSong(tags.Title, tags.JoinedPerformers, tags.Album, tags.FirstAlbumArtist)
+                track = new LocalSong(tags.Title, tags.JoinedPerformers.Replace(";", ","), tags.Album, tags.FirstAlbumArtist)
                 {
                     FilePath = audioPath,
                     Genre = tags.FirstGenre,

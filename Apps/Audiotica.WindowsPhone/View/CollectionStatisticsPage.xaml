@@ -1,0 +1,70 @@
+﻿<audiotica:PageBase
+    x:Class="Audiotica.View.CollectionStatisticsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Audiotica.View"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:audiotica="using:Audiotica"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+    DataContext="{Binding Statistics, Source={StaticResource Locator}}">
+
+    <ScrollViewer Margin="20,35,20,0">
+        <StackPanel>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <TextBlock Text="TIME SPENT LISTENING TO MUSIC" FontSize="35" TextWrapping="Wrap" />
+                <TextBlock Foreground="{StaticResource PhoneAccentBrush}" Grid.Row="1" FontSize="30"
+                           TextWrapping="Wrap">
+                    <Run Text="{Binding TotalHours}" />
+                    <Run Text=" HOURS" />
+                    <LineBreak />
+                    <Run Text="{Binding TotalMinutes}" />
+                    <Run Text=" MINUTES" />
+                </TextBlock>
+            </Grid>
+            <Grid Margin="0,20,0,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <TextBlock Text="COLLECTION SIZE" FontSize="35" TextWrapping="Wrap" />
+                <TextBlock Foreground="{StaticResource PhoneAccentBrush}" Grid.Row="1" FontSize="30"
+                           TextWrapping="Wrap">
+                    <Run Text="{Binding Service.Songs.Count}" />
+                    <Run Text=" SONGS" />
+                    <LineBreak />
+                    <Run Text="{Binding Service.Albums.Count}" />
+                    <Run Text=" ALBUMS" />
+                    <LineBreak />
+                    <Run Text="{Binding Service.Artists.Count}" />
+                    <Run Text=" ARTISTS" />
+                </TextBlock>
+            </Grid>
+            <TextBlock Text="YOUR FAVORITE ARTISTS" FontSize="35" TextWrapping="Wrap" Margin="0,20,0,0" />
+            <ListView ItemsSource="{Binding TopArtists}">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <Grid Height="150" Margin="0,0,0,10" Background="{StaticResource PhoneAccentBrush}">
+                            <Grid>
+                                <Grid.Background>
+                                    <ImageBrush Stretch="UniformToFill" ImageSource="{Binding Artwork}"
+                                    AlignmentY="Top" />
+                                </Grid.Background>
+                            </Grid>
+                            <Grid Background="#BF000000" VerticalAlignment="Bottom">
+                                <TextBlock TextTrimming="CharacterEllipsis" Margin="15,5" FontSize="22"
+                               Text="{Binding Name}" HorizontalAlignment="Left"
+                               VerticalAlignment="Bottom" />
+                            </Grid>
+                        </Grid>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </StackPanel>
+    </ScrollViewer>
+</audiotica:PageBase>

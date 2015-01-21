@@ -8,6 +8,7 @@
     xmlns:audiotica="using:Audiotica"
     xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
     xmlns:core="using:Microsoft.Xaml.Interactions.Core"
+    xmlns:qKit="using:QKit"
     mc:Ignorable="d"
     Name="Page"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
@@ -17,9 +18,10 @@
         <Grid.Background>
             <ImageBrush Opacity=".25" Stretch="UniformToFill" ImageSource="{Binding Artist.Artwork}" />
         </Grid.Background>
-        <Pivot x:Name="ArtistPivot" Title="{Binding Artist.Name, Converter={StaticResource UpperCaseConverter}}" HeaderTemplate="{StaticResource PivotHeaderTemplate}">
+        <Pivot x:Name="ArtistPivot" Title="{Binding Artist.Name, Converter={StaticResource UpperCaseConverter}}" HeaderTemplate="{StaticResource PivotHeaderTemplate}" SelectionChanged="ArtistPivot_SelectionChanged">
             <PivotItem x:Uid="PivotSongs" Header="SONGS">
-                <ListView ShowsScrollingPlaceholders="True" ContainerContentChanging="ItemListView_ContainerContentChanging" IsItemClickEnabled="True" ItemsSource="{Binding Artist.Songs}">
+                <qKit:MultiSelectListView x:Name="SongList" SelectionModeChanged="MultiSelectListView_SelectionModeChanged"
+                                          ContainerContentChanging="ItemListView_ContainerContentChanging" IsItemClickEnabled="True" ItemsSource="{Binding Artist.Songs}" Margin="-20,0,0,0">
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <audiotica:SongViewer />
@@ -30,7 +32,7 @@
                             <core:InvokeCommandAction Command="{Binding SongClickCommand}" />
                         </core:EventTriggerBehavior>
                     </interactivity:Interaction.Behaviors>
-                </ListView>
+                </qKit:MultiSelectListView>
             </PivotItem>
             <PivotItem x:Uid="PivotAlbums" Header="ALBUMS">
                 <ListView ItemsSource="{Binding Artist.Albums}"
@@ -46,29 +48,8 @@
                                 </interactivity:Interaction.Behaviors>
                                 <FlyoutBase.AttachedFlyout>
                                     <MenuFlyout>
-                                        <MenuFlyoutItem x:Uid="MenuItemAddTo" Text="Add to"
-                                                                        CommandParameter="{Binding}"
-                                                                        Command="{Binding DataContext.Commands.AddToClickCommand, ElementName=Page}">
-                                            <interactivity:Interaction.Behaviors>
-                                                <core:EventTriggerBehavior EventName="Click">
-                                                    <audiotica:ShowFlyoutAction />
-                                                </core:EventTriggerBehavior>
-                                            </interactivity:Interaction.Behaviors>
-                                            <FlyoutBase.AttachedFlyout>
-                                                <ListPickerFlyout x:Name="Picker"
-                                                                                  DisplayMemberPath="Name"
-                                                                                  ItemsSource="{Binding AddableTo}">
-                                                    <interactivity:Interaction.Behaviors>
-                                                        <core:EventTriggerBehavior
-                                                                            EventName="ItemsPicked">
-                                                            <core:InvokeCommandAction
-                                                                                Command="{Binding DataContext.Commands.ItemPickedCommand, ElementName=Page}"
-                                                                                CommandParameter="{Binding SelectedItem, ElementName=Picker}" />
-                                                        </core:EventTriggerBehavior>
-                                                    </interactivity:Interaction.Behaviors>
-                                                </ListPickerFlyout>
-                                            </FlyoutBase.AttachedFlyout>
-                                        </MenuFlyoutItem>
+                                        <MenuFlyoutItem Text="Add to Queue..." Command="{Binding DataContext.Commands.AddToQueueCommand, ElementName=Page}" CommandParameter="{Binding}" />
+                                        <MenuFlyoutItem Text="Add to Playlist..." Command="{Binding DataContext.Commands.AddToPlaylistCommand, ElementName=Page}" CommandParameter="{Binding}" />
                                         <MenuFlyoutItem x:Uid="MenuItemDelete" Text="Delete" Foreground="Red"
                                                         Command="{Binding DataContext.Commands.DeleteClickCommand, ElementName=Page}"
                                                         CommandParameter="{Binding}" />

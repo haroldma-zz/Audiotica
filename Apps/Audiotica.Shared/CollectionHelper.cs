@@ -6,16 +6,20 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Windows.Phone.UI.Input;
 using Windows.Storage;
 using Windows.UI.StartScreen;
-using Windows.UI.Xaml;
 using Windows.UI.Xaml.Media.Imaging;
+using Audiotica.Controls;
 using Audiotica.Core.Common;
 using Audiotica.Core.Utilities;
 using Audiotica.Data.Collection.Model;
+using Audiotica.Data.Collection.SqlHelper;
 using Audiotica.Data.Spotify.Models;
+using Audiotica.View;
 using GalaSoft.MvvmLight.Threading;
 using IF.Lastfm.Core.Objects;
+using Xamarin;
 
 #endregion
 
@@ -29,41 +33,382 @@ namespace Audiotica
         public static List<long> LastfmSavingAlbums = new List<long>();
         private static bool _currentlyPreparing;
 
+        public static async Task DeleteEntryAsync(BaseEntry item, bool showSuccessMessage = true)
+        {
+            var name = "unknown";
+
+            try
+            {
+                if (item is Song)
+                {
+                    var song = item as Song;
+                    name = song.Name;
+
+                    var playbackQueue = App.Locator.CollectionService.PlaybackQueue;
+                    var queue = playbackQueue.FirstOrDefault(p => p.SongId == song.Id);
+
+                    if (queue != null)
+                    {
+                        if (playbackQueue.Count == 1)
+                            await App.Locator.AudioPlayerHelper.ShutdownPlayerAsync();
+                        else
+                            App.Locator.AudioPlayerHelper.NextSong();
+                    }
+
+                    await App.Locator.CollectionService.DeleteSongAsync(song);
+                    ExitIfAlbumEmpty(song.Album);
+                }
+
+                else if (item is Playlist)
+                {
+                    var playlist = item as Playlist;
+                    name = playlist.Name;
+
+                    await App.Locator.CollectionService.DeletePlaylistAsync(playlist);
+                }
+
+                else if (item is Artist)
+                {
+                    var artist = item as Artist;
+                    name = artist.Name;
+
+                    App.Locator.CollectionService.Artists.Remove(artist);
+
+                    var artistSongs = artist.Songs.ToList();
+                    var taskList = new List<Task>();
+
+                    foreach (var song in artistSongs)
+                    {
+                        var playbackQueue = App.Locator.CollectionService.PlaybackQueue;
+                        var queue = playbackQueue.FirstOrDefault(p => p.SongId == song.Id);
+
+                        if (queue != null)
+                        {
+                            if (playbackQueue.Count == 1)
+                                await App.Locator.AudioPlayerHelper.ShutdownPlayerAsync();
+                            else
+                                App.Locator.AudioPlayerHelper.NextSong();
+                        }
+
+                        taskList.Add(App.Locator.CollectionService.DeleteSongAsync(song));
+                    }
+
+                    ExitIfArtistEmpty(artist);
+                }
+
+                else if (item is Album)
+                {
+                    var album = item as Album;
+                    name = album.Name;
+
+                    App.Locator.CollectionService.Albums.Remove(album);
+
+                    var albumSongs = album.Songs.ToList();
+                    var taskList = new List<Task>();
+
+                    foreach (var song in albumSongs)
+                    {
+                        var playbackQueue = App.Locator.CollectionService.PlaybackQueue;
+                        var queue = playbackQueue.FirstOrDefault(p => p.SongId == song.Id);
+
+                        if (queue != null)
+                        {
+                            if (playbackQueue.Count == 1)
+                                await App.Locator.AudioPlayerHelper.ShutdownPlayerAsync();
+                            else
+                                App.Locator.AudioPlayerHelper.NextSong();
+                        }
+
+                        taskList.Add(App.Locator.CollectionService.DeleteSongAsync(song));
+                    }
+
+                    ExitIfAlbumEmpty(album);
+                }
+
+                if (showSuccessMessage)
+                    CurtainPrompt.Show("EntryDeletingSuccess".FromLanguageResource(), name);
+            }
+            catch
+            {
+                CurtainPrompt.ShowError("EntryDeletingError".FromLanguageResource(), name);
+            }
+        }
+
+        public static async Task MigrateAsync()
+        {
+            var songs = App.Locator.CollectionService.Songs.Where(p => p.SongState == SongState.Downloaded).ToList();
+            var importedSongs = App.Locator.CollectionService.Songs.Where(p =>
+                p.SongState == SongState.Local && !p.AudioUrl.Substring(1).StartsWith(":")).ToList();
+            var songsFolder = await StorageHelper.GetFolderAsync("songs");
+
+            if (songs.Count != 0 && songsFolder != null)
+            {
+                using (var handler = Insights.TrackTime("Migrate Downloads To Phone"))
+                {
+                    App.Locator.SqlService.DbConnection.BeginTransaction();
+
+                    UiBlockerUtility.Block("Migrating downloaded songs to phone...");
+                    foreach (var song in songs)
+                    {
+                        try
+                        {
+                            var path = "Audiotica/" + 
+                                song.Album.PrimaryArtist.Name.CleanForFileName() + "/" + 
+                                song.Album.Name.CleanForFileName();
+                            var filename = string.Format("{0}.mp3", song.Name.CleanForFileName());
+
+                            if (song.ArtistName != song.Album.PrimaryArtist.Name)
+                                filename = song.ArtistName.CleanForFileName() + "-" + filename;
+
+                            var file = await StorageHelper.GetFileAsync(string.Format("songs/{0}.mp3", song.Id));
+
+                            var folder = await StorageHelper.EnsureFolderExistsAsync(path, KnownFolders.MusicLibrary);
+                            await file.MoveAsync(folder, filename, NameCollisionOption.ReplaceExisting);
+
+                            song.AudioUrl = Path.Combine(folder.Path, filename);
+                            await App.Locator.SqlService.UpdateItemAsync(song);
+                        }
+                        catch (Exception e)
+                        {
+                            Insights.Report(e, new Dictionary<string, string>
+                            {
+                                {"Where", "Migrating Download"},
+                                {"SongName", song.Name},
+                                {"SongProviderId", song.ProviderId},
+                                {"SongAudioUrl", song.AudioUrl}
+                            });
+                        }
+                    }
+                    handler.Data.Add("TotalCount", songs.Count.ToString());
+                    App.Locator.SqlService.DbConnection.Commit();
+                }
+            }
+
+            if (importedSongs.Count > 0)
+            {
+                using (var handler = Insights.TrackTime("Migrate Outdated Imports"))
+                {
+                    UiBlockerUtility.Block("Deleting outdated song imports...");
+                    App.Locator.SqlService.DbConnection.BeginTransaction();
+                    foreach (var song in importedSongs)
+                    {
+                        try
+                        {
+                            await App.Locator.CollectionService.DeleteSongAsync(song);
+                        }
+                        catch (Exception e)
+                        {
+                            Insights.Report(e, new Dictionary<string, string>
+                            {
+                                {"Where", "Migrating Outdated Import"},
+                                {"SongName", song.Name},
+                                {"SongProviderId", song.ProviderId},
+                                {"SongAudioUrl", song.AudioUrl}
+                            });
+                        }
+                    }
+                    handler.Data.Add("TotalCount", importedSongs.Count.ToString());
+                    App.Locator.SqlService.DbConnection.Commit();
+                }
+            }
+
+            UiBlockerUtility.Unblock();
+
+            if (songsFolder != null)
+                await songsFolder.DeleteAsync();
+
+            if (importedSongs.Count > 0)
+            {
+                CurtainPrompt.Show("You'll need to re-scan, since some imported songs were outdated.");
+            }
+        }
+
+        public static async Task<bool> PinToggleAsync(Artist artist)
+        {
+            bool created;
+            var id = "artist." + artist.Id;
+
+            if (!SecondaryTile.Exists(id))
+            {
+                Insights.Track("Pin To Start", new Dictionary<string, string>
+                {
+                    {"DisplayName", artist.Name},
+                    {"ProviderId", artist.ProviderId},
+                    {"Type", "Artist"}
+                });
+                created = await CreatePin(id, artist.Name, "artists/" + artist.Id,
+                    string.Format(CollectionConstant.ArtistsArtworkPath, artist.Id));
+            }
+            else
+            {
+                var secondaryTile = new SecondaryTile(id);
+                created = !await secondaryTile.RequestDeleteAsync();
+            }
+
+            return created;
+        }
+
+        public static async Task<bool> PinToggleAsync(Album album)
+        {
+            bool created;
+            var id = "album." + album.Id;
+
+            if (!SecondaryTile.Exists(id))
+            {
+                Insights.Track("Pin To Start", new Dictionary<string, string>
+                {
+                    {"DisplayName", album.Name},
+                    {"ProviderId", album.ProviderId},
+                    {"Type", "Album"}
+                });
+                created = await CreatePin(id, album.Name, "albums/" + album.Id,
+                    string.Format(CollectionConstant.ArtworkPath, album.Id));
+            }
+            else
+            {
+                var secondaryTile = new SecondaryTile(id);
+                created = !await secondaryTile.RequestDeleteAsync();
+            }
+
+            return created;
+        }
+
+        private static async Task<bool> CreatePin(string id, string displayName, string arguments, string artwork)
+        {
+            var tileActivationArguments = arguments;
+            var image =
+                new Uri(CollectionConstant.LocalStorageAppPath + artwork);
+
+            var secondaryTile = new SecondaryTile(id,
+                displayName,
+                tileActivationArguments,
+                image,
+                TileSize.Square150x150)
+            {
+                ShortName = displayName
+            };
+            secondaryTile.VisualElements.ShowNameOnSquare150x150Logo = true;
+
+            return await secondaryTile.RequestCreateAsync();
+        }
+
         #region Saving
 
-        public static async Task SaveTrackAsync(ChartTrack chartTrack)
+        public static async Task<SavingError> SaveTrackAsync(ChartTrack chartTrack)
         {
-            CurtainPrompt.Show("SongSavingFindingMp3".FromLanguageResource(), chartTrack.Name);
-            var track = await App.Locator.Spotify.GetTrack(chartTrack.track_id);
-            var album = await App.Locator.Spotify.GetAlbum(track.Album.Id);
+            if (App.Locator.CollectionService.SongAlreadyExists("spotify." + chartTrack.track_id,
+                chartTrack.Name, chartTrack.album_name, chartTrack.ArtistName))
+            {
+                ShowResults(SavingError.AlreadyExists, chartTrack.Name);
+                return SavingError.AlreadyExists;
+            }
+            using (var handle = Insights.TrackTime("Save Song", new Dictionary<string, string>
+            {
+                {"Type", "Spotify"},
+                {"Subtype", "Chart"},
+                {"ProviderId", chartTrack.track_id},
+                {"Name", chartTrack.Name},
+                {"ArtistName", chartTrack.ArtistName}
+            }))
+            {
+                CurtainPrompt.Show("SongSavingFindingMp3".FromLanguageResource(), chartTrack.Name);
+                var track = await App.Locator.Spotify.GetTrack(chartTrack.track_id);
 
-            await SaveTrackAsync(track, album, false);
+                if (track != null)
+                {
+                    var album = await App.Locator.Spotify.GetAlbum(track.Album.Id);
+
+                    var result = await SaveTrackAsync(track, album, false, false);
+
+                    handle.Data.Add("SavingError", result.ToString());
+                    return result;
+                }
+                else
+                {
+                    ShowResults(SavingError.Network, chartTrack.Name);
+                    handle.Data.Add("SavingError", "Network");
+                    return SavingError.Network;
+                }
+            }
         }
 
-        public static async Task SaveTrackAsync(FullTrack track)
+        public static async Task<SavingError> SaveTrackAsync(FullTrack track)
         {
-            CurtainPrompt.Show("SongSavingFindingMp3".FromLanguageResource(), track.Name);
-            var album = await App.Locator.Spotify.GetAlbum(track.Album.Id);
+            if (App.Locator.CollectionService.SongAlreadyExists("spotify." + track.Id,
+                track.Name, track.Album.Name, track.Artist.Name))
+            {
+                ShowResults(SavingError.AlreadyExists, track.Name);
+                return SavingError.AlreadyExists;
+            }
+            using (var handle = Insights.TrackTime("Save Song", new Dictionary<string, string>
+            {
+                {"Type", "Spotify"},
+                {"Subtype", "Full"},
+                {"ProviderId", track.Id},
+                {"Name", track.Name},
+                {"ArtistName", track.Artist.Name}
+            }))
+            {
+                CurtainPrompt.Show("SongSavingFindingMp3".FromLanguageResource(), track.Name);
+                var album = await App.Locator.Spotify.GetAlbum(track.Album.Id);
 
-            await SaveTrackAsync(track, album, false);
+                var result = await SaveTrackAsync(track, album, false, false);
+
+                handle.Data.Add("SavingError", result.ToString());
+                return result;
+            }
         }
 
-        public static async Task SaveTrackAsync(SimpleTrack track, FullAlbum album, bool showFindingMessage = true)
+        public static async Task<SavingError> SaveTrackAsync(SimpleTrack track, FullAlbum album,
+            bool showFindingMessage = true, bool trackTime = true)
         {
+            var handle = Insights.TrackTime("Save Song", new Dictionary<string, string>
+            {
+                {"Type", "Spotify"},
+                {"Subtype", "Simple"},
+                {"ProviderId", track.Id},
+                {"Name", track.Name},
+                {"ArtistName", track.Artist != null ? track.Artist.Name : null}
+            });
+
+            if (trackTime)
+                handle.Start();
+
             if (showFindingMessage)
                 CurtainPrompt.Show("SongSavingFindingMp3".FromLanguageResource(), track.Name);
 
             var result = await _SaveTrackAsync(track, album);
             ShowResults(result, track.Name);
+
+            if (trackTime)
+            {
+                handle.Data.Add("SavingError", result.ToString());
+                handle.Stop();
+            }
+
+            return result;
         }
 
-        public static async Task SaveTrackAsync(LastTrack track, bool showFindingMessage = true)
+        public static async Task<SavingError> SaveTrackAsync(LastTrack track, bool showFindingMessage = true)
         {
-            if (showFindingMessage)
-                CurtainPrompt.Show("SongSavingFindingMp3".FromLanguageResource(), track.Name);
+            using (var handle = Insights.TrackTime("Save Song", new Dictionary<string, string>
+            {
+                {"Type", "LastFM"},
+                {"ProviderId", track.Id},
+                {"Name", track.Name},
+                {"ArtistName", track.ArtistName}
+            }))
+            {
+                if (showFindingMessage)
+                    CurtainPrompt.Show("SongSavingFindingMp3".FromLanguageResource(), track.Name);
 
-            var result = await _SaveTrackAsync(track);
-            ShowResults(result, track.Name);
+                var result = await _SaveTrackAsync(track);
+                ShowResults(result, track.Name);
+
+                handle.Data.Add("SavingError", result.ToString());
+
+                return result;
+            }
         }
 
         public static async Task SaveAlbumAsync(FullAlbum album)
@@ -105,53 +450,69 @@ namespace Audiotica
 
             CurtainPrompt.Show("EntrySaving".FromLanguageResource(), album.Name);
 
-            var index = 0;
-
-            if (!alreadySaved)
+            using (var handler = Insights.TrackTime("Save Album", new Dictionary<string, string>
             {
-                SavingError result;
-                do
+                {"Type", "Spotify"},
+                {"ProviderId", album.Id},
+                {"Name", album.Name},
+                {"AritstName", album.Artist.Name},
+                {"TotalCount", album.Tracks.Items.Count.ToString()}
+            }))
+            {
+                var index = 0;
+
+                if (!alreadySaved)
                 {
-                    //first save one song (to avoid duplicate album creation)
-                    result = await _SaveTrackAsync(album.Tracks.Items[index], album);
-                    index++;
-                } while (result != SavingError.None && index < album.Tracks.Items.Count);
+                    SavingError result;
+                    do
+                    {
+                        //first save one song (to avoid duplicate album creation)
+                        result = await _SaveTrackAsync(album.Tracks.Items[index], album);
+                        index++;
+                    } while (result != SavingError.None && index < album.Tracks.Items.Count);
+                }
+
+                bool success;
+                var missing = false;
+
+                if (album.Tracks.Items.Count > 1)
+                {
+                    App.Locator.SqlService.DbConnection.BeginTransaction();
+                    //save the rest at the rest time
+                    var songs = album.Tracks.Items.Skip(index).Select(track => _SaveTrackAsync(track, album));
+                    var results = await Task.WhenAll(songs);
+
+                    //now wait a split second before showing success message
+                    await Task.Delay(1000);
+
+                    var alreadySavedCount = results.Count(p => p == SavingError.AlreadyExists);
+                    handler.Data.Add("AlreadySaved", alreadySavedCount.ToString());
+
+                    var successCount = results.Count(p => p == SavingError.None || p == SavingError.AlreadyExists
+                                                          || p == SavingError.AlreadySaving);
+                    var missingCount = successCount == 0 ? -1 : album.Tracks.Items.Count - (successCount + index);
+                    success = missingCount == 0;
+                    missing = missingCount > 0;
+
+                    if (missing)
+                    {
+                        handler.Data.Add("MissingCount", missingCount.ToString());
+                        CurtainPrompt.ShowError("AlbumMissingTracks".FromLanguageResource(), missingCount, album.Name);
+                    }
+                    App.Locator.SqlService.DbConnection.Commit();
+                }
+                else
+                    success =
+                        App.Locator.CollectionService.Albums.FirstOrDefault(p => p.ProviderId.Contains(album.Id)) !=
+                        null;
+
+                if (success)
+                    CurtainPrompt.Show("EntrySaved".FromLanguageResource(), album.Name);
+                else if (!missing)
+                    CurtainPrompt.ShowError("EntrySavingError".FromLanguageResource(), album.Name);
+
+                SpotifySavingAlbums.Remove(album.Id);
             }
-
-            bool success;
-            var missing = false;
-
-            if (album.Tracks.Items.Count > 1)
-            {
-                App.Locator.SqlService.DbConnection.BeginTransaction();
-                //save the rest at the rest time
-                var songs = album.Tracks.Items.Skip(index).Select(track => _SaveTrackAsync(track, album));
-                var results = await Task.WhenAll(songs);
-
-                //now wait a split second before showing success message
-                await Task.Delay(1000);
-
-                var successCount = results.Count(p => p == SavingError.None || p == SavingError.AlreadyExists
-                                                      || p == SavingError.AlreadySaving);
-                var missingCount = successCount == 0 ? -1 : album.Tracks.Items.Count - (successCount + index);
-                success = missingCount == 0;
-                missing = missingCount > 0;
-
-                if (missing)
-                    CurtainPrompt.ShowError("AlbumMissingTracks".FromLanguageResource(), missingCount, album.Name);
-                App.Locator.SqlService.DbConnection.Commit();
-            }
-            else
-                success = App.Locator.CollectionService.Albums.FirstOrDefault(p => p.ProviderId.Contains(album.Id)) !=
-                          null;
-
-            if (success)
-                CurtainPrompt.Show("EntrySaved".FromLanguageResource(), album.Name);
-            else if (!missing)
-                CurtainPrompt.ShowError("EntrySavingError".FromLanguageResource(), album.Name);
-
-
-            SpotifySavingAlbums.Remove(album.Id);
         }
 
         public static async Task DownloadArtistsArtworkAsync(bool missingOnly = true)
@@ -169,7 +530,6 @@ namespace Audiotica
                 //don't want to retry getting this pic while we're downloading it
                 var hadArtwork = artist.HasArtwork;
                 artist.HasArtwork = true;
-
 
                 try
                 {
@@ -224,17 +584,17 @@ namespace Audiotica
         private const int MaxMassPlayQueueCount = 100;
         public const double MaxPlayQueueCount = 2000;
 
-        public static async Task PlaySongsAsync(List<Song> songs, bool random = false)
+        public static async Task PlaySongsAsync(List<Song> songs, bool random = false, bool forceClear = false)
         {
             if (songs.Count == 0) return;
 
             var index = random ? (songs.Count == 1 ? 0 : new Random().Next(0, songs.Count - 1)) : 0;
             var song = songs[index];
 
-            await PlaySongsAsync(song, songs);
+            await PlaySongsAsync(song, songs, forceClear);
         }
 
-        public static async Task PlaySongsAsync(Song song, List<Song> songs)
+        public static async Task PlaySongsAsync(Song song, List<Song> songs, bool forceClear = false)
         {
             if (song == null || songs == null || songs.Count == 0) return;
 
@@ -249,19 +609,19 @@ namespace Audiotica
 
             var playbackQueue = App.Locator.CollectionService.PlaybackQueue.ToList();
 
-            var sameLength = _currentlyPreparing || songs.Count == playbackQueue.Count ||
-                             playbackQueue.Count == MaxMassPlayQueueCount;
+            var sameLength = _currentlyPreparing || songs.Count < playbackQueue.Count ||
+                             playbackQueue.Count >= MaxMassPlayQueueCount;
             var containsSong = playbackQueue.FirstOrDefault(p => p.SongId == song.Id) != null;
-            var createQueue = !sameLength
-                              || !containsSong;
+            var createQueue = forceClear || (!sameLength
+                                             || !containsSong);
 
             if (_currentlyPreparing && createQueue)
             {
                 //cancel the previous
                 _currentlyPreparing = false;
 
-                //split second for it to stop
-                await Task.Delay(500);
+                //wait for it to stop
+                await Task.Delay(50);
             }
 
             if (!createQueue)
@@ -271,71 +631,167 @@ namespace Audiotica
 
             else
             {
-                _currentlyPreparing = true;
-
-                await App.Locator.CollectionService.ClearQueueAsync().ConfigureAwait(false);
-                var queueSong = await App.Locator.CollectionService.AddToQueueAsync(song).ConfigureAwait(false);
-                App.Locator.AudioPlayerHelper.PlaySong(queueSong);
-
-                await Task.Delay(500).ConfigureAwait(false);
-
-                if (!_currentlyPreparing)
-                    return;
-
-                App.Locator.SqlService.DbConnection.BeginTransaction();
-                for (var index = 1; index < ordered.Count; index++)
+                using (Insights.TrackTime("Create Queue", "Count", ordered.Count.ToString()))
                 {
-                    if (!_currentlyPreparing)
-                        break;
-                    var s = ordered[index];
-                    await App.Locator.CollectionService.AddToQueueAsync(s).ConfigureAwait(false);
+                    _currentlyPreparing = true;
+
+                    await App.Locator.CollectionService.ClearQueueAsync().ConfigureAwait(false);
+                    var queueSong = await App.Locator.CollectionService.AddToQueueAsync(song).ConfigureAwait(false);
+                    App.Locator.AudioPlayerHelper.PlaySong(queueSong);
+
+                    App.Locator.SqlService.DbConnection.BeginTransaction();
+                    for (var index = 1; index < ordered.Count; index++)
+                    {
+                        if (!_currentlyPreparing)
+                            break;
+                        var s = ordered[index];
+                        await App.Locator.CollectionService.AddToQueueAsync(s).ConfigureAwait(false);
+                    }
+                    App.Locator.SqlService.DbConnection.Commit();
+
+                    _currentlyPreparing = false;
+                }
+            }
+        }
+
+        public static void AddToPlaylistDialog(List<Song> songs)
+        {
+            UiBlockerUtility.BlockNavigation();
+            var picker = new PlaylistPicker(songs)
+            {
+                Action = async playlist =>
+                {
+                    App.SupressBackEvent -= AppOnSupressBackEvent;
+                    UiBlockerUtility.Unblock();
+                    ModalSheetUtility.Hide();
+                    for (var i = 0; i < songs.Count; i++)
+                    {
+                        var song = songs[i];
+
+                        //only add if is not there already
+                        if (playlist.Songs.FirstOrDefault(p => p.SongId == song.Id) == null)
+                            await App.Locator.CollectionService.AddToPlaylistAsync(playlist, song).ConfigureAwait(false);
+
+                        if (App.Locator.Player.CurrentQueue != null || !App.Locator.Settings.AddToInsert) continue;
+
+                        songs.RemoveAt(0);
+                        songs.Reverse();
+                        songs.Insert(0, song);
+                    }
+                }
+            };
+
+            App.SupressBackEvent += AppOnSupressBackEvent;
+            ModalSheetUtility.Show(picker);
+        }
+
+        private static void AppOnSupressBackEvent(object sender, BackPressedEventArgs backPressedEventArgs)
+        {
+            App.SupressBackEvent -= AppOnSupressBackEvent;
+            UiBlockerUtility.Unblock();
+            ModalSheetUtility.Hide();
+        }
+
+        public static async Task AddToQueueAsync(List<Song> songs, bool ignoreInsertMode = false)
+        {
+            using (var handle = Insights.TrackTime("AddListToQueue", "Count", songs.Count.ToString()))
+            {
+                App.Locator.SqlService.DbConnection.BeginTransaction();
+                for (var i = 0; i < songs.Count; i++)
+                {
+                    var song = songs[i];
+                    var playIfNotActive = i == (App.Locator.Settings.AddToInsert
+                                                && App.Locator.Player.CurrentQueue != null
+                        ? songs.Count - 1
+                        : 0);
+
+                    //the last song insert it into the shuffle list (the others shuffle them around)
+                    await AddToQueueAsync(song, i == songs.Count - 1,
+                        playIfNotActive, i == 0, ignoreInsertMode).ConfigureAwait(false);
                 }
                 App.Locator.SqlService.DbConnection.Commit();
+                handle.Data.Add("FinalCount", App.Locator.CollectionService.PlaybackQueue.Count.ToString());
+            }
 
-                _currentlyPreparing = false;
+            var overflow = App.Locator.CollectionService.CurrentPlaybackQueue.Count - MaxPlayQueueCount;
+            if (overflow > 0)
+            {
+                for (var i = 0; i < overflow; i++)
+                {
+                    var queueToRemove = App.Locator.CollectionService.CurrentPlaybackQueue.FirstOrDefault();
+                    if (queueToRemove == App.Locator.Player.CurrentQueue)
+                        queueToRemove =
+                            App.Locator.CollectionService.CurrentPlaybackQueue[1];
+
+                    await App.Locator.CollectionService.DeleteFromQueueAsync(queueToRemove).ConfigureAwait(false);
+                }
             }
         }
 
         public static async Task AddToQueueAsync(Song song, bool shuffleInsert = true, bool playIfNotActive = true,
-            bool clearIfNotActive = true)
+            bool clearIfNotActive = true, bool ignoreInsertMode = false)
         {
-            if (_currentlyPreparing)
+            QueueSong queueSong;
+            using (var handle = Insights.TrackTime("Add Song To Queue"))
             {
-                CurtainPrompt.ShowError("GenericTryAgain".FromLanguageResource());
-                return;
-            }
+                if (_currentlyPreparing)
+                {
+                    CurtainPrompt.ShowError("GenericTryAgain".FromLanguageResource());
+                    return;
+                }
 
-            if (!App.Locator.Player.IsPlayerActive && clearIfNotActive)
-                await App.Locator.CollectionService.ClearQueueAsync();
+                if (!App.Locator.Player.IsPlayerActive && clearIfNotActive)
+                    await App.Locator.CollectionService.ClearQueueAsync();
+
+                var insert = AppSettingsHelper.Read("AddToInsert", true, SettingsStrategy.Roaming) && !ignoreInsertMode;
+
+                queueSong = await App.Locator.CollectionService.AddToQueueAsync(song,
+                    insert ? App.Locator.Player.CurrentQueue : null, shuffleInsert).ConfigureAwait(false);
+
+                if (!App.Locator.Player.IsPlayerActive && playIfNotActive)
+                {
+                    App.Locator.AudioPlayerHelper.PlaySong(queueSong);
+                    DispatcherHelper.RunAsync(() => App.Locator.Player.CurrentQueue = queueSong);
+                }
+                handle.Data.Add("FinalCount", App.Locator.CollectionService.PlaybackQueue.Count.ToString());
+            }
 
             var overflow = App.Locator.CollectionService.CurrentPlaybackQueue.Count - MaxPlayQueueCount;
             if (overflow > 0)
+            {
                 for (var i = 0; i < overflow; i++)
                 {
-                    var queueToRemove = App.Locator.CollectionService.CurrentPlaybackQueue.LastOrDefault();
-                    if (queueToRemove == App.Locator.Player.CurrentQueue)
+                    var queueToRemove = App.Locator.CollectionService.CurrentPlaybackQueue.FirstOrDefault();
+                    if (queueToRemove == App.Locator.Player.CurrentQueue
+                        || queueToRemove == queueSong)
                         queueToRemove =
-                            App.Locator.CollectionService.CurrentPlaybackQueue[
-                                App.Locator.CollectionService.CurrentPlaybackQueue.Count - 2];
+                            App.Locator.CollectionService.CurrentPlaybackQueue[1];
 
                     await App.Locator.CollectionService.DeleteFromQueueAsync(queueToRemove).ConfigureAwait(false);
                 }
-
-            var insert = AppSettingsHelper.Read("AddToInsert", true, SettingsStrategy.Roaming);
-
-            var queueSong = await App.Locator.CollectionService.AddToQueueAsync(song,
-                insert ? App.Locator.Player.CurrentQueue : null, shuffleInsert).ConfigureAwait(false);
-
-            if (!App.Locator.Player.IsPlayerActive && playIfNotActive)
-            {
-                App.Locator.AudioPlayerHelper.PlaySong(queueSong);
-                DispatcherHelper.RunAsync(() => App.Locator.Player.CurrentQueue = queueSong);
             }
         }
 
         #endregion
 
         #region Heper methods
+
+        private static void ExitIfArtistEmpty(Artist artist)
+        {
+            if (App.Navigator.CurrentPage is CollectionArtistPage && artist.Songs.Count == 0)
+            {
+                App.Navigator.GoBack();
+            }
+        }
+
+        private static void ExitIfAlbumEmpty(Album album)
+        {
+            if (App.Navigator.CurrentPage is CollectionAlbumPage && album.Songs.Count == 0)
+            {
+                App.Navigator.GoBack();
+            }
+            ExitIfArtistEmpty(album.PrimaryArtist);
+        }
 
         private static void ShowResults(SavingError result, string trackName)
         {
@@ -434,62 +890,5 @@ namespace Audiotica
         }
 
         #endregion
-
-        public static async Task<bool> PinToggleAsync(Artist artist)
-        {
-            bool created;
-            var id = "artist." + artist.Id;
-
-            if (!SecondaryTile.Exists(id))
-            {
-                created = await CreatePin(id, artist.Name, "artists/" + artist.Id,
-                    string.Format(CollectionConstant.ArtistsArtworkPath, artist.Id));
-            }
-            else
-            {
-                var secondaryTile = new SecondaryTile(id);
-                created = !await secondaryTile.RequestDeleteAsync();
-            }
-
-            return created;
-        }
-
-        public static async Task<bool> PinToggleAsync(Album album)
-        {
-            bool created;
-            var id = "album." + album.Id;
-
-            if (!SecondaryTile.Exists(id))
-            {
-                created = await CreatePin(id, album.Name, "albums/" + album.Id,
-                    string.Format(CollectionConstant.ArtworkPath, album.Id));
-            }
-            else
-            {
-                var secondaryTile = new SecondaryTile(id);
-                created = !await secondaryTile.RequestDeleteAsync();
-            }
-
-            return created;
-        }
-
-        private static async Task<bool> CreatePin(string id, string displayName, string arguments, string artwork)
-        {
-            var tileActivationArguments = arguments;
-            var image =
-                new Uri(CollectionConstant.LocalStorageAppPath + artwork);
-
-            var secondaryTile = new SecondaryTile(id,
-                displayName,
-                tileActivationArguments,
-                image,
-                TileSize.Square150x150)
-            {
-                ShortName = displayName
-            };
-            secondaryTile.VisualElements.ShowNameOnSquare150x150Logo = true;
-
-            return await secondaryTile.RequestCreateAsync();
-        }
     }
 }

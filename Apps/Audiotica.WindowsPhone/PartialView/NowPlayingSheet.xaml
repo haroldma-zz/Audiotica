@@ -306,25 +306,30 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
-                    <Border Background="White" BorderThickness="4" BorderBrush="White" HorizontalAlignment="Left"
-                            VerticalAlignment="Top">
+                    <Grid HorizontalAlignment="Center">
                         <Image VerticalAlignment="Top"
-                               HorizontalAlignment="Left"
-                               Width="200"
-                               Height="200"
-                               Stretch="UniformToFill"
-                               Source="{Binding CurrentQueue.Song.Album.Artwork}" />
-                    </Border>
-                    <StackPanel Grid.Row="1" Margin="0,10,0,0">
-                        <TextBlock FontSize="30" Text="{Binding CurrentQueue.Song.Name}" />
-                        <TextBlock FontSize="24" Text="{Binding CurrentQueue.Song.Artist.Name}" FontWeight="Thin" Foreground="#89FFFFFF"
-                                   TextTrimming="CharacterEllipsis" TextWrapping="Wrap"/>
-                        <TextBlock FontSize="24" Text="{Binding CurrentQueue.Song.Album.Name}" FontWeight="Thin" Foreground="#89FFFFFF"
-                                   TextTrimming="CharacterEllipsis" TextWrapping="Wrap"/>
-                    </StackPanel>
+                                   HorizontalAlignment="Left"
+                                   Stretch="UniformToFill"
+                                   Source="{Binding CurrentQueue.Song.Album.Artwork}" Height="370" Width="370" />
+                        <Grid VerticalAlignment="Bottom" Background="#7F000000">
+                            <StackPanel Margin="20">
+                                <TextBlock FontSize="30" Text="{Binding CurrentQueue.Song.Name}" TextTrimming="CharacterEllipsis" />
+                                <TextBlock FontSize="24" FontWeight="Thin" Foreground="#89FFFFFF"
+                                   TextTrimming="CharacterEllipsis" TextWrapping="Wrap">
+                                    <Run Text="by " />
+                                    <Run Text="{Binding CurrentQueue.Song.Artist.Name}" />
+                                </TextBlock>
+                                <TextBlock FontSize="24" FontWeight="Thin" Foreground="#89FFFFFF"
+                                   TextTrimming="CharacterEllipsis" TextWrapping="Wrap">
+                                    <Run Text="on " />
+                                    <Run Text="{Binding CurrentQueue.Song.Album.Name}" />
+                                </TextBlock>
+                            </StackPanel>
+                        </Grid>
+                    </Grid>
                     <StackPanel Grid.Row="3" Orientation="Horizontal" Margin="0,0,0,25">
                         <AppBarButton Command="{Binding PrevRelayCommand}" Icon="Previous" IsCompact="True" VerticalAlignment="Center" />
-                        <AppBarButton Command="{Binding PlayPauseRelayCommand}" IsCompact="True" Margin="20,0" RenderTransformOrigin="0.5,0.5">
+                        <AppBarButton Command="{Binding PlayPauseRelayCommand}" IsCompact="True" Margin="20,0" RenderTransformOrigin="0.5,0.5" FontFamily="Global User Interface">
                             <AppBarButton.RenderTransform>
                                 <CompositeTransform ScaleX="2" ScaleY="2"/>
                             </AppBarButton.RenderTransform>
@@ -334,14 +339,15 @@
                         </AppBarButton>
                         <AppBarButton Command="{Binding NextRelayCommand}" Icon="Next" IsCompact="True" VerticalAlignment="Center" />
                     </StackPanel>
-                    <Grid Grid.Row="2" Margin="0,20,0,0">
-                        <TextBlock Text="{Binding Position, Converter={StaticResource TimespanToStringConverter}}" />
-                        <TextBlock HorizontalAlignment="Right" Text="{Binding Duration, Converter={StaticResource TimespanToStringConverter}}" />
-                    </Grid>
+                    <TextBlock Grid.Row="2" HorizontalAlignment="Right" Margin="0,5,0,0">
+                        <Run Text="{Binding Position, Converter={StaticResource TimespanToStringConverter}}"/>
+                        <Run Text=" / "/>
+                        <Run Text="{Binding Duration, Converter={StaticResource TimespanToStringConverter}}"/>
+                    </TextBlock>
                     <Slider Grid.Row="2" Value="{Binding Position, Converter={StaticResource TimespanToDoubleConverter}, Mode=TwoWay}"
                     IsEnabled="{Binding IsLoading, Converter={StaticResource BoolToOppositeConverter}}"
                     Maximum="{Binding Duration, Converter={StaticResource TimespanToDoubleConverter}, Mode=TwoWay}" VerticalAlignment="Top" 
-                    ManipulationMode="TranslateX" ManipulationStarted="Slider_ManipulationStarted" ManipulationCompleted="Slider_ManipulationCompleted" Margin="0,20,0,0" ValueChanged="Slider_ValueChanged"/>
+                    ManipulationMode="TranslateX" ManipulationStarted="Slider_ManipulationStarted" ManipulationCompleted="Slider_ManipulationCompleted" Margin="0,5,0,0" ValueChanged="Slider_ValueChanged"/>
                     <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="5,0">
                         <AppBarToggleButton IsChecked="{Binding IsShuffle, Mode=TwoWay}" Icon="Shuffle" IsCompact="True" />
                         <AppBarToggleButton IsChecked="{Binding IsRepeat, Mode=TwoWay}" Icon="RepeatAll" IsCompact="True" />
