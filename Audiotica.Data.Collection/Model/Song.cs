@@ -81,6 +81,8 @@ namespace Audiotica.Data.Collection.Model
             }
         }
 
+        public Guid DownloadGuid { get; set; }
+
         [Ignore]
         public ObservableCollection<AddableCollectionItem> AddableTo { get; set; }
     }

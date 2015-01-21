@@ -63,14 +63,14 @@ namespace Audiotica
 
             foreach (var download in downloads)
             {
-                //Get the absolute uri from the results file
-                var path = Path.Combine(download.ResultFile.Path, download.ResultFile.Name);
-
                 //With the uri get the song
-                var songEntry = _service.Songs.First(p => p.AudioUrl == path);
+                var songEntry = _service.Songs.FirstOrDefault(p => p.DownloadGuid == download.Guid);
 
-                Debug.WriteLine("Handling downoad for {0}", songEntry.Name);
-                HandleDownload(songEntry, download, false);
+                if (songEntry != null)
+                {
+                    Debug.WriteLine("Handling downoad for {0}", songEntry.Name);
+                    HandleDownload(songEntry, download, false);
+                }
             }
         }
 
@@ -160,6 +160,7 @@ namespace Audiotica
 
             song.AudioUrl = song.Download.DownloadOperation.ResultFile.Path;
             song.SongState = SongState.Downloaded;
+            song.DownloadGuid = Guid.Empty;
             await _sqlService.UpdateItemAsync(song);
         }
 
@@ -253,7 +254,6 @@ namespace Audiotica
         {
             song.SongState = SongState.Downloading;
 
-            await _sqlService.UpdateItemAsync(song).ConfigureAwait(false);
             try
             {
                 var path = "Audiotica/" +
@@ -272,7 +272,9 @@ namespace Audiotica
                 var downloader = new BackgroundDownloader();
                 var download = downloader.CreateDownload(new Uri(song.AudioUrl), destinationFile);
                 download.Priority = BackgroundTransferPriority.Default;
+                song.DownloadGuid = download.Guid;
 
+                await _sqlService.UpdateItemAsync(song).ConfigureAwait(false);
                 _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => HandleDownload(song, download, true));
             }
             catch (Exception e)
