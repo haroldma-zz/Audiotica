@@ -306,11 +306,11 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
-                    <Grid>
+                    <Grid HorizontalAlignment="Center">
                         <Image VerticalAlignment="Top"
                                    HorizontalAlignment="Left"
                                    Stretch="UniformToFill"
-                                   Source="{Binding CurrentQueue.Song.Album.Artwork}" />
+                                   Source="{Binding CurrentQueue.Song.Album.Artwork}" Height="370" Width="370" />
                         <Grid VerticalAlignment="Bottom" Background="#7F000000">
                             <StackPanel Margin="20">
                                 <TextBlock FontSize="30" Text="{Binding CurrentQueue.Song.Name}" TextTrimming="CharacterEllipsis" />
@@ -339,14 +339,15 @@
                         </AppBarButton>
                         <AppBarButton Command="{Binding NextRelayCommand}" Icon="Next" IsCompact="True" VerticalAlignment="Center" />
                     </StackPanel>
-                    <Grid Grid.Row="2" Margin="0,20,0,0">
-                        <TextBlock Text="{Binding Position, Converter={StaticResource TimespanToStringConverter}}" />
-                        <TextBlock HorizontalAlignment="Right" Text="{Binding Duration, Converter={StaticResource TimespanToStringConverter}}" />
-                    </Grid>
+                    <TextBlock Grid.Row="2" HorizontalAlignment="Right" Margin="0,5,0,0">
+                        <Run Text="{Binding Position, Converter={StaticResource TimespanToStringConverter}}"/>
+                        <Run Text=" / "/>
+                        <Run Text="{Binding Duration, Converter={StaticResource TimespanToStringConverter}}"/>
+                    </TextBlock>
                     <Slider Grid.Row="2" Value="{Binding Position, Converter={StaticResource TimespanToDoubleConverter}, Mode=TwoWay}"
                     IsEnabled="{Binding IsLoading, Converter={StaticResource BoolToOppositeConverter}}"
                     Maximum="{Binding Duration, Converter={StaticResource TimespanToDoubleConverter}, Mode=TwoWay}" VerticalAlignment="Top" 
-                    ManipulationMode="TranslateX" ManipulationStarted="Slider_ManipulationStarted" ManipulationCompleted="Slider_ManipulationCompleted" Margin="0,20,0,0" ValueChanged="Slider_ValueChanged"/>
+                    ManipulationMode="TranslateX" ManipulationStarted="Slider_ManipulationStarted" ManipulationCompleted="Slider_ManipulationCompleted" Margin="0,5,0,0" ValueChanged="Slider_ValueChanged"/>
                     <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="5,0">
                         <AppBarToggleButton IsChecked="{Binding IsShuffle, Mode=TwoWay}" Icon="Shuffle" IsCompact="True" />
                         <AppBarToggleButton IsChecked="{Binding IsRepeat, Mode=TwoWay}" Icon="RepeatAll" IsCompact="True" />
