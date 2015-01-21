@@ -88,6 +88,12 @@ namespace Audiotica.View.Setting
 
         private void BackupButton_Click(object sender, RoutedEventArgs e)
         {
+            if (App.Locator.Download.ActiveDownloads.Count > 0)
+            {
+                CurtainPrompt.ShowError("Can't do a backup while there are active downloads.");
+                return;
+            }
+
             var savePicker = new FileSavePicker
             {
                 SuggestedStartLocation = PickerLocationId.DocumentsLibrary
@@ -102,6 +108,12 @@ namespace Audiotica.View.Setting
 
         private async void RestoreButton_Click(object sender, RoutedEventArgs e)
         {
+            if (App.Locator.Download.ActiveDownloads.Count > 0)
+            {
+                CurtainPrompt.ShowError("Can't do a restore while there are active downloads.");
+                return;
+            }
+
             if (await MessageBox.ShowAsync("This will delete all your pre-existing data.", "Continue with Restore?",
                 MessageBoxButton.YesNo) != MessageBoxResult.Yes) return;
 
@@ -112,6 +124,12 @@ namespace Audiotica.View.Setting
 
         private async void ResetButton_Click(object sender, RoutedEventArgs e)
         {
+            if (App.Locator.Download.ActiveDownloads.Count > 0)
+            {
+                CurtainPrompt.ShowError("Can't do a reset while there are active downloads.");
+                return;
+            }
+
             if (await MessageBox.ShowAsync(
                 "This will delete completely all your downloaded and saved songs, along with their artwork. Imported songs will only be removed from the app.",
                 "ARE YOU SURE?", MessageBoxButton.YesNo) == MessageBoxResult.No) return;
@@ -122,6 +140,8 @@ namespace Audiotica.View.Setting
 
             AppSettingsHelper.Write("FactoryReset", true);
             App.Locator.AudioPlayerHelper.FullShutdown();
+            App.Locator.SqlService.Dispose();
+            App.Locator.BgSqlService.Dispose();
             Application.Current.Exit();
         }
 
@@ -183,7 +203,6 @@ namespace Audiotica.View.Setting
             using (Insights.TrackTime("Create Backup"))
             {
                 UiBlockerUtility.Block("Backing up (this may take a bit)...");
-
 
                 App.Locator.SqlService.Dispose();
                 App.Locator.BgSqlService.Dispose();
