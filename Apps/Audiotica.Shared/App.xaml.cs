@@ -36,7 +36,7 @@ namespace Audiotica
     public sealed partial class App
     {
         public static bool IsDebugging = Debugger.IsAttached;
-        public static bool IsProduction = false;
+        public static bool IsProduction = true;
 
         #region Fields
 
