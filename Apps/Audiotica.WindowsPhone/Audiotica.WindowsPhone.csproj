@@ -144,8 +144,8 @@
     <Compile Include="View\Setting\DeveloperPage.xaml.cs">
       <DependentUpon>DeveloperPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\Setting\CollectionPage.xaml.cs">
-      <DependentUpon>CollectionPage.xaml</DependentUpon>
+    <Compile Include="View\Setting\CollectionSettingsPage.xaml.cs">
+      <DependentUpon>CollectionSettingsPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Setting\PlayerPage.xaml.cs">
       <DependentUpon>PlayerPage.xaml</DependentUpon>
@@ -261,7 +261,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="View\Setting\CollectionPage.xaml">
+    <Page Include="View\Setting\CollectionSettingsPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

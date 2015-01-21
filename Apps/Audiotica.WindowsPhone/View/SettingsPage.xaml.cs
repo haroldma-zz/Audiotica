@@ -46,7 +46,7 @@ namespace Audiotica.View
 
         private void CollectionButton_OnClick(object sender, RoutedEventArgs e)
         {
-            App.Navigator.GoTo<Setting.CollectionPage, ZoomInTransition>(null);
+            App.Navigator.GoTo<Setting.CollectionSettingsPage, ZoomInTransition>(null);
         }
 
         private void StatisticsButton_OnClick(object sender, RoutedEventArgs e)

@@ -20,9 +20,9 @@ using Xamarin;
 
 namespace Audiotica.View.Setting
 {
-    public sealed partial class CollectionPage : IFileSavePickerContinuable, IFileOpenPickerContinuable
+    public sealed partial class CollectionSettingsPage : IFileSavePickerContinuable, IFileOpenPickerContinuable
     {
-        public CollectionPage()
+        public CollectionSettingsPage()
         {
             InitializeComponent();
         }
