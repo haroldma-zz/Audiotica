@@ -64,7 +64,7 @@ namespace Audiotica
             foreach (var download in downloads)
             {
                 //With the uri get the song
-                var songEntry = _service.Songs.FirstOrDefault(p => p.DownloadGuid == download.Guid);
+                var songEntry = _service.Songs.FirstOrDefault(p => p.DownloadId == download.Guid.ToString());
 
                 if (songEntry != null)
                 {
@@ -160,7 +160,7 @@ namespace Audiotica
 
             song.AudioUrl = song.Download.DownloadOperation.ResultFile.Path;
             song.SongState = SongState.Downloaded;
-            song.DownloadGuid = Guid.Empty;
+            song.DownloadId = null;
             await _sqlService.UpdateItemAsync(song);
         }
 
@@ -272,7 +272,7 @@ namespace Audiotica
                 var downloader = new BackgroundDownloader();
                 var download = downloader.CreateDownload(new Uri(song.AudioUrl), destinationFile);
                 download.Priority = BackgroundTransferPriority.Default;
-                song.DownloadGuid = download.Guid;
+                song.DownloadId = download.Guid.ToString();
 
                 await _sqlService.UpdateItemAsync(song).ConfigureAwait(false);
                 _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => HandleDownload(song, download, true));
