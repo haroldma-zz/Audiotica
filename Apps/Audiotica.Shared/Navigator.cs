@@ -40,6 +40,8 @@ namespace Audiotica
                 throw new InvalidOperationException("Pages can only be registered once.");
             }
             _pages.Add(typeof (T), page);
+
+            page.IsHitTestVisible = false;
             page.Width = _rootContainer.ActualWidth;
             page.Height = _rootContainer.ActualHeight;
             Canvas.SetTop(page, 0);
@@ -85,6 +87,7 @@ namespace Audiotica
             OnNavigating();
             if (CurrentPage != null)
             {
+                CurrentPage.IsHitTestVisible = false;
                 CurrentPage.NavigatedFrom(NavigationMode.Forward);
                 page = GetPage<TPage>();
                 page.BeforeNavigateTo();
@@ -94,7 +97,7 @@ namespace Audiotica
                 transition.Play(() =>
                 {
                     CurrentPage = page;
-
+                    page.IsHitTestVisible = true;
                     var from = _rootContainer.Children.IndexOf(page);
                     var to = _rootContainer.Children.Count - 1;
 
@@ -118,12 +121,15 @@ namespace Audiotica
 
                         _rootPage.BottomAppBar = transition.FromPage.Bar;
                         transition.ToPage.NavigatedFrom(NavigationMode.Back);
+                        transition.ToPage.IsHitTestVisible = false;
                         transition.FromPage.NavigatedTo(null);
+                        transition.FromPage.IsHitTestVisible = true;
                     }));
                     return;
                 }
             }
             page = GetPage<TPage>();
+            page.IsHitTestVisible = true;
             page.BeforeNavigateTo();
             TransitionHelper.Show(page);
             page.NavigatedTo(parameter);
