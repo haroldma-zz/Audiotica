@@ -10,7 +10,6 @@ using Audiotica.Core;
 using Audiotica.Core.Utilities;
 using Audiotica.Data.Collection;
 using Audiotica.Data.Collection.Model;
-using Audiotica.Data.Service.Interfaces;
 using Audiotica.View;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
@@ -23,31 +22,25 @@ namespace Audiotica
 {
     public class PlayerViewModel : ViewModelBase
     {
-        private readonly ISqlService _bgSqlService;
         private readonly AudioPlayerHelper _helper;
         private readonly RelayCommand _nextRelayCommand;
         private readonly RelayCommand _playPauseRelayCommand;
         private readonly RelayCommand _prevRelayCommand;
-        private readonly IScrobblerService _scrobblerService;
         private readonly ICollectionService _service;
         private readonly DispatcherTimer _timer;
         private QueueSong _currentQueue;
         private TimeSpan _duration;
         private bool _isLoading;
-        private bool _isUpdating;
         private double _npHeight;
         private double _npbHeight = double.NaN;
         private Symbol _playPauseIcon;
         private TimeSpan _position;
         private bool _isPlayerActive;
 
-        public PlayerViewModel(AudioPlayerHelper helper, ICollectionService service, ISqlService bgSqlService,
-            IScrobblerService scrobblerService)
+        public PlayerViewModel(AudioPlayerHelper helper, ICollectionService service)
         {
             _helper = helper;
             _service = service;
-            _bgSqlService = bgSqlService;
-            _scrobblerService = scrobblerService;
 
             if (!IsInDesignMode)
             {
@@ -200,6 +193,9 @@ namespace Audiotica
         private void HelperOnTrackChanged(object sender, EventArgs eventArgs)
         {
             var playerInstance = BackgroundMediaPlayer.Current;
+
+            if (playerInstance == null) return;
+
             Duration = playerInstance.NaturalDuration;
             var state = playerInstance.CurrentState;
 

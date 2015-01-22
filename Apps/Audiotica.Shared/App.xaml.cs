@@ -253,15 +253,19 @@ namespace Audiotica
             deferral.Complete();
         }
 
-        private async void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
+        private void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
             Insights.Report(e.Exception);
-            UiBlockerUtility.Unblock();
             e.Handled = true;
+
             //just in case it crashes, save it
             AppSettingsHelper.WriteAsJson("CrashingException", e.Exception);
 
-            await WarnAboutCrashAsync("Crash prevented", e.Exception);
+            DispatcherHelper.CheckBeginInvokeOnUI(async () =>
+            {
+                UiBlockerUtility.Unblock();
+                await WarnAboutCrashAsync("Crash prevented", e.Exception);
+            });
         }
 
         private async Task WarnAboutCrashAsync(string title, Exception e)

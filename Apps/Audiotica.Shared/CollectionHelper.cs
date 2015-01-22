@@ -467,7 +467,7 @@ namespace Audiotica
                     do
                     {
                         //first save one song (to avoid duplicate album creation)
-                        result = await _SaveTrackAsync(album.Tracks.Items[index], album);
+                        result = await _SaveTrackAsync(album.Tracks.Items[index], album, false);
                         index++;
                     } while (result != SavingError.None && index < album.Tracks.Items.Count);
                 }
@@ -479,7 +479,7 @@ namespace Audiotica
                 {
                     App.Locator.SqlService.DbConnection.BeginTransaction();
                     //save the rest at the rest time
-                    var songs = album.Tracks.Items.Skip(index).Select(track => _SaveTrackAsync(track, album));
+                    var songs = album.Tracks.Items.Skip(index).Select(track => _SaveTrackAsync(track, album, false));
                     var results = await Task.WhenAll(songs);
 
                     //now wait a split second before showing success message
@@ -512,6 +512,8 @@ namespace Audiotica
                     CurtainPrompt.ShowError("EntrySavingError".FromLanguageResource(), album.Name);
 
                 SpotifySavingAlbums.Remove(album.Id);
+
+                DownloadArtistsArtworkAsync();
             }
         }
 
@@ -809,7 +811,7 @@ namespace Audiotica
             }
         }
 
-        private static async Task<SavingError> _SaveTrackAsync(SimpleTrack track, FullAlbum album)
+        private static async Task<SavingError> _SaveTrackAsync(SimpleTrack track, FullAlbum album, bool onFinishDownloadArtwork = true)
         {
             var alreadySaving = SpotifySavingTracks.FirstOrDefault(p => p == track.Id) != null;
 
@@ -838,6 +840,8 @@ namespace Audiotica
 
             SpotifySavingTracks.Remove(track.Id);
 
+            if (onFinishDownloadArtwork)
+                DownloadArtistsArtworkAsync();
             return result;
         }
 
@@ -870,6 +874,7 @@ namespace Audiotica
 
             LastfmSavingTracks.Remove(track.Id);
 
+            DownloadArtistsArtworkAsync();
             return result;
         }
 

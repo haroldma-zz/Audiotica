@@ -257,7 +257,7 @@ namespace Audiotica.Data.Collection.RunTime
         public bool SongAlreadyExists(string providerId, string name, string album, string artist)
         {
             return Songs.FirstOrDefault(p => p.ProviderId == providerId
-                                             || (p.Name == name && p.Album.Name == album && p.ArtistName == artist)) !=
+                                             || (p.Name == name && p.Album.Name == album && (p.ArtistName == artist || p.Artist.Name == artist))) !=
                    null;
         }
 
@@ -571,8 +571,8 @@ namespace Audiotica.Data.Collection.RunTime
 
             foreach (var file in from file in artworks
                 let id = file.Name.Replace(".jpg", "")
-                where Albums.FirstOrDefault(p => p.Id.ToString() == id) == null
-                      && Artists.FirstOrDefault(p => p.ProviderId == id) == null
+                where Albums.ToList().FirstOrDefault(p => p.Id.ToString() == id) == null
+                      && Artists.ToList().FirstOrDefault(p => p.ProviderId == id) == null
                 select file)
             {
                 try

@@ -62,7 +62,7 @@ namespace Audiotica.ViewModel
             SimpleIoc.Default.Register<AudioPlayerHelper>();
             SimpleIoc.Default.Register<CollectionViewModel>(true);
             SimpleIoc.Default.Register<MainViewModel>();
-            SimpleIoc.Default.Register(() => new PlayerViewModel(AudioPlayerHelper, CollectionService, BgSqlService, ScrobblerService));
+            SimpleIoc.Default.Register(() => new PlayerViewModel(AudioPlayerHelper, CollectionService));
             SimpleIoc.Default.Register<AlbumViewModel>();
             SimpleIoc.Default.Register<CollectionAlbumViewModel>();
             SimpleIoc.Default.Register<CollectionArtistViewModel>();

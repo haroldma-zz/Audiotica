@@ -3,9 +3,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Audiotica.Core.Common;
 using Audiotica.Core.Exceptions;
-using Audiotica.Core.Utilities;
 using Audiotica.Data;
 using Audiotica.Data.Collection.Model;
 using Audiotica.Data.Spotify.Models;
@@ -61,8 +59,12 @@ namespace Audiotica
 
         public static async Task<SavingError> SaveTrackAsync(SimpleTrack track, FullAlbum album)
         {
+            if (track == null || album == null)
+                return SavingError.Unknown;
+
             var preparedSong = track.ToSong();
-            if (App.Locator.CollectionService.SongAlreadyExists(preparedSong.ProviderId, track.Name, album.Name, album.Artist.Name))
+            if (App.Locator.CollectionService.SongAlreadyExists(preparedSong.ProviderId, track.Name, album.Name,
+                album.Artist != null ? album.Artist.Name : track.Artist.Name))
             {
                 return SavingError.AlreadyExists;
             }
@@ -96,7 +98,8 @@ namespace Audiotica
                 return SavingError.NoMatch;
 
             preparedSong.ArtistName = fullTrack != null
-                ? string.Join(", ", fullTrack.Artists.Select(p => p.Name)) : artist.Name;
+                ? string.Join(", ", fullTrack.Artists.Select(p => p.Name))
+                : artist.Name;
             preparedSong.Album = album.ToAlbum();
             preparedSong.Artist = album.Artist.ToArtist();
             preparedSong.Album.PrimaryArtist = preparedSong.Artist;
@@ -104,9 +107,8 @@ namespace Audiotica
 
             try
             {
-                await App.Locator.CollectionService.AddSongAsync(preparedSong, 
+                await App.Locator.CollectionService.AddSongAsync(preparedSong,
                     album.Images[0].Url).ConfigureAwait(false);
-                CollectionHelper.DownloadArtistsArtworkAsync();
                 return SavingError.None;
             }
             catch (NetworkException)
