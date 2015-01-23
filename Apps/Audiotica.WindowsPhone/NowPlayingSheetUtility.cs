@@ -1,6 +1,5 @@
 ﻿#region
 
-using System;
 using Windows.Phone.UI.Input;
 using Audiotica.PartialView;
 using Xamarin;
@@ -25,6 +24,7 @@ namespace Audiotica
 
             App.SupressBackEvent += HardwareButtonsOnBackPressed;
 
+            ScreenTimeoutHelper.OnNowPlayingOpened();
             Insights.Track("Opened Now Playing");
         }
 
@@ -42,6 +42,7 @@ namespace Audiotica
             ModalSheetUtility.Hide(_currentSheet);
             _currentSheet = null;
 
+            ScreenTimeoutHelper.OnNowPlayingClosed();
             Insights.Track("Closed Now Playing");
         }
     }

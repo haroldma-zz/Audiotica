@@ -1,6 +1,4 @@
-﻿using Audiotica.ViewModel;
-
-namespace Audiotica.View.Setting
+﻿namespace Audiotica.View.Setting
 {
     public sealed partial class ApplicationPage
     {

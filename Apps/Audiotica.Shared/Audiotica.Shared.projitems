@@ -31,6 +31,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)ProductConstans.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SavingError.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LocalMusicHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ScreenTimeoutHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SongDownloadService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SongViewer.xaml.cs">
       <DependentUpon>SongViewer.xaml</DependentUpon>
@@ -57,7 +58,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)ViewModel\SettingsViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModel\ViewModelLocator.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ScrobblerHelper.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)WaveFormHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ZoomOutTransition.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ZoomInTransition.cs" />
   </ItemGroup>
