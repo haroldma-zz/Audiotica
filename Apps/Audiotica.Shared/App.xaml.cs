@@ -205,6 +205,9 @@ namespace Audiotica
         private async void RootFrame_FirstNavigated(object sender, NavigationEventArgs e)
         {
             RootFrame.Navigated -= RootFrame_FirstNavigated;
+
+            ScreenTimeoutHelper.OnLaunched();
+
             ApplicationView.GetForCurrentView().SetDesiredBoundsMode(ApplicationViewBoundsMode.UseCoreWindow);
             ApplicationView.GetForCurrentView().VisibleBoundsChanged += OnVisibleBoundsChanged;
             OnVisibleBoundsChanged(null, null);

@@ -12,6 +12,7 @@ using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using GoogleAnalytics;
 using GoogleAnalytics.Core;
+using Xamarin;
 
 #endregion
 
@@ -20,7 +21,6 @@ namespace Audiotica.ViewModel
     public class SettingsViewModel : ViewModelBase
     {
         private readonly IScrobblerService _service;
-        private readonly ICredentialHelper _credentialHelper;
         private readonly IAppSettingsHelper _appSettingsHelper;
         private string _password;
         private bool _scrobbleSwitch;
@@ -29,7 +29,6 @@ namespace Audiotica.ViewModel
         public SettingsViewModel(IScrobblerService service, ICredentialHelper credentialHelper, IAppSettingsHelper appSettingsHelper)
         {
             _service = service;
-            _credentialHelper = credentialHelper;
             _appSettingsHelper = appSettingsHelper;
             InAppAdsClickRelay = new RelayCommand(InAppAdsClicked);
             LoginClickRelay = new RelayCommand(LoginButtonClicked);
@@ -101,6 +100,7 @@ namespace Audiotica.ViewModel
             get { return _appSettingsHelper.Read<bool>("DevMode"); }
             set
             {
+                Insights.Track("Toggled Developer Mode", "Enabled", value.ToString());
                 _appSettingsHelper.Write("DevMode", value);
                 EasyTracker.GetTracker().SendEvent("Settings", "DevMode", value ? "Enabled" : "Disabled", 0);
                 RaisePropertyChanged();
@@ -112,6 +112,7 @@ namespace Audiotica.ViewModel
             get { return _appSettingsHelper.Read<bool>("SimulateFirstRun"); }
             set
             {
+                Insights.Track("Toggled Simulate First Run", "Enabled", value.ToString());
                 _appSettingsHelper.Write("SimulateFirstRun", value);
                 EasyTracker.GetTracker().SendEvent("Settings", "SimulateFirstRun", value ? "Enabled" : "Disabled", 0);
                 RaisePropertyChanged();
@@ -123,6 +124,7 @@ namespace Audiotica.ViewModel
             get { return _appSettingsHelper.Read<bool>("SimulateUpdate"); }
             set
             {
+                Insights.Track("Toggled Simulate Update", "Enabled", value.ToString());
                 _appSettingsHelper.Write("SimulateUpdate", value);
                 EasyTracker.GetTracker().SendEvent("Settings", "SimulateUpdate", value ? "Enabled" : "Disabled", 0);
                 RaisePropertyChanged();
@@ -134,6 +136,7 @@ namespace Audiotica.ViewModel
             get { return _appSettingsHelper.Read<bool>("FrameRateCounter"); }
             set
             {
+                Insights.Track("Toggled Frame Rate Counter", "Enabled", value.ToString());
                 Application.Current.DebugSettings.EnableFrameRateCounter = value;
                 _appSettingsHelper.Write("FrameRateCounter", value);
                 EasyTracker.GetTracker().SendEvent("Settings", "FrameRateCounter", value ? "Enabled" : "Disabled", 0);
@@ -146,6 +149,7 @@ namespace Audiotica.ViewModel
             get { return _appSettingsHelper.Read<bool>("RedrawRegions"); }
             set
             {
+                Insights.Track("Toggled Redraw Regions", "Enabled", value.ToString());
                 Application.Current.DebugSettings.EnableRedrawRegions = value;
                 _appSettingsHelper.Write("RedrawRegions", value);
                 EasyTracker.GetTracker().SendEvent("Settings", "RedrawRegions", value ? "Enabled" : "Disabled", 0);
@@ -178,6 +182,7 @@ namespace Audiotica.ViewModel
                     App.Locator.Collection.RandomizeAlbumList.Clear();
 
                 EasyTracker.GetTracker().SendEvent("Settings", "WallpaperArt", value ? "Enabled" : "Disabled", 0);
+                Insights.Track("Toggled Wallpaper Art", "Enabled", value.ToString());
                 _appSettingsHelper.Write("WallpaperArt", value, SettingsStrategy.Roaming);
                 RaisePropertyChanged();
             }
@@ -189,7 +194,26 @@ namespace Audiotica.ViewModel
             set
             {
                 EasyTracker.GetTracker().SendEvent("Settings", "AddToInsert", value ? "Enabled" : "Disabled", 0);
+                Insights.Track("Toggled Add To Insert", "Enabled", value.ToString());
                 _appSettingsHelper.Write("AddToInsert", value, SettingsStrategy.Roaming);
+                RaisePropertyChanged();
+            }
+        }
+
+        public int SelectedTimeoutOption
+        {
+            get { return (int)ScreenTimeoutHelper.TimeoutOption; }
+            set
+            {
+                Insights.Track("Changed Timeout", "Option", ((PreventScreenTimeoutOption)value).ToString());
+                ScreenTimeoutHelper.TimeoutOption = (PreventScreenTimeoutOption)value;
+
+                if (ScreenTimeoutHelper.TimeoutOption == PreventScreenTimeoutOption.Always)
+                    ScreenTimeoutHelper.PreventTimeout();
+                else
+                    ScreenTimeoutHelper.AllowTimeout();
+
+                EasyTracker.GetTracker().SendEvent("Settings", "SelectedTimeoutOption", ScreenTimeoutHelper.TimeoutOption.ToString(), 0);
                 RaisePropertyChanged();
             }
         }
@@ -199,6 +223,7 @@ namespace Audiotica.ViewModel
             get { return _appSettingsHelper.Read("Ads", true, SettingsStrategy.Roaming); }
             set
             {
+                Insights.Track("Toggled Advertisements", "Enabled", value.ToString());
                 if (value)
                 {
                     App.Locator.Ads.Enable();
@@ -218,6 +243,7 @@ namespace Audiotica.ViewModel
             get { return _appSettingsHelper.Read<bool>("Scrobble", SettingsStrategy.Roaming); }
             set
             {
+                Insights.Track("Toggled Scrobbling", "Enabled", value.ToString());
                 _appSettingsHelper.Write("Scrobble", value, SettingsStrategy.Roaming);
                 EasyTracker.GetTracker().SendEvent("Settings", "Scrobble", value ? "Enabled" : "Disabled", 0);
                 RaisePropertyChanged();
@@ -255,6 +281,7 @@ namespace Audiotica.ViewModel
                 LastFmPassword = null;
                 IsLoggedIn = false;
                 Scrobble = false;
+                Insights.Track("Logged out from Last.FM");
             }
             else
             {
@@ -272,6 +299,7 @@ namespace Audiotica.ViewModel
                         CurtainPrompt.Show("AuthLoginSuccess".FromLanguageResource());
                         IsLoggedIn = true;
                         Scrobble = true;
+                        Insights.Track("Logged in Last.FM");
                     }
                     else
                     {

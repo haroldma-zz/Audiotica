@@ -22,8 +22,6 @@ namespace Audiotica.Data.Service.RunTime
 {
     public class Mp3SearchService : IMp3SearchService
     {
-        private readonly IAppSettingsHelper _appSettingsHelper;
-
         private const string SoundCloudSearchUrl =
             "https://api.soundcloud.com/search/sounds?client_id={0}&limit={1}&q={2}";
 
@@ -34,6 +32,7 @@ namespace Audiotica.Data.Service.RunTime
         private const string NeteaseSuggestApi = "http://music.163.com/api/search/suggest/web?csrf_token=";
         private const string NeteaseDetailApi = "http://music.163.com/api/song/detail/?ids=%5B{0}%5D";
         private const string Mp3SkullSearchUrl = "http://mp3skull.com/search_db.php?q={0}&fckh={1}";
+        private readonly IAppSettingsHelper _appSettingsHelper;
         private string _mp3SkullFckh;
 
         public Mp3SearchService(IAppSettingsHelper appSettingsHelper)
@@ -83,7 +82,7 @@ namespace Audiotica.Data.Service.RunTime
                     song.artwork_url = song.artwork_url.Replace("large", "t500x500");
                 }
 
-                return FilterByTypeAndMatch(parseResp.collection.Select(p => new WebSong(p)).ToList(),
+                return await FilterByTypeAndMatch(parseResp.collection.Select(p => new WebSong(p)).ToList(),
                     title, artist);
             }
         }
@@ -104,7 +103,7 @@ namespace Audiotica.Data.Service.RunTime
 
                 if (parseResp == null || parseResp.response == null || !resp.IsSuccessStatusCode) return null;
 
-                return FilterByTypeAndMatch(parseResp.response.Select(p => new WebSong(p)).ToList(),
+                return await FilterByTypeAndMatch(parseResp.response.Select(p => new WebSong(p)).ToList(),
                     title, artist);
             }
         }
@@ -152,7 +151,7 @@ namespace Audiotica.Data.Service.RunTime
                         if (songNode.Attributes.Contains("data-bitrate"))
                             song.BitRate = int.Parse(songNode.Attributes["data-bitrate"].Value);
                         if (songNode.Attributes.Contains("data-filesize"))
-                            song.ByteSize = (int) double.Parse(songNode.Attributes["data-filesize"].Value);
+                            song.ByteSize = (int)double.Parse(songNode.Attributes["data-filesize"].Value);
                         if (songNode.Attributes.Contains("data-duration"))
                         {
                             var duration = songNode.Attributes["data-duration"].Value;
@@ -197,7 +196,7 @@ namespace Audiotica.Data.Service.RunTime
                         songs.Add(song);
                     }
 
-                    return songs.Any() ? FilterByTypeAndMatch(songs, title, artist) : null;
+                    return songs.Any() ? await FilterByTypeAndMatch(songs, title, artist) : null;
                 }
             }
         }
@@ -237,7 +236,7 @@ namespace Audiotica.Data.Service.RunTime
                     }
                 }
 
-                return songs.Any() ? FilterByTypeAndMatch(songs, title, artist) : null;
+                return songs.Any() ? await FilterByTypeAndMatch(songs, title, artist) : null;
             }
         }
 
@@ -275,7 +274,7 @@ namespace Audiotica.Data.Service.RunTime
                         }
                     }
 
-                    return songs.Any() ? FilterByTypeAndMatch(songs, title, artist) : null;
+                    return songs.Any() ? await FilterByTypeAndMatch(songs, title, artist) : null;
                 }
             }
         }
@@ -306,8 +305,8 @@ namespace Audiotica.Data.Service.RunTime
                 var songs = new List<WebSong>();
 
                 foreach (var vid in from searchResult in searchListResponse.Items
-                    where searchResult.Id.Kind == "youtube#video"
-                    select new WebSong(searchResult))
+                                    where searchResult.Id.Kind == "youtube#video"
+                                    select new WebSong(searchResult))
                 {
                     using (var client = new HttpClient())
                     {
@@ -337,7 +336,7 @@ namespace Audiotica.Data.Service.RunTime
                         songs.Add(vid);
                     }
                 }
-                return FilterByTypeAndMatch(songs, title, artist);
+                return await FilterByTypeAndMatch(songs, title, artist);
             }
             catch
             {
@@ -454,7 +453,7 @@ namespace Audiotica.Data.Service.RunTime
                     songs.Add(song);
                 }
 
-                return songs.Any() ? FilterByTypeAndMatch(songs, title, artist) : null;
+                return songs.Any() ? await FilterByTypeAndMatch(songs, title, artist) : null;
             }
         }
 
@@ -487,7 +486,7 @@ namespace Audiotica.Data.Service.RunTime
             return minuteDic.OrderByDescending(p => p.Value).FirstOrDefault().Key;
         }
 
-        private List<WebSong> FilterByTypeAndMatch(IEnumerable<WebSong> songs, string title, string artist)
+        private async Task<List<WebSong>> FilterByTypeAndMatch(IEnumerable<WebSong> songs, string title, string artist)
         {
             //just in case a song is "acoustic version"
             var cleanTile = title.Replace("(acoustic)", "");
@@ -525,7 +524,36 @@ namespace Audiotica.Data.Service.RunTime
              *it will be best to eliminate the two minute songs
              */
             var mostUsedMinute = GetMostUsedMinute(filterSongs);
-            return filterSongs.Where(p => p.Duration.Minutes == mostUsedMinute).ToList();
+            var filtered = filterSongs.Where(p => p.Duration.Minutes == mostUsedMinute).ToList();
+            var matches = new List<WebSong>();
+
+            foreach (var webSong in filtered)
+            {
+                if (await IsUrlOnlineAsync(webSong.AudioUrl))
+                    matches.Add(webSong);
+            }
+
+            return matches;
+        }
+
+        private async Task<bool> IsUrlOnlineAsync(string url)
+        {
+            try
+            {
+                using (var client = new HttpClient())
+                {
+                    client.Timeout = TimeSpan.FromSeconds(10);
+                    var resp =
+                        await
+                            client.SendAsync(new HttpRequestMessage(HttpMethod.Head, new Uri(url)),
+                                HttpCompletionOption.ResponseHeadersRead);
+                    return resp.IsSuccessStatusCode;
+                }
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         private bool IsCorrectType(string title, string songTitle, string type)

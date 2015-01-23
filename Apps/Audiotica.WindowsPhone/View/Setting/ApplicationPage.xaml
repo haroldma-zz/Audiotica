@@ -24,10 +24,19 @@
             <StackPanel>
                 <ToggleSwitch x:Uid="SettingsToggleAds" Header="Ads" IsEnabled="{Binding IsAdsEnabled}"
                               Visibility="{Binding IsAdsEnabled, Converter={StaticResource VisibilityConverter}}"
-                                      IsOn="{Binding Advertisements, Mode=TwoWay}" />
-                <Button Visibility="{Binding IsAdsEnabled, Converter={StaticResource ReverseVisibilityConverter}}" Command="{Binding InAppAdsClickRelay}" Content="Remove advertisement (in-app)" HorizontalAlignment="Stretch" />
+                              IsOn="{Binding Advertisements, Mode=TwoWay}" />
+                <Button Visibility="{Binding IsAdsEnabled, Converter={StaticResource ReverseVisibilityConverter}}"
+                        Command="{Binding InAppAdsClickRelay}" Content="Remove advertisement (in-app)"
+                        HorizontalAlignment="Stretch" />
+
                 <ToggleSwitch x:Uid="SettingsToggleWallpaper" Header="Album Art Wallpaper"
-                                      IsOn="{Binding WallpaperArt, Mode=TwoWay}" />
+                              IsOn="{Binding WallpaperArt, Mode=TwoWay}" />
+
+                <ComboBox Header="Prevent screen time-out" SelectedIndex="{Binding SelectedTimeoutOption, Mode=TwoWay}">
+                    <x:String>never</x:String>
+                    <x:String>always</x:String>
+                    <x:String>only in &quot;now playing&quot; page</x:String>
+                </ComboBox>
             </StackPanel>
         </ScrollViewer>
     </Grid>
