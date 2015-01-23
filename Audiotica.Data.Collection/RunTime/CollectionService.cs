@@ -1,6 +1,7 @@
 ﻿#region
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -30,7 +31,7 @@ namespace Audiotica.Data.Collection.RunTime
         private readonly string _localFilePrefix;
         private readonly string _artworkFilePath;
         private readonly string _artistArtworkFilePath;
-        private readonly Dictionary<long, QueueSong> _lookupMap = new Dictionary<long, QueueSong>();
+        private readonly ConcurrentDictionary<long, QueueSong> _lookupMap = new ConcurrentDictionary<long, QueueSong>();
         private readonly ISqlService _sqlService;
 
         public CollectionService(ISqlService sqlService, ISqlService bgSqlService, IDispatcherHelper dispatcher,
@@ -612,8 +613,8 @@ namespace Audiotica.Data.Collection.RunTime
         public async Task<QueueSong> AddToQueueAsync(Song song, QueueSong position = null, bool shuffleInsert = true)
         {
             var rnd = new Random(DateTime.Now.Millisecond);
-            QueueSong prev = null;
-            QueueSong shufflePrev = null;
+            QueueSong prev;
+            QueueSong shufflePrev;
             QueueSong next = null;
             QueueSong shuffleNext = null;
             var shuffleIndex = -1;
@@ -632,8 +633,7 @@ namespace Audiotica.Data.Collection.RunTime
             if (insert)
             {
                 next = PlaybackQueue[normalIndex];
-                if (next.PrevId != 0 && _lookupMap.ContainsKey(next.PrevId))
-                    prev = _lookupMap[next.PrevId];
+                _lookupMap.TryGetValue(next.PrevId, out prev);
             }
             else
             {
@@ -647,8 +647,7 @@ namespace Audiotica.Data.Collection.RunTime
                 else
                 {
                     shuffleNext = ShufflePlaybackQueue[shuffleIndex];
-                    if (shuffleNext.ShufflePrevId != 0 && _lookupMap.ContainsKey(shuffleNext.ShufflePrevId))
-                        shufflePrev = _lookupMap[shuffleNext.ShufflePrevId];
+                    _lookupMap.TryGetValue(shuffleNext.ShufflePrevId, out shufflePrev);
                 }
             }
             else
@@ -658,8 +657,7 @@ namespace Audiotica.Data.Collection.RunTime
                     shuffleIndex = rnd.Next(1, ShufflePlaybackQueue.Count - 1);
                     shuffleNext = ShufflePlaybackQueue.ElementAt(shuffleIndex);
 
-                    if (shuffleNext.ShufflePrevId != 0 && _lookupMap.ContainsKey(shuffleNext.ShufflePrevId))
-                        shufflePrev = _lookupMap[shuffleNext.ShufflePrevId];
+                    _lookupMap.TryGetValue(shuffleNext.ShufflePrevId, out shufflePrev);
                 }
                 else
                 {
@@ -721,12 +719,9 @@ namespace Audiotica.Data.Collection.RunTime
                     ShufflePlaybackQueue.Add(newQueue);
                 else
                     ShufflePlaybackQueue.Insert(shuffleIndex, newQueue);
-
-                if (_lookupMap.ContainsKey(newQueue.Id))
-                    _lookupMap.Remove(newQueue.Id);
-
-                _lookupMap.Add(newQueue.Id, newQueue);
             }).ConfigureAwait(false);
+
+            _lookupMap.TryAdd(newQueue.Id, newQueue);
 
             return newQueue;
         }
@@ -775,7 +770,7 @@ namespace Audiotica.Data.Collection.RunTime
                 PlaybackQueue.Remove(songToRemove);
                 CurrentPlaybackQueue.Remove(songToRemove);
             });
-            _lookupMap.Remove(songToRemove.Id);
+            _lookupMap.TryRemove(songToRemove.Id, out songToRemove);
 
             //Delete from database
             await _bgSqlService.DeleteItemAsync(songToRemove);
@@ -791,10 +786,7 @@ namespace Audiotica.Data.Collection.RunTime
             {
                 queueSong.Song = Songs.FirstOrDefault(p => p.Id == queueSong.SongId);
 
-                if (_lookupMap.ContainsKey(queueSong.Id))
-                    _lookupMap.Remove(queueSong.Id);
-
-                _lookupMap.Add(queueSong.Id, queueSong);
+                _lookupMap.TryAdd(queueSong.Id, queueSong);
 
                 if (queueSong.ShufflePrevId == 0)
                     shuffleHead = queueSong;
