@@ -31,38 +31,33 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Windows.Storage;
+using PCLStorage;
 
 #endregion
 
-namespace Audiotica.Core.Utilities
+namespace Audiotica.Core.Utils
 {
     // based on http://codepaste.net/gtu5mq
-    public static class StorageHelper
+    public class StorageHelper
     {
         #region Private Methods
 
-        private static StorageFolder GetFolderFromStrategy(StorageStrategy location)
+        private static IFolder GetFolderFromStrategy(StorageStrategy location)
         {
             switch (location)
             {
                 case StorageStrategy.Roaming:
-                    return ApplicationData.Current.RoamingFolder;
-                case StorageStrategy.Temporary:
-                    return ApplicationData.Current.TemporaryFolder;
-                case StorageStrategy.Installation:
-                    return Windows.ApplicationModel.Package.Current.InstalledLocation;
-
+                    return FileSystem.Current.RoamingStorage;
                 default:
-                    return ApplicationData.Current.LocalFolder;
+                    return FileSystem.Current.LocalStorage;
             }
         }
 
-        public static async Task<StorageFile> GetIfFileExistsAsync(string path, StorageStrategy strategy = StorageStrategy.Local)
+        public static async Task<IFile> GetIfFileExistsAsync(string path, StorageStrategy strategy = StorageStrategy.Local)
         {
             return await GetIfFileExistsAsync(path, GetFolderFromStrategy(strategy)).ConfigureAwait(false);
         }
-        public static async Task<StorageFile> GetIfFileExistsAsync(string path, StorageFolder folder)
+        public static async Task<IFile> GetIfFileExistsAsync(string path, IFolder folder)
         {
             var parts = path.Split('/');
 
@@ -78,15 +73,15 @@ namespace Audiotica.Core.Utilities
             {
                 return null;
             }
-            return await folder.TryGetItemAsync(fileName).ConfigureAwait(false) as StorageFile;
+            return await folder.TryGetFileAsync(fileName).ConfigureAwait(false);
         }
 
-        private static async Task<StorageFolder> _EnsureFolderExistsAsync(string name, StorageFolder parent)
+        private  static async Task<IFolder> _EnsureFolderExistsAsync(string name, IFolder parent)
         {
             if (parent == null) throw new ArgumentNullException("parent");
             return
                 await
-                    parent.CreateFolderAsync(name, CreationCollisionOption.OpenIfExists).AsTask().ConfigureAwait(false);
+                    parent.CreateFolderAsync(name, CreationCollisionOption.OpenIfExists).ConfigureAwait(false);
         }
 
         #endregion
@@ -98,18 +93,18 @@ namespace Audiotica.Core.Utilities
             return await FileExistsAsync(path, GetFolderFromStrategy(location)).ConfigureAwait(false);
         }
 
-        public static async Task<bool> FileExistsAsync(string path, StorageFolder folder)
+        public static async Task<bool> FileExistsAsync(string path, IFolder folder)
         {
             return (await GetIfFileExistsAsync(path, folder).ConfigureAwait(false)) != null;
         }
 
-        public static async Task<StorageFolder> EnsureFolderExistsAsync(string path,
+        public static async Task<IFolder> EnsureFolderExistsAsync(string path,
             StorageStrategy location = StorageStrategy.Local)
         {
             return await EnsureFolderExistsAsync(path, GetFolderFromStrategy(location)).ConfigureAwait(false);
         }
 
-        public static async Task<StorageFolder> EnsureFolderExistsAsync(string path, StorageFolder parentFolder)
+        public static async Task<IFolder> EnsureFolderExistsAsync(string path, IFolder parentFolder)
         {
             var parent = parentFolder;
 
@@ -127,7 +122,7 @@ namespace Audiotica.Core.Utilities
             return await DeleteFileAsync(path, GetFolderFromStrategy(location));
         }
 
-        public static async Task<bool> DeleteFileAsync(string path, StorageFolder folder)
+        public static async Task<bool> DeleteFileAsync(string path, IFolder folder)
         {
             var file = await GetIfFileExistsAsync(path, folder).ConfigureAwait(false);
 
@@ -137,13 +132,13 @@ namespace Audiotica.Core.Utilities
             return !(await FileExistsAsync(path, folder).ConfigureAwait(false));
         }
 
-        public static async Task<StorageFolder> GetFolderAsync(string path,
+        public static async Task<IFolder> GetFolderAsync(string path,
             StorageStrategy location = StorageStrategy.Local)
         {
             return await GetFolderAsync(path, GetFolderFromStrategy(location)).ConfigureAwait(false);
         }
 
-        public static async Task<StorageFolder> GetFolderAsync(string path, StorageFolder parentFolder)
+        public static async Task<IFolder> GetFolderAsync(string path, IFolder parentFolder)
         {
             var parent = parentFolder;
 
@@ -157,17 +152,10 @@ namespace Audiotica.Core.Utilities
             return parent; // now points to innermost folder
         }
 
-        private static async Task<StorageFolder> _GetFolderAsync(string name, StorageFolder parent)
+        private static async Task<IFolder> _GetFolderAsync(string name, IFolder parent)
         {
-            var item = await parent.TryGetItemAsync(name).ConfigureAwait(false);
-            if (item is StorageFolder)
-            {
-                return item as StorageFolder;
-            }
-            else
-            {
-                return null;
-            }
+            var item = await parent.TryGetFolderAsync(name).ConfigureAwait(false);
+            return item;
         }
 
         public static async Task<BinaryReader> GetReaderForFileAsync(string path,
@@ -176,11 +164,11 @@ namespace Audiotica.Core.Utilities
             return await GetReaderForFileAsync(path, GetFolderFromStrategy(location)).ConfigureAwait(false);
         }
 
-        public static async Task<BinaryReader> GetReaderForFileAsync(string path, StorageFolder folder)
+        public static async Task<BinaryReader> GetReaderForFileAsync(string path, IFolder folder)
         {
             var file = await CreateFileAsync(path, folder).ConfigureAwait(false);
 
-            var stream = await file.OpenStreamForReadAsync().ConfigureAwait(false);
+            var stream = await file.OpenAsync(FileAccess.ReadAndWrite).ConfigureAwait(false);
 
             return new BinaryReader(stream);
         }
@@ -191,23 +179,23 @@ namespace Audiotica.Core.Utilities
             return await GetWriterForFileAsync(path, GetFolderFromStrategy(location)).ConfigureAwait(false);
         }
 
-        public static async Task<BinaryWriter> GetWriterForFileAsync(string path, StorageFolder folder)
+        public static async Task<BinaryWriter> GetWriterForFileAsync(string path, IFolder folder)
         {
             var file = await CreateFileAsync(path, folder).ConfigureAwait(false);
 
-            var stream = await file.OpenStreamForWriteAsync().ConfigureAwait(false);
+            var stream = await file.OpenAsync(FileAccess.ReadAndWrite).ConfigureAwait(false);
 
             return new BinaryWriter(stream);
         }
 
-        public static async Task<StorageFile> CreateFileAsync(string path,
+        public static async Task<IFile> CreateFileAsync(string path,
             StorageStrategy location = StorageStrategy.Local,
             CreationCollisionOption option = CreationCollisionOption.OpenIfExists)
         {
             return await CreateFileAsync(path, GetFolderFromStrategy(location), option);
         }
 
-        public static async Task<StorageFile> CreateFileAsync(string path, StorageFolder folder,
+        public static async Task<IFile> CreateFileAsync(string path, IFolder folder,
             CreationCollisionOption option = CreationCollisionOption.OpenIfExists)
         {
             if (path.StartsWith("/") || path.StartsWith("\\"))
@@ -224,17 +212,17 @@ namespace Audiotica.Core.Utilities
                             .ConfigureAwait(false);
             }
 
-            return await folder.CreateFileAsync(fileName, option).AsTask().ConfigureAwait(false);
+            return await folder.CreateFileAsync(fileName, option).ConfigureAwait(false);
         }
 
-        public static async Task<StorageFile> GetFileAsync(string path,
+        public static async Task<IFile> GetFileAsync(string path,
             StorageStrategy location = StorageStrategy.Local)
         {
             return await CreateFileAsync(path, GetFolderFromStrategy(location));
         }
-        
-        public static async Task<StorageFile> GetFileAsync(string path,
-            StorageFolder folder)
+
+        public static async Task<IFile> GetFileAsync(string path,
+            IFolder folder)
         {
             return await CreateFileAsync(path, folder);
         }
@@ -250,12 +238,6 @@ namespace Audiotica.Core.Utilities
 
             /// <summary>Cloud, isolated folder. 100k cumulative limit.</summary>
             Roaming,
-
-            /// <summary>Local, temporary folder (not for settings)</summary>
-            Temporary,
-
-            /// <summary>Local, app install folder (read-only)</summary>
-            Installation
         }
 
         #endregion

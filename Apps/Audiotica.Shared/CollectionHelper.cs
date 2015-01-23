@@ -11,15 +11,21 @@ using Windows.Storage;
 using Windows.UI.StartScreen;
 using Windows.UI.Xaml.Media.Imaging;
 using Audiotica.Controls;
-using Audiotica.Core.Common;
-using Audiotica.Core.Utilities;
+using Audiotica.Core.Utils;
+using Audiotica.Core.Utils.Interfaces;
+using Audiotica.Core.WinRt;
+using Audiotica.Core.WinRt.Common;
+using Audiotica.Core.WinRt.Utilities;
+using Audiotica.Data.Collection;
 using Audiotica.Data.Collection.Model;
-using Audiotica.Data.Collection.SqlHelper;
 using Audiotica.Data.Spotify.Models;
 using Audiotica.View;
 using GalaSoft.MvvmLight.Threading;
 using IF.Lastfm.Core.Objects;
+using PCLStorage;
 using Xamarin;
+using CreationCollisionOption = PCLStorage.CreationCollisionOption;
+using NameCollisionOption = Windows.Storage.NameCollisionOption;
 
 #endregion
 
@@ -139,30 +145,30 @@ namespace Audiotica
             var songs = App.Locator.CollectionService.Songs.Where(p => p.SongState == SongState.Downloaded).ToList();
             var importedSongs = App.Locator.CollectionService.Songs.Where(p =>
                 p.SongState == SongState.Local && !p.AudioUrl.Substring(1).StartsWith(":")).ToList();
-            var songsFolder = await StorageHelper.GetFolderAsync("songs");
+            var songsFolder = await WinRtStorageHelper.GetFolderAsync("songs");
 
             if (songs.Count != 0 && songsFolder != null)
             {
                 using (var handler = Insights.TrackTime("Migrate Downloads To Phone"))
                 {
-                    App.Locator.SqlService.DbConnection.BeginTransaction();
+                    App.Locator.SqlService.BeginTransaction();
 
                     UiBlockerUtility.Block("Migrating downloaded songs to phone...");
                     foreach (var song in songs)
                     {
                         try
                         {
-                            var path = "Audiotica/" + 
-                                song.Album.PrimaryArtist.Name.CleanForFileName() + "/" + 
-                                song.Album.Name.CleanForFileName();
+                            var path = "Audiotica/" +
+                                       song.Album.PrimaryArtist.Name.CleanForFileName() + "/" +
+                                       song.Album.Name.CleanForFileName();
                             var filename = string.Format("{0}.mp3", song.Name.CleanForFileName());
 
                             if (song.ArtistName != song.Album.PrimaryArtist.Name)
                                 filename = song.ArtistName.CleanForFileName() + "-" + filename;
 
-                            var file = await StorageHelper.GetFileAsync(string.Format("songs/{0}.mp3", song.Id));
+                            var file = await WinRtStorageHelper.GetFileAsync(string.Format("songs/{0}.mp3", song.Id));
 
-                            var folder = await StorageHelper.EnsureFolderExistsAsync(path, KnownFolders.MusicLibrary);
+                            var folder = await WinRtStorageHelper.EnsureFolderExistsAsync(path, KnownFolders.MusicLibrary);
                             await file.MoveAsync(folder, filename, NameCollisionOption.ReplaceExisting);
 
                             song.AudioUrl = Path.Combine(folder.Path, filename);
@@ -174,13 +180,15 @@ namespace Audiotica
                             {
                                 {"Where", "Migrating Download"},
                                 {"SongName", song.Name},
+                                {"ArtistName", song.ArtistName},
+                                {"AlbumName", song.Album.Name},
                                 {"SongProviderId", song.ProviderId},
                                 {"SongAudioUrl", song.AudioUrl}
                             });
                         }
                     }
                     handler.Data.Add("TotalCount", songs.Count.ToString());
-                    App.Locator.SqlService.DbConnection.Commit();
+                    App.Locator.SqlService.Commit();
                 }
             }
 
@@ -189,7 +197,7 @@ namespace Audiotica
                 using (var handler = Insights.TrackTime("Migrate Outdated Imports"))
                 {
                     UiBlockerUtility.Block("Deleting outdated song imports...");
-                    App.Locator.SqlService.DbConnection.BeginTransaction();
+                    App.Locator.SqlService.BeginTransaction();
                     foreach (var song in importedSongs)
                     {
                         try
@@ -208,7 +216,7 @@ namespace Audiotica
                         }
                     }
                     handler.Data.Add("TotalCount", importedSongs.Count.ToString());
-                    App.Locator.SqlService.DbConnection.Commit();
+                    App.Locator.SqlService.Commit();
                 }
             }
 
@@ -323,12 +331,9 @@ namespace Audiotica
                     handle.Data.Add("SavingError", result.ToString());
                     return result;
                 }
-                else
-                {
-                    ShowResults(SavingError.Network, chartTrack.Name);
-                    handle.Data.Add("SavingError", "Network");
-                    return SavingError.Network;
-                }
+                ShowResults(SavingError.Network, chartTrack.Name);
+                handle.Data.Add("SavingError", "Network");
+                return SavingError.Network;
             }
         }
 
@@ -467,7 +472,7 @@ namespace Audiotica
                     do
                     {
                         //first save one song (to avoid duplicate album creation)
-                        result = await _SaveTrackAsync(album.Tracks.Items[index], album);
+                        result = await _SaveTrackAsync(album.Tracks.Items[index], album, false);
                         index++;
                     } while (result != SavingError.None && index < album.Tracks.Items.Count);
                 }
@@ -477,9 +482,9 @@ namespace Audiotica
 
                 if (album.Tracks.Items.Count > 1)
                 {
-                    App.Locator.SqlService.DbConnection.BeginTransaction();
+                    App.Locator.SqlService.BeginTransaction();
                     //save the rest at the rest time
-                    var songs = album.Tracks.Items.Skip(index).Select(track => _SaveTrackAsync(track, album));
+                    var songs = album.Tracks.Items.Skip(index).Select(track => _SaveTrackAsync(track, album, false));
                     var results = await Task.WhenAll(songs);
 
                     //now wait a split second before showing success message
@@ -499,7 +504,7 @@ namespace Audiotica
                         handler.Data.Add("MissingCount", missingCount.ToString());
                         CurtainPrompt.ShowError("AlbumMissingTracks".FromLanguageResource(), missingCount, album.Name);
                     }
-                    App.Locator.SqlService.DbConnection.Commit();
+                    App.Locator.SqlService.Commit();
                 }
                 else
                     success =
@@ -512,6 +517,8 @@ namespace Audiotica
                     CurtainPrompt.ShowError("EntrySavingError".FromLanguageResource(), album.Name);
 
                 SpotifySavingAlbums.Remove(album.Id);
+
+                DownloadArtistsArtworkAsync();
             }
         }
 
@@ -540,14 +547,13 @@ namespace Audiotica
                     var artistFilePath = string.Format(CollectionConstant.ArtistsArtworkPath, artist.Id);
                     var file =
                         await
-                            StorageHelper.CreateFileAsync(artistFilePath,
-                                option: CreationCollisionOption.ReplaceExisting);
+                            StorageHelper.CreateFileAsync(artistFilePath, option: CreationCollisionOption.ReplaceExisting);
 
                     using (var client = new HttpClient())
                     {
                         using (var stream = await client.GetStreamAsync(lastArtist.MainImage.Largest))
                         {
-                            using (var fileStream = await file.OpenStreamForWriteAsync())
+                            using (var fileStream = await file.OpenAsync(FileAccess.ReadAndWrite))
                             {
                                 await stream.CopyToAsync(fileStream);
                             }
@@ -561,11 +567,11 @@ namespace Audiotica
                     }
 
                     await DispatcherHelper.RunAsync(() =>
+                    {
                         artist.Artwork =
-                            new BitmapImage(new Uri(CollectionConstant.LocalStorageAppPath + artistFilePath))
-                            {
-                                DecodePixelHeight = App.Locator.CollectionService.ScaledImageSize
-                            });
+                            new PclBitmapImage(new Uri(CollectionConstant.LocalStorageAppPath + artistFilePath));
+                        artist.Artwork.SetDecodedPixel(App.Locator.CollectionService.ScaledImageSize);
+                    });
                 }
                 catch
                 {
@@ -639,7 +645,7 @@ namespace Audiotica
                     var queueSong = await App.Locator.CollectionService.AddToQueueAsync(song).ConfigureAwait(false);
                     App.Locator.AudioPlayerHelper.PlaySong(queueSong);
 
-                    App.Locator.SqlService.DbConnection.BeginTransaction();
+                    App.Locator.SqlService.BeginTransaction();
                     for (var index = 1; index < ordered.Count; index++)
                     {
                         if (!_currentlyPreparing)
@@ -647,7 +653,7 @@ namespace Audiotica
                         var s = ordered[index];
                         await App.Locator.CollectionService.AddToQueueAsync(s).ConfigureAwait(false);
                     }
-                    App.Locator.SqlService.DbConnection.Commit();
+                    App.Locator.SqlService.Commit();
 
                     _currentlyPreparing = false;
                 }
@@ -696,7 +702,7 @@ namespace Audiotica
         {
             using (var handle = Insights.TrackTime("AddListToQueue", "Count", songs.Count.ToString()))
             {
-                App.Locator.SqlService.DbConnection.BeginTransaction();
+                App.Locator.SqlService.BeginTransaction();
                 for (var i = 0; i < songs.Count; i++)
                 {
                     var song = songs[i];
@@ -709,7 +715,7 @@ namespace Audiotica
                     await AddToQueueAsync(song, i == songs.Count - 1,
                         playIfNotActive, i == 0, ignoreInsertMode).ConfigureAwait(false);
                 }
-                App.Locator.SqlService.DbConnection.Commit();
+                App.Locator.SqlService.Commit();
                 handle.Data.Add("FinalCount", App.Locator.CollectionService.PlaybackQueue.Count.ToString());
             }
 
@@ -743,7 +749,7 @@ namespace Audiotica
                 if (!App.Locator.Player.IsPlayerActive && clearIfNotActive)
                     await App.Locator.CollectionService.ClearQueueAsync();
 
-                var insert = AppSettingsHelper.Read("AddToInsert", true, SettingsStrategy.Roaming) && !ignoreInsertMode;
+                var insert = App.Locator.AppSettingsHelper.Read("AddToInsert", true, SettingsStrategy.Roaming) && !ignoreInsertMode;
 
                 queueSong = await App.Locator.CollectionService.AddToQueueAsync(song,
                     insert ? App.Locator.Player.CurrentQueue : null, shuffleInsert).ConfigureAwait(false);
@@ -809,7 +815,8 @@ namespace Audiotica
             }
         }
 
-        private static async Task<SavingError> _SaveTrackAsync(SimpleTrack track, FullAlbum album)
+        private static async Task<SavingError> _SaveTrackAsync(SimpleTrack track, FullAlbum album,
+            bool onFinishDownloadArtwork = true)
         {
             var alreadySaving = SpotifySavingTracks.FirstOrDefault(p => p == track.Id) != null;
 
@@ -827,17 +834,19 @@ namespace Audiotica
             var startTransaction = !App.Locator.SqlService.DbConnection.IsInTransaction;
 
             if (startTransaction)
-                App.Locator.SqlService.DbConnection.BeginTransaction();
+                App.Locator.SqlService.BeginTransaction();
 
             var result = await SpotifyHelper.SaveTrackAsync(track, album);
 
             if (startTransaction)
-                App.Locator.SqlService.DbConnection.Commit();
+                App.Locator.SqlService.Commit();
 
             ShowErrorResults(result, track.Name);
 
             SpotifySavingTracks.Remove(track.Id);
 
+            if (onFinishDownloadArtwork)
+                DownloadArtistsArtworkAsync();
             return result;
         }
 
@@ -859,17 +868,18 @@ namespace Audiotica
             var startTransaction = !App.Locator.SqlService.DbConnection.IsInTransaction;
 
             if (startTransaction)
-                App.Locator.SqlService.DbConnection.BeginTransaction();
+                App.Locator.SqlService.BeginTransaction();
 
             var result = await ScrobblerHelper.SaveTrackAsync(track);
 
             if (startTransaction)
-                App.Locator.SqlService.DbConnection.Commit();
+                App.Locator.SqlService.Commit();
 
             ShowErrorResults(result, track.Name);
 
             LastfmSavingTracks.Remove(track.Id);
 
+            DownloadArtistsArtworkAsync();
             return result;
         }
 

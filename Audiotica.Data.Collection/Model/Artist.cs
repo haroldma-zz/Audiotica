@@ -1,14 +1,12 @@
-﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using Windows.UI.Xaml.Media.Imaging;
-using Audiotica.Data.Collection.SqlHelper;
+﻿using System.Collections.ObjectModel;
+using Audiotica.Core.Common;
 using SQLite;
 
 namespace Audiotica.Data.Collection.Model
 {
     public class Artist : BaseEntry
     {
-        private BitmapImage _artwork;
+        private IBitmapImage _artwork;
 
         public Artist()
         {
@@ -18,13 +16,11 @@ namespace Audiotica.Data.Collection.Model
         }
 
         public string ProviderId { get; set; }
-
         public string Name { get; set; }
-
         public bool HasArtwork { get; set; }
 
         [Ignore]
-        public BitmapImage Artwork
+        public IBitmapImage Artwork
         {
             get { return _artwork; }
             set

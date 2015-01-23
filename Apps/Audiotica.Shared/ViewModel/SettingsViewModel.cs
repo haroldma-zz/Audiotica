@@ -3,10 +3,11 @@
 using System;
 using Windows.ApplicationModel.Store;
 using Windows.UI.Xaml;
-using Audiotica.Core.Common;
-using Audiotica.Core.Utilities;
+using Audiotica.Core.Utils.Interfaces;
+using Audiotica.Core.WinRt;
+using Audiotica.Core.WinRt.Common;
+using Audiotica.Core.WinRt.Utilities;
 using Audiotica.Data.Service.Interfaces;
-using Audiotica.PartialView;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using GoogleAnalytics;
@@ -19,23 +20,26 @@ namespace Audiotica.ViewModel
     public class SettingsViewModel : ViewModelBase
     {
         private readonly IScrobblerService _service;
+        private readonly ICredentialHelper _credentialHelper;
+        private readonly IAppSettingsHelper _appSettingsHelper;
         private string _password;
         private bool _scrobbleSwitch;
         private string _username;
 
-        public SettingsViewModel(IScrobblerService service)
+        public SettingsViewModel(IScrobblerService service, ICredentialHelper credentialHelper, IAppSettingsHelper appSettingsHelper)
         {
             _service = service;
+            _credentialHelper = credentialHelper;
+            _appSettingsHelper = appSettingsHelper;
             InAppAdsClickRelay = new RelayCommand(InAppAdsClicked);
             LoginClickRelay = new RelayCommand(LoginButtonClicked);
             DeveloperModeClickRelay = new RelayCommand(DeveloperModeExecute);
 
-            var creds = CredentialHelper.GetCredentials("lastfm");
+            var creds = credentialHelper.GetCredentials("lastfm");
             if (creds == null) return;
 
-            LastFmUsername = creds.UserName;
-            creds.RetrievePassword();
-            LastFmPassword = creds.Password;
+            LastFmUsername = creds.GetUsername();
+            LastFmPassword = creds.GetPassword();
             IsLoggedIn = true;
         }
 
@@ -70,6 +74,7 @@ namespace Audiotica.ViewModel
 
         private int _devCount;
         private const int DevModeCount = 7;
+
         private void DeveloperModeExecute()
         {
             if (DevMode)
@@ -93,10 +98,10 @@ namespace Audiotica.ViewModel
 
         public bool DevMode
         {
-            get { return AppSettingsHelper.Read<bool>("DevMode"); }
+            get { return _appSettingsHelper.Read<bool>("DevMode"); }
             set
             {
-                AppSettingsHelper.Write("DevMode", value);
+                _appSettingsHelper.Write("DevMode", value);
                 EasyTracker.GetTracker().SendEvent("Settings", "DevMode", value ? "Enabled" : "Disabled", 0);
                 RaisePropertyChanged();
             }
@@ -104,10 +109,10 @@ namespace Audiotica.ViewModel
 
         public bool SimulateFirstRun
         {
-            get { return AppSettingsHelper.Read<bool>("SimulateFirstRun"); }
+            get { return _appSettingsHelper.Read<bool>("SimulateFirstRun"); }
             set
             {
-                AppSettingsHelper.Write("SimulateFirstRun", value);
+                _appSettingsHelper.Write("SimulateFirstRun", value);
                 EasyTracker.GetTracker().SendEvent("Settings", "SimulateFirstRun", value ? "Enabled" : "Disabled", 0);
                 RaisePropertyChanged();
             }
@@ -115,10 +120,10 @@ namespace Audiotica.ViewModel
 
         public bool SimulateUpdate
         {
-            get { return AppSettingsHelper.Read<bool>("SimulateUpdate"); }
+            get { return _appSettingsHelper.Read<bool>("SimulateUpdate"); }
             set
             {
-                AppSettingsHelper.Write("SimulateUpdate", value);
+                _appSettingsHelper.Write("SimulateUpdate", value);
                 EasyTracker.GetTracker().SendEvent("Settings", "SimulateUpdate", value ? "Enabled" : "Disabled", 0);
                 RaisePropertyChanged();
             }
@@ -126,11 +131,11 @@ namespace Audiotica.ViewModel
 
         public bool FrameRateCounter
         {
-            get { return AppSettingsHelper.Read<bool>("FrameRateCounter"); }
+            get { return _appSettingsHelper.Read<bool>("FrameRateCounter"); }
             set
             {
                 Application.Current.DebugSettings.EnableFrameRateCounter = value;
-                AppSettingsHelper.Write("FrameRateCounter", value);
+                _appSettingsHelper.Write("FrameRateCounter", value);
                 EasyTracker.GetTracker().SendEvent("Settings", "FrameRateCounter", value ? "Enabled" : "Disabled", 0);
                 RaisePropertyChanged();
             }
@@ -138,11 +143,11 @@ namespace Audiotica.ViewModel
 
         public bool RedrawRegions
         {
-            get { return AppSettingsHelper.Read<bool>("RedrawRegions"); }
+            get { return _appSettingsHelper.Read<bool>("RedrawRegions"); }
             set
             {
                 Application.Current.DebugSettings.EnableRedrawRegions = value;
-                AppSettingsHelper.Write("RedrawRegions", value);
+                _appSettingsHelper.Write("RedrawRegions", value);
                 EasyTracker.GetTracker().SendEvent("Settings", "RedrawRegions", value ? "Enabled" : "Disabled", 0);
                 RaisePropertyChanged();
             }
@@ -152,43 +157,46 @@ namespace Audiotica.ViewModel
 
         public bool IsAdsEnabled
         {
-            get { return !App.IsProduction 
-                || App.LicenseInformation.ProductLicenses[ProductConstants.InAppAdvertisements].IsActive; }
+            get
+            {
+                return !App.IsProduction
+                       || App.LicenseInformation.ProductLicenses[ProductConstants.InAppAdvertisements].IsActive;
+            }
         }
 
         public string Version
         {
-            get { return AppVersionHelper.CurrentVersion.ToString(); }
+            get { return App.Locator.AppVersionHelper.CurrentVersion.ToString(); }
         }
 
         public bool WallpaperArt
         {
-            get { return AppSettingsHelper.Read("WallpaperArt", true, SettingsStrategy.Roaming); }
+            get { return _appSettingsHelper.Read("WallpaperArt", true, SettingsStrategy.Roaming); }
             set
             {
                 if (!value)
                     App.Locator.Collection.RandomizeAlbumList.Clear();
 
                 EasyTracker.GetTracker().SendEvent("Settings", "WallpaperArt", value ? "Enabled" : "Disabled", 0);
-                AppSettingsHelper.Write("WallpaperArt", value, SettingsStrategy.Roaming);
+                _appSettingsHelper.Write("WallpaperArt", value, SettingsStrategy.Roaming);
                 RaisePropertyChanged();
             }
         }
 
         public bool AddToInsert
         {
-            get { return AppSettingsHelper.Read("AddToInsert", true, SettingsStrategy.Roaming); }
+            get { return _appSettingsHelper.Read("AddToInsert", true, SettingsStrategy.Roaming); }
             set
             {
                 EasyTracker.GetTracker().SendEvent("Settings", "AddToInsert", value ? "Enabled" : "Disabled", 0);
-                AppSettingsHelper.Write("AddToInsert", value, SettingsStrategy.Roaming);
+                _appSettingsHelper.Write("AddToInsert", value, SettingsStrategy.Roaming);
                 RaisePropertyChanged();
             }
         }
 
         public bool Advertisements
         {
-            get { return AppSettingsHelper.Read("Ads", true, SettingsStrategy.Roaming); }
+            get { return _appSettingsHelper.Read("Ads", true, SettingsStrategy.Roaming); }
             set
             {
                 if (value)
@@ -200,17 +208,17 @@ namespace Audiotica.ViewModel
                     App.Locator.Ads.Disable();
                 }
                 EasyTracker.GetTracker().SendEvent("Settings", "Ads", value ? "Enabled" : "Disabled", 0);
-                AppSettingsHelper.Write("Ads", value, SettingsStrategy.Roaming);
+                _appSettingsHelper.Write("Ads", value, SettingsStrategy.Roaming);
                 RaisePropertyChanged();
             }
         }
 
         public bool Scrobble
         {
-            get { return AppSettingsHelper.Read<bool>("Scrobble", SettingsStrategy.Roaming); }
+            get { return _appSettingsHelper.Read<bool>("Scrobble", SettingsStrategy.Roaming); }
             set
             {
-                AppSettingsHelper.Write("Scrobble", value, SettingsStrategy.Roaming);
+                _appSettingsHelper.Write("Scrobble", value, SettingsStrategy.Roaming);
                 EasyTracker.GetTracker().SendEvent("Settings", "Scrobble", value ? "Enabled" : "Disabled", 0);
                 RaisePropertyChanged();
             }

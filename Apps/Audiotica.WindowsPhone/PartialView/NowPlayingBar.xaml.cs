@@ -87,7 +87,7 @@ namespace Audiotica.PartialView
 
             if (song == null) return;
 
-            var currentPlayingId = AppSettingsHelper.Read<int>(PlayerConstants.CurrentTrack);
+            var currentPlayingId = App.Locator.AppSettingsHelper.Read<int>(PlayerConstants.CurrentTrack);
 
             if (e.RemovedItems.Count != 0 && song.Id != currentPlayingId)
             {

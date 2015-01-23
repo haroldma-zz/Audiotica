@@ -8,9 +8,9 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Audiotica.Core;
 using Audiotica.Core.Utilities;
+using Audiotica.Core.Utils.Interfaces;
 using Audiotica.Data.Collection;
 using Audiotica.Data.Collection.Model;
-using Audiotica.Data.Service.Interfaces;
 using Audiotica.View;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
@@ -23,31 +23,27 @@ namespace Audiotica
 {
     public class PlayerViewModel : ViewModelBase
     {
-        private readonly ISqlService _bgSqlService;
         private readonly AudioPlayerHelper _helper;
         private readonly RelayCommand _nextRelayCommand;
         private readonly RelayCommand _playPauseRelayCommand;
         private readonly RelayCommand _prevRelayCommand;
-        private readonly IScrobblerService _scrobblerService;
         private readonly ICollectionService _service;
+        private readonly IAppSettingsHelper _appSettingsHelper;
         private readonly DispatcherTimer _timer;
         private QueueSong _currentQueue;
         private TimeSpan _duration;
         private bool _isLoading;
-        private bool _isUpdating;
         private double _npHeight;
         private double _npbHeight = double.NaN;
         private Symbol _playPauseIcon;
         private TimeSpan _position;
         private bool _isPlayerActive;
 
-        public PlayerViewModel(AudioPlayerHelper helper, ICollectionService service, ISqlService bgSqlService,
-            IScrobblerService scrobblerService)
+        public PlayerViewModel(AudioPlayerHelper helper, ICollectionService service, IAppSettingsHelper appSettingsHelper)
         {
             _helper = helper;
             _service = service;
-            _bgSqlService = bgSqlService;
-            _scrobblerService = scrobblerService;
+            _appSettingsHelper = appSettingsHelper;
 
             if (!IsInDesignMode)
             {
@@ -71,20 +67,20 @@ namespace Audiotica
 
         public bool IsRepeat
         {
-            get { return AppSettingsHelper.Read<bool>("Repeat"); }
+            get { return _appSettingsHelper.Read<bool>("Repeat"); }
             set
             {
-                AppSettingsHelper.Write("Repeat", value);
+                _appSettingsHelper.Write("Repeat", value);
                 RaisePropertyChanged();
             }
         }
 
         public bool IsShuffle
         {
-            get { return AppSettingsHelper.Read<bool>("Shuffle"); }
+            get { return _appSettingsHelper.Read<bool>("Shuffle"); }
             set
             {
-                AppSettingsHelper.Write("Shuffle", value);
+                _appSettingsHelper.Write("Shuffle", value);
                 _service.ShuffleModeChanged();
                 RaisePropertyChanged();
                 AudioPlayerHelper.OnShuffleChanged();
@@ -200,8 +196,20 @@ namespace Audiotica
         private void HelperOnTrackChanged(object sender, EventArgs eventArgs)
         {
             var playerInstance = BackgroundMediaPlayer.Current;
+
+            if (playerInstance == null) return;
+
             Duration = playerInstance.NaturalDuration;
-            var state = playerInstance.CurrentState;
+            var state = MediaPlayerState.Closed;
+
+            try
+            {
+                state = playerInstance.CurrentState;
+            }
+            catch
+            {
+                // ignored, rare occacion where the player just throws a generic Exception
+            }
 
             if (state != MediaPlayerState.Closed &&
                  state != MediaPlayerState.Stopped)
@@ -217,8 +225,8 @@ namespace Audiotica
                     }
                 }
 
-                var currentId = AppSettingsHelper.Read<int>(PlayerConstants.CurrentTrack);
-                CurrentQueue = _service.CurrentPlaybackQueue.FirstOrDefault(p => p.Id == currentId);
+                var currentId = _appSettingsHelper.Read<int>(PlayerConstants.CurrentTrack);
+                CurrentQueue = _service.PlaybackQueue.FirstOrDefault(p => p.Id == currentId);
 
                 if (CurrentQueue != null
                     && CurrentQueue.Song != null

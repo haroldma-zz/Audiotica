@@ -2,7 +2,6 @@
 
 using System;
 using System.Linq;
-using Windows.UI.Xaml.Media.Imaging;
 using Audiotica.Data.Model.SoundCloud;
 using Google.Apis.YouTube.v3.Data;
 
@@ -14,8 +13,8 @@ namespace Audiotica.Data.Model
     {
         public WebSong()
         {
-            
         }
+
         public WebSong(SearchResult youtubeVideo)
         {
             Id = youtubeVideo.Id.VideoId;

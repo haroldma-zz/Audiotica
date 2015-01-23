@@ -3,12 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Reflection;
 using System.Threading.Tasks;
-using Windows.Security.Cryptography.Certificates;
-using Audiotica.Data.Collection.Model;
-using Audiotica.Data.Collection.SqlHelper;
 using SQLite;
 
 #endregion
@@ -170,16 +165,31 @@ namespace Audiotica.Data.Collection.RunTime
             return Task.Run(() =>
             {
                 DbConnection.DeleteAll<T>();
-                DbConnection.Execute("DELETE FROM sqlite_sequence  WHERE name = '" + typeof(T).Name + "'");
+                DbConnection.Execute("DELETE FROM sqlite_sequence  WHERE name = '" + typeof (T).Name + "'");
             });
         }
 
         public Task DeleteWhereAsync(BaseEntry entry)
         {
-            return Task.Run(() =>
+            return Task.Run(() => { DbConnection.Delete(entry); });
+        }
+
+        public void BeginTransaction()
+        {
+            try
             {
-                DbConnection.Delete(entry);
-            });
+                DbConnection.BeginTransaction();
+            }
+            catch (InvalidOperationException) { }
+        }
+
+        public void Commit()
+        {
+            try
+            {
+                DbConnection.Commit();
+            }
+            catch (InvalidOperationException) { }
         }
 
         private void CreateTablesIfNotExists()

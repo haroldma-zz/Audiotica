@@ -73,12 +73,11 @@ namespace Audiotica.ViewModel
                 _prevIndex = -1;
         }
 
-        private bool _currentlyPreparing;
         private async void SongClickExecute(ItemClickEventArgs e)
         {
             var song = (PlaylistSong) (e.ClickedItem);
             var queueSong = _playlist.Songs.Select(p => p.Song).ToList();
-            await CollectionHelper.PlaySongsAsync(song.Song, queueSong);
+            await CollectionHelper.PlaySongsAsync(song.Song, queueSong, true);
         }
     }
 }

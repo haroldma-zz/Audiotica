@@ -41,15 +41,17 @@ namespace Audiotica
 
         private void AddMediaPlayerEventHandlers()
         {
+            var player = BackgroundMediaPlayer.Current;
+
             //avoid duplicate events
-            RemoveMediaPlayerEventHandlers();
-            BackgroundMediaPlayer.Current.CurrentStateChanged += MediaPlayer_CurrentStateChanged;
+            RemoveMediaPlayerEventHandlers(player);
+            player.CurrentStateChanged += MediaPlayer_CurrentStateChanged;
             BackgroundMediaPlayer.MessageReceivedFromBackground += BackgroundMediaPlayer_MessageReceivedFromBackground;
         }
 
-        private void RemoveMediaPlayerEventHandlers()
+        private void RemoveMediaPlayerEventHandlers(MediaPlayer player)
         {
-            BackgroundMediaPlayer.Current.CurrentStateChanged -= MediaPlayer_CurrentStateChanged;
+            player.CurrentStateChanged -= MediaPlayer_CurrentStateChanged;
             BackgroundMediaPlayer.MessageReceivedFromBackground -= BackgroundMediaPlayer_MessageReceivedFromBackground;
         }
 
@@ -79,16 +81,25 @@ namespace Audiotica
 
         public void OnAppActive()
         {
-            AppSettingsHelper.Write(PlayerConstants.AppState, PlayerConstants.ForegroundAppActive);
-            AddMediaPlayerEventHandlers();
+            App.Locator.AppSettingsHelper.Write(PlayerConstants.AppState, PlayerConstants.ForegroundAppActive);
+
+            try
+            {
+                AddMediaPlayerEventHandlers();
+            }
+            catch
+            {
+                _isShutdown = true;
+            }
+
             RaiseEvent(TrackChanged);
             OnPlaybackStateChanged(BackgroundMediaPlayer.Current.CurrentState);
         }
 
         public void OnAppSuspended()
         {
-            AppSettingsHelper.Write(PlayerConstants.AppState, PlayerConstants.ForegroundAppSuspended);
-            RemoveMediaPlayerEventHandlers();
+            App.Locator.AppSettingsHelper.Write(PlayerConstants.AppState, PlayerConstants.ForegroundAppSuspended);
+            RemoveMediaPlayerEventHandlers(BackgroundMediaPlayer.Current);
         }
 
         public void PlaySong(QueueSong song)
@@ -106,7 +117,7 @@ namespace Audiotica
             if (_isShutdown)
                 AddMediaPlayerEventHandlers();
 
-            AppSettingsHelper.Write(PlayerConstants.CurrentTrack, song.Id);
+            App.Locator.AppSettingsHelper.Write(PlayerConstants.CurrentTrack, song.Id);
             
             var message = new ValueSet {{PlayerConstants.StartPlayback, null}};
             BackgroundMediaPlayer.SendMessageToBackground(message);
@@ -141,16 +152,16 @@ namespace Audiotica
 
         public void FullShutdown()
         {
-            RemoveMediaPlayerEventHandlers();
+            RemoveMediaPlayerEventHandlers(BackgroundMediaPlayer.Current);
             BackgroundMediaPlayer.Shutdown();
-            AppSettingsHelper.Write(PlayerConstants.CurrentTrack, null);
+            App.Locator.AppSettingsHelper.Write(PlayerConstants.CurrentTrack, null);
         }
 
         public async Task ShutdownPlayerAsync()
         {
-            RemoveMediaPlayerEventHandlers();
+            RemoveMediaPlayerEventHandlers(BackgroundMediaPlayer.Current);
             BackgroundMediaPlayer.Shutdown();
-            AppSettingsHelper.Write(PlayerConstants.CurrentTrack, null);
+            App.Locator.AppSettingsHelper.Write(PlayerConstants.CurrentTrack, null);
             await Task.Delay(1000);
             _isShutdown = true;
             RaiseEvent(Shutdown);

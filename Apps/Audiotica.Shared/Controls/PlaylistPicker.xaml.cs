@@ -5,8 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
+using Audiotica.Data.Collection;
 using Audiotica.Data.Collection.Model;
-using Audiotica.Data.Collection.SqlHelper;
 
 #endregion
 

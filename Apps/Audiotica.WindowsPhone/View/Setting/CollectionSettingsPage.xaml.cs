@@ -4,16 +4,14 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using Windows.ApplicationModel.Activation;
-using Windows.Foundation.Collections;
-using Windows.Media.Playback;
 using Windows.Storage;
 using Windows.Storage.Pickers;
 using Windows.UI.Xaml;
-using Audiotica.Core;
-using Audiotica.Core.Common;
 using Audiotica.Core.Utilities;
+using Audiotica.Core.Utils;
+using Audiotica.Core.WinRt.Common;
+using PCLStorage;
 using Xamarin;
 
 #endregion
@@ -55,7 +53,7 @@ namespace Audiotica.View.Setting
                 App.Locator.CollectionService.Artists.SuppressEvents = true;
                 App.Locator.CollectionService.Albums.SuppressEvents = true;
 
-                App.Locator.SqlService.DbConnection.BeginTransaction();
+                App.Locator.SqlService.BeginTransaction();
                 for (var i = 0; i < localMusic.Count; i++)
                 {
                     StatusBarHelper.ShowStatus(string.Format("Importing {0} of {1} items", i + 1, localMusic.Count),
@@ -69,7 +67,7 @@ namespace Audiotica.View.Setting
                         failedCount++;
                     }
                 }
-                App.Locator.SqlService.DbConnection.Commit();
+                App.Locator.SqlService.Commit();
 
                 App.Locator.CollectionService.Songs.Reset();
                 App.Locator.CollectionService.Artists.Reset();
@@ -138,7 +136,7 @@ namespace Audiotica.View.Setting
                 "To continue with the factory reset the app will shutdown and continue once you open it again.",
                 "Application Restart Required");
 
-            AppSettingsHelper.Write("FactoryReset", true);
+            App.Locator.AppSettingsHelper.Write("FactoryReset", true);
             App.Locator.AudioPlayerHelper.FullShutdown();
             App.Locator.SqlService.Dispose();
             App.Locator.BgSqlService.Dispose();
@@ -169,7 +167,7 @@ namespace Audiotica.View.Setting
                     stream.Seek(0, SeekOrigin.Begin);
                     var restoreFile = await StorageHelper.CreateFileAsync("_current_restore.autcp");
 
-                    using (var restoreStream = await restoreFile.OpenStreamForWriteAsync())
+                    using (var restoreStream = await restoreFile.OpenAsync(FileAccess.ReadAndWrite))
                     {
                         await stream.CopyToAsync(restoreStream);
                     }

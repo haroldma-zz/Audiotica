@@ -1,12 +1,10 @@
-﻿using Audiotica.Data.Collection.SqlHelper;
-using SQLite;
+﻿using SQLite;
 
 namespace Audiotica.Data.Collection.Model
 {
     public class PlaylistSong : QueueSong
     {
         public long PlaylistId { get; set; }
-
 
         #region ignored from base
 

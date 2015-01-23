@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using Audiotica.Core.Exceptions;
-using Audiotica.Core.Utilities;
+using Audiotica.Core.Utils;
 using Audiotica.Data.Model.Deezer;
 using Audiotica.Data.Service.Interfaces;
 
@@ -22,7 +19,6 @@ namespace Audiotica.Data.Service.RunTime
         private const string ArtistTopTrackList = BaseApi + "artist/{0}/top?index={1}&limit={2}";
         private const string AlbumTrackList = BaseApi + "album/{0}/tracks";
 
-
         public Task<DeezerPageResponse<DeezerSong>> GetArtistTopSongsAsync(int id, int page = 0, int limit = 10)
         {
             return GetAsync<DeezerPageResponse<DeezerSong>>(string.Format(ArtistTopTrackList, id, page, limit));
@@ -35,17 +31,23 @@ namespace Audiotica.Data.Service.RunTime
 
         public Task<DeezerPageResponse<DeezerArtist>> SearchArtistsAsync(string query, int page = 0, int limit = 10)
         {
-            return GetAsync<DeezerPageResponse<DeezerArtist>>(string.Format(SearchArtistPath, Uri.EscapeDataString(query), page, limit));
+            return
+                GetAsync<DeezerPageResponse<DeezerArtist>>(string.Format(SearchArtistPath, Uri.EscapeDataString(query),
+                    page, limit));
         }
 
         public Task<DeezerPageResponse<DeezerSong>> SearchSongsAsync(string query, int page = 0, int limit = 10)
         {
-            return GetAsync<DeezerPageResponse<DeezerSong>>(string.Format(SearchTracksPath, Uri.EscapeDataString(query), page, limit));
+            return
+                GetAsync<DeezerPageResponse<DeezerSong>>(string.Format(SearchTracksPath, Uri.EscapeDataString(query),
+                    page, limit));
         }
 
         public Task<DeezerPageResponse<DeezerAlbum>> SearchAlbumsAsync(string query, int page = 0, int limit = 10)
         {
-            return GetAsync<DeezerPageResponse<DeezerAlbum>>(string.Format(SearchAlbumsPath, Uri.EscapeDataString(query), page, limit));
+            return
+                GetAsync<DeezerPageResponse<DeezerAlbum>>(string.Format(SearchAlbumsPath, Uri.EscapeDataString(query),
+                    page, limit));
         }
 
         private async Task<T> GetAsync<T>(string url) where T : DeezerBaseResponse

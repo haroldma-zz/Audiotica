@@ -8,6 +8,9 @@ using Windows.Storage;
 using Windows.UI.Xaml;
 using Audiotica.Core.Common;
 using Audiotica.Core.Utilities;
+using Audiotica.Core.Utils;
+using Audiotica.Core.WinRt.Utilities;
+using PCLStorage;
 using Xamarin;
 
 #endregion
@@ -25,7 +28,7 @@ namespace Audiotica.View
         {
             base.NavigatedTo(parameter);
             
-            var reset = AppSettingsHelper.Read<bool>("FactoryReset");
+            var reset = App.Locator.AppSettingsHelper.Read<bool>("FactoryReset");
 
             var startingMsg = "Restoring (this may take a bit)...";
             if (reset)
@@ -59,7 +62,7 @@ namespace Audiotica.View
 
                 if (!reset)
                 {
-                    using (var stream = await file.OpenStreamForWriteAsync())
+                    using (var stream = await file.OpenAsync(FileAccess.ReadAndWrite))
                     {
                         await AutcpFormatHelper.UnpackBackup(ApplicationData.Current.LocalFolder, stream);
                     }
@@ -81,7 +84,7 @@ namespace Audiotica.View
                         await db.DeleteAsync();
                     }
 
-                    AppSettingsHelper.Write("FactoryReset", false);
+                    App.Locator.AppSettingsHelper.Write("FactoryReset", false);
                 }
 
                 StatusBarHelper.HideStatus();

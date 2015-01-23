@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Audiotica.Core.Common;
-using Audiotica.Core.Utilities;
+using Audiotica.Core.Utils.Interfaces;
 using Audiotica.Data.Collection.Model;
+using Audiotica.Data.Service.Interfaces;
 using Audiotica.Data.Service.RunTime;
 using IF.Lastfm.Core.Api.Enums;
 
@@ -13,17 +10,19 @@ namespace Audiotica.WindowsPhone.Player
 {
     internal class ScrobblerHelper
     {
-        private readonly ScrobblerService _service;
+        private readonly IAppSettingsHelper _appSettingsHelper;
+        private readonly IScrobblerService _service;
 
-        public ScrobblerHelper()
+        public ScrobblerHelper(IAppSettingsHelper appSettingsHelper, IScrobblerService scrobblerService)
         {
-            _service = new ScrobblerService();
+            _appSettingsHelper = appSettingsHelper;
+            _service = scrobblerService;
         }
 
         public bool IsScrobblingEnabled()
         {
-            return _service.IsAuthenticated 
-                && AppSettingsHelper.Read<bool>("Scrobble", SettingsStrategy.Roaming);
+            return _service.IsAuthenticated
+                   && _appSettingsHelper.Read<bool>("Scrobble", SettingsStrategy.Roaming);
         }
 
         public bool CanScrobble(Song song, TimeSpan position)
@@ -37,7 +36,7 @@ namespace Audiotica.WindowsPhone.Player
             var playbackTime = position.TotalSeconds;
             var duration = song.Duration.TotalSeconds;
 
-            return duration >= 30 && (playbackTime >= duration / 2 || playbackTime >= 60 * 4);
+            return duration >= 30 && (playbackTime >= duration/2 || playbackTime >= 60*4);
         }
 
         public async Task UpdateNowPlaying(QueueSong queue)
@@ -47,7 +46,9 @@ namespace Audiotica.WindowsPhone.Player
                 await _service.ScrobbleNowPlayingAsync(queue.Song.Name, queue.Song.ArtistName,
                     DateTime.UtcNow, queue.Song.Duration);
             }
-            catch { }
+            catch
+            {
+            }
         }
 
         public async Task<bool> Scrobble(HistoryEntry item, TimeSpan position)

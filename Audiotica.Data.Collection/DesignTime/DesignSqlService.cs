@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using Audiotica.Data.Collection.SqlHelper;
 using SQLite;
 
 #endregion
@@ -81,6 +80,16 @@ namespace Audiotica.Data.Collection.DesignTime
         }
 
         public Task DeleteWhereAsync(BaseEntry entry)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void BeginTransaction()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Commit()
         {
             throw new NotImplementedException();
         }

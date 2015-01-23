@@ -52,7 +52,7 @@
                         <Grid Height="150" Margin="0,0,0,10" Background="{StaticResource PhoneAccentBrush}">
                             <Grid>
                                 <Grid.Background>
-                                    <ImageBrush Stretch="UniformToFill" ImageSource="{Binding Artwork}"
+                                    <ImageBrush Stretch="UniformToFill" ImageSource="{Binding Artwork.Image}"
                                     AlignmentY="Top" />
                                 </Grid.Background>
                             </Grid>

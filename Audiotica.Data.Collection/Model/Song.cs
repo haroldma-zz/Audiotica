@@ -2,7 +2,6 @@
 
 using System;
 using System.Collections.ObjectModel;
-using Audiotica.Data.Collection.SqlHelper;
 using SQLite;
 
 #endregion
@@ -11,13 +10,14 @@ namespace Audiotica.Data.Collection.Model
 {
     public class Song : BaseEntry
     {
+        private BackgroundDownload _download;
+        private SongState _songState;
+
         public Song()
         {
             AddableTo = new ObservableCollection<AddableCollectionItem>();
         }
 
-        private BackgroundDownload _download;
-        private SongState _songState;
         public string ProviderId { get; set; }
 
         [Indexed]
@@ -27,12 +27,9 @@ namespace Audiotica.Data.Collection.Model
         public int AlbumId { get; set; }
 
         public string Name { get; set; }
-
         //Artist prop is for the album (main), this one is specific to each song
         public string ArtistName { get; set; }
-
         public int TrackNumber { get; set; }
-
         public string AudioUrl { get; set; }
 
         public SongState SongState
@@ -46,13 +43,9 @@ namespace Audiotica.Data.Collection.Model
         }
 
         public int PlayCount { get; set; }
-
         public DateTime LastPlayed { get; set; }
-
         public HeartState HeartState { get; set; }
-
         public TimeSpan Duration { get; set; }
-
 
         [Ignore]
         public bool IsStreaming

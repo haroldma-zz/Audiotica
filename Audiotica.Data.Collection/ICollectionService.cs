@@ -2,10 +2,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.IO;
 using System.Threading.Tasks;
-using Windows.Storage;
 using Audiotica.Core.Common;
 using Audiotica.Data.Collection.Model;
 using TagLib;
@@ -17,10 +14,7 @@ namespace Audiotica.Data.Collection
     public interface ICollectionService
     {
         bool IsLibraryLoaded { get; }
-        event EventHandler LibraryLoaded;
-
-        int ScaledImageSize { get; }
-
+        int ScaledImageSize { get; set; }
         OptimizedObservableCollection<Song> Songs { get; set; }
         OptimizedObservableCollection<Album> Albums { get; set; }
         OptimizedObservableCollection<Artist> Artists { get; set; }
@@ -28,6 +22,7 @@ namespace Audiotica.Data.Collection
         OptimizedObservableCollection<QueueSong> PlaybackQueue { get; }
         OptimizedObservableCollection<QueueSong> ShufflePlaybackQueue { get; }
         OptimizedObservableCollection<QueueSong> CurrentPlaybackQueue { get; }
+        event EventHandler LibraryLoaded;
 
         /// <summary>
         ///     Loads all songs, albums, artist and playlists/queue.
@@ -40,6 +35,7 @@ namespace Audiotica.Data.Collection
         ///     Adds the song to the database and collection.
         /// </summary>
         Task AddSongAsync(Song song, string artworkUrl);
+
         Task AddSongAsync(Song song, Tag tags);
 
         /// <summary>
@@ -57,23 +53,23 @@ namespace Audiotica.Data.Collection
         Task ShuffleCurrentQueueAsync();
 
         /// <summary>
-        /// Erases all songs in the playback queue (database and  PlaybackQueue prop)
+        ///     Erases all songs in the playback queue (database and  PlaybackQueue prop)
         /// </summary>
         /// <returns></returns>
         Task ClearQueueAsync();
 
         /// <summary>
-        /// Adds the current song to the end of the queue.
+        ///     Adds the current song to the end of the queue.
         /// </summary>
         Task<QueueSong> AddToQueueAsync(Song song, QueueSong position = null, bool shuffleInsert = true);
 
         /// <summary>
-        /// Moves the queue items at the old index to the new index
+        ///     Moves the queue items at the old index to the new index
         /// </summary>
         Task MoveQueueFromToAsync(int oldIndex, int newIndex);
 
         /// <summary>
-        /// Deletes the specify song from the queue (database and PlaybackQueue prop)
+        ///     Deletes the specify song from the queue (database and PlaybackQueue prop)
         /// </summary>
         /// <param name="songToRemove"></param>
         /// <returns></returns>

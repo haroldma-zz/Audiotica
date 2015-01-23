@@ -6,6 +6,8 @@ using System.Linq;
 using Windows.UI.Xaml.Controls;
 using Audiotica.Core.Common;
 using Audiotica.Core.Utilities;
+using Audiotica.Core.WinRt;
+using Audiotica.Core.WinRt.Common;
 using Audiotica.Data;
 using Audiotica.Data.Service.Interfaces;
 using GalaSoft.MvvmLight;

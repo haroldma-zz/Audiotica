@@ -1,7 +1,6 @@
 ﻿#region
 
 using System;
-using Audiotica.Data.Collection.SqlHelper;
 using SQLite;
 
 #endregion

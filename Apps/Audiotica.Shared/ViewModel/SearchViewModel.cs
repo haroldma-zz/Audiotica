@@ -10,7 +10,8 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Audiotica.Core.Common;
-using Audiotica.Core.Utilities;
+using Audiotica.Core.WinRt;
+using Audiotica.Core.WinRt.Common;
 using Audiotica.Data.Service.Interfaces;
 using Audiotica.Data.Spotify.Models;
 using GalaSoft.MvvmLight;
@@ -111,6 +112,9 @@ namespace Audiotica.ViewModel
 
         public async Task SearchAsync(string term)
         {
+            if (string.IsNullOrEmpty(term))
+                return;
+
             try
             {
                 if (Tracks != null)
@@ -140,6 +144,10 @@ namespace Audiotica.ViewModel
                     Task.Run(async () =>
                     {
                         _tracksResponse = await _spotify.SearchTracksAsync(term);
+
+                        if (_tracksResponse == null)
+                            return;
+
                         await DispatcherHelper.RunAsync(() =>
                         {
                             Tracks = CreateIncrementalCollection(
@@ -153,6 +161,10 @@ namespace Audiotica.ViewModel
                     Task.Run(async () =>
                     {
                         _albumsResponse = await _spotify.SearchAlbumsAsync(term);
+
+                        if (_albumsResponse == null)
+                            return;
+
                         await DispatcherHelper.RunAsync(() =>
                         {
                             Albums = CreateIncrementalCollection(
@@ -166,6 +178,10 @@ namespace Audiotica.ViewModel
                     Task.Run(async () =>
                     {
                         _artistsResponse = await _spotify.SearchArtistsAsync(term);
+
+                        if (_artistsResponse == null)
+                            return;
+
                         DispatcherHelper.RunAsync(() =>
                         {
                             Artists = CreateIncrementalCollection(
@@ -178,7 +194,18 @@ namespace Audiotica.ViewModel
                     }),
                     Task.Run(async () =>
                     {
-                        _lastTrackResponse = await _service.SearchTracksAsync(term);
+                        try
+                        {
+                            _lastTrackResponse = await _service.SearchTracksAsync(term);
+                        }
+                        catch 
+                        { 
+                            //fail silently 
+                        }
+
+                        if (_lastTrackResponse == null)
+                            return;
+
                         await DispatcherHelper.RunAsync(() =>
                         {
                             LastTracks = CreateLastIncrementalCollection(
@@ -263,20 +290,29 @@ namespace Audiotica.ViewModel
                     try
                     {
                         IsLoading = true;
+                        var itemsAdded = 0;
 
                         var pageResp = getPageResponse();
+
                         var resp = await searchFunc(pageResp.Offset + pageResp.Limit);
 
-                        foreach (var item in resp.Items)
-                            collection.Add(item);
+                        if (resp != null)
+                        {
+                            foreach (var item in resp.Items)
+                                collection.Add(item);
+
+                            setPageResponse(resp);
+
+                            itemsAdded = resp.Items.Count;
+                        }
+                        else
+                            setPageResponse(null);
 
                         IsLoading = false;
 
-                        setPageResponse(resp);
-
                         return new LoadMoreItemsResult
                         {
-                            Count = (uint) resp.Items.Count
+                            Count = (uint) itemsAdded
                         };
                     }
                     catch

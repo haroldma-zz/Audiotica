@@ -16,7 +16,7 @@
 
     <Grid>
         <Grid.Background>
-            <ImageBrush Opacity=".25" Stretch="UniformToFill" ImageSource="{Binding Artist.Artwork}" />
+            <ImageBrush Opacity=".25" Stretch="UniformToFill" ImageSource="{Binding Artist.Artwork.Image}" />
         </Grid.Background>
         <Pivot x:Name="ArtistPivot" Title="{Binding Artist.Name, Converter={StaticResource UpperCaseConverter}}" HeaderTemplate="{StaticResource PivotHeaderTemplate}" SelectionChanged="ArtistPivot_SelectionChanged">
             <PivotItem x:Uid="PivotSongs" Header="SONGS">
@@ -60,7 +60,7 @@
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
                                 <Grid VerticalAlignment="Top" Background="{StaticResource PhoneAccentBrush}">
-                                    <Image Stretch="UniformToFill" Width="175" Height="175" Source="{Binding Artwork}" />
+                                    <Image Stretch="UniformToFill" Width="175" Height="175" Source="{Binding Artwork.Image}" />
                                 </Grid>
                                 <Grid Grid.Column="1" Margin="10">
                                     <Grid.RowDefinitions>

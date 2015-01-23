@@ -3,7 +3,6 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Threading;
-using Windows.Networking.BackgroundTransfer;
 
 #endregion
 
@@ -21,7 +20,7 @@ namespace Audiotica.Data.Collection.Model
 
         #region Constructor
 
-        public BackgroundDownload(DownloadOperation downloadOperation)
+        public BackgroundDownload(object downloadOperation)
         {
             DownloadOperation = downloadOperation;
             CancellationTokenSrc = new CancellationTokenSource();
@@ -61,7 +60,7 @@ namespace Audiotica.Data.Collection.Model
             }
         }
 
-        public DownloadOperation DownloadOperation { get; private set; }
+        public object DownloadOperation { get; private set; }
 
         public CancellationTokenSource CancellationTokenSrc { get; set; }
 

@@ -6,10 +6,10 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
-using Audiotica.Core.Utilities;
+using Audiotica.Core.Utils;
+using Audiotica.Core.Utils.Interfaces;
 using Audiotica.Data.Model;
 using Audiotica.Data.Model.AudioticaCloud;
-using Newtonsoft.Json.Linq;
 
 #endregion
 
@@ -17,6 +17,8 @@ namespace Audiotica.Data.Service.RunTime
 {
     public class AudioticaService
     {
+        private readonly ICredentialHelper _credentialHelper;
+        private readonly IAppSettingsHelper _appSettingsHelper;
 #if DEBUG
         private const string BaseApiPath = "http://localhost:48065/api/";
         private const string AppToken = "LOCALTESTING";
@@ -31,15 +33,16 @@ namespace Audiotica.Data.Service.RunTime
 
         private string _authenticationToken;
 
-        public AudioticaService()
+        public AudioticaService(ICredentialHelper credentialHelper, IAppSettingsHelper appSettingsHelper)
         {
-            var cred = CredentialHelper.GetCredentials("AudioticaCloud");
+            _credentialHelper = credentialHelper;
+            _appSettingsHelper = appSettingsHelper;
+            var cred = _credentialHelper.GetCredentials("AudioticaCloud");
             if (cred == null) return;
 
-            cred.RetrievePassword();
-            _authenticationToken = cred.Password;
+            _authenticationToken = cred.GetPassword();
 
-            CurrentUser = AppSettingsHelper.Read<AudioticaUser>("AudioticaCloudUser");
+            CurrentUser = _appSettingsHelper.Read<AudioticaUser>("AudioticaCloudUser");
         }
 
         public AudioticaUser CurrentUser { get; set; }
@@ -67,7 +70,8 @@ namespace Audiotica.Data.Service.RunTime
             {
                 var resp = await client.GetAsync(url).ConfigureAwait(false);
                 var json = await resp.Content.ReadAsStringAsync().ConfigureAwait(false);
-                var httpData = await json.DeserializeAsync<BaseAudioticaResponse<T>>().ConfigureAwait(false) ?? new BaseAudioticaResponse<T>();
+                var httpData = await json.DeserializeAsync<BaseAudioticaResponse<T>>().ConfigureAwait(false) ??
+                               new BaseAudioticaResponse<T>();
 
                 httpData.Success = resp.IsSuccessStatusCode;
 
@@ -88,7 +92,8 @@ namespace Audiotica.Data.Service.RunTime
                 {
                     var resp = await client.PostAsync(url, content).ConfigureAwait(false);
                     var json = await resp.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    var httpData = await json.DeserializeAsync<BaseAudioticaResponse<T>>().ConfigureAwait(false) ?? new BaseAudioticaResponse<T>();
+                    var httpData = await json.DeserializeAsync<BaseAudioticaResponse<T>>().ConfigureAwait(false) ??
+                                   new BaseAudioticaResponse<T>();
 
                     httpData.Success = resp.IsSuccessStatusCode;
 
@@ -115,8 +120,8 @@ namespace Audiotica.Data.Service.RunTime
             _authenticationToken = resp.Data.AuthenticationToken;
             CurrentUser = resp.Data.User;
 
-            AppSettingsHelper.WriteAsJson("AudioticaCloudUser", CurrentUser);
-            CredentialHelper.SaveCredentials("AudioticaCloud", resp.Data.User.Id,
+            _appSettingsHelper.WriteAsJson("AudioticaCloudUser", CurrentUser);
+            _credentialHelper.SaveCredentials("AudioticaCloud", resp.Data.User.Id,
                 resp.Data.AuthenticationToken);
 
             return resp as BaseAudioticaResponse;
@@ -143,15 +148,16 @@ namespace Audiotica.Data.Service.RunTime
             {
                 //keping the user object updated
                 CurrentUser = resp.Data;
-                AppSettingsHelper.WriteAsJson("AudioticaCloudUser", CurrentUser);
+                _appSettingsHelper.WriteAsJson("AudioticaCloudUser", CurrentUser);
             }
 
             return resp;
         }
 
-        public async Task<BaseAudioticaResponse<List<WebSong>>> GetMatchesAsync(string title, string artist, int limit = 1)
+        public async Task<BaseAudioticaResponse<List<WebSong>>> GetMatchesAsync(string title, string artist,
+            int limit = 1)
         {
-            var resp = await GetAsync<List<WebSong>>(string.Format(MatchPath, 
+            var resp = await GetAsync<List<WebSong>>(string.Format(MatchPath,
                 Uri.EscapeDataString(title), Uri.EscapeDataString(artist), limit));
             return resp;
         }

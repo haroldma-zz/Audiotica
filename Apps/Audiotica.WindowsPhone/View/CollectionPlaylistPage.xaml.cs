@@ -1,16 +1,14 @@
 ﻿#region
 
-using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Linq;
 using Windows.Foundation;
 using Windows.Phone.UI.Input;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
-using Audiotica.Core.Common;
-using Audiotica.Core.Utilities;
+using Audiotica.Core.WinRt;
+using Audiotica.Core.WinRt.Common;
 using Audiotica.Data.Collection.Model;
 using Audiotica.ViewModel;
 using GalaSoft.MvvmLight.Messaging;
@@ -22,9 +20,9 @@ namespace Audiotica.View
 {
     public sealed partial class CollectionPlaylistPage
     {
+        private TypedEventHandler<ListViewBase, ContainerContentChangingEventArgs> _delegate;
         private List<ICommandBarElement> _reorderModeCommands;
         private List<ICommandBarElement> _selectionModeCommands;
-        private TypedEventHandler<ListViewBase, ContainerContentChangingEventArgs> _delegate;
 
         public CollectionPlaylistPage()
         {
@@ -36,14 +34,22 @@ namespace Audiotica.View
 
         private void CreateCommands()
         {
-            var acceptButton = new AppBarButton { Icon = new SymbolIcon(Symbol.Accept), Label = "GenericAccept".FromLanguageResource() };
+            var acceptButton = new AppBarButton
+            {
+                Icon = new SymbolIcon(Symbol.Accept),
+                Label = "GenericAccept".FromLanguageResource()
+            };
             acceptButton.Click += AcceptButtonOnClick;
             _reorderModeCommands = new List<ICommandBarElement>
             {
                 acceptButton
             };
 
-            var deleteButton = new AppBarButton { Icon = new SymbolIcon(Symbol.Delete), Label = "GenericRemove".FromLanguageResource() };
+            var deleteButton = new AppBarButton
+            {
+                Icon = new SymbolIcon(Symbol.Delete),
+                Label = "GenericRemove".FromLanguageResource()
+            };
             deleteButton.Click += DeleteButtonOnClick;
             _selectionModeCommands = new List<ICommandBarElement>
             {
@@ -97,7 +103,7 @@ namespace Audiotica.View
 
             HardwareButtons.BackPressed += HardwareButtonsOnBackPressed;
 
-            var msg = new GenericMessage<int>((int)id);
+            var msg = new GenericMessage<int>((int) id);
             Messenger.Default.Send(msg, "playlist-coll-detail-id");
         }
 
@@ -115,10 +121,6 @@ namespace Audiotica.View
             var bar = Bar as CommandBar;
             SongList.IsItemClickEnabled = false;
 
-// ReSharper disable once RedundantCheckBeforeAssignment
-            if (SongList.SelectionMode != ListViewSelectionMode.Multiple)
-                SongList.SelectionMode = ListViewSelectionMode.Multiple;
-
             AppBarHelper.SaveState(bar);
             AppBarHelper.SwitchState(bar, _selectionModeCommands);
         }
@@ -134,7 +136,7 @@ namespace Audiotica.View
 
         private void SelectAppBarButton_Click(object sender, RoutedEventArgs e)
         {
-            ToMultiMode();
+            SongList.SelectionMode = ListViewSelectionMode.Multiple;
         }
 
         private void ReorderAppBarButton_Click(object sender, RoutedEventArgs e)
@@ -158,10 +160,11 @@ namespace Audiotica.View
             {
                 songViewer.ClearData();
             }
-            else switch (args.Phase)
+            else
+                switch (args.Phase)
                 {
                     case 0:
-                        songViewer.ShowPlaceholder((args.Item as PlaylistSong).Song, playlistMode:true);
+                        songViewer.ShowPlaceholder((args.Item as PlaylistSong).Song, playlistMode: true);
                         args.RegisterUpdateCallback(ContainerContentChangingDelegate);
                         break;
                     case 1:

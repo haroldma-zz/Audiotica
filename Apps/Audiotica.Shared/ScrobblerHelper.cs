@@ -49,33 +49,35 @@ namespace Audiotica
 
         public static async Task<SavingError> SaveTrackAsync(LastTrack track)
         {
-            PreparedSong preparedSong = null;
-            var providerId = track.ToSong().ProviderId;
-            if (providerId == "lastid.")
-            {
-                preparedSong = await PrepareTrackForDownloadAsync(track);
-                providerId = preparedSong.Song.ProviderId;
-            }
-
-            if (App.Locator.CollectionService.SongAlreadyExists(providerId, track.Name, track.AlbumName,
-                track.ArtistName))
-            {
-                return SavingError.AlreadyExists;
-            }
-
-            var url = await Mp3MatchEngine.FindMp3For(track.Name, track.ArtistName).ConfigureAwait(false);
-
-            if (string.IsNullOrEmpty(url))
-                return SavingError.NoMatch;
-
-            if (preparedSong == null)
-                preparedSong = await PrepareTrackForDownloadAsync(track);
-            preparedSong.Song.AudioUrl = url;
-
             try
             {
+                PreparedSong preparedSong = null;
+                var providerId = track.ToSong().ProviderId;
+                if (providerId == "lastid.")
+                {
+                    preparedSong = await PrepareTrackForDownloadAsync(track);
+                    providerId = preparedSong.Song.ProviderId;
+                }
+
+                if (App.Locator.CollectionService.SongAlreadyExists(providerId, track.Name, track.AlbumName,
+                    track.ArtistName))
+                {
+                    return SavingError.AlreadyExists;
+                }
+
+                var url =
+                    await App.Locator.Mp3MatchEngine.FindMp3For(track.Name, track.ArtistName).ConfigureAwait(false);
+
+                if (string.IsNullOrEmpty(url))
+                    return SavingError.NoMatch;
+
+                if (preparedSong == null)
+                    preparedSong = await PrepareTrackForDownloadAsync(track);
+                preparedSong.Song.AudioUrl = url;
+
+
                 await App.Locator.CollectionService.AddSongAsync(preparedSong.Song, preparedSong.ArtworkUrl)
-                        .ConfigureAwait(false);
+                    .ConfigureAwait(false);
                 CollectionHelper.DownloadArtistsArtworkAsync();
                 return SavingError.None;
             }
@@ -105,11 +107,7 @@ namespace Audiotica
                 var lastAlbum = await App.Locator.ScrobblerService.GetDetailAlbum(
                     string.IsNullOrEmpty(lastTrack.AlbumName) ? track.AlbumName : lastTrack.AlbumName, track.ArtistName);
 
-                if (track.ArtistMbid == null)
-                    artist = await App.Locator.ScrobblerService.GetDetailArtist(track.ArtistName).ConfigureAwait(false);
-                else
-                    artist =
-                        await App.Locator.ScrobblerService.GetDetailArtistByMbid(track.ArtistMbid).ConfigureAwait(false);
+                artist = await App.Locator.ScrobblerService.GetDetailArtist(track.ArtistName).ConfigureAwait(false);
 
                 preparedSong.Song.Album = lastAlbum.ToAlbum();
                 preparedSong.Song.Album.PrimaryArtist = artist.ToArtist();
@@ -119,7 +117,7 @@ namespace Audiotica
             }
 
             else
-                artist = await App.Locator.ScrobblerService.GetDetailArtist(track.ArtistName);
+                artist = await App.Locator.ScrobblerService.GetDetailArtist(track.ArtistName).ConfigureAwait(false);
 
             if (string.IsNullOrEmpty(preparedSong.ArtworkUrl))
                 preparedSong.ArtworkUrl = (track.Images != null && track.Images.Largest != null)
