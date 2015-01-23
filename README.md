@@ -21,6 +21,6 @@ Simply clone the repo
 
 Open the solution file `Audiotica.sln` in Visual Studio.  Make sure the selected platform is either `x86`, for emulator, or `ARM` for device.  Then right-click and click Build on the `Audiotica.WindowsPhone` project in the `Apps` folder.  Nuget should download all missing packages, if not open the package manager and click `Restore Missing Packages`.
 
-You should now have successfully build the Audiotica app for Windows Phone.  Unless you don't have the SQLite SDK installed or are in any other branch besides `master`, everything should be working.
+You should now have successfully build the Audiotica app for Windows Phone.  Unless you don't have the Ad Mediator SDK installed or are in any other branch besides `master`, everything should be working.
 
 **NOTE: As of this writing the Windows project will not build.**  This project has not be worked on yet.
