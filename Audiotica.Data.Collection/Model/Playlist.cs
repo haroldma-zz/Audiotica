@@ -2,7 +2,6 @@
 
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using Audiotica.Data.Collection.SqlHelper;
 using SQLite;
 
 #endregion

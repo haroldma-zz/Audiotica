@@ -2,17 +2,13 @@
 
 using System;
 using System.Diagnostics;
-using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
 using Windows.ApplicationModel.Background;
 using Windows.Foundation.Collections;
 using Windows.Media;
 using Windows.Media.Playback;
 using Audiotica.Core;
-using Audiotica.Core.Utilities;
-using Audiotica.Data.Collection;
-using Audiotica.Data.Collection.RunTime;
+using Audiotica.Core.WinRt.Utilities;
 
 #endregion
 
@@ -35,18 +31,19 @@ namespace Audiotica.WindowsPhone.Player
         private readonly AutoResetEvent _backgroundTaskStarted = new AutoResetEvent(false);
         private bool _backgroundtaskrunning;
         private BackgroundTaskDeferral _deferral; // Used to keep task alive
+        private AppSettingsHelper _appSettingsHelper;
 
-        private ForegroundAppStatus _foregroundAppState
+        private ForegroundAppStatus ForegroundAppState
         {
             get
             {
-                var value = AppSettingsHelper.Read(PlayerConstants.AppState);
+                var value = _appSettingsHelper.Read(PlayerConstants.AppState);
                 if (value == null)
                     return ForegroundAppStatus.Unknown;
-                else
-                    return (ForegroundAppStatus)Enum.Parse(typeof(ForegroundAppStatus), value);
+                return (ForegroundAppStatus) Enum.Parse(typeof (ForegroundAppStatus), value);
             }
         }
+
         private QueueManager _queueManager;
         private SystemMediaTransportControls _systemmediatransportcontrol;
 
@@ -59,8 +56,8 @@ namespace Audiotica.WindowsPhone.Player
             {
                 if (_queueManager != null) return _queueManager;
 
-                
-                _queueManager = new QueueManager();
+
+                _queueManager = new QueueManager(_appSettingsHelper);
                 return _queueManager;
             }
         }
@@ -75,6 +72,7 @@ namespace Audiotica.WindowsPhone.Player
         /// <param name="taskInstance"></param>
         public void Run(IBackgroundTaskInstance taskInstance)
         {
+            _appSettingsHelper = new AppSettingsHelper();
             Debug.WriteLine("Background Audio Task " + taskInstance.Task.Name + " starting...");
             // InitializeAsync SMTC object to talk with UVC. 
             //Note that, this is intended to run after app is paused and 
@@ -102,7 +100,7 @@ namespace Audiotica.WindowsPhone.Player
             BackgroundMediaPlayer.MessageReceivedFromForeground += BackgroundMediaPlayer_MessageReceivedFromForeground;
 
             //Send information to foreground that background task has been started if app is active
-            if (_foregroundAppState != ForegroundAppStatus.Suspended)
+            if (ForegroundAppState != ForegroundAppStatus.Suspended)
             {
                 var message = new ValueSet {{PlayerConstants.BackgroundTaskStarted, ""}};
                 BackgroundMediaPlayer.SendMessageToForeground(message);
@@ -110,7 +108,7 @@ namespace Audiotica.WindowsPhone.Player
             _backgroundTaskStarted.Set();
             _backgroundtaskrunning = true;
 
-            AppSettingsHelper.Write(PlayerConstants.BackgroundTaskState,
+            _appSettingsHelper.Write(PlayerConstants.BackgroundTaskState,
                 PlayerConstants.BackgroundTaskRunning);
             _deferral = taskInstance.GetDeferral();
         }
@@ -142,7 +140,7 @@ namespace Audiotica.WindowsPhone.Player
                     _queueManager = null;
                 }
 
-                AppSettingsHelper.Write(PlayerConstants.BackgroundTaskState,
+                _appSettingsHelper.Write(PlayerConstants.BackgroundTaskState,
                     PlayerConstants.BackgroundTaskCancelled);
 
                 _backgroundtaskrunning = false;
@@ -270,9 +268,9 @@ namespace Audiotica.WindowsPhone.Player
         private void playList_TrackChanged(QueueManager sender, object args)
         {
             UpdateUvcOnNewTrack();
-            AppSettingsHelper.Write(PlayerConstants.CurrentTrack, sender.CurrentTrack.Id);
+            _appSettingsHelper.Write(PlayerConstants.CurrentTrack, sender.CurrentTrack.Id);
 
-            if (_foregroundAppState != ForegroundAppStatus.Active) return;
+            if (ForegroundAppState != ForegroundAppStatus.Active) return;
 
             //Message channel that can be used to send messages to foreground
             var message = new ValueSet {{PlayerConstants.Trackchanged, sender.CurrentTrack.Id}};
@@ -322,14 +320,14 @@ namespace Audiotica.WindowsPhone.Player
         private void BackgroundMediaPlayer_MessageReceivedFromForeground(object sender,
             MediaPlayerDataReceivedEventArgs e)
         {
-            foreach (string key in e.Data.Keys)
+            foreach (var key in e.Data.Keys)
             {
                 switch (key.ToLower())
                 {
                     case PlayerConstants.AppSuspended:
                         Debug.WriteLine("App suspending");
                         // App is suspended, you can save your task state at this point
-                        AppSettingsHelper.Write(PlayerConstants.CurrentTrack, QueueManager.CurrentTrack.Id);
+                        _appSettingsHelper.Write(PlayerConstants.CurrentTrack, QueueManager.CurrentTrack.Id);
                         break;
                     case PlayerConstants.AppResumed:
                         Debug.WriteLine("App resuming"); // App is resumed, now subscribe to message channel

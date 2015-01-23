@@ -11,15 +11,21 @@ using Windows.Storage;
 using Windows.UI.StartScreen;
 using Windows.UI.Xaml.Media.Imaging;
 using Audiotica.Controls;
-using Audiotica.Core.Common;
-using Audiotica.Core.Utilities;
+using Audiotica.Core.Utils;
+using Audiotica.Core.Utils.Interfaces;
+using Audiotica.Core.WinRt;
+using Audiotica.Core.WinRt.Common;
+using Audiotica.Core.WinRt.Utilities;
+using Audiotica.Data.Collection;
 using Audiotica.Data.Collection.Model;
-using Audiotica.Data.Collection.SqlHelper;
 using Audiotica.Data.Spotify.Models;
 using Audiotica.View;
 using GalaSoft.MvvmLight.Threading;
 using IF.Lastfm.Core.Objects;
+using PCLStorage;
 using Xamarin;
+using CreationCollisionOption = PCLStorage.CreationCollisionOption;
+using NameCollisionOption = Windows.Storage.NameCollisionOption;
 
 #endregion
 
@@ -139,7 +145,7 @@ namespace Audiotica
             var songs = App.Locator.CollectionService.Songs.Where(p => p.SongState == SongState.Downloaded).ToList();
             var importedSongs = App.Locator.CollectionService.Songs.Where(p =>
                 p.SongState == SongState.Local && !p.AudioUrl.Substring(1).StartsWith(":")).ToList();
-            var songsFolder = await StorageHelper.GetFolderAsync("songs");
+            var songsFolder = await WinRtStorageHelper.GetFolderAsync("songs");
 
             if (songs.Count != 0 && songsFolder != null)
             {
@@ -152,17 +158,17 @@ namespace Audiotica
                     {
                         try
                         {
-                            var path = "Audiotica/" + 
-                                song.Album.PrimaryArtist.Name.CleanForFileName() + "/" + 
-                                song.Album.Name.CleanForFileName();
+                            var path = "Audiotica/" +
+                                       song.Album.PrimaryArtist.Name.CleanForFileName() + "/" +
+                                       song.Album.Name.CleanForFileName();
                             var filename = string.Format("{0}.mp3", song.Name.CleanForFileName());
 
                             if (song.ArtistName != song.Album.PrimaryArtist.Name)
                                 filename = song.ArtistName.CleanForFileName() + "-" + filename;
 
-                            var file = await StorageHelper.GetFileAsync(string.Format("songs/{0}.mp3", song.Id));
+                            var file = await WinRtStorageHelper.GetFileAsync(string.Format("songs/{0}.mp3", song.Id));
 
-                            var folder = await StorageHelper.EnsureFolderExistsAsync(path, KnownFolders.MusicLibrary);
+                            var folder = await WinRtStorageHelper.EnsureFolderExistsAsync(path, KnownFolders.MusicLibrary);
                             await file.MoveAsync(folder, filename, NameCollisionOption.ReplaceExisting);
 
                             song.AudioUrl = Path.Combine(folder.Path, filename);
@@ -323,12 +329,9 @@ namespace Audiotica
                     handle.Data.Add("SavingError", result.ToString());
                     return result;
                 }
-                else
-                {
-                    ShowResults(SavingError.Network, chartTrack.Name);
-                    handle.Data.Add("SavingError", "Network");
-                    return SavingError.Network;
-                }
+                ShowResults(SavingError.Network, chartTrack.Name);
+                handle.Data.Add("SavingError", "Network");
+                return SavingError.Network;
             }
         }
 
@@ -542,14 +545,13 @@ namespace Audiotica
                     var artistFilePath = string.Format(CollectionConstant.ArtistsArtworkPath, artist.Id);
                     var file =
                         await
-                            StorageHelper.CreateFileAsync(artistFilePath,
-                                option: CreationCollisionOption.ReplaceExisting);
+                            StorageHelper.CreateFileAsync(artistFilePath, option: CreationCollisionOption.ReplaceExisting);
 
                     using (var client = new HttpClient())
                     {
                         using (var stream = await client.GetStreamAsync(lastArtist.MainImage.Largest))
                         {
-                            using (var fileStream = await file.OpenStreamForWriteAsync())
+                            using (var fileStream = await file.OpenAsync(FileAccess.ReadAndWrite))
                             {
                                 await stream.CopyToAsync(fileStream);
                             }
@@ -563,11 +565,11 @@ namespace Audiotica
                     }
 
                     await DispatcherHelper.RunAsync(() =>
+                    {
                         artist.Artwork =
-                            new BitmapImage(new Uri(CollectionConstant.LocalStorageAppPath + artistFilePath))
-                            {
-                                DecodePixelHeight = App.Locator.CollectionService.ScaledImageSize
-                            });
+                            new PclBitmapImage(new Uri(CollectionConstant.LocalStorageAppPath + artistFilePath));
+                        artist.Artwork.SetDecodedPixel(App.Locator.CollectionService.ScaledImageSize);
+                    });
                 }
                 catch
                 {
@@ -745,7 +747,7 @@ namespace Audiotica
                 if (!App.Locator.Player.IsPlayerActive && clearIfNotActive)
                     await App.Locator.CollectionService.ClearQueueAsync();
 
-                var insert = AppSettingsHelper.Read("AddToInsert", true, SettingsStrategy.Roaming) && !ignoreInsertMode;
+                var insert = App.Locator.AppSettingsHelper.Read("AddToInsert", true, SettingsStrategy.Roaming) && !ignoreInsertMode;
 
                 queueSong = await App.Locator.CollectionService.AddToQueueAsync(song,
                     insert ? App.Locator.Player.CurrentQueue : null, shuffleInsert).ConfigureAwait(false);
@@ -811,7 +813,8 @@ namespace Audiotica
             }
         }
 
-        private static async Task<SavingError> _SaveTrackAsync(SimpleTrack track, FullAlbum album, bool onFinishDownloadArtwork = true)
+        private static async Task<SavingError> _SaveTrackAsync(SimpleTrack track, FullAlbum album,
+            bool onFinishDownloadArtwork = true)
         {
             var alreadySaving = SpotifySavingTracks.FirstOrDefault(p => p == track.Id) != null;
 

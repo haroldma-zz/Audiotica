@@ -10,7 +10,6 @@ using Windows.UI.Xaml.Controls;
 using Audiotica.Core.Common;
 using Audiotica.Data.Collection;
 using Audiotica.Data.Collection.Model;
-using Audiotica.Data.Collection.SqlHelper;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Threading;

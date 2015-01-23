@@ -2,6 +2,8 @@
 
 using Windows.UI.Xaml.Navigation;
 using Audiotica.Core.Utilities;
+using Audiotica.Core.Utils;
+using Audiotica.Core.WinRt.Utilities;
 using Audiotica.View.Setting;
 
 #endregion
@@ -15,7 +17,7 @@ namespace Audiotica.View
             InitializeComponent();
             App.Navigator = new Navigator(this, LayoutRoot);
 
-            if (AppVersionHelper.IsFirstRun)
+            if (App.Locator.AppVersionHelper.IsFirstRun)
                 App.Navigator.AddPage(new FirstRunPage());
             else if (IsRestore())
                 App.Navigator.AddPage(new RestorePage());
@@ -41,13 +43,13 @@ namespace Audiotica.View
 
         private bool IsRestore()
         {
-            return AppSettingsHelper.Read<bool>("FactoryReset") 
+            return App.Locator.AppSettingsHelper.Read<bool>("FactoryReset") 
                 || StorageHelper.FileExistsAsync("_current_restore.autcp").Result;
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
-            if (AppVersionHelper.IsFirstRun)
+            if (App.Locator.AppVersionHelper.IsFirstRun)
                 App.Navigator.GoTo<FirstRunPage, PageTransition>(null);
             else if (IsRestore())
                 App.Navigator.GoTo<RestorePage, PageTransition>(null);

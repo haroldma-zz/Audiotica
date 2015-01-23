@@ -1,32 +1,29 @@
 ﻿#region
 
-// The Blank Application template is documented at http://go.microsoft.com/fwlink/?LinkId=234227
 using System;
 using System.Diagnostics;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.ApplicationModel.Store;
+using Windows.Graphics.Display;
 using Windows.Phone.UI.Input;
-using Windows.Storage;
 using Windows.System;
 using Windows.UI.Popups;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
-using Audiotica.Core.Common;
 using Audiotica.Core.Utilities;
-using Audiotica.Data.Collection.Model;
-using Audiotica.Data.Service.RunTime;
+using Audiotica.Core.Utils;
+using Audiotica.Core.WinRt;
+using Audiotica.Core.WinRt.Common;
 using Audiotica.View;
 using Audiotica.ViewModel;
 using GalaSoft.MvvmLight.Threading;
 using GoogleAnalytics;
-using MyToolkit.Paging.Handlers;
 using Xamarin;
 
 #endregion
@@ -81,13 +78,6 @@ namespace Audiotica
             Suspending += OnSuspending;
             Resuming += OnResuming;
             UnhandledException += OnUnhandledException;
-
-            AppVersionHelper.OnLaunched();
-            EasyTracker.GetTracker().AppVersion =
-                AppVersionHelper.CurrentVersion + (IsProduction ? "" : "-beta");
-
-            Current.DebugSettings.EnableFrameRateCounter = AppSettingsHelper.Read<bool>("FrameRateCounter");
-            Current.DebugSettings.EnableRedrawRegions = AppSettingsHelper.Read<bool>("RedrawRegions");
         }
 
         public static event EventHandler<BackPressedEventArgs> SupressBackEvent;
@@ -110,7 +100,7 @@ namespace Audiotica
 
         #region Overriding
 
-        protected override async void OnActivated(IActivatedEventArgs e)
+        protected override void OnActivated(IActivatedEventArgs e)
         {
             base.OnActivated(e);
 
@@ -136,8 +126,8 @@ namespace Audiotica
         {
             CreateRootFrame();
 
-            var restore = AppSettingsHelper.Read<bool>("FactoryReset")
-            || await StorageHelper.FileExistsAsync("_current_restore.autcp");
+            var restore = Locator.AppSettingsHelper.Read<bool>("FactoryReset")
+                          || await StorageHelper.FileExistsAsync("_current_restore.autcp");
 
             if (RootFrame.Content == null)
             {
@@ -202,10 +192,10 @@ namespace Audiotica
             var dataManager = DataTransferManager.GetForCurrentView();
             dataManager.DataRequested += DataTransferManagerOnDataRequested;
 
-            if (AppVersionHelper.JustUpdated)
+            if (Locator.AppVersionHelper.JustUpdated)
                 OnUpdate();
-            else if (AppVersionHelper.IsFirstRun)
-                AppSettingsHelper.WriteAsJson("LastRunVersion", AppVersionHelper.CurrentVersion);
+            else if (Locator.AppVersionHelper.IsFirstRun)
+                Locator.AppSettingsHelper.WriteAsJson("LastRunVersion", Locator.AppVersionHelper.CurrentVersion);
         }
 
         #endregion
@@ -219,11 +209,43 @@ namespace Audiotica
             ApplicationView.GetForCurrentView().VisibleBoundsChanged += OnVisibleBoundsChanged;
             OnVisibleBoundsChanged(null, null);
 
-            var crash = AppSettingsHelper.ReadJsonAs<Exception>("CrashingException");
-            if (crash != null && !AppVersionHelper.JustUpdated)
+            var crash = Locator.AppSettingsHelper.ReadJsonAs<Exception>("CrashingException");
+            if (crash != null && !Locator.AppVersionHelper.JustUpdated)
                 await WarnAboutCrashAsync("Application Crashed", crash);
             else
                 await ReviewReminderAsync();
+        }
+
+        private int GetScaledImageSize()
+        {
+            var scaledImageSize = 200;
+            double factor = 1;
+
+            var scaledFactor = DisplayInformation.GetForCurrentView().ResolutionScale;
+            switch (scaledFactor)
+            {
+                case ResolutionScale.Scale120Percent:
+                    factor = 1.2;
+                    break;
+                case ResolutionScale.Scale140Percent:
+                    factor = 1.4;
+                    break;
+                case ResolutionScale.Scale150Percent:
+                    factor = 1.5;
+                    break;
+                case ResolutionScale.Scale160Percent:
+                    factor = 1.6;
+                    break;
+                case ResolutionScale.Scale180Percent:
+                    factor = 1.8;
+                    break;
+                case ResolutionScale.Scale225Percent:
+                    factor = 2.25;
+                    break;
+            }
+
+            scaledImageSize = (int)(scaledImageSize * factor);
+            return scaledImageSize;
         }
 
         private async void OnUpdate()
@@ -259,7 +281,7 @@ namespace Audiotica
             e.Handled = true;
 
             //just in case it crashes, save it
-            AppSettingsHelper.WriteAsJson("CrashingException", e.Exception);
+            Locator.AppSettingsHelper.WriteAsJson("CrashingException", e.Exception);
 
             DispatcherHelper.CheckBeginInvokeOnUI(async () =>
             {
@@ -274,7 +296,7 @@ namespace Audiotica
 
             const string emailTo = "badbug@audiotica.fm";
             const string emailSubject = "Audiotica crash report";
-            var emailBody = "I encountered a problem with Audiotica (v" + AppVersionHelper.CurrentVersion +
+            var emailBody = "I encountered a problem with Audiotica (v" + Locator.AppVersionHelper.CurrentVersion +
                             ")...\r\n\r\n" + e.Message + "\r\n\r\nDetails:\r\n" +
                             stacktrace;
             var url = "mailto:?to=" + emailTo + "&subject=" + emailSubject + "&body=" +
@@ -288,7 +310,7 @@ namespace Audiotica
             }
 
             //made it so far, no need to save the crash details
-            AppSettingsHelper.Write("CrashingException", null);
+            Locator.AppSettingsHelper.Write("CrashingException", null);
         }
 
         private void DataTransferManagerOnDataRequested(DataTransferManager sender, DataRequestedEventArgs e)
@@ -309,15 +331,25 @@ namespace Audiotica
 
             if (RootFrame != null) return;
 
-            RootFrame = new Frame() {Style = Resources["AppFrame"] as Style};
-            Window.Current.Content = RootFrame;
             DispatcherHelper.Initialize();
+
+            Locator.AppVersionHelper.OnLaunched();
+            EasyTracker.GetTracker().AppVersion =
+                Locator.AppVersionHelper.CurrentVersion + (IsProduction ? "" : "-beta");
+
+            Current.DebugSettings.EnableFrameRateCounter = Locator.AppSettingsHelper.Read<bool>("FrameRateCounter");
+            Current.DebugSettings.EnableRedrawRegions = Locator.AppSettingsHelper.Read<bool>("RedrawRegions");
+
+            RootFrame = new Frame {Style = Resources["AppFrame"] as Style};
+            Window.Current.Content = RootFrame;
         }
 
         public async Task BootAppServicesAsync()
         {
             if (!_init)
             {
+                Locator.CollectionService.ScaledImageSize = GetScaledImageSize();
+
                 using (var handle = Insights.TrackTime("Boot App Services"))
                 {
                     try
@@ -344,8 +376,8 @@ namespace Audiotica
 
         private async Task ReviewReminderAsync()
         {
-            var launchCount = AppSettingsHelper.Read<int>("LaunchCount");
-            AppSettingsHelper.Write("LaunchCount", ++launchCount);
+            var launchCount = Locator.AppSettingsHelper.Read<int>("LaunchCount");
+            Locator.AppSettingsHelper.Write("LaunchCount", ++launchCount);
             if (launchCount != 5) return;
 
             var rate = "FeedbackDialogRateButton".FromLanguageResource();

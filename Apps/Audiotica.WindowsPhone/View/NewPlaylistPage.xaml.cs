@@ -1,15 +1,13 @@
 ﻿#region
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Audiotica.Core.Common;
-using Audiotica.Core.Utilities;
-using Audiotica.Data.Collection.Model;
+using Audiotica.Core.WinRt;
+using Audiotica.Core.WinRt.Common;
 
 #endregion
-
 
 namespace Audiotica.View
 {
@@ -22,7 +20,7 @@ namespace Audiotica.View
             BottomAppBar = null;
         }
 
-        private async void AppBarButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        private async void AppBarButton_Click(object sender, RoutedEventArgs e)
         {
             var button = sender as AppBarButton;
             var name = PlaylistNameText.Text;
@@ -37,14 +35,13 @@ namespace Audiotica.View
             else
             {
                 if (App.Locator.CollectionService.
-                    Playlists.FirstOrDefault(p => 
+                    Playlists.FirstOrDefault(p =>
                         String.Equals(p.Name, name, StringComparison.CurrentCultureIgnoreCase)) != null)
                 {
                     CurtainPrompt.ShowError("PlaylistCreateNameTaken".FromLanguageResource());
                 }
                 else
                 {
-                    
                     var playlist = await App.Locator.CollectionService.CreatePlaylistAsync(name);
                     CurtainPrompt.Show("PlaylistCreateSuccess".FromLanguageResource(), playlist.Name);
                     App.Navigator.GoBack();

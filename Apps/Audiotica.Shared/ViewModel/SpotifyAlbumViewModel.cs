@@ -1,17 +1,14 @@
 ﻿#region
 
-using System;
 using System.Collections.ObjectModel;
 using Windows.UI.Xaml.Controls;
-using Audiotica.Core.Common;
-using Audiotica.Core.Utilities;
-using Audiotica.Data;
+using Audiotica.Core.WinRt;
+using Audiotica.Core.WinRt.Common;
 using Audiotica.Data.Service.Interfaces;
 using Audiotica.Data.Spotify.Models;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Messaging;
-using IF.Lastfm.Core.Objects;
 
 #endregion
 
@@ -19,11 +16,11 @@ namespace Audiotica.ViewModel
 {
     public class SpotifyAlbumViewModel : ViewModelBase
     {
+        private readonly ISpotifyService _service;
         private FullAlbum _album;
         private bool _isLoading;
         private RelayCommand<ItemClickEventArgs> _songClickRelayCommand;
         private ObservableCollection<SimpleTrack> _tracks;
-        private readonly ISpotifyService _service;
 
         public SpotifyAlbumViewModel(ISpotifyService service)
         {
@@ -91,7 +88,7 @@ namespace Audiotica.ViewModel
 
         private async void SongClickExecute(ItemClickEventArgs item)
         {
-            var track = (SimpleTrack)item.ClickedItem;
+            var track = (SimpleTrack) item.ClickedItem;
             await CollectionHelper.SaveTrackAsync(track, Album);
         }
     }

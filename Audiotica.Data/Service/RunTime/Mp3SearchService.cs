@@ -6,8 +6,8 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Audiotica.Core.Exceptions;
-using Audiotica.Core.Utilities;
+using Audiotica.Core.Utils;
+using Audiotica.Core.Utils.Interfaces;
 using Audiotica.Data.Model;
 using Audiotica.Data.Model.SoundCloud;
 using Audiotica.Data.Service.Interfaces;
@@ -22,92 +22,33 @@ namespace Audiotica.Data.Service.RunTime
 {
     public class Mp3SearchService : IMp3SearchService
     {
-        public Mp3SearchService()
-        {
-            HtmlNode.ElementsFlags.Remove("form");
-        }
+        private readonly IAppSettingsHelper _appSettingsHelper;
 
         private const string SoundCloudSearchUrl =
             "https://api.soundcloud.com/search/sounds?client_id={0}&limit={1}&q={2}";
 
         private const string Mp3ClanSearchUrl = "http://mp3clan.com/app/mp3Search.php?q={0}&count={1}";
-
         private const string Mp3TruckSearchUrl = "https://mp3truck.net/ajaxRequest.php";
-
         private const string MeileSearchUrl = "http://www.meile.com/search?type=&q={0}";
         private const string MeileDetailUrl = "http://www.meile.com/song/mult?songId={0}";
-
         private const string NeteaseSuggestApi = "http://music.163.com/api/search/suggest/web?csrf_token=";
         private const string NeteaseDetailApi = "http://music.163.com/api/song/detail/?ids=%5B{0}%5D";
-
         private const string Mp3SkullSearchUrl = "http://mp3skull.com/search_db.php?q={0}&fckh={1}";
-
         private string _mp3SkullFckh;
+
+        public Mp3SearchService(IAppSettingsHelper appSettingsHelper)
+        {
+            _appSettingsHelper = appSettingsHelper;
+            HtmlNode.ElementsFlags.Remove("form");
+        }
+
         private string Mp3SkullFckh
         {
-            get { return _mp3SkullFckh ?? (_mp3SkullFckh = AppSettingsHelper.Read<string>("Mp3SkullFckh")); }
+            get { return _mp3SkullFckh ?? (_mp3SkullFckh = _appSettingsHelper.Read<string>("Mp3SkullFckh")); }
             set
             {
                 _mp3SkullFckh = value;
-                AppSettingsHelper.Write("Mp3SkullFckh", value);
-            }
-        }
-
-        public async Task<List<WebSong>>  SearchYoutube(string title, string artist, string album = null, int limit = 5)
-        {
-            var youtubeService = new YouTubeService(new BaseClientService.Initializer()
-            {
-                ApiKey = ApiKeys.YoutubeId,
-                ApplicationName = "Audiotica"
-            });
-            youtubeService.HttpClient.DefaultRequestHeaders.Referrer = new Uri("http://audiotica.fm");
-
-            var searchListRequest = youtubeService.Search.List("snippet");
-            searchListRequest.Q = CreateQuery(title, artist, album, false) + " (Audio)";
-            searchListRequest.MaxResults = limit;
-
-            try
-            {
-                // Call the search.list method to retrieve results matching the specified query term.
-                var searchListResponse = await searchListRequest.ExecuteAsync().ConfigureAwait(false);
-
-                var songs = new List<WebSong>();
-
-                foreach (var vid in from searchResult in searchListResponse.Items where searchResult.Id.Kind == "youtube#video" select new WebSong(searchResult))
-                {
-                    using (var client = new HttpClient())
-                    {
-                        var resp = await client.GetAsync(
-                            string.Format(
-                                "http://www.youtube-mp3.org/a/itemInfo/?video_id={0}&ac=www&t=grp&r=1419628947067&s=139194",
-                                vid.Id));
-                        if (!resp.IsSuccessStatusCode) continue;
-
-                        var json = await resp.Content.ReadAsStringAsync();
-                        json = json.Replace(";", "").Replace("info = ", "");
-
-                        //must be a valid json to continue
-                        if (!json.StartsWith("{") || !json.EndsWith("}")) continue;
-
-                        var o = JToken.Parse(json);
-
-                        if (o.Value<string>("status") != "serving") continue;
-
-                        var length = o.Value<string>("length");
-                        if (!string.IsNullOrEmpty(length))
-                            vid.Duration = TimeSpan.FromMinutes(int.Parse(length));
-                        vid.AudioUrl =
-                            string.Format(
-                                "http://www.youtube-mp3.org/get?ab=128&video_id={0}&h={1}&r=1419629380530.1463092791&s=36098",
-                                vid.Id, o.Value<string>("h"));
-                        songs.Add(vid);
-                    }
-                }
-                return FilterByTypeAndMatch(songs, title, artist);
-            }
-            catch
-            {
-                return null;
+                _appSettingsHelper.Write("Mp3SkullFckh", value);
             }
         }
 
@@ -150,10 +91,10 @@ namespace Audiotica.Data.Service.RunTime
         public async Task<List<WebSong>> SearchMp3Clan(string title, string artist, string album = null, int limit = 5)
         {
             //mp3clan search doesn't work that well with the pound key (even encoded)
-            var url = string.Format(Mp3ClanSearchUrl, 
+            var url = string.Format(Mp3ClanSearchUrl,
                 CreateQuery(
-                title.Contains("#") ? title.Replace("#", "") : title, 
-                artist, album), limit);
+                    title.Contains("#") ? title.Replace("#", "") : title,
+                    artist, album), limit);
 
             using (var client = new HttpClient())
             {
@@ -258,6 +199,149 @@ namespace Audiotica.Data.Service.RunTime
 
                     return songs.Any() ? FilterByTypeAndMatch(songs, title, artist) : null;
                 }
+            }
+        }
+
+        public async Task<List<WebSong>> SearchMeile(string title, string artist, string album = null, int limit = 5)
+        {
+            var url = string.Format(MeileSearchUrl, CreateQuery(title, artist, album));
+
+            using (var client = new HttpClient())
+            {
+                var resp = await client.GetAsync(url).ConfigureAwait(false);
+                var html = await resp.Content.ReadAsStringAsync().ConfigureAwait(false);
+
+                //Meile has no search api, so we go to old school web page scrapping
+                //using HtmlAgilityPack this is very easy
+                var doc = new HtmlDocument();
+                doc.LoadHtml(html);
+
+                //Get the hyperlink node with the class='name'
+                var songNameNodes = doc.DocumentNode.Descendants("a")
+                    .Where(p => p.Attributes.Contains("class") && p.Attributes["class"].Value == "name");
+
+                if (songNameNodes == null) return null;
+
+                //in it there is an attribute that contains the url to the song
+                var songUrls = songNameNodes.Select(p => p.Attributes["href"].Value);
+                var songIds = songUrls.Where(p => p.Contains("/song/")).ToList();
+
+                var songs = new List<WebSong>();
+
+                foreach (var songId in songIds)
+                {
+                    var song = await GetDetailsForMeileSong(songId.Replace("/song/", ""), client).ConfigureAwait(false);
+                    if (song != null)
+                    {
+                        songs.Add(new WebSong(song));
+                    }
+                }
+
+                return songs.Any() ? FilterByTypeAndMatch(songs, title, artist) : null;
+            }
+        }
+
+        public async Task<List<WebSong>> SearchNetease(string title, string artist, string album = null, int limit = 5)
+        {
+            using (var client = new HttpClient())
+            {
+                //Setting referer (163 doesn't work without it)
+                client.DefaultRequestHeaders.Referrer = new Uri("http://music.163.com");
+
+                //Lets go ahead and search for a match
+                var dict = new Dictionary<string, string>
+                {
+                    {"s", CreateQuery(title, artist, album, false)},
+                    {"limit", limit.ToString()}
+                };
+
+                using (var data = new FormUrlEncodedContent(dict))
+                {
+                    var resp = await client.PostAsync(NeteaseSuggestApi, data).ConfigureAwait(false);
+                    var json = await resp.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    var parseResp = await json.DeserializeAsync<NeteaseRoot>();
+                    if (!resp.IsSuccessStatusCode) return null;
+
+                    if (parseResp == null || parseResp.result == null || parseResp.result.songs == null) return null;
+
+                    var songs = new List<WebSong>();
+
+                    foreach (var neteaseSong in parseResp.result.songs)
+                    {
+                        var song = await GetDetailsForNeteaseSong(neteaseSong.id, client).ConfigureAwait(false);
+                        if (song != null)
+                        {
+                            songs.Add(new WebSong(song));
+                        }
+                    }
+
+                    return songs.Any() ? FilterByTypeAndMatch(songs, title, artist) : null;
+                }
+            }
+        }
+
+        public Task<int> GetBitrateFromCc(string ccId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<List<WebSong>> SearchYoutube(string title, string artist, string album = null, int limit = 5)
+        {
+            var youtubeService = new YouTubeService(new BaseClientService.Initializer
+            {
+                ApiKey = ApiKeys.YoutubeId,
+                ApplicationName = "Audiotica"
+            });
+            youtubeService.HttpClient.DefaultRequestHeaders.Referrer = new Uri("http://audiotica.fm");
+
+            var searchListRequest = youtubeService.Search.List("snippet");
+            searchListRequest.Q = CreateQuery(title, artist, album, false) + " (Audio)";
+            searchListRequest.MaxResults = limit;
+
+            try
+            {
+                // Call the search.list method to retrieve results matching the specified query term.
+                var searchListResponse = await searchListRequest.ExecuteAsync().ConfigureAwait(false);
+
+                var songs = new List<WebSong>();
+
+                foreach (var vid in from searchResult in searchListResponse.Items
+                    where searchResult.Id.Kind == "youtube#video"
+                    select new WebSong(searchResult))
+                {
+                    using (var client = new HttpClient())
+                    {
+                        var resp = await client.GetAsync(
+                            string.Format(
+                                "http://www.youtube-mp3.org/a/itemInfo/?video_id={0}&ac=www&t=grp&r=1419628947067&s=139194",
+                                vid.Id));
+                        if (!resp.IsSuccessStatusCode) continue;
+
+                        var json = await resp.Content.ReadAsStringAsync();
+                        json = json.Replace(";", "").Replace("info = ", "");
+
+                        //must be a valid json to continue
+                        if (!json.StartsWith("{") || !json.EndsWith("}")) continue;
+
+                        var o = JToken.Parse(json);
+
+                        if (o.Value<string>("status") != "serving") continue;
+
+                        var length = o.Value<string>("length");
+                        if (!string.IsNullOrEmpty(length))
+                            vid.Duration = TimeSpan.FromMinutes(int.Parse(length));
+                        vid.AudioUrl =
+                            string.Format(
+                                "http://www.youtube-mp3.org/get?ab=128&video_id={0}&h={1}&r=1419629380530.1463092791&s=36098",
+                                vid.Id, o.Value<string>("h"));
+                        songs.Add(vid);
+                    }
+                }
+                return FilterByTypeAndMatch(songs, title, artist);
+            }
+            catch
+            {
+                return null;
             }
         }
 
@@ -374,89 +458,6 @@ namespace Audiotica.Data.Service.RunTime
             }
         }
 
-        public async Task<List<WebSong>> SearchMeile(string title, string artist, string album = null, int limit = 5)
-        {
-            var url = string.Format(MeileSearchUrl, CreateQuery(title, artist, album));
-
-            using (var client = new HttpClient())
-            {
-                var resp = await client.GetAsync(url).ConfigureAwait(false);
-                var html = await resp.Content.ReadAsStringAsync().ConfigureAwait(false);
-
-                //Meile has no search api, so we go to old school web page scrapping
-                //using HtmlAgilityPack this is very easy
-                var doc = new HtmlDocument();
-                doc.LoadHtml(html);
-
-                //Get the hyperlink node with the class='name'
-                var songNameNodes = doc.DocumentNode.Descendants("a")
-                    .Where(p => p.Attributes.Contains("class") && p.Attributes["class"].Value == "name");
-
-                if (songNameNodes == null) return null;
-
-                //in it there is an attribute that contains the url to the song
-                var songUrls = songNameNodes.Select(p => p.Attributes["href"].Value);
-                var songIds = songUrls.Where(p => p.Contains("/song/")).ToList();
-
-                var songs = new List<WebSong>();
-
-                foreach (var songId in songIds)
-                {
-                    var song = await GetDetailsForMeileSong(songId.Replace("/song/", ""), client).ConfigureAwait(false);
-                    if (song != null)
-                    {
-                        songs.Add(new WebSong(song));
-                    }
-                }
-
-                return songs.Any() ? FilterByTypeAndMatch(songs, title, artist) : null;
-            }
-        }
-
-        public async Task<List<WebSong>> SearchNetease(string title, string artist, string album = null, int limit = 5)
-        {
-            using (var client = new HttpClient())
-            {
-                //Setting referer (163 doesn't work without it)
-                client.DefaultRequestHeaders.Referrer = new Uri("http://music.163.com");
-
-                //Lets go ahead and search for a match
-                var dict = new Dictionary<string, string>
-                {
-                    {"s", CreateQuery(title, artist, album, false)},
-                    {"limit", limit.ToString()}
-                };
-
-                using (var data = new FormUrlEncodedContent(dict))
-                {
-                    var resp = await client.PostAsync(NeteaseSuggestApi, data).ConfigureAwait(false);
-                    var json = await resp.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    var parseResp = await json.DeserializeAsync<NeteaseRoot>();
-                    if (!resp.IsSuccessStatusCode) return null;
-
-                    if (parseResp == null || parseResp.result == null || parseResp.result.songs == null) return null;
-
-                    var songs = new List<WebSong>();
-
-                    foreach (var neteaseSong in parseResp.result.songs)
-                    {
-                        var song = await GetDetailsForNeteaseSong(neteaseSong.id, client).ConfigureAwait(false);
-                        if (song != null)
-                        {
-                            songs.Add(new WebSong(song));
-                        }
-                    }
-
-                    return songs.Any() ? FilterByTypeAndMatch(songs, title, artist) : null;
-                }
-            }
-        }
-
-        public Task<int> GetBitrateFromCc(string ccId)
-        {
-            throw new NotImplementedException();
-        }
-
         private string CreateQuery(string title, string artist, string album, bool urlEncode = true)
         {
             var query = ((title + " " + artist).Trim() + album).Trim();
@@ -508,7 +509,7 @@ namespace Audiotica.Data.Service.RunTime
                                      || cleanTile.ToLower().Contains(p.Title.ToLower());
                 var isCorrectArtist = p.Artist != null
                     ? p.Artist.ToLower().Contains(artist.ToLower())
-                      || artist.ToLower().Contains(p.Artist.ToLower()) 
+                      || artist.ToLower().Contains(p.Artist.ToLower())
                     //soundcloud doesnt have artist prop, check in title
                     : p.Title.ToLower().Contains(artist.ToLower());
 
@@ -533,13 +534,13 @@ namespace Audiotica.Data.Service.RunTime
             songTitle = songTitle.ToLower();
 
             var isSupposedType = title.Contains(" " + type)
-                || title.Contains(type + " ")
-                || title.Contains(type + ")")
-                || title.Contains("(" + type);
+                                 || title.Contains(type + " ")
+                                 || title.Contains(type + ")")
+                                 || title.Contains("(" + type);
             var isType = songTitle.Contains(" " + type)
-                || songTitle.Contains(type + " ") 
-                || songTitle.Contains(type+")")
-                || songTitle.Contains("(" + type);
+                         || songTitle.Contains(type + " ")
+                         || songTitle.Contains(type + ")")
+                         || songTitle.Contains("(" + type);
             return isSupposedType && isType || !isSupposedType && !isType;
         }
 

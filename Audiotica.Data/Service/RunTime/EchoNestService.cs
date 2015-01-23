@@ -1,11 +1,10 @@
 ﻿#region
 
-using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Audiotica.Core.Exceptions;
-using Audiotica.Core.Utilities;
+using Audiotica.Core.Utils;
 using Audiotica.Data.Model.EchoNest;
 using Audiotica.Data.Service.Interfaces;
 
@@ -56,7 +55,7 @@ namespace Audiotica.Data.Service.RunTime
 
         private void ThrowIfError<T>(EchoRoot<T> echoResponse)
         {
-            if (echoResponse == null || echoResponse.response as EchoResponse == null)
+            if (echoResponse == null || !(echoResponse.response is EchoResponse))
                 throw new NetworkException();
 
             var resp = echoResponse.response as EchoResponse;

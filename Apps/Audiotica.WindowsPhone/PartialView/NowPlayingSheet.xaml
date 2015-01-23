@@ -296,7 +296,7 @@
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Pivot Title="NOW PLAYING" HeaderTemplate="{StaticResource PivotHeaderTemplate}">
             <Pivot.Background>
-                <ImageBrush Opacity=".25" Stretch="UniformToFill" ImageSource="{Binding CurrentQueue.Song.Artist.Artwork}" />
+                <ImageBrush Opacity=".25" Stretch="UniformToFill" ImageSource="{Binding CurrentQueue.Song.Artist.Artwork.Image}" />
             </Pivot.Background>
             <PivotItem Header="PLAYER">
                 <Grid>
@@ -310,7 +310,7 @@
                         <Image VerticalAlignment="Top"
                                    HorizontalAlignment="Left"
                                    Stretch="UniformToFill"
-                                   Source="{Binding CurrentQueue.Song.Album.Artwork}" Height="370" Width="370" />
+                                   Source="{Binding CurrentQueue.Song.Album.Artwork.Image}" Height="370" Width="370" />
                         <Grid VerticalAlignment="Bottom" Background="#7F000000">
                             <StackPanel Margin="20">
                                 <TextBlock FontSize="30" Text="{Binding CurrentQueue.Song.Name}" TextTrimming="CharacterEllipsis" />

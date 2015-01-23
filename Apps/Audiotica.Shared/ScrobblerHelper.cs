@@ -63,7 +63,7 @@ namespace Audiotica
                 return SavingError.AlreadyExists;
             }
 
-            var url = await Mp3MatchEngine.FindMp3For(track.Name, track.ArtistName).ConfigureAwait(false);
+            var url = await App.Locator.Mp3MatchEngine.FindMp3For(track.Name, track.ArtistName).ConfigureAwait(false);
 
             if (string.IsNullOrEmpty(url))
                 return SavingError.NoMatch;

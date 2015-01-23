@@ -7,21 +7,21 @@ using System.Linq;
 
 #endregion
 
-namespace Audiotica.Core.Utilities
+namespace Audiotica.Core.Utils
 {
     public static class CollectionExtensions
     {
         public static void Sort<T>(this ObservableCollection<T> observable, Comparison<T> comparison)
         {
-            List<T> sorted = observable.ToList();
+            var sorted = observable.ToList();
             sorted.Sort(comparison);
 
-            int ptr = 0;
+            var ptr = 0;
             while (ptr < sorted.Count)
             {
                 if (!observable[ptr].Equals(sorted[ptr]))
                 {
-                    T t = observable[ptr];
+                    var t = observable[ptr];
                     observable.RemoveAt(ptr);
                     observable.Insert(sorted.IndexOf(t), t);
                 }

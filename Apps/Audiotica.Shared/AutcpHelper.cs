@@ -5,11 +5,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Runtime.InteropServices;
-using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.Storage;
-using Audiotica.Core.Utilities;
+using Audiotica.Core.Utils;
+using PCLStorage;
+using CreationCollisionOption = PCLStorage.CreationCollisionOption;
 
 #endregion
 
@@ -19,9 +20,7 @@ namespace Audiotica
     {
         public const int FormatVersion = 2;
         public const int FormatCompatabilityVersion = 2;
-
         private const int FileHeaderSize = 37;
-
 
         public static async Task UnpackBackup(StorageFolder folder, Stream backupStream)
         {
@@ -41,7 +40,7 @@ namespace Audiotica
                             await
                                 StorageHelper.CreateFileAsync(name,
                                     option: CreationCollisionOption.ReplaceExisting);
-                        using (var stream = await file.OpenStreamForWriteAsync())
+                        using (var stream = await file.OpenAsync(FileAccess.ReadAndWrite))
                         {
                             using (var original = entry.Open())
                             {
@@ -49,7 +48,9 @@ namespace Audiotica
                             }
                         }
                     }
-                    catch { }
+                    catch
+                    {
+                    }
                 }
             }
         }

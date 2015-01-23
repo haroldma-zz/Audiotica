@@ -6,7 +6,7 @@ using SQLite;
 
 #endregion
 
-namespace Audiotica.Data.Collection.SqlHelper
+namespace Audiotica.Data.Collection
 {
     public class BaseEntry : INotifyPropertyChanged
     {

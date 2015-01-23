@@ -79,7 +79,7 @@ namespace Audiotica
 
         public void OnAppActive()
         {
-            AppSettingsHelper.Write(PlayerConstants.AppState, PlayerConstants.ForegroundAppActive);
+            App.Locator.AppSettingsHelper.Write(PlayerConstants.AppState, PlayerConstants.ForegroundAppActive);
             AddMediaPlayerEventHandlers();
             RaiseEvent(TrackChanged);
             OnPlaybackStateChanged(BackgroundMediaPlayer.Current.CurrentState);
@@ -87,7 +87,7 @@ namespace Audiotica
 
         public void OnAppSuspended()
         {
-            AppSettingsHelper.Write(PlayerConstants.AppState, PlayerConstants.ForegroundAppSuspended);
+            App.Locator.AppSettingsHelper.Write(PlayerConstants.AppState, PlayerConstants.ForegroundAppSuspended);
             RemoveMediaPlayerEventHandlers();
         }
 
@@ -106,7 +106,7 @@ namespace Audiotica
             if (_isShutdown)
                 AddMediaPlayerEventHandlers();
 
-            AppSettingsHelper.Write(PlayerConstants.CurrentTrack, song.Id);
+            App.Locator.AppSettingsHelper.Write(PlayerConstants.CurrentTrack, song.Id);
             
             var message = new ValueSet {{PlayerConstants.StartPlayback, null}};
             BackgroundMediaPlayer.SendMessageToBackground(message);
@@ -143,14 +143,14 @@ namespace Audiotica
         {
             RemoveMediaPlayerEventHandlers();
             BackgroundMediaPlayer.Shutdown();
-            AppSettingsHelper.Write(PlayerConstants.CurrentTrack, null);
+            App.Locator.AppSettingsHelper.Write(PlayerConstants.CurrentTrack, null);
         }
 
         public async Task ShutdownPlayerAsync()
         {
             RemoveMediaPlayerEventHandlers();
             BackgroundMediaPlayer.Shutdown();
-            AppSettingsHelper.Write(PlayerConstants.CurrentTrack, null);
+            App.Locator.AppSettingsHelper.Write(PlayerConstants.CurrentTrack, null);
             await Task.Delay(1000);
             _isShutdown = true;
             RaiseEvent(Shutdown);

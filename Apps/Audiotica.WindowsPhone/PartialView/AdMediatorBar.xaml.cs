@@ -2,6 +2,7 @@
 
 using Windows.UI.Xaml;
 using Audiotica.Core.Utilities;
+using Audiotica.Core.Utils.Interfaces;
 using GalaSoft.MvvmLight.Ioc;
 using Microsoft.AdMediator.WindowsPhone81;
 
@@ -17,12 +18,12 @@ namespace Audiotica.PartialView
             SimpleIoc.Default.Register(() => this);
             Loaded += (sender, args) =>
             {
-                var ads = AppSettingsHelper.Read("Ads", true, SettingsStrategy.Roaming);
+                var ads = App.Locator.AppSettingsHelper.Read("Ads", true, SettingsStrategy.Roaming);
                 var owns = App.Locator.Settings.IsAdsEnabled;
 
                 if (!owns && !ads)
                 {
-                    AppSettingsHelper.Write("Ads", true, SettingsStrategy.Roaming);
+                    App.Locator.AppSettingsHelper.Write("Ads", true, SettingsStrategy.Roaming);
                     ads = true;
                 }
 

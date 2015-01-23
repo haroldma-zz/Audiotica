@@ -8,6 +8,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Audiotica.Core;
 using Audiotica.Core.Utilities;
+using Audiotica.Core.Utils.Interfaces;
 using Audiotica.Data.Collection;
 using Audiotica.Data.Collection.Model;
 using Audiotica.View;
@@ -27,6 +28,7 @@ namespace Audiotica
         private readonly RelayCommand _playPauseRelayCommand;
         private readonly RelayCommand _prevRelayCommand;
         private readonly ICollectionService _service;
+        private readonly IAppSettingsHelper _appSettingsHelper;
         private readonly DispatcherTimer _timer;
         private QueueSong _currentQueue;
         private TimeSpan _duration;
@@ -37,10 +39,11 @@ namespace Audiotica
         private TimeSpan _position;
         private bool _isPlayerActive;
 
-        public PlayerViewModel(AudioPlayerHelper helper, ICollectionService service)
+        public PlayerViewModel(AudioPlayerHelper helper, ICollectionService service, IAppSettingsHelper appSettingsHelper)
         {
             _helper = helper;
             _service = service;
+            _appSettingsHelper = appSettingsHelper;
 
             if (!IsInDesignMode)
             {
@@ -64,20 +67,20 @@ namespace Audiotica
 
         public bool IsRepeat
         {
-            get { return AppSettingsHelper.Read<bool>("Repeat"); }
+            get { return _appSettingsHelper.Read<bool>("Repeat"); }
             set
             {
-                AppSettingsHelper.Write("Repeat", value);
+                _appSettingsHelper.Write("Repeat", value);
                 RaisePropertyChanged();
             }
         }
 
         public bool IsShuffle
         {
-            get { return AppSettingsHelper.Read<bool>("Shuffle"); }
+            get { return _appSettingsHelper.Read<bool>("Shuffle"); }
             set
             {
-                AppSettingsHelper.Write("Shuffle", value);
+                _appSettingsHelper.Write("Shuffle", value);
                 _service.ShuffleModeChanged();
                 RaisePropertyChanged();
                 AudioPlayerHelper.OnShuffleChanged();
@@ -213,7 +216,7 @@ namespace Audiotica
                     }
                 }
 
-                var currentId = AppSettingsHelper.Read<int>(PlayerConstants.CurrentTrack);
+                var currentId = _appSettingsHelper.Read<int>(PlayerConstants.CurrentTrack);
                 CurrentQueue = _service.CurrentPlaybackQueue.FirstOrDefault(p => p.Id == currentId);
 
                 if (CurrentQueue != null

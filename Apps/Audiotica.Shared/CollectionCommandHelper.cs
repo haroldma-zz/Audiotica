@@ -8,7 +8,6 @@ using Audiotica.Core.Common;
 using Audiotica.Core.Utilities;
 using Audiotica.Data.Collection;
 using Audiotica.Data.Collection.Model;
-using Audiotica.Data.Collection.SqlHelper;
 using Audiotica.View;
 using GalaSoft.MvvmLight.Command;
 

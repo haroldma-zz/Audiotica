@@ -1,5 +1,4 @@
-﻿using Audiotica.Data.Collection.SqlHelper;
-using SQLite;
+﻿using SQLite;
 
 namespace Audiotica.Data.Collection.Model
 {

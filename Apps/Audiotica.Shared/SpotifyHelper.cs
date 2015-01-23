@@ -87,7 +87,7 @@ namespace Audiotica
 
             try
             {
-                url = await Mp3MatchEngine.FindMp3For(track.Name, artist.Name).ConfigureAwait(false);
+                url = await App.Locator.Mp3MatchEngine.FindMp3For(track.Name, artist.Name).ConfigureAwait(false);
             }
             catch
             {

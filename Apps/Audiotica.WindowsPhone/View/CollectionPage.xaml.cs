@@ -10,8 +10,12 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Audiotica.Controls;
 using Audiotica.Core.Utilities;
+using Audiotica.Core.Utils;
+using Audiotica.Core.Utils.Interfaces;
+using Audiotica.Core.WinRt;
+using Audiotica.Core.WinRt.Utilities;
+using Audiotica.Data.Collection;
 using Audiotica.Data.Collection.Model;
-using Audiotica.Data.Collection.SqlHelper;
 
 #endregion
 
@@ -122,7 +126,7 @@ namespace Audiotica.View
             var vm = App.Locator.Collection;
 
             if (vm.RandomizeAlbumList.Count != 0 ||
-                !AppSettingsHelper.Read("WallpaperArt", true, SettingsStrategy.Roaming)) return;
+                !App.Locator.AppSettingsHelper.Read("WallpaperArt", true, SettingsStrategy.Roaming)) return;
 
             var albums =
                 App.Locator.CollectionService.Albums.ToList()

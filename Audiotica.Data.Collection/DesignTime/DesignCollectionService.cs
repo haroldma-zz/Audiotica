@@ -3,12 +3,9 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
-using Windows.Storage;
-using Windows.UI.Xaml.Media.Imaging;
 using Audiotica.Core.Common;
+using Audiotica.Core.Utils.Interfaces;
 using Audiotica.Data.Collection.Model;
 using TagLib;
 
@@ -18,19 +15,21 @@ namespace Audiotica.Data.Collection.DesignTime
 {
     public class DesignCollectionService : ICollectionService
     {
-        public DesignCollectionService()
+        private readonly IBitmapFactory _bitmapFactory;
+
+        public DesignCollectionService(IBitmapFactory bitmapFactory)
         {
+            _bitmapFactory = bitmapFactory;
             LoadLibrary();
         }
 
         public bool IsLibraryLoaded { get; private set; }
         public event EventHandler LibraryLoaded;
-        public int ScaledImageSize { get; private set; }
+        public int ScaledImageSize { get; set; }
         public OptimizedObservableCollection<Song> Songs { get; set; }
         public OptimizedObservableCollection<Album> Albums { get; set; }
         public OptimizedObservableCollection<Artist> Artists { get; set; }
         public OptimizedObservableCollection<Playlist> Playlists { get; set; }
-
         public OptimizedObservableCollection<QueueSong> PlaybackQueue { get; private set; }
         public OptimizedObservableCollection<QueueSong> ShufflePlaybackQueue { get; private set; }
         public OptimizedObservableCollection<QueueSong> CurrentPlaybackQueue { get; private set; }
@@ -42,13 +41,22 @@ namespace Audiotica.Data.Collection.DesignTime
                 new Song
                 {
                     Name = "Maps",
-                    Artist = new Artist {Name = "Maroon 5", Artwork = new BitmapImage(new Uri("http://musicimage.xboxlive.com/content/music.1F154700-0200-11DB-89CA-0019B92A3933/image?locale=en-US"))},
+                    Artist =
+                        new Artist
+                        {
+                            Name = "Maroon 5",
+                            Artwork =
+                                _bitmapFactory.CreateImage(
+                                    new Uri(
+                                        "http://musicimage.xboxlive.com/content/music.1F154700-0200-11DB-89CA-0019B92A3933/image?locale=en-US"))
+                        },
                     Album =
                         new Album
                         {
                             Name = "V",
-                            Artwork = 
-                                    new BitmapImage(new Uri("http://static.musictoday.com/store/bands/93/product_medium/IXDDM501.JPG"))
+                            Artwork =
+                                _bitmapFactory.CreateImage(
+                                    new Uri("http://static.musictoday.com/store/bands/93/product_medium/IXDDM501.JPG"))
                         }
                 },
                 new Song
@@ -60,29 +68,31 @@ namespace Audiotica.Data.Collection.DesignTime
                         {
                             Name = "V",
                             Artwork =
-                                   new BitmapImage(new Uri("http://static.musictoday.com/store/bands/93/product_medium/IXDDM501.JPG"))
+                                _bitmapFactory.CreateImage(
+                                    new Uri("http://static.musictoday.com/store/bands/93/product_medium/IXDDM501.JPG"))
                         }
                 }
             };
 
             Albums = new OptimizedObservableCollection<Album>
             {
-                 new Album
-                        {
-                            Id= 0,
-                            Name = "V",
-                            Artwork =
-                                    new BitmapImage(new Uri("http://static.musictoday.com/store/bands/93/product_medium/IXDDM501.JPG")),
-                            PrimaryArtist = new Artist { Name = "Maroon 5"},
-                            Genre = "Pop",
-                            Songs = new OptimizedObservableCollection<Song>(Songs)
-                        }
+                new Album
+                {
+                    Id = 0,
+                    Name = "V",
+                    Artwork =
+                        _bitmapFactory.CreateImage(
+                            new Uri("http://static.musictoday.com/store/bands/93/product_medium/IXDDM501.JPG")),
+                    PrimaryArtist = new Artist {Name = "Maroon 5"},
+                    Genre = "Pop",
+                    Songs = new OptimizedObservableCollection<Song>(Songs)
+                }
             };
 
             Artists = new OptimizedObservableCollection<Artist>
             {
                 new Artist {Name = "Maroon 5", Albums = Albums, Songs = Songs},
-                new Artist {Name = "Taylor Swift"},
+                new Artist {Name = "Taylor Swift"}
             };
 
             Playlists = new OptimizedObservableCollection<Playlist>

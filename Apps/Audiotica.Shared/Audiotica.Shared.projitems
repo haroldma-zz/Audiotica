@@ -23,6 +23,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Controls\PlaylistPicker.xaml.cs">
       <DependentUpon>PlaylistPicker.xaml</DependentUpon>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)LocalSong.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ModalSheetUtility.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)NavigationHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Navigator.cs" />

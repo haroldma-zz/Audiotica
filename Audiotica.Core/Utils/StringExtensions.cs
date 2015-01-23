@@ -1,12 +1,11 @@
 ﻿#region
 
 using System.Threading.Tasks;
-using Windows.ApplicationModel.Resources;
 using Newtonsoft.Json;
 
 #endregion
 
-namespace Audiotica.Core.Utilities
+namespace Audiotica.Core.Utils
 {
     public static class StringExtensions
     {
@@ -28,6 +27,11 @@ namespace Audiotica.Core.Utilities
                 .Replace("|", " ");
         }
 
+        public static string StripHtmlTags(this string str)
+        {
+            return HtmlRemoval.StripTagsRegex(str);
+        }
+
         public static async Task<T> DeserializeAsync<T>(this string json)
         {
             return await Task.Factory.StartNew(() =>
@@ -41,12 +45,6 @@ namespace Audiotica.Core.Utilities
                     return default(T);
                 }
             }).ConfigureAwait(false);
-        }
-
-        public static string FromLanguageResource(this string str)
-        {
-            var loader = new ResourceLoader();
-            return loader.GetString(str);
         }
     }
 }

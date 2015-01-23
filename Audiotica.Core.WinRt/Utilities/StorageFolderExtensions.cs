@@ -7,7 +7,7 @@ using Windows.Storage;
 
 #endregion
 
-namespace Audiotica.Core.Utilities
+namespace Audiotica.Core.WinRt.Utilities
 {
     /// <summary>
     ///     Replaces the missing TryGetItemAsync method in Windows Phone 8.1

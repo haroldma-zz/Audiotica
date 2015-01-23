@@ -83,6 +83,10 @@
   </PropertyGroup>
   <ItemGroup>
     <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
+    <ProjectReference Include="..\..\Audiotica.Core.WinRt\Audiotica.Core.WinRt.csproj">
+      <Project>{1f2b1bbe-abf9-47d9-910e-d682dfbe695c}</Project>
+      <Name>Audiotica.Core.WinRt</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Audiotica.Core\Audiotica.Core.csproj">
       <Project>{49668872-a57c-4e70-834b-83608e6cef23}</Project>
       <Name>Audiotica.Core</Name>

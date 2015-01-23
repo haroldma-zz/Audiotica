@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using Audiotica.Data.Collection.SqlHelper;
 using SQLite;
 
 #endregion

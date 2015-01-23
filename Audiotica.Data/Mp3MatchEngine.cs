@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using Audiotica.Core.Utils.Interfaces;
 using Audiotica.Data.Model;
 using Audiotica.Data.Service.RunTime;
 
@@ -22,9 +23,11 @@ namespace Audiotica.Data
         Mp3Skull,
     }
 
-    public static class Mp3MatchEngine
+    public class Mp3MatchEngine
     {
-        private static readonly Mp3Provider[] Providers =
+        private readonly Mp3SearchService _service;
+
+        private readonly Mp3Provider[] _providers =
         {
             Mp3Provider.Mp3Clan,
             Mp3Provider.Mp3Truck,
@@ -36,8 +39,12 @@ namespace Audiotica.Data
            // Mp3Provider.YouTube <- links expire, not good for streaming
         };
 
+        public Mp3MatchEngine(IAppSettingsHelper settingsHelper)
+        {
+            _service = new Mp3SearchService(settingsHelper);
+        }
 
-        public static async Task<string> FindMp3For(string title, string artist)
+        public async Task<string> FindMp3For(string title, string artist)
         {
             title = title.ToLower()
                 .Replace("feat.", "ft.") //better alternatives for matching
@@ -59,9 +66,9 @@ namespace Audiotica.Data
             var currentProvider = 0;
             string url = null;
 
-            while (currentProvider < Providers.Length)
+            while (currentProvider < _providers.Length)
             {
-                var mp3Provider = Providers[currentProvider];
+                var mp3Provider = _providers[currentProvider];
                 url = await GetMatch(mp3Provider, title, artist).ConfigureAwait(false);
 
                 if (url != null)
@@ -71,34 +78,33 @@ namespace Audiotica.Data
             return url;
         }
 
-        public static async Task<string> GetMatch(Mp3Provider provider, string title, string artist,
+        public async Task<string> GetMatch(Mp3Provider provider, string title, string artist,
             string album = null)
         {
-            var service = new Mp3SearchService();
             var webSongs = new List<WebSong>();
 
             switch (provider)
             {
                 case Mp3Provider.Netease:
-                    webSongs = await service.SearchNetease(title, artist, album, 3).ConfigureAwait(false);
+                    webSongs = await _service.SearchNetease(title, artist, album, 3).ConfigureAwait(false);
                     break;
                 case Mp3Provider.YouTube:
-                    webSongs = await service.SearchYoutube(title, artist, album, 3).ConfigureAwait(false);
+                    webSongs = await _service.SearchYoutube(title, artist, album, 3).ConfigureAwait(false);
                     break;
                 case Mp3Provider.Mp3Clan:
-                    webSongs = await service.SearchMp3Clan(title, artist, album, 3).ConfigureAwait(false);
+                    webSongs = await _service.SearchMp3Clan(title, artist, album, 3).ConfigureAwait(false);
                     break;
                 case Mp3Provider.Meile:
-                    webSongs = await service.SearchMeile(title, artist, album, 3).ConfigureAwait(false);
+                    webSongs = await _service.SearchMeile(title, artist, album, 3).ConfigureAwait(false);
                     break;
                 case Mp3Provider.Mp3Truck:
-                    webSongs = await service.SearchMp3Truck(title, artist, album).ConfigureAwait(false);
+                    webSongs = await _service.SearchMp3Truck(title, artist, album).ConfigureAwait(false);
                     break;
                 case Mp3Provider.SoundCloud:
-                    webSongs = await service.SearchSoundCloud(title, artist, album).ConfigureAwait(false);
+                    webSongs = await _service.SearchSoundCloud(title, artist, album).ConfigureAwait(false);
                     break;
                 case Mp3Provider.Mp3Skull:
-                    webSongs = await service.SearchMp3Skull(title, artist, album).ConfigureAwait(false);
+                    webSongs = await _service.SearchMp3Skull(title, artist, album).ConfigureAwait(false);
                     break;
             }
 

@@ -1,12 +1,8 @@
 ﻿#region
 
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using Windows.UI.Xaml.Media.Imaging;
 using Audiotica.Core.Common;
-using Audiotica.Core.Utilities;
-using Audiotica.Data.Collection.SqlHelper;
 using SQLite;
 
 #endregion
@@ -15,9 +11,9 @@ namespace Audiotica.Data.Collection.Model
 {
     public class Album : BaseEntry
     {
-        private BitmapImage _artwork;
-        private BitmapImage _smallArtwork;
-        private BitmapImage _mediumArtwork;
+        private IBitmapImage _artwork;
+        private IBitmapImage _mediumArtwork;
+        private IBitmapImage _smallArtwork;
 
         public Album()
         {
@@ -30,25 +26,26 @@ namespace Audiotica.Data.Collection.Model
         [Indexed]
         public int PrimaryArtistId { get; set; }
 
-
         public string Name { get; set; }
-
         public string Genre { get; set; }
-
         public DateTime ReleaseDate { get; set; }
 
         [Ignore]
         public OptimizedObservableCollection<Song> Songs { get; set; }
 
         [Ignore]
-        public BitmapImage Artwork { get { return _artwork; }
+        public IBitmapImage Artwork
+        {
+            get { return _artwork; }
             set
             {
                 _artwork = value;
                 OnPropertyChanged();
-            } }
+            }
+        }
+
         [Ignore]
-        public BitmapImage SmallArtwork
+        public IBitmapImage SmallArtwork
         {
             get { return _smallArtwork; }
             set
@@ -57,8 +54,9 @@ namespace Audiotica.Data.Collection.Model
                 OnPropertyChanged();
             }
         }
+
         [Ignore]
-        public BitmapImage MediumArtwork
+        public IBitmapImage MediumArtwork
         {
             get { return _mediumArtwork; }
             set

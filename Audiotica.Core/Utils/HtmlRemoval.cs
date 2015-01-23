@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 
 #endregion
 
-namespace Audiotica.Core.Utilities
+namespace Audiotica.Core.Utils
 {
     /// <summary>
     ///     Methods to remove HTML from strings.
@@ -28,21 +28,20 @@ namespace Audiotica.Core.Utilities
             var arrayIndex = 0;
             var inside = false;
 
-            foreach (var @let in source)
+            foreach (var o in source.ToCharArray())
             {
-                if (@let == '<')
+                switch (o)
                 {
-                    inside = true;
-                    continue;
-                }
-                if (@let == '>')
-                {
-                    inside = false;
-                    continue;
+                    case '<':
+                        inside = true;
+                        continue;
+                    case '>':
+                        inside = false;
+                        continue;
                 }
                 if (inside) continue;
 
-                array[arrayIndex] = @let;
+                array[arrayIndex] = o;
                 arrayIndex++;
             }
             return new string(array, 0, arrayIndex);

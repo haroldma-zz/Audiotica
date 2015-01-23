@@ -2,18 +2,15 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Windows.UI.Xaml.Controls;
-using Audiotica.Core.Common;
-using Audiotica.Core.Utilities;
-using Audiotica.Data;
+using Audiotica.Core.Utils;
+using Audiotica.Core.WinRt;
 using Audiotica.Data.Service.Interfaces;
 using Audiotica.Data.Spotify;
 using Audiotica.Data.Spotify.Models;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Messaging;
-using IF.Lastfm.Core.Objects;
 
 #endregion
 
@@ -22,16 +19,18 @@ namespace Audiotica.ViewModel
     public class SpotifyArtistViewModel : ViewModelBase
     {
         private readonly ISpotifyService _service;
+        private readonly INotificationManager _notificationManager;
         private SimpleArtist _artist;
         private bool _isLoading;
         private RelayCommand<ItemClickEventArgs> _songClickRelayCommand;
         private Paging<SimpleAlbum> _topAlbums;
         private List<FullTrack> _topTracks;
 
-        public SpotifyArtistViewModel(ISpotifyService service)
+        public SpotifyArtistViewModel(ISpotifyService service, INotificationManager notificationManager)
         {
             SongClickRelayCommand = new RelayCommand<ItemClickEventArgs>(SongClickExecute);
             _service = service;
+            _notificationManager = notificationManager;
 
             MessengerInstance.Register<GenericMessage<string>>(this, "spotify-artist-detail-id", ReceivedName);
 
@@ -94,7 +93,7 @@ namespace Audiotica.ViewModel
             }
             catch (Exception e)
             {
-                CurtainPrompt.ShowError("AppNetworkIssue".FromLanguageResource());
+                _notificationManager.ShowError("AppNetworkIssue".FromLanguageResource());
             }
             try
             {
@@ -102,7 +101,7 @@ namespace Audiotica.ViewModel
             }
             catch (Exception e)
             {
-                CurtainPrompt.ShowError("AppNetworkIssue".FromLanguageResource());
+                _notificationManager.ShowError("AppNetworkIssue".FromLanguageResource());
             }
 
             try
@@ -111,7 +110,7 @@ namespace Audiotica.ViewModel
             }
             catch (Exception e)
             {
-                CurtainPrompt.ShowError("AppNetworkIssue".FromLanguageResource());
+                _notificationManager.ShowError("AppNetworkIssue".FromLanguageResource());
             }
 
             IsLoading = false;
@@ -119,7 +118,7 @@ namespace Audiotica.ViewModel
 
         private async void SongClickExecute(ItemClickEventArgs item)
         {
-            var track = (FullTrack)item.ClickedItem;
+            var track = (FullTrack) item.ClickedItem;
             await CollectionHelper.SaveTrackAsync(track);
         }
     }

@@ -162,7 +162,7 @@
                                     <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
-                                <Image Stretch="UniformToFill" Source="{Binding Song.Album.MediumArtwork}" Width="70"
+                                <Image Stretch="UniformToFill" Source="{Binding Song.Album.MediumArtwork.Image}" Width="70"
                                    Margin="0,0,10,0" Height="70" />
                                 <StackPanel VerticalAlignment="Center" Grid.Column="1">
                                     <TextBlock Text="{Binding Song.Name}" FontSize="22"

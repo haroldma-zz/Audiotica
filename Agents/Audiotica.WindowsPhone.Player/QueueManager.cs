@@ -4,15 +4,15 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Linq.Expressions;
 using Windows.Foundation;
 using Windows.Media.Playback;
 using Windows.Storage;
 using Audiotica.Core;
-using Audiotica.Core.Utilities;
-using Audiotica.Data.Collection;
+using Audiotica.Core.Utils.Interfaces;
+using Audiotica.Core.WinRt.Utilities;
 using Audiotica.Data.Collection.Model;
 using Audiotica.Data.Collection.RunTime;
+using Audiotica.Data.Service.RunTime;
 
 #endregion
 
@@ -20,13 +20,67 @@ namespace Audiotica.WindowsPhone.Player
 {
     internal class QueueManager
     {
+        private bool IsShuffle
+        {
+            get { return _appSettingsHelper.Read<bool>("Shuffle"); }
+        }
+
+        private int GetCurrentId()
+        {
+            return _appSettingsHelper.Read<int>(PlayerConstants.CurrentTrack);
+        }
+
+        public QueueSong GetCurrentQueueSong()
+        {
+            return GetQueueSongById(GetCurrentId());
+        }
+
+        private QueueSong GetQueueSong(Func<QueueSong, bool> expression)
+        {
+            using (var bgSql = CreatePlayerSqlService())
+            {
+                var queue = bgSql.SelectFirst(expression);
+
+                if (queue == null) return null;
+                using (var sql = CreateCollectionSqlService())
+                {
+                    var song = sql.SelectFirst<Song>(p => p.Id == queue.SongId);
+                    var artist = sql.SelectFirst<Artist>(p => p.Id == song.ArtistId);
+                    var album = sql.SelectFirst<Album>(p => p.Id == song.AlbumId);
+
+                    song.Artist = artist;
+                    song.Album = album;
+                    song.Album.PrimaryArtist = artist;
+                    queue.Song = song;
+                    return queue;
+                }
+            }
+        }
+
+        public QueueSong GetQueueSongById(int id)
+        {
+            return GetQueueSong(p => p.Id == id);
+        }
+
+        public QueueSong GetQueueSongWhereNextId(int id)
+        {
+            return IsShuffle ? GetQueueSong(p => p.ShuffleNextId == id) : GetQueueSong(p => p.NextId == id);
+        }
+
+        public QueueSong GetQueueSongWherePrevId(int id)
+        {
+            return IsShuffle ? GetQueueSong(p => p.ShufflePrevId == id) : GetQueueSong(p => p.PrevId == id);
+        }
+
         #region Private members
+
+        private readonly IAppSettingsHelper _appSettingsHelper;
 
         private SqlService CreateHistorySqlService()
         {
             var historyDbTypes = new List<Type>
             {
-                typeof (HistoryEntry),
+                typeof (HistoryEntry)
             };
             var historyConfig = new SqlServiceConfig
             {
@@ -43,7 +97,7 @@ namespace Audiotica.WindowsPhone.Player
         {
             var bgDbTypes = new List<Type>
             {
-                typeof (QueueSong),
+                typeof (QueueSong)
             };
             var bgConfig = new SqlServiceConfig
             {
@@ -81,9 +135,10 @@ namespace Audiotica.WindowsPhone.Player
         private readonly MediaPlayer _mediaPlayer;
         private QueueSong _currentTrack;
 
-        public QueueManager()
+        public QueueManager(IAppSettingsHelper appSettingsHelper)
         {
-            _scrobbler = new ScrobblerHelper();
+            _appSettingsHelper = appSettingsHelper;
+            _scrobbler = new ScrobblerHelper(_appSettingsHelper, new ScrobblerService(new PclCredentialHelper()));
 
             _mediaPlayer = BackgroundMediaPlayer.Current;
             _mediaPlayer.MediaOpened += MediaPlayer_MediaOpened;
@@ -181,7 +236,7 @@ namespace Audiotica.WindowsPhone.Player
         /// </summary>
         private void MediaPlayer_MediaEnded(MediaPlayer sender, object args)
         {
-            if (AppSettingsHelper.Read<bool>("Repeat"))
+            if (_appSettingsHelper.Read<bool>("Repeat"))
                 StartTrack(GetCurrentQueueSong());
 
             else
@@ -317,57 +372,5 @@ namespace Audiotica.WindowsPhone.Player
         }
 
         #endregion
-
-        private bool IsShuffle
-        {
-            get { return AppSettingsHelper.Read<bool>("Shuffle"); }
-        }
-
-        private int GetCurrentId()
-        {
-            return AppSettingsHelper.Read<int>(PlayerConstants.CurrentTrack);
-        }
-
-        public QueueSong GetCurrentQueueSong()
-        {
-            return GetQueueSongById(GetCurrentId());
-        }
-
-        private QueueSong GetQueueSong(Func<QueueSong, bool> expression)
-        {
-            using (var bgSql = CreatePlayerSqlService())
-            {
-                var queue = bgSql.SelectFirst(expression);
-
-                if (queue == null) return null;
-                using (var sql = CreateCollectionSqlService())
-                {
-                    var song = sql.SelectFirst<Song>(p => p.Id == queue.SongId);
-                    var artist = sql.SelectFirst<Artist>(p => p.Id == song.ArtistId);
-                    var album = sql.SelectFirst<Album>(p => p.Id == song.AlbumId);
-
-                    song.Artist = artist;
-                    song.Album = album;
-                    song.Album.PrimaryArtist = artist;
-                    queue.Song = song;
-                    return queue;
-                }
-            }
-        }
-
-        public QueueSong GetQueueSongById(int id)
-        {
-            return GetQueueSong(p => p.Id == id);
-        }
-
-        public QueueSong GetQueueSongWhereNextId(int id)
-        {
-            return IsShuffle ? GetQueueSong(p => p.ShuffleNextId == id) : GetQueueSong(p => p.NextId == id);
-        }
-
-        public QueueSong GetQueueSongWherePrevId(int id)
-        {
-            return IsShuffle ? GetQueueSong(p => p.ShufflePrevId == id) : GetQueueSong(p => p.PrevId == id);
-        }
     }
 }

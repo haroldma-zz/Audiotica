@@ -37,11 +37,10 @@ using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
-using ColorHelper = Audiotica.Core.Utilities.ColorHelper;
 
 #endregion
 
-namespace Audiotica.Core.Common
+namespace Audiotica.Core.WinRt.Common
 {
     public class CurtainPrompt
     {

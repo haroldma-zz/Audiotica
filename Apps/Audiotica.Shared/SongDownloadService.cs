@@ -10,11 +10,15 @@ using System.Threading.Tasks;
 using Windows.Networking.BackgroundTransfer;
 using Windows.Storage;
 using Windows.UI.Core;
-using Audiotica.Core.Common;
-using Audiotica.Core.Utilities;
+using Audiotica.Core.Utils;
+using Audiotica.Core.WinRt;
+using Audiotica.Core.WinRt.Common;
+using Audiotica.Core.WinRt.Utilities;
 using Audiotica.Data.Collection;
 using Audiotica.Data.Collection.Model;
+using PCLStorage;
 using TagLib;
+using CreationCollisionOption = Windows.Storage.CreationCollisionOption;
 
 #endregion
 
@@ -84,7 +88,7 @@ namespace Audiotica
             {
                 //Get the associated song BackgroundDownload
                 var songDownload =
-                    ActiveDownloads.FirstOrDefault(p => p.Download.DownloadOperation.Guid == download.Guid);
+                    ActiveDownloads.FirstOrDefault(p => ((DownloadOperation) p.Download.DownloadOperation).Guid == download.Guid);
 
                 if (songDownload == null)
                     return;
@@ -114,7 +118,7 @@ namespace Audiotica
 
             try
             {
-                var file = song.Download.DownloadOperation.ResultFile;
+                var file = ((DownloadOperation)song.Download.DownloadOperation).ResultFile;
                 using (var fileStream = await file.OpenStreamForWriteAsync())
                 {
                     var tagFile = File.Create(new SimpleFileAbstraction(file.Name, fileStream, fileStream));
@@ -126,12 +130,12 @@ namespace Audiotica
                         newTags.Performers = song.ArtistName.Split(',').Select(p => p.Trim()).ToArray();
 
                     newTags.Album = song.Album.Name;
-                    newTags.AlbumArtists = new []{song.Album.PrimaryArtist.Name};
+                    newTags.AlbumArtists = new[] {song.Album.PrimaryArtist.Name};
 
                     if (!string.IsNullOrEmpty(song.Album.Genre))
                         newTags.Genres = song.Album.Genre.Split(',').Select(p => p.Trim()).ToArray();
 
-                    newTags.Track = (uint)song.TrackNumber;
+                    newTags.Track = (uint) song.TrackNumber;
 
                     newTags.Comment = "Downloaded with Audiotica - http://audiotica.fm";
 
@@ -140,7 +144,7 @@ namespace Audiotica
                         var albumFilePath = string.Format(CollectionConstant.ArtworkPath, song.Album.Id);
                         var artworkFile = await StorageHelper.GetFileAsync(albumFilePath);
 
-                        using (var artworkStream = await artworkFile.OpenStreamForReadAsync())
+                        using (var artworkStream = await artworkFile.OpenAsync(FileAccess.ReadAndWrite))
                         {
                             newTags.Pictures = new IPicture[]
                             {
@@ -158,7 +162,7 @@ namespace Audiotica
 
             #endregion
 
-            song.AudioUrl = song.Download.DownloadOperation.ResultFile.Path;
+            song.AudioUrl = ((DownloadOperation)song.Download.DownloadOperation).ResultFile.Path;
             song.SongState = SongState.Downloaded;
             song.DownloadId = null;
             await _sqlService.UpdateItemAsync(song);
@@ -174,8 +178,8 @@ namespace Audiotica
             Debug.WriteLine("Added {0} to active downloads", song.Name);
 
             var path = "Audiotica/" +
-                                song.Album.PrimaryArtist.Name.CleanForFileName() + "/" +
-                                song.Album.Name.CleanForFileName();
+                       song.Album.PrimaryArtist.Name.CleanForFileName() + "/" +
+                       song.Album.Name.CleanForFileName();
             var filename = string.Format("{0}.mp3", song.Name.CleanForFileName());
 
             if (song.ArtistName != song.Album.PrimaryArtist.Name)
@@ -205,7 +209,7 @@ namespace Audiotica
                     Debug.WriteLine("Download status code for {0} is bad :/", song.Name);
                     song.SongState = SongState.None;
                     _sqlService.UpdateItem(song);
-                    StorageHelper.DeleteFileAsync(path + filename, KnownFolders.MusicLibrary).Wait();
+                    WinRtStorageHelper.DeleteFileAsync(path + filename, KnownFolders.MusicLibrary).Wait();
                 }
             }
             catch
@@ -214,7 +218,7 @@ namespace Audiotica
 
                 song.SongState = SongState.None;
                 _sqlService.UpdateItem(song);
-                StorageHelper.DeleteFileAsync(path + filename, KnownFolders.MusicLibrary).Wait();
+                WinRtStorageHelper.DeleteFileAsync(path + filename, KnownFolders.MusicLibrary).Wait();
             }
             finally
             {
@@ -241,7 +245,7 @@ namespace Audiotica
         {
             foreach (var activeDownload in ActiveDownloads)
             {
-                activeDownload.Download.DownloadOperation.Pause();
+                ((DownloadOperation)activeDownload.Download.DownloadOperation).Pause();
             }
         }
 
@@ -257,8 +261,8 @@ namespace Audiotica
             try
             {
                 var path = "Audiotica/" +
-                                song.Album.PrimaryArtist.Name.CleanForFileName() + "/" +
-                                song.Album.Name.CleanForFileName();
+                           song.Album.PrimaryArtist.Name.CleanForFileName() + "/" +
+                           song.Album.Name.CleanForFileName();
                 var filename = string.Format("{0}.mp3", song.Name.CleanForFileName());
 
                 if (song.ArtistName != song.Album.PrimaryArtist.Name)
@@ -266,7 +270,8 @@ namespace Audiotica
 
                 var destinationFile =
                     await
-                        StorageHelper.CreateFileAsync(path + "/" + filename, KnownFolders.MusicLibrary, CreationCollisionOption.ReplaceExisting)
+                        WinRtStorageHelper.CreateFileAsync(path + "/" + filename, KnownFolders.MusicLibrary,
+                            CreationCollisionOption.ReplaceExisting)
                             .ConfigureAwait(false);
 
                 var downloader = new BackgroundDownloader();
