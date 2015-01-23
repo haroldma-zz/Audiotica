@@ -99,7 +99,7 @@ namespace Audiotica
         public void OnAppSuspended()
         {
             App.Locator.AppSettingsHelper.Write(PlayerConstants.AppState, PlayerConstants.ForegroundAppSuspended);
-            RemoveMediaPlayerEventHandlers();
+            RemoveMediaPlayerEventHandlers(BackgroundMediaPlayer.Current);
         }
 
         public void PlaySong(QueueSong song)
@@ -152,14 +152,14 @@ namespace Audiotica
 
         public void FullShutdown()
         {
-            RemoveMediaPlayerEventHandlers();
+            RemoveMediaPlayerEventHandlers(BackgroundMediaPlayer.Current);
             BackgroundMediaPlayer.Shutdown();
             App.Locator.AppSettingsHelper.Write(PlayerConstants.CurrentTrack, null);
         }
 
         public async Task ShutdownPlayerAsync()
         {
-            RemoveMediaPlayerEventHandlers();
+            RemoveMediaPlayerEventHandlers(BackgroundMediaPlayer.Current);
             BackgroundMediaPlayer.Shutdown();
             App.Locator.AppSettingsHelper.Write(PlayerConstants.CurrentTrack, null);
             await Task.Delay(1000);

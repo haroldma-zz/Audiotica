@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/2010/manifest" xmlns:m2="http://schemas.microsoft.com/appx/2013/manifest" xmlns:m3="http://schemas.microsoft.com/appx/2014/manifest" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest">
-  <Identity Name="3237Zumicts.AudioticaBeta" Publisher="CN=E38C2EDA-A823-4D3D-BBB1-8F0B81FF4C7B" Version="1501.22.20.55" />
+  <Identity Name="3237Zumicts.AudioticaBeta" Publisher="CN=E38C2EDA-A823-4D3D-BBB1-8F0B81FF4C7B" Version="1501.23.10.49" />
   <mp:PhoneIdentity PhoneProductId="328d5f1b-7584-4d93-86a1-22e73b46a921" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
     <DisplayName>Audiotica Beta</DisplayName>
