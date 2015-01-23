@@ -105,11 +105,7 @@ namespace Audiotica
                 var lastAlbum = await App.Locator.ScrobblerService.GetDetailAlbum(
                     string.IsNullOrEmpty(lastTrack.AlbumName) ? track.AlbumName : lastTrack.AlbumName, track.ArtistName);
 
-                if (track.ArtistMbid == null)
-                    artist = await App.Locator.ScrobblerService.GetDetailArtist(track.ArtistName).ConfigureAwait(false);
-                else
-                    artist =
-                        await App.Locator.ScrobblerService.GetDetailArtistByMbid(track.ArtistMbid).ConfigureAwait(false);
+                artist = await App.Locator.ScrobblerService.GetDetailArtist(track.ArtistName).ConfigureAwait(false);
 
                 preparedSong.Song.Album = lastAlbum.ToAlbum();
                 preparedSong.Song.Album.PrimaryArtist = artist.ToArtist();
