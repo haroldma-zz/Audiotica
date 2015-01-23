@@ -267,15 +267,22 @@ namespace Audiotica.Data.Service.RunTime
 
         private async Task<bool> GetSessionTokenAsync(string username, string password)
         {
-            var response = await _auth.GetSessionTokenAsync(username, password);
+            var response = await GetSessionTokenWithResultsAsync(username, password);
             OnAuthStateChanged();
-            return response.Success;
+            return response == LastFmApiError.None;
         }
 
         private async Task<LastFmApiError> GetSessionTokenWithResultsAsync(string username, string password)
         {
-            var response = await _auth.GetSessionTokenAsync(username, password);
-            return response.Error;
+            try
+            {
+                var response = await _auth.GetSessionTokenAsync(username, password);
+                return response.Error;
+            }
+            catch
+            {
+                return LastFmApiError.RequestFailed;
+            }
         }
 
         private void ThrowIfError(LastResponse resp)

@@ -5,23 +5,16 @@ using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Audiotica.Core.Utils;
 using Audiotica.Data.Spotify.Models;
 using Newtonsoft.Json;
 
 namespace Audiotica.Data.Spotify
 {
-    public sealed class SpotifyWebApi : IDisposable
+    public sealed class SpotifyWebApi
     {
         public String TokenType { get; set; }
         public String AccessToken { get; set; }
-
-        readonly HttpClient _webclient;
-        readonly JsonSerializerSettings _settings;
-        public SpotifyWebApi()
-        {
-            _webclient = new HttpClient();
-            _settings = new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore, TypeNameHandling = TypeNameHandling.All };
-        }
 
         #region Search and Fetch
 
@@ -112,23 +105,19 @@ namespace Audiotica.Data.Spotify
         #region Util
         public async Task<T> DownloadDataAsync<T>(String url)
         {
-            return JsonConvert.DeserializeObject<T>(await DownloadStringAsync(url), _settings);
+            return await (await DownloadStringAsync(url)).DeserializeAsync<T>();
         }
 
         public async Task<string> DownloadStringAsync(String url)
         {
-            var resp = await _webclient.GetAsync(url);
-            var text = await resp.Content.ReadAsStringAsync();
-            Debug.WriteLine(text);
-            return text;
+            using (var client = new HttpClient())
+            {
+                var resp = await client.GetAsync(url);
+                var text = await resp.Content.ReadAsStringAsync();
+                return text;
+            }
         }
 
         #endregion
-
-        public void Dispose()
-        {
-            _webclient.Dispose();
-            GC.SuppressFinalize(this);
-        }
     }
 }

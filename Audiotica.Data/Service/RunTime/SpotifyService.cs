@@ -62,6 +62,9 @@ namespace Audiotica.Data.Service.RunTime
         public async Task<Paging<FullTrack>> SearchTracksAsync(string query, int limit = 20, int offset = 0)
         {
             var results = await _spotify.SearchItems(query, SearchType.TRACK, limit, offset);
+
+            if (results == null || results.Tracks == null || results.Tracks.Items == null) return null;
+
             RemoveDuplicates(results.Tracks.Items);
             return results.Tracks;
         }
@@ -69,12 +72,16 @@ namespace Audiotica.Data.Service.RunTime
         public async Task<Paging<FullArtist>> SearchArtistsAsync(string query, int limit = 20, int offset = 0)
         {
             var results = await _spotify.SearchItems(query, SearchType.ARTIST, limit, offset);
-            return results.Artists;
+
+            return results != null ? results.Artists : null;
         }
 
         public async Task<Paging<SimpleAlbum>> SearchAlbumsAsync(string query, int limit = 20, int offset = 0)
         {
             var results = await _spotify.SearchItems(query, SearchType.ALBUM, limit, offset);
+
+            if (results == null || results.Albums == null || results.Albums.Items == null) return null;
+
             RemoveDuplicates(results.Albums.Items);
             return results.Albums;
         }
