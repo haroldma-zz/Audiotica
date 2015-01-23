@@ -62,7 +62,7 @@ namespace Audiotica.ViewModel
                 SimpleIoc.Default.Register<SpotifyWebApi>();
                 SimpleIoc.Default.Register<ISpotifyService, SpotifyService>();
 
-                SimpleIoc.Default.Register(() => factory.CreateCollectionSqlService(8, async (connection, d) =>
+                SimpleIoc.Default.Register(() => factory.CreateCollectionSqlService(9, async (connection, d) =>
                 {
                     if (!(d > 0) || !(d < 8)) return;
 
