@@ -83,5 +83,15 @@ namespace Audiotica.Data.Collection.DesignTime
         {
             throw new NotImplementedException();
         }
+
+        public void BeginTransaction()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Commit()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -151,7 +151,7 @@ namespace Audiotica
             {
                 using (var handler = Insights.TrackTime("Migrate Downloads To Phone"))
                 {
-                    App.Locator.SqlService.DbConnection.BeginTransaction();
+                    App.Locator.SqlService.BeginTransaction();
 
                     UiBlockerUtility.Block("Migrating downloaded songs to phone...");
                     foreach (var song in songs)
@@ -180,13 +180,15 @@ namespace Audiotica
                             {
                                 {"Where", "Migrating Download"},
                                 {"SongName", song.Name},
+                                {"ArtistName", song.ArtistName},
+                                {"AlbumName", song.Album.Name},
                                 {"SongProviderId", song.ProviderId},
                                 {"SongAudioUrl", song.AudioUrl}
                             });
                         }
                     }
                     handler.Data.Add("TotalCount", songs.Count.ToString());
-                    App.Locator.SqlService.DbConnection.Commit();
+                    App.Locator.SqlService.Commit();
                 }
             }
 
@@ -195,7 +197,7 @@ namespace Audiotica
                 using (var handler = Insights.TrackTime("Migrate Outdated Imports"))
                 {
                     UiBlockerUtility.Block("Deleting outdated song imports...");
-                    App.Locator.SqlService.DbConnection.BeginTransaction();
+                    App.Locator.SqlService.BeginTransaction();
                     foreach (var song in importedSongs)
                     {
                         try
@@ -214,7 +216,7 @@ namespace Audiotica
                         }
                     }
                     handler.Data.Add("TotalCount", importedSongs.Count.ToString());
-                    App.Locator.SqlService.DbConnection.Commit();
+                    App.Locator.SqlService.Commit();
                 }
             }
 
@@ -480,7 +482,7 @@ namespace Audiotica
 
                 if (album.Tracks.Items.Count > 1)
                 {
-                    App.Locator.SqlService.DbConnection.BeginTransaction();
+                    App.Locator.SqlService.BeginTransaction();
                     //save the rest at the rest time
                     var songs = album.Tracks.Items.Skip(index).Select(track => _SaveTrackAsync(track, album, false));
                     var results = await Task.WhenAll(songs);
@@ -502,7 +504,7 @@ namespace Audiotica
                         handler.Data.Add("MissingCount", missingCount.ToString());
                         CurtainPrompt.ShowError("AlbumMissingTracks".FromLanguageResource(), missingCount, album.Name);
                     }
-                    App.Locator.SqlService.DbConnection.Commit();
+                    App.Locator.SqlService.Commit();
                 }
                 else
                     success =
@@ -643,7 +645,7 @@ namespace Audiotica
                     var queueSong = await App.Locator.CollectionService.AddToQueueAsync(song).ConfigureAwait(false);
                     App.Locator.AudioPlayerHelper.PlaySong(queueSong);
 
-                    App.Locator.SqlService.DbConnection.BeginTransaction();
+                    App.Locator.SqlService.BeginTransaction();
                     for (var index = 1; index < ordered.Count; index++)
                     {
                         if (!_currentlyPreparing)
@@ -651,7 +653,7 @@ namespace Audiotica
                         var s = ordered[index];
                         await App.Locator.CollectionService.AddToQueueAsync(s).ConfigureAwait(false);
                     }
-                    App.Locator.SqlService.DbConnection.Commit();
+                    App.Locator.SqlService.Commit();
 
                     _currentlyPreparing = false;
                 }
@@ -700,7 +702,7 @@ namespace Audiotica
         {
             using (var handle = Insights.TrackTime("AddListToQueue", "Count", songs.Count.ToString()))
             {
-                App.Locator.SqlService.DbConnection.BeginTransaction();
+                App.Locator.SqlService.BeginTransaction();
                 for (var i = 0; i < songs.Count; i++)
                 {
                     var song = songs[i];
@@ -713,7 +715,7 @@ namespace Audiotica
                     await AddToQueueAsync(song, i == songs.Count - 1,
                         playIfNotActive, i == 0, ignoreInsertMode).ConfigureAwait(false);
                 }
-                App.Locator.SqlService.DbConnection.Commit();
+                App.Locator.SqlService.Commit();
                 handle.Data.Add("FinalCount", App.Locator.CollectionService.PlaybackQueue.Count.ToString());
             }
 
@@ -832,12 +834,12 @@ namespace Audiotica
             var startTransaction = !App.Locator.SqlService.DbConnection.IsInTransaction;
 
             if (startTransaction)
-                App.Locator.SqlService.DbConnection.BeginTransaction();
+                App.Locator.SqlService.BeginTransaction();
 
             var result = await SpotifyHelper.SaveTrackAsync(track, album);
 
             if (startTransaction)
-                App.Locator.SqlService.DbConnection.Commit();
+                App.Locator.SqlService.Commit();
 
             ShowErrorResults(result, track.Name);
 
@@ -866,12 +868,12 @@ namespace Audiotica
             var startTransaction = !App.Locator.SqlService.DbConnection.IsInTransaction;
 
             if (startTransaction)
-                App.Locator.SqlService.DbConnection.BeginTransaction();
+                App.Locator.SqlService.BeginTransaction();
 
             var result = await ScrobblerHelper.SaveTrackAsync(track);
 
             if (startTransaction)
-                App.Locator.SqlService.DbConnection.Commit();
+                App.Locator.SqlService.Commit();
 
             ShowErrorResults(result, track.Name);
 

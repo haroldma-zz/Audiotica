@@ -1,5 +1,6 @@
 ﻿#region
 
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using SQLite;
@@ -10,7 +11,7 @@ namespace Audiotica.Data.Collection.Model
 {
     public class Playlist : BaseEntry
     {
-        internal readonly Dictionary<long, PlaylistSong> LookupMap = new Dictionary<long, PlaylistSong>();
+        internal readonly ConcurrentDictionary<long, PlaylistSong> LookupMap = new ConcurrentDictionary<long, PlaylistSong>();
 
         public Playlist()
         {

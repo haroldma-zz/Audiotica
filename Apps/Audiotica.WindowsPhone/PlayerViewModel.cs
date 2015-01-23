@@ -200,7 +200,16 @@ namespace Audiotica
             if (playerInstance == null) return;
 
             Duration = playerInstance.NaturalDuration;
-            var state = playerInstance.CurrentState;
+            var state = MediaPlayerState.Closed;
+
+            try
+            {
+                state = playerInstance.CurrentState;
+            }
+            catch
+            {
+                // ignored, rare occacion where the player just throws a generic Exception
+            }
 
             if (state != MediaPlayerState.Closed &&
                  state != MediaPlayerState.Stopped)
@@ -217,7 +226,7 @@ namespace Audiotica
                 }
 
                 var currentId = _appSettingsHelper.Read<int>(PlayerConstants.CurrentTrack);
-                CurrentQueue = _service.CurrentPlaybackQueue.FirstOrDefault(p => p.Id == currentId);
+                CurrentQueue = _service.PlaybackQueue.FirstOrDefault(p => p.Id == currentId);
 
                 if (CurrentQueue != null
                     && CurrentQueue.Song != null

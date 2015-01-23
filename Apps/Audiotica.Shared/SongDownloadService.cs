@@ -144,7 +144,7 @@ namespace Audiotica
                         var albumFilePath = string.Format(CollectionConstant.ArtworkPath, song.Album.Id);
                         var artworkFile = await StorageHelper.GetFileAsync(albumFilePath);
 
-                        using (var artworkStream = await artworkFile.OpenAsync(FileAccess.ReadAndWrite))
+                        using (var artworkStream = await artworkFile.OpenAsync(FileAccess.Read))
                         {
                             newTags.Pictures = new IPicture[]
                             {

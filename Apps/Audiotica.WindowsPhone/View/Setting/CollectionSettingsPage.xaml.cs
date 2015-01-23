@@ -53,7 +53,7 @@ namespace Audiotica.View.Setting
                 App.Locator.CollectionService.Artists.SuppressEvents = true;
                 App.Locator.CollectionService.Albums.SuppressEvents = true;
 
-                App.Locator.SqlService.DbConnection.BeginTransaction();
+                App.Locator.SqlService.BeginTransaction();
                 for (var i = 0; i < localMusic.Count; i++)
                 {
                     StatusBarHelper.ShowStatus(string.Format("Importing {0} of {1} items", i + 1, localMusic.Count),
@@ -67,7 +67,7 @@ namespace Audiotica.View.Setting
                         failedCount++;
                     }
                 }
-                App.Locator.SqlService.DbConnection.Commit();
+                App.Locator.SqlService.Commit();
 
                 App.Locator.CollectionService.Songs.Reset();
                 App.Locator.CollectionService.Artists.Reset();

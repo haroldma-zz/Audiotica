@@ -25,5 +25,8 @@ namespace Audiotica.Data.Collection
         Task<List<T>> SelectAllAsync<T>() where T : new();
         Task DeleteTableAsync<T>();
         Task DeleteWhereAsync(BaseEntry entry);
+
+        void BeginTransaction();
+        void Commit();
     }
 }

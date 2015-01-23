@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Runtime.InteropServices;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.Storage;
@@ -72,7 +73,7 @@ namespace Audiotica
                     {
                         var files = new List<StorageFile>();
 
-                        if (item.IsOfType(StorageItemTypes.File))
+                        if (item is StorageFile)
                         {
                             var file = (item as StorageFile);
                             if (file.FileType == ".autcp"
@@ -81,7 +82,7 @@ namespace Audiotica
                                 continue;
                             files.Add(file);
                         }
-                        else if (item.IsOfType(StorageItemTypes.Folder))
+                        else if (item is StorageFolder)
                         {
                             var name = (item as StorageFolder).Name;
                             if (name == "SOMA" || name == "Logs" || name == "AdMediator"
@@ -93,15 +94,15 @@ namespace Audiotica
 
                         foreach (var file in files)
                         {
-                            using (var stream = (await file.OpenStreamForReadAsync()))
-                            {
-                                var path = file.Path.Replace(folder.Path + "\\", "").Replace("\\", "/");
+                            var buffer = (await FileIO.ReadBufferAsync(file)).ToArray();
 
-                                var entry = zipArchive.CreateEntry(path, CompressionLevel.Optimal);
-                                using (var entryStream = entry.Open())
-                                {
-                                    await stream.CopyToAsync(entryStream);
-                                }
+                            var path = file.Path.Replace(folder.Path + "\\", "").Replace("\\", "/");
+
+                            var entry = zipArchive.CreateEntry(path, CompressionLevel.Optimal);
+                            using (var entryStream = entry.Open())
+                            {
+                                await entryStream.WriteAsync(buffer, 0, buffer.Length);
+                                await entryStream.FlushAsync();
                             }
                         }
                     }

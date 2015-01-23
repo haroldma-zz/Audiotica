@@ -174,6 +174,24 @@ namespace Audiotica.Data.Collection.RunTime
             return Task.Run(() => { DbConnection.Delete(entry); });
         }
 
+        public void BeginTransaction()
+        {
+            try
+            {
+                DbConnection.BeginTransaction();
+            }
+            catch (InvalidOperationException) { }
+        }
+
+        public void Commit()
+        {
+            try
+            {
+                DbConnection.Commit();
+            }
+            catch (InvalidOperationException) { }
+        }
+
         private void CreateTablesIfNotExists()
         {
             foreach (var type in _config.Tables)

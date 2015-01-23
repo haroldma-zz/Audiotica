@@ -121,10 +121,6 @@ namespace Audiotica.View
             var bar = Bar as CommandBar;
             SongList.IsItemClickEnabled = false;
 
-// ReSharper disable once RedundantCheckBeforeAssignment
-            if (SongList.SelectionMode != ListViewSelectionMode.Multiple)
-                SongList.SelectionMode = ListViewSelectionMode.Multiple;
-
             AppBarHelper.SaveState(bar);
             AppBarHelper.SwitchState(bar, _selectionModeCommands);
         }
@@ -140,7 +136,7 @@ namespace Audiotica.View
 
         private void SelectAppBarButton_Click(object sender, RoutedEventArgs e)
         {
-            ToMultiMode();
+            SongList.SelectionMode = ListViewSelectionMode.Multiple;
         }
 
         private void ReorderAppBarButton_Click(object sender, RoutedEventArgs e)
