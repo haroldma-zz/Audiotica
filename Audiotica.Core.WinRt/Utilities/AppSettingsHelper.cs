@@ -44,6 +44,7 @@ namespace Audiotica.Core.WinRt.Utilities
                 }
                 catch
                 {
+                    // ignored
                 }
             }
             return defaultValue;
@@ -63,6 +64,7 @@ namespace Audiotica.Core.WinRt.Utilities
             }
             catch
             {
+                // ignored
             }
 
             return obj;
@@ -91,6 +93,7 @@ namespace Audiotica.Core.WinRt.Utilities
             }
             catch
             {
+                // ignored
             }
         }
 

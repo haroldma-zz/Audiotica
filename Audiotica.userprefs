@@ -1,0 +1,8 @@
+﻿<Properties StartupItem="Agents/Audiotica.Windows.Player/Audiotica.Windows.Player.csproj">
+  <DisabledProjects>
+    <String>Audiotica.Core.WinRt/Audiotica.Core.WinRt.csproj</String>
+    <String>Apps/Audiotica.Shared/Audiotica.Shared.shproj</String>
+    <String>Agents/Audiotica.Windows.Player/Audiotica.Windows.Player.csproj</String>
+    <String>Agents/Audiotica.WindowsPhone.Player/Audiotica.WindowsPhone.Player.csproj</String>
+  </DisabledProjects>
+</Properties>

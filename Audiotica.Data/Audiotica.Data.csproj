@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <MinimumVisualStudioVersion>10.0</MinimumVisualStudioVersion>
@@ -142,7 +142,6 @@
     </Reference>
     <Reference Include="System.Net.Http.Extensions">
       <HintPath>..\packages\Microsoft.Net.Http.2.2.28\lib\portable-net45+win8+wpa81\System.Net.Http.Extensions.dll</HintPath>
-      <Private>True</Private>
     </Reference>
     <Reference Include="System.Net.Http.Primitives">
       <HintPath>..\packages\Microsoft.Net.Http.2.2.28\lib\portable-net45+win8+wpa81\System.Net.Http.Primitives.dll</HintPath>
@@ -157,11 +156,11 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Audiotica.Core\Audiotica.Core.csproj">
-      <Project>{49668872-a57c-4e70-834b-83608e6cef23}</Project>
+      <Project>{49668872-A57C-4E70-834B-83608E6CEF23}</Project>
       <Name>Audiotica.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\Audiotica.Data.Collection\Audiotica.Data.Collection.csproj">
-      <Project>{264b7b96-92a4-4fb4-a938-eb30fd288b70}</Project>
+      <Project>{264B7B96-92A4-4FB4-A938-EB30FD288B70}</Project>
       <Name>Audiotica.Data.Collection</Name>
     </ProjectReference>
   </ItemGroup>
