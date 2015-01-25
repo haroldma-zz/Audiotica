@@ -116,6 +116,7 @@
     </Compile>
     <Compile Include="BaseActivity.cs" />
     <Compile Include="BroadcastReceivers\HeadsetButtonsReceiver.cs" />
+    <Compile Include="BroadcastReceivers\MediaActionReceiver.cs" />
     <Compile Include="DryIoc\Container.cs" />
     <Compile Include="Fragments\ListViewFragment.cs" />
     <Compile Include="Implementations\CredentialHelper.cs" />
@@ -130,6 +131,9 @@
     <Compile Include="Resources\Resource.Designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\AudioPlaybackService.cs" />
+    <Compile Include="Utilities\CollectionHelper.cs" />
+    <Compile Include="Utilities\SettingsHelper.cs" />
+    <Compile Include="Utilities\AudioPlayerHelper.cs" />
     <Compile Include="Utilities\Crypto.cs" />
     <Compile Include="App.cs" />
     <Compile Include="Utilities\CustomArrayAdapter.cs" />
@@ -155,17 +159,17 @@
     <AndroidResource Include="Resources\drawable\transparent_drawable.axml">
       <SubType>AndroidResource</SubType>
     </AndroidResource>
+    <AndroidResource Include="Resources\layout\notification_custom_layout.axml">
+      <SubType>AndroidResource</SubType>
+    </AndroidResource>
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\layout\Main.axml" />
   </ItemGroup>
   <ItemGroup>
-    <AndroidResource Include="Resources\values\Strings.xml">
+    <AndroidResource Include="Resources\values\Dimens.xml">
       <SubType>Designer</SubType>
     </AndroidResource>
-  </ItemGroup>
-  <ItemGroup>
-    <AndroidResource Include="Resources\drawable\Icon.png" />
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="..\Audiotica.Shared\Assets\ElectricDaisyCarnival.jpg">
@@ -176,6 +180,25 @@
     </AndroidResource>
     <Content Include="Properties\AndroidManifest.xml" />
     <AndroidResource Include="Resources\drawable\ic_action_overflow_universal.png" />
+    <AndroidResource Include="Resources\drawable\NotifIcon.png" />
+    <AndroidResource Include="Resources\drawable\Icon.png" />
+    <AndroidResource Include="Resources\values\Styles.xml" />
+    <AndroidResource Include="Resources\drawable\btn_notification_collapse.png" />
+    <AndroidResource Include="Resources\drawable\btn_playback_next_light.png" />
+    <AndroidResource Include="Resources\drawable\btn_playback_next.png" />
+    <AndroidResource Include="Resources\drawable\btn_playback_pause_light.png" />
+    <AndroidResource Include="Resources\drawable\btn_playback_pause.png" />
+    <AndroidResource Include="Resources\drawable\btn_playback_play_light.png" />
+    <AndroidResource Include="Resources\drawable\btn_playback_play.png" />
+    <AndroidResource Include="Resources\drawable\btn_playback_previous_light.png" />
+    <AndroidResource Include="Resources\drawable\btn_playback_previous.png" />
+    <AndroidResource Include="Resources\drawable\btn_playback_repeat_all.png" />
+    <AndroidResource Include="Resources\drawable\btn_playback_repeat_one.png" />
+    <AndroidResource Include="Resources\drawable\btn_playback_repeat.png" />
+    <AndroidResource Include="Resources\drawable\btn_playback_shuffle_all.png" />
+    <AndroidResource Include="Resources\drawable\btn_playback_shuffle.png" />
+    <AndroidResource Include="Resources\layout\notification_custom_expanded_layout.axml" />
+    <AndroidResource Include="Resources\values\XMLFile1.xml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Audiotica.Core\Audiotica.Core.csproj">

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Android.App;
 using Android.Content;
 using Android.OS;
@@ -10,7 +11,7 @@ namespace Audiotica.Android
 {
     public class App : Application
     {
-        public AudioServiceConnection AudioServiceConnection = new AudioServiceConnection();
+        public AudioPlaybackServiceConnection AudioServiceConnection = new AudioPlaybackServiceConnection();
         private Intent _playIntent;
 
         //mono needs this, else it... crashes
@@ -21,8 +22,6 @@ namespace Audiotica.Android
         public static App Current { get; set; }
         public Activity CurrentActivity { get; set; }
         public Locator Locator { get; set; }
-        public double CrossfadeDuration { get; set; }
-        public RepeatMode RepeatMode { get; set; }
 
         public override async void OnCreate()
         {
@@ -33,46 +32,79 @@ namespace Audiotica.Android
             await Current.Locator.SqlService.InitializeAsync();
             await Current.Locator.BgSqlService.InitializeAsync();
             await Current.Locator.CollectionService.LoadLibraryAsync();
+        }
 
-            if (_playIntent != null) return;
+        private TaskCompletionSource<bool> _startPlaybackCompletionSource; 
+        public Task<bool> StartPlaybackServiceAsync()
+        {
+            if (_playIntent != null) return Task.FromResult(false);
 
-            _playIntent = new Intent(this, Java.Lang.Class.FromType(typeof (AudioPlaybackService)));
+            _startPlaybackCompletionSource = new TaskCompletionSource<bool>();
+            _playIntent = new Intent(this, typeof(AudioPlaybackService));
             BindService(_playIntent, AudioServiceConnection, Bind.AutoCreate);
             StartService(_playIntent);
+
+            return _startPlaybackCompletionSource.Task;
         }
-    }
 
-    public class AudioServiceConnection : Object, IServiceConnection
-    {
-        private AudioPlaybackService.AudioPlaybackBinder _audioPlaybackBinder;
-
-        public void OnServiceConnected(ComponentName name, IBinder service)
+        public void StopPlaybackService()
         {
-            var audioPlaybackBinder = (AudioPlaybackService.AudioPlaybackBinder) service;
-            if (audioPlaybackBinder == null) return;
+            AudioServiceConnection.StopService();
+            _playIntent = null;
+        }
 
-            _audioPlaybackBinder = audioPlaybackBinder;
-            IsPlayerBound = true;
+        public class AudioPlaybackServiceConnection : Object, IServiceConnection
+        {
+            private AudioPlaybackService.AudioPlaybackBinder _audioPlaybackBinder;
 
-            while (!App.Current.Locator.CollectionService.IsLibraryLoaded)
+            public void OnServiceConnected(ComponentName name, IBinder service)
             {
-                
+                var audioPlaybackBinder = (AudioPlaybackService.AudioPlaybackBinder) service;
+                if (audioPlaybackBinder == null)
+                {
+                    Current._startPlaybackCompletionSource.SetResult(false);
+                    return;
+                }
+
+                _audioPlaybackBinder = audioPlaybackBinder;
+                IsPlayerBound = true;
+                _audioPlaybackBinder.GetPlaybackService().InitMusicPlayer();
+                Current._startPlaybackCompletionSource.SetResult(true);
             }
 
-            _audioPlaybackBinder.GetPlaybackService().PlaySong(App.Current.Locator.CollectionService.PlaybackQueue[0]);
-        }
+            public void OnServiceDisconnected(ComponentName name)
+            {
+                IsPlayerBound = false;
 
-        public void OnServiceDisconnected(ComponentName name)
-        {
-            IsPlayerBound = false;
-        }
+                if (_audioPlaybackBinder.IsBinderAlive)
+                    _audioPlaybackBinder.Dispose();
+                _audioPlaybackBinder = null;
+            }
 
 
-        public bool IsPlayerBound { get; set; }
+            public bool IsPlayerBound { get; set; }
 
-        public AudioPlaybackService GetPlaybackService()
-        {
-            return _audioPlaybackBinder.GetPlaybackService();
+            public AudioPlaybackService GetPlaybackService()
+            {
+                return _audioPlaybackBinder.GetPlaybackService();
+            }
+
+            public void StopService()
+            {
+                IsPlayerBound = false;
+               
+                try
+                {
+                    Context.UnbindService(this);
+                    _audioPlaybackBinder.Dispose();
+                    _audioPlaybackBinder = null;
+                }
+                catch
+                {
+                }
+
+                Context.StopService(new Intent(Context, typeof (AudioPlaybackService)));
+            }
         }
     }
 

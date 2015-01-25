@@ -1901,6 +1901,66 @@ namespace Audiotica.Android
 			// aapt resource value: 0x7f080024
 			public const int abc_text_size_title_material_toolbar = 2131230756;
 			
+			// aapt resource value: 0x7f080036
+			public const int activity_horizontal_margin = 2131230774;
+			
+			// aapt resource value: 0x7f080037
+			public const int activity_vertical_margin = 2131230775;
+			
+			// aapt resource value: 0x7f080069
+			public const int app_widget_bottom_margin = 2131230825;
+			
+			// aapt resource value: 0x7f08005c
+			public const int app_widget_large_alternate_artwork_size = 2131230812;
+			
+			// aapt resource value: 0x7f080059
+			public const int app_widget_large_min_height = 2131230809;
+			
+			// aapt resource value: 0x7f080058
+			public const int app_widget_large_min_width = 2131230808;
+			
+			// aapt resource value: 0x7f080068
+			public const int app_widget_padding = 2131230824;
+			
+			// aapt resource value: 0x7f080064
+			public const int app_widget_recents_action_bar_height = 2131230820;
+			
+			// aapt resource value: 0x7f080065
+			public const int app_widget_recents_action_bar_item_padding = 2131230821;
+			
+			// aapt resource value: 0x7f08005a
+			public const int app_widget_scrollable_min_height = 2131230810;
+			
+			// aapt resource value: 0x7f08005b
+			public const int app_widget_scrollable_min_resize_height = 2131230811;
+			
+			// aapt resource value: 0x7f080061
+			public const int app_widget_small_artwork_size = 2131230817;
+			
+			// aapt resource value: 0x7f080063
+			public const int app_widget_small_button_height = 2131230819;
+			
+			// aapt resource value: 0x7f080062
+			public const int app_widget_small_button_padding = 2131230818;
+			
+			// aapt resource value: 0x7f08005f
+			public const int app_widget_small_info_container_padding_left = 2131230815;
+			
+			// aapt resource value: 0x7f080060
+			public const int app_widget_small_info_container_padding_right = 2131230816;
+			
+			// aapt resource value: 0x7f08005e
+			public const int app_widget_small_min_height = 2131230814;
+			
+			// aapt resource value: 0x7f08005d
+			public const int app_widget_small_min_width = 2131230813;
+			
+			// aapt resource value: 0x7f080066
+			public const int app_widget_tiny_height = 2131230822;
+			
+			// aapt resource value: 0x7f080067
+			public const int app_widget_tiny_width = 2131230823;
+			
 			// aapt resource value: 0x7f080025
 			public const int dialog_fixed_height_major = 2131230757;
 			
@@ -1918,6 +1978,78 @@ namespace Audiotica.Android
 			
 			// aapt resource value: 0x7f08002a
 			public const int disabled_alpha_material_light = 2131230762;
+			
+			// aapt resource value: 0x7f080040
+			public const int footer_thumbnail = 2131230784;
+			
+			// aapt resource value: 0x7f080039
+			public const int image_height_vmlimit = 2131230777;
+			
+			// aapt resource value: 0x7f080038
+			public const int image_width_vmlimit = 2131230776;
+			
+			// aapt resource value: 0x7f080034
+			public const int kitkat_nav_bar_margin = 2131230772;
+			
+			// aapt resource value: 0x7f080035
+			public const int kitkat_nav_bar_margin_large = 2131230773;
+			
+			// aapt resource value: 0x7f08003d
+			public const int large_widget_album_art_size = 2131230781;
+			
+			// aapt resource value: 0x7f080042
+			public const int list_padding = 2131230786;
+			
+			// aapt resource value: 0x7f08006a
+			public const int list_view_left_icon_size = 2131230826;
+			
+			// aapt resource value: 0x7f080050
+			public const int notification_action_height = 2131230800;
+			
+			// aapt resource value: 0x7f08004f
+			public const int notification_action_padding = 2131230799;
+			
+			// aapt resource value: 0x7f080051
+			public const int notification_action_width = 2131230801;
+			
+			// aapt resource value: 0x7f08004b
+			public const int notification_big_icon_height = 2131230795;
+			
+			// aapt resource value: 0x7f08004c
+			public const int notification_big_icon_width = 2131230796;
+			
+			// aapt resource value: 0x7f080054
+			public const int notification_expanded_button_height = 2131230804;
+			
+			// aapt resource value: 0x7f080055
+			public const int notification_expanded_button_padding = 2131230805;
+			
+			// aapt resource value: 0x7f080053
+			public const int notification_expanded_buttons_divider_padding = 2131230803;
+			
+			// aapt resource value: 0x7f080057
+			public const int notification_expanded_collapse_padding = 2131230807;
+			
+			// aapt resource value: 0x7f080056
+			public const int notification_expanded_content_padding_top = 2131230806;
+			
+			// aapt resource value: 0x7f080052
+			public const int notification_expanded_height = 2131230802;
+			
+			// aapt resource value: 0x7f08003f
+			public const int notification_height = 2131230783;
+			
+			// aapt resource value: 0x7f08004e
+			public const int notification_info_container_padding_bottom = 2131230798;
+			
+			// aapt resource value: 0x7f08004d
+			public const int notification_info_container_padding_left = 2131230797;
+			
+			// aapt resource value: 0x7f08003c
+			public const int playlist_preview = 2131230780;
+			
+			// aapt resource value: 0x7f08003a
+			public const int quickplay_offset = 2131230778;
 			
 			// aapt resource value: 0x7f08002b
 			public const int sb__bg_corner_radius = 2131230763;
@@ -1945,6 +2077,39 @@ namespace Audiotica.Android
 			
 			// aapt resource value: 0x7f080031
 			public const int sb__text_size = 2131230769;
+			
+			// aapt resource value: 0x7f080043
+			public const int shadow_width = 2131230787;
+			
+			// aapt resource value: 0x7f080041
+			public const int slidingmenu_offset = 2131230785;
+			
+			// aapt resource value: 0x7f08004a
+			public const int text_size_dayum = 2131230794;
+			
+			// aapt resource value: 0x7f080044
+			public const int text_size_extra_micro = 2131230788;
+			
+			// aapt resource value: 0x7f080048
+			public const int text_size_large = 2131230792;
+			
+			// aapt resource value: 0x7f080047
+			public const int text_size_medium = 2131230791;
+			
+			// aapt resource value: 0x7f080045
+			public const int text_size_micro = 2131230789;
+			
+			// aapt resource value: 0x7f080046
+			public const int text_size_small = 2131230790;
+			
+			// aapt resource value: 0x7f080049
+			public const int text_size_x_large = 2131230793;
+			
+			// aapt resource value: 0x7f08003e
+			public const int widget_list_view_art_size = 2131230782;
+			
+			// aapt resource value: 0x7f08003b
+			public const int widget_margin = 2131230779;
 			
 			static Dimension()
 			{
@@ -2113,31 +2278,76 @@ namespace Audiotica.Android
 			public const int abc_textfield_search_material = 2130837554;
 			
 			// aapt resource value: 0x7f020033
-			public const int card_gridview_dark = 2130837555;
+			public const int btn_notification_collapse = 2130837555;
 			
 			// aapt resource value: 0x7f020034
-			public const int card_light = 2130837556;
+			public const int btn_playback_next = 2130837556;
 			
 			// aapt resource value: 0x7f020035
-			public const int ElectricDaisyCarnival = 2130837557;
+			public const int btn_playback_next_light = 2130837557;
 			
 			// aapt resource value: 0x7f020036
-			public const int ic_action_overflow_universal = 2130837558;
+			public const int btn_playback_pause = 2130837558;
 			
 			// aapt resource value: 0x7f020037
-			public const int Icon = 2130837559;
+			public const int btn_playback_pause_light = 2130837559;
 			
 			// aapt resource value: 0x7f020038
-			public const int MissingArtwork = 2130837560;
+			public const int btn_playback_play = 2130837560;
 			
 			// aapt resource value: 0x7f020039
-			public const int sb__bg = 2130837561;
+			public const int btn_playback_play_light = 2130837561;
 			
 			// aapt resource value: 0x7f02003a
-			public const int sb__btn_bg = 2130837562;
+			public const int btn_playback_previous = 2130837562;
 			
 			// aapt resource value: 0x7f02003b
-			public const int transparent_drawable = 2130837563;
+			public const int btn_playback_previous_light = 2130837563;
+			
+			// aapt resource value: 0x7f02003c
+			public const int btn_playback_repeat = 2130837564;
+			
+			// aapt resource value: 0x7f02003d
+			public const int btn_playback_repeat_all = 2130837565;
+			
+			// aapt resource value: 0x7f02003e
+			public const int btn_playback_repeat_one = 2130837566;
+			
+			// aapt resource value: 0x7f02003f
+			public const int btn_playback_shuffle = 2130837567;
+			
+			// aapt resource value: 0x7f020040
+			public const int btn_playback_shuffle_all = 2130837568;
+			
+			// aapt resource value: 0x7f020041
+			public const int card_gridview_dark = 2130837569;
+			
+			// aapt resource value: 0x7f020042
+			public const int card_light = 2130837570;
+			
+			// aapt resource value: 0x7f020043
+			public const int ElectricDaisyCarnival = 2130837571;
+			
+			// aapt resource value: 0x7f020044
+			public const int ic_action_overflow_universal = 2130837572;
+			
+			// aapt resource value: 0x7f020045
+			public const int Icon = 2130837573;
+			
+			// aapt resource value: 0x7f020046
+			public const int MissingArtwork = 2130837574;
+			
+			// aapt resource value: 0x7f020047
+			public const int NotifIcon = 2130837575;
+			
+			// aapt resource value: 0x7f020048
+			public const int sb__bg = 2130837576;
+			
+			// aapt resource value: 0x7f020049
+			public const int sb__btn_bg = 2130837577;
+			
+			// aapt resource value: 0x7f02004a
+			public const int transparent_drawable = 2130837578;
 			
 			static Drawable()
 			{
@@ -2197,8 +2407,8 @@ namespace Audiotica.Android
 			// aapt resource value: 0x7f090016
 			public const int always = 2131296278;
 			
-			// aapt resource value: 0x7f09004c
-			public const int artistNameSongListView = 2131296332;
+			// aapt resource value: 0x7f09005d
+			public const int artistNameSongListView = 2131296349;
 			
 			// aapt resource value: 0x7f090013
 			public const int beginning = 2131296275;
@@ -2260,8 +2470,8 @@ namespace Audiotica.Android
 			// aapt resource value: 0x7f090023
 			public const int image = 2131296291;
 			
-			// aapt resource value: 0x7f09004e
-			public const int linearLayout1 = 2131296334;
+			// aapt resource value: 0x7f09005f
+			public const int linearLayout1 = 2131296351;
 			
 			// aapt resource value: 0x7f090009
 			public const int listMode = 2131296265;
@@ -2284,8 +2494,59 @@ namespace Audiotica.Android
 			// aapt resource value: 0x7f09000a
 			public const int normal = 2131296266;
 			
+			// aapt resource value: 0x7f09004f
+			public const int notification_base = 2131296335;
+			
+			// aapt resource value: 0x7f090056
+			public const int notification_base_collapse = 2131296342;
+			
+			// aapt resource value: 0x7f090050
+			public const int notification_base_image = 2131296336;
+			
+			// aapt resource value: 0x7f090051
+			public const int notification_base_line_one = 2131296337;
+			
+			// aapt resource value: 0x7f090052
+			public const int notification_base_line_two = 2131296338;
+			
+			// aapt resource value: 0x7f090055
+			public const int notification_base_next = 2131296341;
+			
+			// aapt resource value: 0x7f090054
+			public const int notification_base_play = 2131296340;
+			
+			// aapt resource value: 0x7f090053
+			public const int notification_base_previous = 2131296339;
+			
+			// aapt resource value: 0x7f09004b
+			public const int notification_expanded_base_collapse = 2131296331;
+			
+			// aapt resource value: 0x7f090046
+			public const int notification_expanded_base_image = 2131296326;
+			
+			// aapt resource value: 0x7f09004c
+			public const int notification_expanded_base_line_one = 2131296332;
+			
+			// aapt resource value: 0x7f09004e
+			public const int notification_expanded_base_line_three = 2131296334;
+			
 			// aapt resource value: 0x7f09004d
-			public const int overflow_icon = 2131296333;
+			public const int notification_expanded_base_line_two = 2131296333;
+			
+			// aapt resource value: 0x7f09004a
+			public const int notification_expanded_base_next = 2131296330;
+			
+			// aapt resource value: 0x7f090049
+			public const int notification_expanded_base_play = 2131296329;
+			
+			// aapt resource value: 0x7f090048
+			public const int notification_expanded_base_previous = 2131296328;
+			
+			// aapt resource value: 0x7f090047
+			public const int notification_expanded_buttons = 2131296327;
+			
+			// aapt resource value: 0x7f09005e
+			public const int overflow_icon = 2131296350;
 			
 			// aapt resource value: 0x7f090005
 			public const int progress_circular = 2131296261;
@@ -2296,11 +2557,11 @@ namespace Audiotica.Android
 			// aapt resource value: 0x7f09002b
 			public const int radio = 2131296299;
 			
-			// aapt resource value: 0x7f090047
-			public const int sb__action = 2131296327;
+			// aapt resource value: 0x7f090058
+			public const int sb__action = 2131296344;
 			
-			// aapt resource value: 0x7f090046
-			public const int sb__text = 2131296326;
+			// aapt resource value: 0x7f090057
+			public const int sb__text = 2131296343;
 			
 			// aapt resource value: 0x7f090035
 			public const int search_badge = 2131296309;
@@ -2350,20 +2611,20 @@ namespace Audiotica.Android
 			// aapt resource value: 0x7f090011
 			public const int showTitle = 2131296273;
 			
-			// aapt resource value: 0x7f090049
-			public const int songCardContent = 2131296329;
+			// aapt resource value: 0x7f09005a
+			public const int songCardContent = 2131296346;
 			
-			// aapt resource value: 0x7f09004a
-			public const int songDurationListView = 2131296330;
+			// aapt resource value: 0x7f09005b
+			public const int songDurationListView = 2131296347;
 			
 			// aapt resource value: 0x7f090045
 			public const int songListView = 2131296325;
 			
-			// aapt resource value: 0x7f09004b
-			public const int songNameListView = 2131296331;
+			// aapt resource value: 0x7f09005c
+			public const int songNameListView = 2131296348;
 			
-			// aapt resource value: 0x7f090048
-			public const int songsListAlbumThumbnail = 2131296328;
+			// aapt resource value: 0x7f090059
+			public const int songsListAlbumThumbnail = 2131296345;
 			
 			// aapt resource value: 0x7f090007
 			public const int split_action_bar = 2131296263;
@@ -2404,6 +2665,9 @@ namespace Audiotica.Android
 			
 			// aapt resource value: 0x7f0a0000
 			public const int abc_max_action_buttons = 2131361792;
+			
+			// aapt resource value: 0x7f0a0001
+			public const int num_cols = 2131361793;
 			
 			static Integer()
 			{
@@ -2513,16 +2777,22 @@ namespace Audiotica.Android
 			public const int Main = 2130903064;
 			
 			// aapt resource value: 0x7f030019
-			public const int sb__template = 2130903065;
+			public const int notification_custom_expanded_layout = 2130903065;
 			
 			// aapt resource value: 0x7f03001a
-			public const int songs_list_view_cards_layout = 2130903066;
+			public const int notification_custom_layout = 2130903066;
 			
 			// aapt resource value: 0x7f03001b
-			public const int songs_list_view_layout = 2130903067;
+			public const int sb__template = 2130903067;
 			
 			// aapt resource value: 0x7f03001c
-			public const int support_simple_spinner_dropdown_item = 2130903068;
+			public const int songs_list_view_cards_layout = 2130903068;
+			
+			// aapt resource value: 0x7f03001d
+			public const int songs_list_view_layout = 2130903069;
+			
+			// aapt resource value: 0x7f03001e
+			public const int support_simple_spinner_dropdown_item = 2130903070;
 			
 			static Layout()
 			{
@@ -2936,6 +3206,24 @@ namespace Audiotica.Android
 			
 			// aapt resource value: 0x7f0c0060
 			public const int Base_Widget_AppCompat_Toolbar_Button_Navigation = 2131492960;
+			
+			// aapt resource value: 0x7f0c00ee
+			public const int NotificationAction = 2131493102;
+			
+			// aapt resource value: 0x7f0c00f2
+			public const int NotificationAction_Collapse = 2131493106;
+			
+			// aapt resource value: 0x7f0c00f1
+			public const int NotificationAction_Next = 2131493105;
+			
+			// aapt resource value: 0x7f0c00f0
+			public const int NotificationAction_Play = 2131493104;
+			
+			// aapt resource value: 0x7f0c00ef
+			public const int NotificationAction_Previous = 2131493103;
+			
+			// aapt resource value: 0x7f0c00f3
+			public const int NotificationText = 2131493107;
 			
 			// aapt resource value: 0x7f0c0061
 			public const int Platform_AppCompat = 2131492961;

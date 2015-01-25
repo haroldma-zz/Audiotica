@@ -141,7 +141,7 @@ namespace Audiotica
 
                     if (song.Album.HasArtwork)
                     {
-                        var albumFilePath = string.Format(CollectionConstant.ArtworkPath, song.Album.Id);
+                        var albumFilePath = string.Format(AppConstant.ArtworkPath, song.Album.Id);
                         var artworkFile = await StorageHelper.GetFileAsync(albumFilePath);
 
                         using (var artworkStream = await artworkFile.OpenAsync(FileAccess.Read))
@@ -263,7 +263,7 @@ namespace Audiotica
                 var filename = song.Name.CleanForFileName();
                 if (song.ArtistName != song.Album.PrimaryArtist.Name)
                     filename = song.ArtistName.CleanForFileName() + "-" + filename;
-                var path = string.Format(CollectionConstant.SongPath, song.Album.PrimaryArtist.Name.CleanForFileName(), song.Album.Name.CleanForFileName(), filename);
+                var path = string.Format(AppConstant.SongPath, song.Album.PrimaryArtist.Name.CleanForFileName(), song.Album.Name.CleanForFileName(), filename);
                 
                 var destinationFile =
                     await

@@ -7,7 +7,7 @@ using Audiotica.Core.Common;
 
 namespace Audiotica.Core.WinRt
 {
-    public static class CollectionConstant
+    public static class AppConstant
     {
         public const string LocalStorageAppPath = "ms-appdata:///local/";
         public const string PackageAppPath = "ms-appx:///";
