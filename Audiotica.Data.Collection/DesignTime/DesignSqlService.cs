@@ -19,7 +19,7 @@ namespace Audiotica.Data.Collection.DesignTime
 
         public SQLiteConnection DbConnection { get; private set; }
 
-        public void Initialize(bool walMode = true)
+        public void Initialize(bool walMode = true, bool readOnlyMode = false)
         {
             throw new NotImplementedException();
         }
@@ -60,6 +60,11 @@ namespace Audiotica.Data.Collection.DesignTime
         }
 
         public T SelectFirst<T>(Func<T, bool> expression) where T : new()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<T> SelectFirstAsync<T>(Func<T, bool> expression) where T : new()
         {
             throw new NotImplementedException();
         }

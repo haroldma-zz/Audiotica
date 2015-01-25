@@ -1,8 +1,33 @@
-﻿<Properties StartupItem="Agents/Audiotica.Windows.Player/Audiotica.Windows.Player.csproj">
+﻿<Properties StartupItem="Apps/Audiotica.Android/Audiotica.Android.csproj">
   <DisabledProjects>
     <String>Audiotica.Core.WinRt/Audiotica.Core.WinRt.csproj</String>
     <String>Apps/Audiotica.Shared/Audiotica.Shared.shproj</String>
     <String>Agents/Audiotica.Windows.Player/Audiotica.Windows.Player.csproj</String>
     <String>Agents/Audiotica.WindowsPhone.Player/Audiotica.WindowsPhone.Player.csproj</String>
+    <String>Apps/Audiotica.Windows/Audiotica.Windows.csproj</String>
+    <String>Apps/Audiotica.WindowsPhone/Audiotica.WindowsPhone.csproj</String>
   </DisabledProjects>
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="Android.AVD_for_Nexus_5_by_Google" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Apps/Audiotica.Android/Implementations/PclBitmapImage.cs">
+    <Files>
+      <File FileName="Apps/Audiotica.Android/MainActivity.cs" Line="1" Column="1" />
+      <File FileName="Apps/Audiotica.Android/Locator.cs" Line="1" Column="1" />
+      <File FileName="Audiotica.Data/Mp3MatchEngine.cs" Line="1" Column="1" />
+      <File FileName="Apps/Audiotica.Android/Properties/AndroidManifest.xml" Line="1" Column="1" />
+      <File FileName="Apps/Audiotica.Android/App.cs" Line="1" Column="1" />
+      <File FileName="Apps/Audiotica.Android/BaseActivity.cs" Line="1" Column="1" />
+      <File FileName="Audiotica.Data.Collection/RunTime/CollectionService.cs" Line="1" Column="1" />
+      <File FileName="Apps/Audiotica.Android/Implementations/DispatcherHelper.cs" Line="1" Column="1" />
+      <File FileName="Apps/Audiotica.Android/Utilities/CustomArrayAdapter.cs" Line="1" Column="1" />
+      <File FileName="Apps/Audiotica.Android/Implementations/PclBitmapImage.cs" Line="1" Column="1" />
+      <File FileName="Apps/Audiotica.Android/Implementations/PclBitmapFactory.cs" Line="1" Column="1" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore>
+      <Breakpoint file="/Users/harry/Github/Audiotica/Apps/Audiotica.Android/BaseActivity.cs" line="34" column="1" />
+      <Breakpoint file="/Users/harry/Github/Audiotica/Apps/Audiotica.Android/Implementations/PclBitmapImage.cs" line="79" column="1" />
+    </BreakpointStore>
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
 </Properties>

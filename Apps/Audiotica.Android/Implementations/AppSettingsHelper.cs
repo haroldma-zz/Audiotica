@@ -8,7 +8,7 @@ namespace Audiotica.Android.Implementations
     public class AppSettingsHelper : IAppSettingsHelper
     {
         public AppSettingsHelper()
-        {
+        { 
             LocalSettings = Application.Context.GetSharedPreferences("Audiotica.Android", FileCreationMode.Private);
         }
 

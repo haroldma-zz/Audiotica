@@ -158,13 +158,10 @@ namespace Audiotica
                     {
                         try
                         {
-                            var path = "Audiotica/" +
-                                       song.Album.PrimaryArtist.Name.CleanForFileName() + "/" +
-                                       song.Album.Name.CleanForFileName();
-                            var filename = string.Format("{0}.mp3", song.Name.CleanForFileName());
-
+                            var filename = song.Name.CleanForFileName();
                             if (song.ArtistName != song.Album.PrimaryArtist.Name)
                                 filename = song.ArtistName.CleanForFileName() + "-" + filename;
+                            var path = string.Format(CollectionConstant.SongPath, song.Album.PrimaryArtist.Name.CleanForFileName(), song.Album.Name.CleanForFileName(), filename);
 
                             var file = await WinRtStorageHelper.GetFileAsync(string.Format("songs/{0}.mp3", song.Id));
 

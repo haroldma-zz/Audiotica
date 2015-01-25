@@ -3,23 +3,29 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using Windows.Graphics.Display;
-using Windows.Storage;
 using Audiotica.Core.Utils.Interfaces;
 using Audiotica.Data.Collection;
 using Audiotica.Data.Collection.Model;
 using Audiotica.Data.Collection.RunTime;
 using SQLite;
 
+#if __ANDROID__
+using Audiotica.Android;
+#elif WINRT
+using Audiotica.Core.WinRt;
+#endif
+
 #endregion
 
-namespace Audiotica.Core.WinRt
+// ReSharper disable once CheckNamespace
+namespace Audiotica
 {
     public class AudioticaFactory
     {
         private readonly IAppSettingsHelper _appSettingsHelper;
         private readonly IBitmapFactory _bitmapFactory;
         private readonly IDispatcherHelper _dispatcher;
+        private readonly string _folderPath;
 
         public AudioticaFactory(IDispatcherHelper dispatcher, IAppSettingsHelper appSettingsHelper,
             IBitmapFactory bitmapFactory)
@@ -27,6 +33,12 @@ namespace Audiotica.Core.WinRt
             _dispatcher = dispatcher;
             _appSettingsHelper = appSettingsHelper;
             _bitmapFactory = bitmapFactory;
+
+#if __ANDROID__
+            _folderPath = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+#elif WINRT
+            _folderPath = Windows.Storage.ApplicationData.Current.LocalFolder.Path;
+#endif
         }
 
         public ISqlService CreateCollectionSqlService(double version, Action<SQLiteConnection, double> onUpdate = null)
@@ -43,7 +55,7 @@ namespace Audiotica.Core.WinRt
             {
                 Tables = dbTypes,
                 CurrentVersion = version,
-                Path = Path.Combine(ApplicationData.Current.LocalFolder.Path, "collection.sqldb"),
+                Path = Path.Combine(_folderPath, "collection.sqldb"),
                 OnUpdate = onUpdate
             };
             return new SqlService(config);
@@ -59,7 +71,7 @@ namespace Audiotica.Core.WinRt
             {
                 Tables = dbTypes,
                 CurrentVersion = version,
-                Path = Path.Combine(ApplicationData.Current.LocalFolder.Path, "player.sqldb"),
+                Path = Path.Combine(_folderPath, "player.sqldb"),
                 OnUpdate = onUpdate
             };
             return new SqlService(config);
@@ -68,7 +80,13 @@ namespace Audiotica.Core.WinRt
         public ICollectionService CreateCollectionService(ISqlService collectionSqlService, ISqlService playerSqlService)
         {
             return new CollectionService(collectionSqlService, playerSqlService, _dispatcher, _appSettingsHelper,
-                _bitmapFactory, CollectionConstant.MissingArtworkImage, CollectionConstant.LocalStorageAppPath, CollectionConstant.ArtworkPath, CollectionConstant.ArtistsArtworkPath);
+                _bitmapFactory,  AppConstant.MissingArtworkImage, 
+#if __ANDROID__
+                "file://" + _folderPath
+#elif WINRT
+                AppConstant.LocalStorageAppPath
+#endif
+                , AppConstant.ArtworkPath, AppConstant.ArtistsArtworkPath);
         }
     }
 }

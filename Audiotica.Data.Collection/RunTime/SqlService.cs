@@ -27,9 +27,13 @@ namespace Audiotica.Data.Collection.RunTime
             GC.Collect();
         }
 
-        public void Initialize(bool walMode = true)
+        public void Initialize(bool walMode = true, bool readOnlyMode = false)
         {
-            DbConnection = new SQLiteConnection(_config.Path);
+            var flags = SQLiteOpenFlags.ReadWrite | SQLiteOpenFlags.Create;
+            if (readOnlyMode)
+                flags = SQLiteOpenFlags.ReadOnly;
+
+            DbConnection = new SQLiteConnection(_config.Path, flags);
             var sqlVersion = DbConnection.ExecuteScalar<int>("PRAGMA user_version");
             if (sqlVersion == _config.CurrentVersion) return;
 
@@ -141,6 +145,11 @@ namespace Audiotica.Data.Collection.RunTime
             {
             }
             return new List<T>();
+        }
+
+        public Task<T> SelectFirstAsync<T>(Func<T, bool> expression) where T : new()
+        {
+            return Task.FromResult(SelectFirst(expression));
         }
 
         public T SelectFirst<T>(Func<T, bool> expression) where T : new()

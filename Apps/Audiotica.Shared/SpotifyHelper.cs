@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Audiotica.Core.Exceptions;
 using Audiotica.Data;
+using Audiotica.Data.Collection;
 using Audiotica.Data.Collection.Model;
 using Audiotica.Data.Spotify.Models;
 
@@ -14,49 +15,6 @@ namespace Audiotica
 {
     public static class SpotifyHelper
     {
-        public static Artist ToArtist(this SimpleArtist simpleArtist)
-        {
-            return new Artist
-            {
-                Name = simpleArtist.Name.Trim().Replace("  ", " "),
-                ProviderId = "spotify." + simpleArtist.Id
-            };
-        }
-
-        public static Album ToAlbum(this FullAlbum fullAlbum)
-        {
-            var album = new Album
-            {
-                ProviderId = "spotify." + fullAlbum.Id,
-                Name = fullAlbum.Name.Trim().Replace("  ", " "),
-                ReleaseDate = GetDateTime(fullAlbum),
-                Genre = fullAlbum.Genres != null ? fullAlbum.Genres.FirstOrDefault() : ""
-            };
-
-            return album;
-        }
-
-        private static DateTime GetDateTime(FullAlbum album)
-        {
-            if (album.ReleaseDatePrecision == "year")
-            {
-                var year = int.Parse(album.ReleaseDate);
-                return new DateTime(year, 1, 1);
-            }
-            return DateTime.Parse(album.ReleaseDate);
-        }
-
-        public static Song ToSong(this SimpleTrack track)
-        {
-            var song = new Song
-            {
-                ProviderId = "spotify." + track.Id,
-                Name = track.Name.Trim().Replace("  ", " "),
-                TrackNumber = track.TrackNumber
-            };
-            return song;
-        }
-
         public static async Task<SavingError> SaveTrackAsync(SimpleTrack track, FullAlbum album)
         {
             try

@@ -159,10 +159,6 @@
       <Project>{49668872-A57C-4E70-834B-83608E6CEF23}</Project>
       <Name>Audiotica.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Audiotica.Data.Collection\Audiotica.Data.Collection.csproj">
-      <Project>{264B7B96-92A4-4FB4-A938-EB30FD288B70}</Project>
-      <Name>Audiotica.Data.Collection</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

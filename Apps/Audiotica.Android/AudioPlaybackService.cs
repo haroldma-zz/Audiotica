@@ -10,9 +10,9 @@ using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 
-namespace Audiotica.Android.Utilities
+namespace Audiotica.Android
 {
-    class AudioticaFactory
+    class AudioPlaybackService
     {
     }
 }
