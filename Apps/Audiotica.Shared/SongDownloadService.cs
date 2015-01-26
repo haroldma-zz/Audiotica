@@ -165,7 +165,7 @@ namespace Audiotica
                 {
                     if (song.Album.HasArtwork)
                     {
-                        var albumFilePath = string.Format(CollectionConstant.ArtworkPath, song.Album.Id);
+                        var albumFilePath = string.Format(AppConstant.ArtworkPath, song.Album.Id);
                         var artworkFile = await StorageHelper.GetFileAsync(albumFilePath).ConfigureAwait(false);
 
                         using (var artworkStream = await artworkFile.OpenAsync(FileAccess.Read))
@@ -282,17 +282,14 @@ namespace Audiotica
 
             try
             {
-                var path = "Audiotica/" +
-                           song.Album.PrimaryArtist.Name.CleanForFileName() + "/" +
-                           song.Album.Name.CleanForFileName();
-                var filename = string.Format("{0}.mp3", song.Name.CleanForFileName());
-
+                var filename = song.Name.CleanForFileName();
                 if (song.ArtistName != song.Album.PrimaryArtist.Name)
                     filename = song.ArtistName.CleanForFileName() + "-" + filename;
-
+                var path = string.Format(AppConstant.SongPath, song.Album.PrimaryArtist.Name.CleanForFileName(), song.Album.Name.CleanForFileName(), filename);
+                
                 var destinationFile =
                     await
-                        WinRtStorageHelper.CreateFileAsync(path + "/" + filename, KnownFolders.MusicLibrary,
+                        WinRtStorageHelper.CreateFileAsync(path, KnownFolders.MusicLibrary,
                             CreationCollisionOption.ReplaceExisting)
                             .ConfigureAwait(false);
 

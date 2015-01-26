@@ -158,13 +158,10 @@ namespace Audiotica
                     {
                         try
                         {
-                            var path = "Audiotica/" +
-                                       song.Album.PrimaryArtist.Name.CleanForFileName() + "/" +
-                                       song.Album.Name.CleanForFileName();
-                            var filename = string.Format("{0}.mp3", song.Name.CleanForFileName());
-
+                            var filename = song.Name.CleanForFileName();
                             if (song.ArtistName != song.Album.PrimaryArtist.Name)
                                 filename = song.ArtistName.CleanForFileName() + "-" + filename;
+                            var path = string.Format(AppConstant.SongPath, song.Album.PrimaryArtist.Name.CleanForFileName(), song.Album.Name.CleanForFileName(), filename);
 
                             var file = await WinRtStorageHelper.GetFileAsync(string.Format("songs/{0}.mp3", song.Id));
 
@@ -245,7 +242,7 @@ namespace Audiotica
                     {"Type", "Artist"}
                 });
                 created = await CreatePin(id, artist.Name, "artists/" + artist.Id,
-                    string.Format(CollectionConstant.ArtistsArtworkPath, artist.Id));
+                    string.Format(AppConstant.ArtistsArtworkPath, artist.Id));
             }
             else
             {
@@ -270,7 +267,7 @@ namespace Audiotica
                     {"Type", "Album"}
                 });
                 created = await CreatePin(id, album.Name, "albums/" + album.Id,
-                    string.Format(CollectionConstant.ArtworkPath, album.Id));
+                    string.Format(AppConstant.ArtworkPath, album.Id));
             }
             else
             {
@@ -285,7 +282,7 @@ namespace Audiotica
         {
             var tileActivationArguments = arguments;
             var image =
-                new Uri(CollectionConstant.LocalStorageAppPath + artwork);
+                new Uri(AppConstant.LocalStorageAppPath + artwork);
 
             var secondaryTile = new SecondaryTile(id,
                 displayName,
@@ -544,7 +541,7 @@ namespace Audiotica
 
                     if (lastArtist.MainImage == null || lastArtist.MainImage.Largest == null) return;
 
-                    var artistFilePath = string.Format(CollectionConstant.ArtistsArtworkPath, artist.Id);
+                    var artistFilePath = string.Format(AppConstant.ArtistsArtworkPath, artist.Id);
                     var file =
                         await
                             StorageHelper.CreateFileAsync(artistFilePath, option: CreationCollisionOption.ReplaceExisting);
@@ -569,7 +566,7 @@ namespace Audiotica
                     await DispatcherHelper.RunAsync(() =>
                     {
                         artist.Artwork =
-                            new PclBitmapImage(new Uri(CollectionConstant.LocalStorageAppPath + artistFilePath));
+                            new PclBitmapImage(new Uri(AppConstant.LocalStorageAppPath + artistFilePath));
                         artist.Artwork.SetDecodedPixel(App.Locator.CollectionService.ScaledImageSize);
                     });
                 }
@@ -586,7 +583,6 @@ namespace Audiotica
 
         #region Playing
 
-        //haven't tested with more than this
         private const int MaxMassPlayQueueCount = 100;
         public const double MaxPlayQueueCount = 2000;
 

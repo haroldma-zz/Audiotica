@@ -38,7 +38,6 @@ namespace Audiotica.Data.Collection.RunTime
             IAppSettingsHelper appSettingsHelper, IBitmapFactory bitmapFactory, IBitmapImage missingArtwork,
             string localFilePrefix, string artworkFilePath, string artistArtworkFilePath)
         {
-            ScaledImageSize = 200; //default
             _bgSqlService = bgSqlService;
             _sqlService = sqlService;
             _dispatcher = dispatcher;
@@ -112,7 +111,7 @@ namespace Audiotica.Data.Collection.RunTime
 
             if (isForeground)
                 _dispatcher.RunAsync(() =>
-                    Songs.AddRange(songs));
+                    Songs.AddRange(songs)).Wait();
             else
                 Songs.AddRange(songs);
 
@@ -132,17 +131,21 @@ namespace Audiotica.Data.Collection.RunTime
                             album.Artwork =
                                 _bitmapFactory.CreateImage(
                                     new Uri(path));
-                            album.Artwork.SetDecodedPixel(ScaledImageSize);
 
-                            album.MediumArtwork =
-                                _bitmapFactory.CreateImage(
-                                    new Uri(path));
-                            album.MediumArtwork.SetDecodedPixel(ScaledImageSize/2);
+                            if (ScaledImageSize != 0)
+                            {
+                                album.Artwork.SetDecodedPixel(ScaledImageSize);
 
-                            album.SmallArtwork =
-                                _bitmapFactory.CreateImage(
-                                    new Uri(path));
-                            album.SmallArtwork.SetDecodedPixel(50);
+                                album.MediumArtwork =
+                                    _bitmapFactory.CreateImage(
+                                        new Uri(path));
+                                album.MediumArtwork.SetDecodedPixel(ScaledImageSize/2);
+
+                                album.SmallArtwork =
+                                    _bitmapFactory.CreateImage(
+                                        new Uri(path));
+                                album.SmallArtwork.SetDecodedPixel(50);
+                            }
                         }
                         else
                         {
@@ -155,7 +158,7 @@ namespace Audiotica.Data.Collection.RunTime
 
             if (isForeground)
                 _dispatcher.RunAsync(() =>
-                    Albums.AddRange(albums));
+                    Albums.AddRange(albums)).Wait();
             else
                 Albums.AddRange(albums);
 
@@ -174,21 +177,21 @@ namespace Audiotica.Data.Collection.RunTime
                             ? _bitmapFactory.CreateImage(new Uri(_localFilePrefix + artworkPath))
                             : null;
 
-                        if (artist.Artwork != null)
+                        if (ScaledImageSize != 0 && artist.Artwork != null)
                             artist.Artwork.SetDecodedPixel(ScaledImageSize);
                     }).Wait();
             }
 
             if (isForeground)
                 _dispatcher.RunAsync(() =>
-                    Artists.AddRange(artists));
+                    Artists.AddRange(artists)).Wait();
             else
                 Artists.AddRange(artists);
 
 
             IsLibraryLoaded = true;
 
-            LoadQueue();
+            LoadQueue(songs);
 
             if (!loadEssentials)
                 LoadPlaylists();
@@ -212,7 +215,7 @@ namespace Audiotica.Data.Collection.RunTime
 
             try
             {
-                CleanupFiles();
+                CleanupFiles(albums, artists);
             }
             catch
             {
@@ -442,17 +445,21 @@ namespace Audiotica.Data.Collection.RunTime
                         song.Album.Artwork =
                             _bitmapFactory.CreateImage(
                                 new Uri(path));
-                        song.Album.Artwork.SetDecodedPixel(ScaledImageSize);
 
-                        song.Album.MediumArtwork =
-                            _bitmapFactory.CreateImage(
-                                new Uri(path));
-                        song.Album.MediumArtwork.SetDecodedPixel(ScaledImageSize/2);
+                        if (ScaledImageSize != 0)
+                        {
+                            song.Album.Artwork.SetDecodedPixel(ScaledImageSize);
 
-                        song.Album.SmallArtwork =
-                            _bitmapFactory.CreateImage(
-                                new Uri(path));
-                        song.Album.SmallArtwork.SetDecodedPixel(50);
+                            song.Album.MediumArtwork =
+                                _bitmapFactory.CreateImage(
+                                    new Uri(path));
+                            song.Album.MediumArtwork.SetDecodedPixel(ScaledImageSize/2);
+
+                            song.Album.SmallArtwork =
+                                _bitmapFactory.CreateImage(
+                                    new Uri(path));
+                            song.Album.SmallArtwork.SetDecodedPixel(50);
+                        }
                     }
                     else
                     {
@@ -550,7 +557,7 @@ namespace Audiotica.Data.Collection.RunTime
             return false;
         }
 
-        private async void CleanupFiles()
+        private async void CleanupFiles(IEnumerable<Album> albums, IEnumerable<Artist> artists)
         {
             var artworkFolder = await StorageHelper.GetFolderAsync("artworks");
 
@@ -560,8 +567,8 @@ namespace Audiotica.Data.Collection.RunTime
 
             foreach (var file in from file in artworks
                 let id = file.Name.Replace(".jpg", "")
-                where Albums.ToList().FirstOrDefault(p => p.Id.ToString() == id) == null
-                      && Artists.ToList().FirstOrDefault(p => p.ProviderId == id) == null
+                where albums.FirstOrDefault(p => p.Id.ToString() == id) == null
+                      && artists.FirstOrDefault(p => p.ProviderId == id) == null
                 select file)
             {
                 try
@@ -789,7 +796,7 @@ namespace Audiotica.Data.Collection.RunTime
             await _bgSqlService.DeleteItemAsync(songToRemove);
         }
 
-        private void LoadQueue()
+        private void LoadQueue(List<Song> songs)
         {
             var queue = _bgSqlService.SelectAll<QueueSong>();
             QueueSong head = null;
@@ -797,7 +804,7 @@ namespace Audiotica.Data.Collection.RunTime
 
             foreach (var queueSong in queue)
             {
-                queueSong.Song = Songs.FirstOrDefault(p => p.Id == queueSong.SongId);
+                queueSong.Song = songs.FirstOrDefault(p => p.Id == queueSong.SongId);
 
                 _lookupMap.TryAdd(queueSong.Id, queueSong);
 

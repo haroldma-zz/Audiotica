@@ -130,7 +130,7 @@ namespace Audiotica.View
 
             var albums =
                 App.Locator.CollectionService.Albums.ToList()
-                    .Where(p => p.Artwork != CollectionConstant.MissingArtworkImage)
+                    .Where(p => p.Artwork != AppConstant.MissingArtworkImage)
                     .ToList();
 
             var albumCount = albums.Count;
