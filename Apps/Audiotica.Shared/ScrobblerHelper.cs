@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Audiotica.Core.Exceptions;
 using Audiotica.Data;
+using Audiotica.Data.Collection;
 using Audiotica.Data.Collection.Model;
 using IF.Lastfm.Core.Objects;
 
