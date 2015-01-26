@@ -16,5 +16,5 @@
 
 
   matrix:
-  allow_failures:
-    - branch: development
+    allow_failures:
+      - branch: developmentß
