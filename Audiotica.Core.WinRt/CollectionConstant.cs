@@ -17,12 +17,10 @@ namespace Audiotica.Core.WinRt
         public const string ArtworkPath = "artworks/{0}.jpg";
         public const string ArtistsArtworkPath = "artists/{0}.jpg";
 
+        private static IBitmapImage _missingArtwork;
         public static IBitmapImage MissingArtworkImage
         {
-            get
-            {
-                return new PclBitmapImage(new Uri(MissingArtworkAppPath));
-            }
+            get { return _missingArtwork ?? (_missingArtwork = new PclBitmapImage(new Uri(MissingArtworkAppPath))); }
         }
     }
 }
