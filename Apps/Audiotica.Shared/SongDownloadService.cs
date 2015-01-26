@@ -88,7 +88,8 @@ namespace Audiotica
             {
                 //Get the associated song BackgroundDownload
                 var songDownload =
-                    ActiveDownloads.FirstOrDefault(p => ((DownloadOperation) p.Download.DownloadOperation).Guid == download.Guid);
+                    ActiveDownloads.FirstOrDefault(
+                        p => ((DownloadOperation) p.Download.DownloadOperation).Guid == download.Guid);
 
                 if (songDownload == null)
                     return;
@@ -116,56 +117,77 @@ namespace Audiotica
 
             #region update id3 tags
 
-            try
-            {
-                var file = ((DownloadOperation)song.Download.DownloadOperation).ResultFile;
-                using (var fileStream = await file.OpenStreamForWriteAsync())
-                {
-                    var tagFile = File.Create(new SimpleFileAbstraction(file.Name, fileStream, fileStream));
-                    var newTags = tagFile.GetTag(TagTypes.Id3v2, true);
-
-                    newTags.Title = song.Name;
-
-                    if (song.Artist.ProviderId != "autc.unknown")
-                        newTags.Performers = song.ArtistName.Split(',').Select(p => p.Trim()).ToArray();
-
-                    newTags.Album = song.Album.Name;
-                    newTags.AlbumArtists = new[] {song.Album.PrimaryArtist.Name};
-
-                    if (!string.IsNullOrEmpty(song.Album.Genre))
-                        newTags.Genres = song.Album.Genre.Split(',').Select(p => p.Trim()).ToArray();
-
-                    newTags.Track = (uint) song.TrackNumber;
-
-                    newTags.Comment = "Downloaded with Audiotica - http://audiotica.fm";
-
-                    if (song.Album.HasArtwork)
-                    {
-                        var albumFilePath = string.Format(CollectionConstant.ArtworkPath, song.Album.Id);
-                        var artworkFile = await StorageHelper.GetFileAsync(albumFilePath);
-
-                        using (var artworkStream = await artworkFile.OpenAsync(FileAccess.Read))
-                        {
-                            newTags.Pictures = new IPicture[]
-                            {
-                                new Picture(new SimpleFileAbstraction(artworkFile.Name, artworkStream, artworkStream))
-                            };
-                        }
-                    }
-
-                    await Task.Run(() => tagFile.Save());
-                }
-            }
-            catch
-            {
-            }
+            var file = ((DownloadOperation) song.Download.DownloadOperation).ResultFile;
+            UpdateId3Tags(song, file);
 
             #endregion
 
-            song.AudioUrl = ((DownloadOperation)song.Download.DownloadOperation).ResultFile.Path;
+            song.AudioUrl = ((DownloadOperation) song.Download.DownloadOperation).ResultFile.Path;
             song.SongState = SongState.Downloaded;
             song.DownloadId = null;
             await _sqlService.UpdateItemAsync(song);
+        }
+
+        private async void UpdateId3Tags(Song song, IStorageFile file)
+        {
+            using (var fileStream = await file.OpenStreamForWriteAsync().ConfigureAwait(false))
+            {
+                File tagFile;
+
+                try
+                {
+                    tagFile = File.Create(new SimpleFileAbstraction(file.Name, fileStream, fileStream));
+                }
+                catch
+                {
+                    //either the download is corrupted or is not an mp3 file
+                    return;
+                }
+
+                var newTags = tagFile.GetTag(TagTypes.Id3v2, true);
+
+                newTags.Title = song.Name;
+
+                if (song.Artist.ProviderId != "autc.unknown")
+                    newTags.Performers = song.ArtistName.Split(',').Select(p => p.Trim()).ToArray();
+
+                newTags.Album = song.Album.Name;
+                newTags.AlbumArtists = new[] {song.Album.PrimaryArtist.Name};
+
+                if (!string.IsNullOrEmpty(song.Album.Genre))
+                    newTags.Genres = song.Album.Genre.Split(',').Select(p => p.Trim()).ToArray();
+
+                newTags.Track = (uint) song.TrackNumber;
+
+                newTags.Comment = "Downloaded with Audiotica - http://audiotica.fm";
+
+                try
+                {
+                    if (song.Album.HasArtwork)
+                    {
+                        var albumFilePath = string.Format(CollectionConstant.ArtworkPath, song.Album.Id);
+                        var artworkFile = await StorageHelper.GetFileAsync(albumFilePath).ConfigureAwait(false);
+
+                        using (var artworkStream = await artworkFile.OpenAsync(FileAccess.Read))
+                        {
+                            using (var memStream = new MemoryStream())
+                            {
+                                await artworkStream.CopyToAsync(memStream);
+                                newTags.Pictures = new IPicture[]
+                                {
+                                    new Picture(new ByteVector(memStream.ToArray(), (int) memStream.Length))
+                                };
+                            }
+                        }
+                    }
+                }
+                catch (UnauthorizedAccessException)
+                {
+                    //Should never happen, since we are opening the files in read mode and nothing is locking it.
+                }
+
+                await Task.Run(() => tagFile.Save());
+            }
         }
 
         /// <summary>
@@ -245,7 +267,7 @@ namespace Audiotica
         {
             foreach (var activeDownload in ActiveDownloads)
             {
-                ((DownloadOperation)activeDownload.Download.DownloadOperation).Pause();
+                ((DownloadOperation) activeDownload.Download.DownloadOperation).Pause();
             }
         }
 
