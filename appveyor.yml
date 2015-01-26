@@ -1,59 +1,20 @@
-#---------------------------------#
-#      general configuration      #
-#---------------------------------#
+-
+  branches:
+    only:
+      - development
+      - master
 
-# version format
-version: 1502.0.{build}-{branch}
+  version: 1502.0.{build}-{branch}
 
-# branches to build
-branches:
-  # whitelist
-  only:
-    - master
-    - development
+  platform:
+    - x86
+    - ARM
 
-  # blacklist
-  except:
-    - gh-pages
+  configuration:
+    - Debug
+    - Release
 
-#---------------------------------#
-#    environment configuration    #
-#---------------------------------#
 
-# Operating system (build VM template)
-os: Windows Server 2012
-
-# fetch repository as zip archive
-shallow_clone: true                 # default is "false"
-
-# set clone depth
-clone_depth: 5                      # clone entire repository history if not defined                            
-
-#---------------------------------#
-#       build configuration       #
-#---------------------------------#
-
-# build platform, i.e. x86, x64, Any CPU. This setting is optional.
-platform: 
-  - x86  
-  - ARM
-
-# build Configuration, i.e. Debug, Release, etc.
-configuration: 
-  - Debug
-  - Release
-
-#---------------------------------#
-#         notifications           #
-#---------------------------------#
-
-notifications:
-
-  # Email
-  - provider: Email
-    to:
-      - harry@zumicts.com
-    subject: 'Audiotica Build {{status}}'                  # optional
-    message: "{{message}}, {{commitId}}, ..."    # optional
-    on_build_status_changed: true
- "{message}, {commitId}, ..."
+  matrix:
+  allow_failures:
+    - branch: development
