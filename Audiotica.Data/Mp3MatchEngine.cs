@@ -29,11 +29,10 @@ namespace Audiotica.Data
 
         private readonly Mp3Provider[] _providers =
         {
+            Mp3Provider.Netease,
             Mp3Provider.Mp3Clan,
             Mp3Provider.Mp3Truck,
             Mp3Provider.Mp3Skull,
-            //netease is kind of slow lately...
-            Mp3Provider.Netease,
             Mp3Provider.Meile,
             Mp3Provider.SoundCloud,
            // Mp3Provider.YouTube <- links expire, not good for streaming

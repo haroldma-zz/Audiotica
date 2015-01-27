@@ -1,205 +1,295 @@
-﻿#region
-
-using System;
+﻿using System;
 using System.Linq;
-using System.Threading.Tasks;
-using Windows.Media.Playback;
-using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
+
 using Audiotica.Core;
-using Audiotica.Core.Utilities;
 using Audiotica.Core.Utils.Interfaces;
 using Audiotica.Data.Collection;
 using Audiotica.Data.Collection.Model;
-using Audiotica.View;
+
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
-using IF.Lastfm.Core.Api.Enums;
-using Xamarin;
 
-#endregion
+using Windows.Media.Playback;
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
+
+using Xamarin;
 
 namespace Audiotica
 {
     public class PlayerViewModel : ViewModelBase
     {
-        private readonly AudioPlayerHelper _helper;
-        private readonly RelayCommand _nextRelayCommand;
-        private readonly RelayCommand _playPauseRelayCommand;
-        private readonly RelayCommand _prevRelayCommand;
-        private readonly ICollectionService _service;
-        private readonly IAppSettingsHelper _appSettingsHelper;
-        private readonly DispatcherTimer _timer;
-        private QueueSong _currentQueue;
-        private TimeSpan _duration;
-        private bool _isLoading;
-        private double _npHeight;
-        private double _npbHeight = double.NaN;
-        private Symbol _playPauseIcon;
-        private TimeSpan _position;
-        private bool _isPlayerActive;
+        private readonly IAppSettingsHelper appSettingsHelper;
 
-        public PlayerViewModel(AudioPlayerHelper helper, ICollectionService service, IAppSettingsHelper appSettingsHelper)
+        private readonly AudioPlayerHelper helper;
+
+        private readonly RelayCommand nextRelayCommand;
+
+        private readonly RelayCommand playPauseRelayCommand;
+
+        private readonly RelayCommand prevRelayCommand;
+
+        private readonly ICollectionService service;
+
+        private readonly DispatcherTimer timer;
+
+        private QueueSong currentQueue;
+
+        private TimeSpan duration;
+
+        private bool isLoading;
+
+        private bool isPlayerActive;
+
+        private double npbHeight = double.NaN;
+
+        private double npHeight;
+
+        private Symbol playPauseIcon;
+
+        private TimeSpan position;
+
+        public PlayerViewModel(
+            AudioPlayerHelper helper, 
+            ICollectionService service, 
+            IAppSettingsHelper appSettingsHelper)
         {
-            _helper = helper;
-            _service = service;
-            _appSettingsHelper = appSettingsHelper;
+            this.helper = helper;
+            this.service = service;
+            this.appSettingsHelper = appSettingsHelper;
 
-            if (!IsInDesignMode)
+            if (!this.IsInDesignMode)
             {
-                helper.TrackChanged += HelperOnTrackChanged;
-                helper.PlaybackStateChanged += HelperOnPlaybackStateChanged;
-                helper.Shutdown += HelperOnShutdown;
+                helper.TrackChanged += this.HelperOnTrackChanged;
+                helper.PlaybackStateChanged += this.HelperOnPlaybackStateChanged;
+                helper.Shutdown += this.HelperOnShutdown;
 
-                _nextRelayCommand = new RelayCommand(NextSong);
-                _prevRelayCommand = new RelayCommand(PrevSong);
-                _playPauseRelayCommand = new RelayCommand(PlayPauseToggle);
+                this.nextRelayCommand = new RelayCommand(this.NextSong);
+                this.prevRelayCommand = new RelayCommand(this.PrevSong);
+                this.playPauseRelayCommand = new RelayCommand(this.PlayPauseToggle);
 
-                _timer = new DispatcherTimer {Interval = TimeSpan.FromSeconds(1)};
-                _timer.Tick += TimerOnTick;
+                this.timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
+                this.timer.Tick += this.TimerOnTick;
             }
             else
             {
-                CurrentQueue = service.PlaybackQueue.FirstOrDefault();
-                PlayPauseIcon = Symbol.Play;
+                this.CurrentQueue = service.PlaybackQueue.FirstOrDefault();
+                this.PlayPauseIcon = Symbol.Play;
             }
         }
 
         public bool IsRepeat
         {
-            get { return _appSettingsHelper.Read<bool>("Repeat"); }
+            get
+            {
+                return this.appSettingsHelper.Read<bool>("Repeat");
+            }
+
             set
             {
-                _appSettingsHelper.Write("Repeat", value);
-                RaisePropertyChanged();
+                this.appSettingsHelper.Write("Repeat", value);
+                this.RaisePropertyChanged();
             }
         }
 
         public bool IsShuffle
         {
-            get { return _appSettingsHelper.Read<bool>("Shuffle"); }
+            get
+            {
+                return this.appSettingsHelper.Read<bool>("Shuffle");
+            }
+
             set
             {
-                _appSettingsHelper.Write("Shuffle", value);
-                _service.ShuffleModeChanged();
-                RaisePropertyChanged();
-                AudioPlayerHelper.OnShuffleChanged();
+                this.appSettingsHelper.Write("Shuffle", value);
+                this.service.ShuffleModeChanged();
+                this.RaisePropertyChanged();
+                this.AudioPlayerHelper.OnShuffleChanged();
                 Insights.Track("Shuffle", "Enabled", value ? "True" : "False");
             }
         }
 
         public bool IsPlayerActive
         {
-            get { return _isPlayerActive; }
-            set { Set(ref _isPlayerActive, value); }
+            get
+            {
+                return this.isPlayerActive;
+            }
+
+            set
+            {
+                this.Set(ref this.isPlayerActive, value);
+            }
         }
 
         public TimeSpan Duration
         {
-            get { return _duration; }
-            set { Set(ref _duration, value); }
+            get
+            {
+                return this.duration;
+            }
+
+            set
+            {
+                this.Set(ref this.duration, value);
+            }
         }
 
         public TimeSpan Position
         {
-            get { return _position; }
-            set { Set(ref _position, value); }
+            get
+            {
+                return this.position;
+            }
+
+            set
+            {
+                this.Set(ref this.position, value);
+            }
         }
 
         public QueueSong CurrentQueue
         {
-            get { return _currentQueue; }
-            set { Set(ref _currentQueue, value); }
+            get
+            {
+                return this.currentQueue;
+            }
+
+            set
+            {
+                this.Set(ref this.currentQueue, value);
+            }
         }
 
         public Symbol PlayPauseIcon
         {
-            get { return _playPauseIcon; }
-            set { Set(ref _playPauseIcon, value); }
+            get
+            {
+                return this.playPauseIcon;
+            }
+
+            set
+            {
+                this.Set(ref this.playPauseIcon, value);
+            }
         }
 
         public bool IsLoading
         {
-            get { return _isLoading; }
-            set { Set(ref _isLoading, value); }
+            get
+            {
+                return this.isLoading;
+            }
+
+            set
+            {
+                this.Set(ref this.isLoading, value);
+            }
         }
 
         public RelayCommand NextRelayCommand
         {
-            get { return _nextRelayCommand; }
+            get
+            {
+                return this.nextRelayCommand;
+            }
         }
 
         public RelayCommand PrevRelayCommand
         {
-            get { return _prevRelayCommand; }
+            get
+            {
+                return this.prevRelayCommand;
+            }
         }
 
         public RelayCommand PlayPauseRelayCommand
         {
-            get { return _playPauseRelayCommand; }
+            get
+            {
+                return this.playPauseRelayCommand;
+            }
         }
 
         public double NowPlayingHeight
         {
-            get { return _npHeight; }
-            set { Set(ref _npHeight, value); }
+            get
+            {
+                return this.npHeight;
+            }
+
+            set
+            {
+                this.Set(ref this.npHeight, value);
+            }
         }
 
         public double NowPlayingBarHeight
         {
-            get { return _npbHeight; }
-            set { Set(ref _npbHeight, value); }
+            get
+            {
+                return this.npbHeight;
+            }
+
+            set
+            {
+                this.Set(ref this.npbHeight, value);
+            }
         }
 
         public ICollectionService CollectionService
         {
-            get { return _service; }
+            get
+            {
+                return this.service;
+            }
         }
 
         public AudioPlayerHelper AudioPlayerHelper
         {
-            get { return _helper; }
-        }
-
-        private void TimerOnTick(object sender, object o)
-        {
-            Position = BackgroundMediaPlayer.Current.Position;
-        }
-
-        private void HelperOnShutdown(object sender, EventArgs eventArgs)
-        {
-            CurrentQueue = null;
-            NowPlayingSheetUtility.CloseNowPlaying();
-            IsPlayerActive = false;
+            get
+            {
+                return this.helper;
+            }
         }
 
         private void HelperOnPlaybackStateChanged(object sender, PlaybackStateEventArgs playbackStateEventArgs)
         {
-            IsLoading = false;
+            this.IsLoading = false;
             switch (playbackStateEventArgs.State)
             {
                 default:
-                    PlayPauseIcon = Symbol.Play;
-                    _timer.Stop();
+                    this.PlayPauseIcon = Symbol.Play;
+                    this.timer.Stop();
                     break;
                 case MediaPlayerState.Playing:
-                    _timer.Start();
-                    PlayPauseIcon = Symbol.Pause;
+                    this.timer.Start();
+                    this.PlayPauseIcon = Symbol.Pause;
                     break;
                 case MediaPlayerState.Buffering:
                 case MediaPlayerState.Opening:
-                    IsLoading = true;
+                    this.IsLoading = true;
                     break;
             }
+        }
+
+        private void HelperOnShutdown(object sender, EventArgs eventArgs)
+        {
+            this.CurrentQueue = null;
+            NowPlayingSheetUtility.CloseNowPlaying();
+            this.IsPlayerActive = false;
         }
 
         private void HelperOnTrackChanged(object sender, EventArgs eventArgs)
         {
             var playerInstance = BackgroundMediaPlayer.Current;
 
-            if (playerInstance == null) return;
+            if (playerInstance == null)
+            {
+                return;
+            }
 
-            Duration = playerInstance.NaturalDuration;
+            this.Duration = playerInstance.NaturalDuration;
             var state = MediaPlayerState.Closed;
 
             try
@@ -211,51 +301,63 @@ namespace Audiotica
                 // ignored, rare occacion where the player just throws a generic Exception
             }
 
-            if (state != MediaPlayerState.Closed &&
-                 state != MediaPlayerState.Stopped)
+            if (state != MediaPlayerState.Closed && state != MediaPlayerState.Stopped)
             {
-                if (CurrentQueue != null)
+                if (this.CurrentQueue != null)
                 {
-                    var lastPlayed = DateTime.Now - CurrentQueue.Song.LastPlayed;
+                    var lastPlayed = DateTime.Now - this.CurrentQueue.Song.LastPlayed;
 
                     if (lastPlayed.TotalSeconds > 30)
                     {
-                        CurrentQueue.Song.PlayCount++;
-                        CurrentQueue.Song.LastPlayed = DateTime.Now;
+                        this.CurrentQueue.Song.PlayCount++;
+                        this.CurrentQueue.Song.LastPlayed = DateTime.Now;
                     }
                 }
 
-                var currentId = _appSettingsHelper.Read<int>(PlayerConstants.CurrentTrack);
-                CurrentQueue = _service.PlaybackQueue.FirstOrDefault(p => p.Id == currentId);
+                var currentId = this.appSettingsHelper.Read<int>(PlayerConstants.CurrentTrack);
+                this.CurrentQueue = this.service.PlaybackQueue.FirstOrDefault(p => p.Id == currentId);
 
-                if (CurrentQueue != null
-                    && CurrentQueue.Song != null
-                    && CurrentQueue.Song.Duration.Ticks != Duration.Ticks)
-                    CurrentQueue.Song.Duration = Duration;
+                if (this.CurrentQueue != null && this.CurrentQueue.Song != null
+                    && this.CurrentQueue.Song.Duration.Ticks != this.Duration.Ticks)
+                {
+                    this.CurrentQueue.Song.Duration = this.Duration;
+                }
 
-                IsPlayerActive = true;
+                this.IsPlayerActive = true;
             }
             else
             {
                 NowPlayingSheetUtility.CloseNowPlaying();
-                IsPlayerActive = false;
-                CurrentQueue = null;
+                this.IsPlayerActive = false;
+                this.CurrentQueue = null;
             }
-        }
-
-        private void PlayPauseToggle()
-        {
-            _helper.PlayPauseToggle();
-        }
-
-        private void PrevSong()
-        {
-            _helper.PrevSong();
         }
 
         private void NextSong()
         {
-            _helper.NextSong();
+            this.helper.NextSong();
+        }
+
+        private void PlayPauseToggle()
+        {
+            this.helper.PlayPauseToggle();
+        }
+
+        private void PrevSong()
+        {
+            this.helper.PrevSong();
+        }
+
+        private void TimerOnTick(object sender, object o)
+        {
+            try
+            {
+                this.Position = BackgroundMediaPlayer.Current.Position;
+            }
+            catch
+            {
+                // pertaining to the following (random) error: Server execution failed (Exception from HRESULT: 0x80080005 (CO_E_SERVER_EXEC_FAILURE))
+            }
         }
     }
 }

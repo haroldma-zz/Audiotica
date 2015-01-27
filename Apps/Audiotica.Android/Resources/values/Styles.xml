@@ -1,0 +1,37 @@
+﻿<resources>
+  <!-- Notification bar actions -->
+  <style name="NotificationAction">
+    <item name="android:layout_width">@dimen/notification_action_width</item>
+    <item name="android:layout_height">@dimen/notification_action_height</item>
+    <item name="android:gravity">center|right</item>
+    <item name="android:scaleType">fitCenter</item>
+    <item name="android:padding">@dimen/notification_action_padding</item>
+    <item name="android:background">?android:selectableItemBackground</item>
+  </style>
+
+  <style name="NotificationAction.Previous" parent="@style/NotificationAction">
+    <item name="android:src">@drawable/btn_playback_previous_light</item>
+    <item name="android:visibility">gone</item>
+  </style>
+
+  <style name="NotificationAction.Play" parent="@style/NotificationAction">
+    <item name="android:src">@drawable/btn_playback_play_light</item>
+  </style>
+
+  <style name="NotificationAction.Next" parent="@style/NotificationAction">
+    <item name="android:src">@drawable/btn_playback_next_light</item>
+  </style>
+
+  <style name="NotificationAction.Collapse" parent="@style/NotificationAction">
+    <item name="android:src">@drawable/btn_notification_collapse</item>
+  </style>
+
+  <!-- Notification bar event text -->
+  <style name="NotificationText">
+    <item name="android:layout_width">match_parent</item>
+    <item name="android:layout_height">wrap_content</item>
+    <item name="android:ellipsize">end</item>
+    <item name="android:fadingEdge">horizontal</item>
+    <item name="android:singleLine">true</item>
+  </style>
+</resources>
