@@ -2,8 +2,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+
 using SQLite;
 
 #endregion
@@ -12,18 +14,18 @@ namespace Audiotica.Data.Collection.RunTime
 {
     public class SqlService : ISqlService
     {
-        private readonly SqlServiceConfig _config;
+        private readonly SqlServiceConfig config;
 
         public SqlService(SqlServiceConfig config)
         {
-            _config = config;
+            this.config = config;
         }
 
         public SQLiteConnection DbConnection { get; set; }
 
         public void Dispose()
         {
-            DbConnection.Dispose();
+            this.DbConnection.Dispose();
             GC.Collect();
         }
 
@@ -31,48 +33,63 @@ namespace Audiotica.Data.Collection.RunTime
         {
             var flags = SQLiteOpenFlags.ReadWrite | SQLiteOpenFlags.Create;
             if (readOnlyMode)
+            {
                 flags = SQLiteOpenFlags.ReadOnly;
+            }
 
-            DbConnection = new SQLiteConnection(_config.Path, flags);
-            var sqlVersion = DbConnection.ExecuteScalar<int>("PRAGMA user_version");
-            if (sqlVersion == _config.CurrentVersion) return;
+            this.DbConnection = new SQLiteConnection(this.config.Path, flags);
 
-            //using wal so the player and app can access the db without worrying about it being locked
-            DbConnection.ExecuteScalar<string>("PRAGMA journal_mode = " + (walMode ? "WAL" : "DELETE"));
+            // using wal so the player and app can access the db without worrying about it being locked
+            this.DbConnection.ExecuteScalar<string>("PRAGMA journal_mode = " + (walMode ? "WAL" : "DELETE"));
 
-            if (_config.OnUpdate != null)
-                _config.OnUpdate(DbConnection, sqlVersion);
+            var sqlVersion = this.DbConnection.ExecuteScalar<int>("PRAGMA user_version");
+            if (sqlVersion == this.config.CurrentVersion)
+            {
+                return;
+            }
+
+            if (this.config.OnUpdate != null)
+            {
+                try
+                {
+                    this.config.OnUpdate(this.DbConnection, sqlVersion);
+                }
+                catch (Exception exception)
+                {
+                    Debug.WriteLine(exception.Message);
+                }
+            }
 
             /*
              * Callback function is invoked once for each DELETE, INSERT, or UPDATE operation. 
              * The argument is the number of rows that were changed
              * Turning this off will give a small speed boost 
              */
-            DbConnection.ExecuteScalar<string>("PRAGMA count_changes = OFF");
+            this.DbConnection.ExecuteScalar<string>("PRAGMA count_changes = OFF");
 
-            //Data integrity is not a top priority, performance is.
-            DbConnection.ExecuteScalar<string>("PRAGMA synchronous = OFF");
+            // Data integrity is not a top priority, performance is.
+            this.DbConnection.ExecuteScalar<string>("PRAGMA synchronous = OFF");
 
-            DbConnection.ExecuteScalar<string>("PRAGMA foreign_keys = ON");
+            this.DbConnection.ExecuteScalar<string>("PRAGMA foreign_keys = ON");
 
-            CreateTablesIfNotExists();
+            this.CreateTablesIfNotExists();
         }
 
         public async Task InitializeAsync()
         {
-            await Task.Run(() => Initialize()).ConfigureAwait(false);
+            await Task.Run(() => this.Initialize()).ConfigureAwait(false);
         }
 
         public bool Insert(BaseEntry entry)
         {
             try
             {
-                DbConnection.Insert(entry);
+                this.DbConnection.Insert(entry);
                 return true;
             }
             catch (SQLiteException e)
             {
-                return e.Result == SQLite3.Result.Busy && Insert(entry);
+                return e.Result == SQLite3.Result.Busy && this.Insert(entry);
             }
             catch
             {
@@ -82,19 +99,19 @@ namespace Audiotica.Data.Collection.RunTime
 
         public async Task<bool> InsertAsync(BaseEntry entry)
         {
-            return await Task.FromResult(Insert(entry)).ConfigureAwait(false);
+            return await Task.FromResult(this.Insert(entry)).ConfigureAwait(false);
         }
 
         public bool DeleteItem(BaseEntry item)
         {
             try
             {
-                DbConnection.Delete(item);
+                this.DbConnection.Delete(item);
                 return true;
             }
             catch (SQLiteException e)
             {
-                return e.Result == SQLite3.Result.Busy && DeleteItem(item);
+                return e.Result == SQLite3.Result.Busy && this.DeleteItem(item);
             }
             catch
             {
@@ -104,14 +121,14 @@ namespace Audiotica.Data.Collection.RunTime
 
         public async Task<bool> DeleteItemAsync(BaseEntry item)
         {
-            return await Task.FromResult(DeleteItem(item)).ConfigureAwait(false);
+            return await Task.FromResult(this.DeleteItem(item)).ConfigureAwait(false);
         }
 
         public bool UpdateItem(BaseEntry item)
         {
             try
             {
-                DbConnection.Update(item);
+                this.DbConnection.Update(item);
                 return true;
             }
             catch
@@ -122,106 +139,122 @@ namespace Audiotica.Data.Collection.RunTime
 
         public async Task<bool> UpdateItemAsync(BaseEntry item)
         {
-            return await Task.FromResult(UpdateItem(item)).ConfigureAwait(false);
+            return await Task.FromResult(this.UpdateItem(item)).ConfigureAwait(false);
         }
 
         public async Task<List<T>> SelectAllAsync<T>() where T : new()
         {
-            return await Task.Factory.StartNew(() => SelectAll<T>()).ConfigureAwait(false);
+            return await Task.Factory.StartNew(() => this.SelectAll<T>()).ConfigureAwait(false);
         }
 
         public List<T> SelectAll<T>() where T : new()
         {
             try
             {
-                return DbConnection.Table<T>().ToList();
+                return this.DbConnection.Table<T>().ToList();
             }
             catch (SQLiteException e)
             {
                 if (e.Result == SQLite3.Result.Busy)
-                    return SelectAll<T>();
+                {
+                    return this.SelectAll<T>();
+                }
             }
             catch
             {
+                // ignored
             }
+
             return new List<T>();
         }
 
         public Task<T> SelectFirstAsync<T>(Func<T, bool> expression) where T : new()
         {
-            return Task.FromResult(SelectFirst(expression));
+            return Task.FromResult(this.SelectFirst(expression));
         }
 
         public T SelectFirst<T>(Func<T, bool> expression) where T : new()
         {
             try
             {
-                return DbConnection.Table<T>().FirstOrDefault(expression);
+                return this.DbConnection.Table<T>().FirstOrDefault(expression);
             }
             catch (SQLiteException e)
             {
                 if (e.Result == SQLite3.Result.Busy)
-                    return SelectFirst(expression);
+                {
+                    return this.SelectFirst(expression);
+                }
             }
             catch
             {
+                // ignored
             }
+
             return default(T);
         }
 
         public Task DeleteTableAsync<T>()
         {
-            return Task.Run(() =>
-            {
-                DbConnection.DeleteAll<T>();
-                DbConnection.Execute("DELETE FROM sqlite_sequence  WHERE name = '" + typeof (T).Name + "'");
-            });
+            return Task.Run(
+                () =>
+                    {
+                        this.DbConnection.DeleteAll<T>();
+                        this.DbConnection.Execute("DELETE FROM sqlite_sequence  WHERE name = '" + typeof(T).Name + "'");
+                    });
         }
 
         public Task DeleteWhereAsync(BaseEntry entry)
         {
-            return Task.Run(() => { DbConnection.Delete(entry); });
+            return Task.Run(() => { this.DbConnection.Delete(entry); });
         }
 
         public void BeginTransaction()
         {
             try
             {
-                DbConnection.BeginTransaction();
+                this.DbConnection.BeginTransaction();
             }
-            catch (InvalidOperationException) { }
+            catch (InvalidOperationException)
+            {
+            }
         }
 
         public void Commit()
         {
             try
             {
-                DbConnection.Commit();
+                this.DbConnection.Commit();
             }
-            catch (InvalidOperationException) { }
+            catch (InvalidOperationException)
+            {
+            }
         }
 
         private void CreateTablesIfNotExists()
         {
-            foreach (var type in _config.Tables)
+            foreach (var type in this.config.Tables)
             {
-                DbConnection.CreateTable(type);
+                this.DbConnection.CreateTable(type);
             }
 
-            UpdateDbVersion(_config.CurrentVersion);
+            this.UpdateDbVersion(this.config.CurrentVersion);
         }
 
         private void UpdateDbVersion(double version)
         {
-            DbConnection.Execute("PRAGMA user_version = " + version);
+            this.DbConnection.Execute("PRAGMA user_version = " + version);
         }
     }
 
     public class SqlServiceConfig
     {
         public Action<SQLiteConnection, double> OnUpdate;
-        public double CurrentVersion { get; set; }
+
+        public int CurrentVersion { get; set; }
+
         public string Path { get; set; }
+
         public List<Type> Tables { get; set; }
     }
 }

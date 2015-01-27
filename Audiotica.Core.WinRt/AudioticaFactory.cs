@@ -41,7 +41,7 @@ namespace Audiotica
 #endif
         }
 
-        public ISqlService CreateCollectionSqlService(double version, Action<SQLiteConnection, double> onUpdate = null)
+        public ISqlService CreateCollectionSqlService(int version, Action<SQLiteConnection, double> onUpdate = null)
         {
             var dbTypes = new List<Type>
             {
@@ -61,7 +61,7 @@ namespace Audiotica
             return new SqlService(config);
         }
 
-        public ISqlService CreatePlayerSqlService(double version, Action<SQLiteConnection, double> onUpdate = null)
+        public ISqlService CreatePlayerSqlService(int version, Action<SQLiteConnection, double> onUpdate = null)
         {
             var dbTypes = new List<Type>
             {
