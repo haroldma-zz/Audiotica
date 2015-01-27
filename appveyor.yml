@@ -18,3 +18,6 @@
   matrix:
     allow_failures:
       - branch: developmentß
+
+  before_build:
+    - nuget restore
