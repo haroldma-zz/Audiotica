@@ -13,6 +13,11 @@ namespace Audiotica.Core.Utils
                 return null;
             }
 
+            if (str.Length > 35)
+            {
+                str = str.Substring(0, 35);
+            }
+
             /*
              * A filename cannot contain any of the following characters:
              * \ / : * ? " < > |
