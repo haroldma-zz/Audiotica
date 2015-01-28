@@ -16,6 +16,8 @@ using Audiotica.Data.Collection.Model;
 
 using PCLStorage;
 
+using SQLite;
+
 using TagLib;
 
 namespace Audiotica.Data.Collection.RunTime
@@ -407,8 +409,6 @@ namespace Audiotica.Data.Collection.RunTime
 
         private async Task AddSongAsync(Song song, Tag tags, string artworkUrl)
         {
-            
-
             var primaryArtist = (song.Album == null ? song.Artist : song.Album.PrimaryArtist)
                                 ?? new Artist { Name = "Unknown Artist", ProviderId = "autc.unknown" };
 
@@ -444,19 +444,15 @@ namespace Audiotica.Data.Collection.RunTime
 
             song.ArtistId = song.Artist.Id;
 
-            
-
-            #region create album
-
             if (song.Album == null)
             {
                 song.Album = new Album
-                                 {
-                                     PrimaryArtistId = song.ArtistId, 
-                                     Name = song.Name, 
-                                     PrimaryArtist = song.Artist, 
-                                     ProviderId = "autc.single." + song.ProviderId
-                                 };
+                {
+                    PrimaryArtistId = song.ArtistId, 
+                    Name = song.Name, 
+                    PrimaryArtist = song.Artist, 
+                    ProviderId = "autc.single." + song.ProviderId
+                };
             }
 
             var album = this.Albums.FirstOrDefault(p => p.ProviderId == song.Album.ProviderId);
@@ -469,8 +465,6 @@ namespace Audiotica.Data.Collection.RunTime
             {
                 await this.sqlService.InsertAsync(song.Album);
                 await this.dispatcher.RunAsync(() => this.Albums.Insert(0, song.Album));
-
-                #region Download artwork
 
                 var albumFilePath = string.Format(this.artworkFilePath, song.Album.Id);
 
@@ -526,21 +520,15 @@ namespace Audiotica.Data.Collection.RunTime
                                 song.Album.SmallArtwork = this.missingArtwork;
                             }
                         });
-
-                #endregion
             }
 
             song.AlbumId = song.Album.Id;
-
-            #endregion
 
             await this.sqlService.InsertAsync(song);
 
             await this.dispatcher.RunAsync(
                 () =>
                     {
-                        #region Order album songs
-
                         var orderedAlbumSong = song.Album.Songs.ToList();
                         orderedAlbumSong.Add(song);
                         orderedAlbumSong = orderedAlbumSong.OrderBy(p => p.TrackNumber).ToList();
@@ -548,9 +536,7 @@ namespace Audiotica.Data.Collection.RunTime
                         var index = orderedAlbumSong.IndexOf(song);
                         song.Album.Songs.Insert(index, song);
 
-                        #endregion
-
-                        #region Order artist songs
+                        
 
                         var orderedArtistSong = song.Artist.Songs.ToList();
                         orderedArtistSong.Add(song);
@@ -559,7 +545,7 @@ namespace Audiotica.Data.Collection.RunTime
                         index = orderedArtistSong.IndexOf(song);
                         song.Artist.Songs.Insert(index, song);
 
-                        #endregion
+                        
 
                         #region Order artist album
 
@@ -764,14 +750,14 @@ namespace Audiotica.Data.Collection.RunTime
 
             // Create the new queue entry
             var newQueue = new QueueSong
-                               {
-                                   SongId = song.Id, 
-                                   NextId = next == null ? 0 : next.Id, 
-                                   PrevId = prev == null ? 0 : prev.Id, 
-                                   ShuffleNextId = shuffleNext == null ? 0 : shuffleNext.Id, 
-                                   ShufflePrevId = shufflePrev == null ? 0 : shufflePrev.Id, 
-                                   Song = song
-                               };
+            {
+                SongId = song.Id, 
+                NextId = next == null ? 0 : next.Id, 
+                PrevId = prev == null ? 0 : prev.Id, 
+                ShuffleNextId = shuffleNext == null ? 0 : shuffleNext.Id, 
+                ShufflePrevId = shufflePrev == null ? 0 : shufflePrev.Id, 
+                Song = song
+            };
 
             // Add it to the database
             await this.bgSqlService.InsertAsync(newQueue).ConfigureAwait(false);
@@ -808,7 +794,14 @@ namespace Audiotica.Data.Collection.RunTime
                     {
                         if (insert)
                         {
-                            this.PlaybackQueue.Insert(normalIndex, newQueue);
+                            try
+                            {
+                                this.PlaybackQueue.Insert(normalIndex, newQueue);
+                            }
+                            catch (ArgumentOutOfRangeException)
+                            {
+                                this.PlaybackQueue.Add(newQueue);
+                            }
                         }
                         else
                         {
@@ -821,7 +814,14 @@ namespace Audiotica.Data.Collection.RunTime
                         }
                         else
                         {
-                            this.ShufflePlaybackQueue.Insert(shuffleIndex, newQueue);
+                            try
+                            {
+                                this.ShufflePlaybackQueue.Insert(shuffleIndex, newQueue);
+                            }
+                            catch (ArgumentOutOfRangeException)
+                            {
+                                this.ShufflePlaybackQueue.Add(newQueue);
+                            }
                         }
                     }).ConfigureAwait(false);
 
@@ -986,13 +986,13 @@ namespace Audiotica.Data.Collection.RunTime
 
             // Create the new queue entry
             var newSong = new PlaylistSong
-                              {
-                                  SongId = song.Id, 
-                                  NextId = 0, 
-                                  PrevId = tail == null ? 0 : tail.Id, 
-                                  Song = song, 
-                                  PlaylistId = playlist.Id
-                              };
+            {
+                SongId = song.Id, 
+                NextId = 0, 
+                PrevId = tail == null ? 0 : tail.Id, 
+                Song = song, 
+                PlaylistId = playlist.Id
+            };
 
             // Add it to the database
             await this.sqlService.InsertAsync(newSong);
@@ -1024,8 +1024,6 @@ namespace Audiotica.Data.Collection.RunTime
             {
                 return;
             }
-
-            
 
             var songPrevId = song.PrevId;
             var songNextId = song.NextId;
@@ -1063,10 +1061,6 @@ namespace Audiotica.Data.Collection.RunTime
                 }
             }
 
-            
-
-            #region update surrounding songs
-
             if (songPrevId != 0)
             {
                 PlaylistSong prevSong;
@@ -1087,16 +1081,12 @@ namespace Audiotica.Data.Collection.RunTime
                 }
             }
 
-            #endregion
-
             await this.sqlService.UpdateItemAsync(song);
             await this.sqlService.UpdateItemAsync(originalSong);
         }
 
         public async Task DeleteFromPlaylistAsync(Playlist playlist, PlaylistSong songToRemove)
         {
-            
-
             if (songToRemove.NextId != 0)
             {
                 var nextSong = playlist.LookupMap[songToRemove.NextId];
@@ -1110,8 +1100,6 @@ namespace Audiotica.Data.Collection.RunTime
                 prevSong.NextId = songToRemove.NextId;
                 await this.sqlService.UpdateItemAsync(prevSong);
             }
-
-            
 
             await this.sqlService.DeleteItemAsync(songToRemove);
             await this.dispatcher.RunAsync(() => playlist.Songs.Remove(songToRemove));
@@ -1139,8 +1127,6 @@ namespace Audiotica.Data.Collection.RunTime
                     }
                 }
 
-                
-
                 if (head != null)
                 {
                     for (var i = 0; i < songs.Count; i++)
@@ -1153,8 +1139,6 @@ namespace Audiotica.Data.Collection.RunTime
                         }
                     }
                 }
-
-                
 
                 if (this.dispatcher != null)
                 {
