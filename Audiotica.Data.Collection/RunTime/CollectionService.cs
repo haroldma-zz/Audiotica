@@ -16,6 +16,8 @@ using Audiotica.Data.Collection.Model;
 
 using PCLStorage;
 
+using SQLite;
+
 using TagLib;
 
 namespace Audiotica.Data.Collection.RunTime
