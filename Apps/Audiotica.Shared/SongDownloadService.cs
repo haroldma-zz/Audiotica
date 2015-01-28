@@ -230,16 +230,6 @@ namespace Audiotica
         {
             song.Download = new BackgroundDownload(download);
             this.ActiveDownloads.Add(song);
-            Debug.WriteLine("Added {0} to active downloads", song.Name);
-
-            var path = "Audiotica/" + song.Album.PrimaryArtist.Name.CleanForFileName() + "/"
-                       + song.Album.Name.CleanForFileName();
-            var filename = string.Format("{0}.mp3", song.Name.CleanForFileName());
-
-            if (song.ArtistName != song.Album.PrimaryArtist.Name)
-            {
-                filename = song.ArtistName.CleanForFileName() + "-" + filename;
-            }
 
             try
             {
@@ -265,19 +255,16 @@ namespace Audiotica
                 }
                 else
                 {
-                    Debug.WriteLine("Download status code for {0} is bad :/", song.Name);
                     song.SongState = SongState.None;
                     this.sqlService.UpdateItem(song);
-                    WinRtStorageHelper.DeleteFileAsync(path + filename, KnownFolders.MusicLibrary).Wait();
+                    download.ResultFile.DeleteAsync();
                 }
             }
             catch
             {
-                Debug.WriteLine("Download cancelled {0}", song.Name);
-
                 song.SongState = SongState.None;
                 this.sqlService.UpdateItem(song);
-                WinRtStorageHelper.DeleteFileAsync(path + filename, KnownFolders.MusicLibrary).Wait();
+                download.ResultFile.DeleteAsync();
             }
             finally
             {
@@ -319,16 +306,16 @@ namespace Audiotica
 
             try
             {
-                var filename = song.Name.CleanForFileName();
+                var filename = song.Name.CleanForFileName("Invalid Song Name");
                 if (song.ArtistName != song.Album.PrimaryArtist.Name)
                 {
-                    filename = song.ArtistName.CleanForFileName() + "-" + filename;
+                    filename = song.ArtistName.CleanForFileName("Invalid Artist Name") + "-" + filename;
                 }
 
                 var path = string.Format(
-                    AppConstant.SongPath, 
-                    song.Album.PrimaryArtist.Name.CleanForFileName(), 
-                    song.Album.Name.CleanForFileName(), 
+                    AppConstant.SongPath,
+                    song.Album.PrimaryArtist.Name.CleanForFileName("Invalid Artist Name"),
+                    song.Album.Name.CleanForFileName("Invalid Album Name"),
                     filename);
 
                 var destinationFile =

@@ -1,6 +1,8 @@
 ﻿#region
 
 using System;
+using System.Diagnostics;
+
 using Windows.ApplicationModel.Store;
 using Windows.UI.Xaml;
 using Audiotica.Core.Utils.Interfaces;
@@ -46,7 +48,7 @@ namespace Audiotica.ViewModel
         {
             try
             {
-                if (App.IsDebugging)
+                if (Debugger.IsAttached)
                 {
                     await CurrentAppSimulator.RequestProductPurchaseAsync(ProductConstants.InAppAdvertisements);
                 }

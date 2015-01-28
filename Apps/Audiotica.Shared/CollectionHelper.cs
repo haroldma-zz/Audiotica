@@ -176,16 +176,16 @@ namespace Audiotica
                     {
                         try
                         {
-                            var filename = song.Name.CleanForFileName();
+                            var filename = song.Name.CleanForFileName("Invalid Song Name");
                             if (song.ArtistName != song.Album.PrimaryArtist.Name)
                             {
-                                filename = song.ArtistName.CleanForFileName() + "-" + filename;
+                                filename = song.ArtistName.CleanForFileName("Invalid Artist Name") + "-" + filename;
                             }
 
                             var path = string.Format(
                                 AppConstant.SongPath, 
-                                song.Album.PrimaryArtist.Name.CleanForFileName() ?? song.ArtistName.CleanForFileName(), 
-                                song.Album.Name.CleanForFileName(), 
+                                song.Album.PrimaryArtist.Name.CleanForFileName("Invalid Artist Name"), 
+                                song.Album.Name.CleanForFileName("Invalid Album Name"), 
                                 filename);
 
                             var file = await WinRtStorageHelper.GetFileAsync(string.Format("songs/{0}.mp3", song.Id));

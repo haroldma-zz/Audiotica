@@ -6,7 +6,7 @@ namespace Audiotica.Core.Utils
 {
     public static class StringExtensions
     {
-        public static string CleanForFileName(this string str)
+        public static string CleanForFileName(this string str, string invalidMessage)
         {
             if (string.IsNullOrEmpty(str))
             {
@@ -17,7 +17,7 @@ namespace Audiotica.Core.Utils
              * A filename cannot contain any of the following characters:
              * \ / : * ? " < > |
              */
-            return
+            var name =
                 str.Replace("\\", string.Empty)
                     .Replace("/", string.Empty)
                     .Replace(":", " ")
@@ -27,6 +27,8 @@ namespace Audiotica.Core.Utils
                     .Replace("<", string.Empty)
                     .Replace(">", string.Empty)
                     .Replace("|", " ");
+
+            return string.IsNullOrEmpty(name) ? invalidMessage : name;
         }
 
         public static async Task<T> DeserializeAsync<T>(this string json)

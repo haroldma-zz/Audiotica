@@ -38,6 +38,8 @@ namespace Audiotica
     /// </summary>
     public sealed partial class App
     {
+        public const bool IsProduction = true;
+
         #region Fields
 
 #if WINDOWS_PHONE_APP
