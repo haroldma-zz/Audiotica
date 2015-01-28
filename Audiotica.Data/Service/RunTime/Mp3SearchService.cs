@@ -120,7 +120,7 @@ namespace Audiotica.Data.Service.RunTime
             }
         }
 
-        public async Task<List<WebSong>> SearchMp3Clan(string title, string artist, string album = null, int limit = 5)
+        public async Task<List<WebSong>> SearchMp3Clan(string title, string artist, string album = null, int limit = 10)
         {
             // mp3clan search doesn't work that well with the pound key (even encoded)
             var url = string.Format(
@@ -252,7 +252,7 @@ namespace Audiotica.Data.Service.RunTime
             }
         }
 
-        public async Task<List<WebSong>> SearchMeile(string title, string artist, string album = null, int limit = 5)
+        public async Task<List<WebSong>> SearchMeile(string title, string artist, string album = null, int limit = 10)
         {
             var url = string.Format(MeileSearchUrl, this.CreateQuery(title, artist, album));
 
@@ -296,7 +296,7 @@ namespace Audiotica.Data.Service.RunTime
             }
         }
 
-        public async Task<List<WebSong>> SearchNetease(string title, string artist, string album = null, int limit = 5)
+        public async Task<List<WebSong>> SearchNetease(string title, string artist, string album = null, int limit = 10)
         {
             using (var client = new HttpClient())
             {
@@ -478,7 +478,7 @@ namespace Audiotica.Data.Service.RunTime
             }
         }
 
-        public async Task<List<WebSong>> SearchYoutube(string title, string artist, string album = null, int limit = 5)
+        public async Task<List<WebSong>> SearchYoutube(string title, string artist, string album = null, int limit = 10)
         {
             var youtubeService =
                 new YouTubeService(
@@ -560,8 +560,15 @@ namespace Audiotica.Data.Service.RunTime
 
         private async Task<List<WebSong>> FilterByTypeAndMatch(IEnumerable<WebSong> songs, string title, string artist)
         {
-            // just in case a song is "acoustic version"
-            var cleanTile = title.Replace("(acoustic)", string.Empty);
+            var cleanTile = title;
+            if (title.Contains("("))
+            {
+                cleanTile = cleanTile.Remove(title.IndexOf('('));
+            }
+            if (title.Contains("-"))
+            {
+                cleanTile = cleanTile.Remove(title.IndexOf('-'));
+            }
 
             var filterSongs = songs.Where(
                 p =>
