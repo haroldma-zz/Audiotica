@@ -389,8 +389,40 @@ namespace Audiotica
                 {
                     try
                     {
-                        await Locator.SqlService.InitializeAsync().ConfigureAwait(false);
-                        await Locator.BgSqlService.InitializeAsync().ConfigureAwait(false);
+                        try
+                        {
+                            await Locator.SqlService.InitializeAsync().ConfigureAwait(false);
+                        }
+                        catch (SQLiteException ex)
+                        {
+                            if (ex.Message.Contains("IOError") || ex.Message.Contains("I/O"))
+                            {
+                                // issues when SQLite can't delete the wal related files, so init in delete mode
+                                // and then go back to wal mode
+                                Locator.SqlService.Dispose();
+                                Locator.SqlService.Initialize(false);
+                                Locator.SqlService.Dispose();
+                                Locator.SqlService.Initialize();
+                            }
+                        }
+
+                        try
+                        {
+                            await Locator.BgSqlService.InitializeAsync().ConfigureAwait(false);
+                        }
+                        catch (SQLiteException ex)
+                        {
+                            if (ex.Message.Contains("IOError") || ex.Message.Contains("I/O"))
+                            {
+                                // issues when SQLite can't delete the wal related files, so init in delete mode
+                                // and then go back to wal mode
+                                Locator.BgSqlService.Dispose();
+                                Locator.BgSqlService.Initialize(false);
+                                Locator.BgSqlService.Dispose();
+                                Locator.BgSqlService.Initialize();
+                            }
+                        }
+
                         await Locator.CollectionService.LoadLibraryAsync().ConfigureAwait(false);
                         handle.Data.Add("SongCount", Locator.CollectionService.Songs.Count.ToString());
 
