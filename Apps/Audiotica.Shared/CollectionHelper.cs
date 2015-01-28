@@ -22,11 +22,11 @@ using IF.Lastfm.Core.Objects;
 
 using PCLStorage;
 
+using SQLite;
+
 using Windows.Phone.UI.Input;
 using Windows.Storage;
 using Windows.UI.StartScreen;
-
-using SQLite;
 
 using Xamarin;
 
@@ -283,7 +283,7 @@ namespace Audiotica
                         id, 
                         artist.Name, 
                         "artists/" + artist.Id, 
-                        string.Format(AppConstant.ArtistsArtworkPath, artist.Id));
+                        artist.HasArtwork ? string.Format(AppConstant.ArtistsArtworkPath, artist.Id) : null);
             }
             else
             {
@@ -311,7 +311,7 @@ namespace Audiotica
                     });
                 created =
                     await
-                    CreatePin(id, album.Name, "albums/" + album.Id, string.Format(AppConstant.ArtworkPath, album.Id));
+                    CreatePin(id, album.Name, "albums/" + album.Id, album.HasArtwork ? string.Format(AppConstant.ArtworkPath, album.Id) : null);
             }
             else
             {
@@ -325,16 +325,16 @@ namespace Audiotica
         private static async Task<bool> CreatePin(string id, string displayName, string arguments, string artwork)
         {
             var tileActivationArguments = arguments;
-            var image = new Uri(AppConstant.LocalStorageAppPath + artwork);
+
+            var image = string.IsNullOrEmpty(artwork) ? null : new Uri(AppConstant.LocalStorageAppPath + artwork);
 
             var secondaryTile = new SecondaryTile(
-                id, 
-                displayName, 
-                tileActivationArguments, 
-                image, 
-                TileSize.Square150x150) {
-                                           ShortName = displayName 
-                                        };
+                id,
+                displayName,
+                tileActivationArguments,
+                image,
+                TileSize.Square150x150) { ShortName = displayName };
+
             secondaryTile.VisualElements.ShowNameOnSquare150x150Logo = true;
 
             return await secondaryTile.RequestCreateAsync();
@@ -764,6 +764,7 @@ namespace Audiotica
                             return;
                         }
                     }
+
                     var queueSong = await App.Locator.CollectionService.AddToQueueAsync(song).ConfigureAwait(false);
                     App.Locator.AudioPlayerHelper.PlaySong(queueSong);
 
