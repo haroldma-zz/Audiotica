@@ -176,11 +176,6 @@ namespace Audiotica.Data.Service.RunTime
                         doc.DocumentNode.Descendants("div")
                             .Where(p => p.Attributes.Contains("class") && p.Attributes["class"].Value.Contains("actl"));
 
-                    if (songNodes == null)
-                    {
-                        return null;
-                    }
-
                     var songs = new List<WebSong>();
 
                     foreach (var songNode in songNodes)
@@ -575,6 +570,7 @@ namespace Audiotica.Data.Service.RunTime
 
                         var isCorrectType = this.IsCorrectType(title, p.Title, "mix")
                                             && this.IsCorrectType(title, p.Title, "cover")
+                                            && this.IsCorrectType(title, p.Title, "rmx")
                                             && this.IsCorrectType(title, p.Title, "live")
                                             && this.IsCorrectType(title, p.Title, "snipped")
                                             && this.IsCorrectType(title, p.Title, "preview")
@@ -606,13 +602,13 @@ namespace Audiotica.Data.Service.RunTime
 
             foreach (var webSong in filtered)
             {
-                if (await this.IsUrlOnlineAsync(webSong.AudioUrl))
+                if (await this.IsUrlOnlineAsync(webSong))
                 {
                     matches.Add(webSong);
                 }
             }
 
-            return matches;
+            return matches.OrderByDescending(p => p.ByteSize).ToList();
         }
 
         private async Task<MeileSong> GetDetailsForMeileSong(string songId, HttpClient client)
@@ -683,7 +679,7 @@ namespace Audiotica.Data.Service.RunTime
             return isSupposedType && isType || !isSupposedType && !isType;
         }
 
-        private async Task<bool> IsUrlOnlineAsync(string url)
+        private async Task<bool> IsUrlOnlineAsync(WebSong song)
         {
             try
             {
@@ -693,9 +689,19 @@ namespace Audiotica.Data.Service.RunTime
                     var resp =
                         await
                         client.SendAsync(
-                            new HttpRequestMessage(HttpMethod.Head, new Uri(url)), 
+                            new HttpRequestMessage(HttpMethod.Head, new Uri(song.AudioUrl)), 
                             HttpCompletionOption.ResponseHeadersRead);
-                    return resp.IsSuccessStatusCode;
+                    resp.EnsureSuccessStatusCode();
+
+                    if (song.ByteSize.Equals(0))
+                    {
+                        var size = resp.Content.Headers.ContentLength;
+                        if (size != null)
+                        {
+                            song.ByteSize = (long)size;
+                        }
+                    }
+                    return true;
                 }
             }
             catch

@@ -29,10 +29,10 @@ namespace Audiotica.Data
 
         private readonly Mp3Provider[] _providers =
         {
-            Mp3Provider.Netease,
-            Mp3Provider.Mp3Clan,
             Mp3Provider.Mp3Truck,
+            Mp3Provider.Mp3Clan,
             Mp3Provider.Mp3Skull,
+            Mp3Provider.Netease,
             Mp3Provider.Meile,
             Mp3Provider.SoundCloud,
            // Mp3Provider.YouTube <- links expire, not good for streaming
@@ -85,16 +85,16 @@ namespace Audiotica.Data
             switch (provider)
             {
                 case Mp3Provider.Netease:
-                    webSongs = await _service.SearchNetease(title, artist, album, 3).ConfigureAwait(false);
+                    webSongs = await _service.SearchNetease(title, artist, album).ConfigureAwait(false);
                     break;
                 case Mp3Provider.YouTube:
-                    webSongs = await _service.SearchYoutube(title, artist, album, 3).ConfigureAwait(false);
+                    webSongs = await _service.SearchYoutube(title, artist, album).ConfigureAwait(false);
                     break;
                 case Mp3Provider.Mp3Clan:
-                    webSongs = await _service.SearchMp3Clan(title, artist, album, 3).ConfigureAwait(false);
+                    webSongs = await _service.SearchMp3Clan(title, artist, album).ConfigureAwait(false);
                     break;
                 case Mp3Provider.Meile:
-                    webSongs = await _service.SearchMeile(title, artist, album, 3).ConfigureAwait(false);
+                    webSongs = await _service.SearchMeile(title, artist, album).ConfigureAwait(false);
                     break;
                 case Mp3Provider.Mp3Truck:
                     webSongs = await _service.SearchMp3Truck(title, artist, album).ConfigureAwait(false);
