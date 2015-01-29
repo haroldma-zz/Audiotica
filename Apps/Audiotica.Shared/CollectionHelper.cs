@@ -59,13 +59,13 @@ namespace Audiotica
                     var playbackQueue = App.Locator.CollectionService.PlaybackQueue;
                     var queue = playbackQueue.FirstOrDefault(p => p.SongId == song.Id);
 
-                    if (queue != null)
+                    if (queue != null && App.Locator.Player.IsPlayerActive)
                     {
                         if (playbackQueue.Count == 1)
                         {
                             await App.Locator.AudioPlayerHelper.ShutdownPlayerAsync();
                         }
-                        else
+                        else if (queue == App.Locator.Player.CurrentQueue)
                         {
                             App.Locator.AudioPlayerHelper.NextSong();
                         }
@@ -102,7 +102,7 @@ namespace Audiotica
                             {
                                 await App.Locator.AudioPlayerHelper.ShutdownPlayerAsync();
                             }
-                            else
+                            else if (queue == App.Locator.Player.CurrentQueue)
                             {
                                 App.Locator.AudioPlayerHelper.NextSong();
                             }
@@ -128,13 +128,13 @@ namespace Audiotica
                         var playbackQueue = App.Locator.CollectionService.PlaybackQueue;
                         var queue = playbackQueue.FirstOrDefault(p => p.SongId == song.Id);
 
-                        if (queue != null)
+                        if (queue != null && App.Locator.Player.IsPlayerActive)
                         {
                             if (playbackQueue.Count == 1)
                             {
                                 await App.Locator.AudioPlayerHelper.ShutdownPlayerAsync();
                             }
-                            else
+                            else if (queue == App.Locator.Player.CurrentQueue)
                             {
                                 App.Locator.AudioPlayerHelper.NextSong();
                             }
