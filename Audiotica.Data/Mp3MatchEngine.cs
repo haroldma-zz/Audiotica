@@ -33,8 +33,8 @@ namespace Audiotica.Data
     {
         private readonly Mp3Provider[] providers =
         {
-            Mp3Provider.Mp3Truck, Mp3Provider.Mp3Clan, Mp3Provider.Mp3Skull, 
-            Mp3Provider.Netease, Mp3Provider.Meile, Mp3Provider.SoundCloud
+             Mp3Provider.Netease, Mp3Provider.Mp3Truck, Mp3Provider.Mp3Clan, Mp3Provider.Mp3Skull, 
+             Mp3Provider.Meile, Mp3Provider.SoundCloud
 
             // Mp3Provider.YouTube <- links expire, not good for streaming
         };
