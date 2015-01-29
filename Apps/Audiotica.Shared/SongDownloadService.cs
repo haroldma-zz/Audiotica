@@ -134,7 +134,27 @@ namespace Audiotica
         /// </returns>
         private async Task DownloadFinishedForAsync(Song song)
         {
-            song.AudioUrl = ((DownloadOperation)song.Download.DownloadOperation).ResultFile.Path;
+            var downloadOperation = (DownloadOperation)song.Download.DownloadOperation;
+
+            await this.UpdateId3TagsAsync(song, downloadOperation.ResultFile);
+
+            var filename = song.Name.CleanForFileName("Invalid Song Name");
+            if (song.ArtistName != song.Album.PrimaryArtist.Name)
+            {
+                filename = song.ArtistName.CleanForFileName("Invalid Artist Name") + "-" + filename;
+            }
+
+            var path = string.Format(
+                AppConstant.SongPath,
+                song.Album.PrimaryArtist.Name.CleanForFileName("Invalid Artist Name"),
+                song.Album.Name.CleanForFileName("Invalid Album Name"),
+                filename);
+
+            var newDestination = await WinRtStorageHelper.CreateFileAsync(path, KnownFolders.MusicLibrary);
+
+            downloadOperation.ResultFile.MoveAndReplaceAsync(newDestination);
+
+            song.AudioUrl = newDestination.Path;
             song.SongState = SongState.Downloaded;
             song.DownloadId = null;
             await this.sqlService.UpdateItemAsync(song);
@@ -145,7 +165,7 @@ namespace Audiotica
         /// </summary>
         /// <param name="song">The song.</param>
         /// <param name="file">The file.</param>
-        private async void UpdateId3Tags(Song song, IStorageFile file)
+        private async Task UpdateId3TagsAsync(Song song, IStorageFile file)
         {
             using (var fileStream = await file.OpenStreamForWriteAsync().ConfigureAwait(false))
             {
@@ -306,24 +326,11 @@ namespace Audiotica
 
             try
             {
-                var filename = song.Name.CleanForFileName("Invalid Song Name");
-                if (song.ArtistName != song.Album.PrimaryArtist.Name)
-                {
-                    filename = song.ArtistName.CleanForFileName("Invalid Artist Name") + "-" + filename;
-                }
-
-                var path = string.Format(
-                    AppConstant.SongPath,
-                    song.Album.PrimaryArtist.Name.CleanForFileName("Invalid Artist Name"),
-                    song.Album.Name.CleanForFileName("Invalid Album Name"),
-                    filename);
+                var path = string.Format("songs/{0}.mp3", song.Id);
 
                 var destinationFile =
                     await
-                    WinRtStorageHelper.CreateFileAsync(
-                        path, 
-                        KnownFolders.MusicLibrary, 
-                        CreationCollisionOption.ReplaceExisting).ConfigureAwait(false);
+                    WinRtStorageHelper.CreateFileAsync(path, ApplicationData.Current.LocalFolder, CreationCollisionOption.ReplaceExisting).ConfigureAwait(false);
 
                 var downloader = new BackgroundDownloader();
                 var download = downloader.CreateDownload(new Uri(song.AudioUrl), destinationFile);
