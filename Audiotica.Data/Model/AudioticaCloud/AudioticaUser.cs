@@ -2,6 +2,7 @@
 {
     public class LoginResponse : BaseAudioticaResponse
     {
+        public string RefreshToken { get; set; }
         public string AuthenticationToken { get; set; }
 
         public AudioticaUser User { get; set; }

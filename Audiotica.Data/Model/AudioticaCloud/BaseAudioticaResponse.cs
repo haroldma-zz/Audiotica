@@ -1,5 +1,6 @@
 ﻿#region
 
+using System.Net;
 using Newtonsoft.Json;
 
 #endregion
@@ -10,14 +11,17 @@ namespace Audiotica.Data.Model.AudioticaCloud
     {
         [JsonProperty(PropertyName = "data")]
         public T Data { get; set; }
-
-        [JsonIgnore]
-        public bool Success { get; set; }
     }
 
     public class BaseAudioticaResponse
     {
         [JsonProperty(PropertyName = "message")]
         public string Message { get; set; }
+
+        [JsonIgnore]
+        public bool Success { get; set; }
+
+        [JsonIgnore]
+        public HttpStatusCode StatusCode { get; set; }
     }
 }
