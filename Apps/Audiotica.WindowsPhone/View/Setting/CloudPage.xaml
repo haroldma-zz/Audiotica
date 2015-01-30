@@ -11,6 +11,9 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Grid Margin="0,25,0,0">
+        <Grid.Background>
+            <ImageBrush ImageSource="/Assets/ListeningToMusic.jpg" Stretch="UniformToFill" Opacity=".25" />
+        </Grid.Background>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
@@ -18,11 +21,26 @@
 
         <!-- Title Panel -->
         <StackPanel Grid.Row="0" Margin="19,0,0,0">
-            <TextBlock Text="AUDIOTICA CLOUD" Style="{ThemeResource TitleTextBlockStyle}" Margin="0,12,0,0" FontSize="24"
+            <TextBlock Text="AUDIOTICA CLOUD" Style="{ThemeResource TitleTextBlockStyle}" Margin="0,12,0,0"
+                       FontSize="24"
                        FontWeight="Bold" />
         </StackPanel>
         <ScrollViewer Grid.Row="1" Margin="19,9.5,19,0">
-            
+            <StackPanel>
+                <TextBlock TextWrapping="Wrap" FontSize="24">
+                    <Run Text="Save your songs faster and let your phone relax, leave all the dirty work to the cloud." />
+                    <LineBreak />
+                    <LineBreak />
+                    <Run Text="Sync your songs for easy access on all your devices." />
+                    <LineBreak />
+                    <LineBreak />
+                    <Run Text="As an added bonus, disable advertisements." />
+                </TextBlock>
+                
+                <Button Content="Sign Up" HorizontalAlignment="Stretch" FontFamily="Global User Interface" Margin="0,50,0,0" />
+                <TextBlock Text="Already have an account?" TextAlignment="Center" FontSize="16" />
+                <Button Content="Sign In" HorizontalAlignment="Stretch" />
+            </StackPanel>
         </ScrollViewer>
     </Grid>
 </audiotica:PageBase>
