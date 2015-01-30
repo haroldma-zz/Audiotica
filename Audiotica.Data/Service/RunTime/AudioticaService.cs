@@ -209,12 +209,11 @@ namespace Audiotica.Data.Service.RunTime
         {
             var resp = await GetAsync<AudioticaUser>(UsersPath + "/me");
 
-            if (resp.Success)
-            {
-                //keping the user object updated
-                CurrentUser = resp.Data;
-                appSettingsHelper.WriteAsJson("AudioticaCloudUser", CurrentUser);
-            }
+            if (!resp.Success) return resp;
+
+            //keping the user object updated
+            CurrentUser = resp.Data;
+            appSettingsHelper.WriteAsJson("AudioticaCloudUser", CurrentUser);
 
             return resp;
         }
