@@ -31,6 +31,7 @@ namespace Audiotica.Data.Service.RunTime
 #endif
 
         private const string UsersPath = BaseApiPath + "users";
+        private const string SubscribePath = UsersPath + "/me/subscribe?planId={0}&coupon={1}";
         private const string TokenPath = UsersPath + "/token";
         private const string MatchPath = BaseApiPath + "match?title={0}&artist={1}&limit={2}";
 
@@ -47,11 +48,21 @@ namespace Audiotica.Data.Service.RunTime
             authenticationToken = cred.GetPassword();
 
             CurrentUser = this.appSettingsHelper.ReadJsonAs<AudioticaUser>("AudioticaCloudUser");
-            refreshToken = this.appSettingsHelper.Read("AudioticaCloudRefreshToken");
+            
+            var refreshCred = this.credentialHelper.GetCredentials("AudioticaCloudRefreshToken");
+
+            if (refreshCred == null) return;
+            refreshToken = refreshCred.GetPassword();
         }
 
         private string refreshToken;
-        public AudioticaUser CurrentUser { get; private set; }
+        private AudioticaUser currentUser;
+
+        public AudioticaUser CurrentUser
+        {
+            get { return currentUser; }
+            private set { Set(ref currentUser, value); }
+        }
 
         public bool IsAuthenticated
         {
@@ -148,7 +159,7 @@ namespace Audiotica.Data.Service.RunTime
                 if (success)
                 {
                     // manage to refresh it, repeat the request
-                    return await GetAsync<T>(url);
+                    return await PostAsync<T>(url, data);
                 }
 
                 // failed to refresh the token, return the original error response
@@ -187,10 +198,11 @@ namespace Audiotica.Data.Service.RunTime
             CurrentUser = resp.Data.User;
 
             refreshToken = resp.Data.RefreshToken;
-            appSettingsHelper.Write("AudioticaCloudRefreshToken", refreshToken);
             appSettingsHelper.WriteAsJson("AudioticaCloudUser", CurrentUser);
             credentialHelper.SaveCredentials("AudioticaCloud", resp.Data.User.Id,
                 resp.Data.AuthenticationToken);
+            credentialHelper.SaveCredentials("AudioticaCloudRefreshToken", resp.Data.User.Id,
+                refreshToken);
             RaisePropertyChanged(() => IsAuthenticated);
         }
 
@@ -233,6 +245,33 @@ namespace Audiotica.Data.Service.RunTime
             //keping the user object updated
             CurrentUser = resp.Data;
             appSettingsHelper.WriteAsJson("AudioticaCloudUser", CurrentUser);
+
+            return resp;
+        }
+
+        public async Task<BaseAudioticaResponse> SubscribeAsync(SubscriptionType plan, SubcriptionTimeFrame timeFrame, AudioticaStripeCard card, string coupon = null)
+        {
+            var creditCardData = new Dictionary<string, string>
+            {
+                {"name", card.Name},
+                {"number", card.Number},
+                {"expMonth", card.ExpMonth.ToString()},
+                {"expYear", card.ExpYear.ToString()},
+                {"cvc", card.Cvc}
+            };
+
+            // plan id and coupon are passed in url query
+            var planId = plan == SubscriptionType.Silver ? "autc_silver" : "autc_gold";
+            planId += "_" + timeFrame.ToString().ToLower();
+            var url = string.Format(SubscribePath, planId, coupon);
+
+            var resp = await PostAsync<object>(url, creditCardData);
+
+            if (resp.Success)
+            {
+                // update the subscription details
+                await GetProfileAsync();
+            }
 
             return resp;
         }

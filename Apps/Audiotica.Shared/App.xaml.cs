@@ -228,6 +228,16 @@ namespace Audiotica
             {
                 await this.ReviewReminderAsync();
             }
+
+            try
+            {
+                // refreshing user profile info
+                if (Locator.AudioticaService.IsAuthenticated)
+                {
+                    await Locator.AudioticaService.GetProfileAsync();
+                }
+            }
+            catch { }
         }
 
         private int GetScaledImageSize()

@@ -19,7 +19,7 @@ namespace Audiotica.Data.Service.DesignTime
 
         public bool IsAuthenticated
         {
-            get { return true; }
+            get { return false; }
         }
 
         public HttpClient CreateHttpClient()
@@ -43,6 +43,12 @@ namespace Audiotica.Data.Service.DesignTime
         }
 
         public Task<BaseAudioticaResponse<AudioticaUser>> GetProfileAsync()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<BaseAudioticaResponse> SubscribeAsync(SubscriptionType plan, SubcriptionTimeFrame timeFrame, AudioticaStripeCard card,
+                                   string coupon = null)
         {
             throw new NotImplementedException();
         }

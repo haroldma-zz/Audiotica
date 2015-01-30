@@ -14,7 +14,19 @@ namespace Audiotica.ViewModel
             Service = service;
             SignInCommand = new RelayCommand(SignInExecute);
             SignUpCommand = new RelayCommand(SignUpExecute);
+            SubscribeCommand = new RelayCommand(SubscribeExecute);
         }
+
+        private async void SubscribeExecute()
+        {
+            var subscribeSheet = new AudioticaSubscribeSheet();
+            var success = await ModalSheetUtility.ShowAsync(subscribeSheet);
+
+            if (success)
+                CurtainPrompt.Show("Welcome to the cloud club!");
+        }
+
+        public RelayCommand SubscribeCommand { get; set; }
 
         public IAudioticaService Service { get; private set; }
         public RelayCommand SignInCommand { get; set; }

@@ -17,11 +17,39 @@
             <TextBlock Text="Subscribe" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="20" Margin="0,25,0,10" />
         </Border>
 
-        <Grid Grid.Row="1" Margin="19,9.5,19,0" >
+        <ScrollViewer Grid.Row="1" Margin="19,9.5,19,0" >
             <StackPanel>
-              
-                <Button Content="Done" HorizontalAlignment="Stretch" />
+                <TextBox x:Name="CardNameBox" Header="Name on Card" PlaceholderText="John Doe">
+                    <TextBox.InputScope>
+                        <InputScope>
+                            <InputScope.Names>
+                                <InputScopeName NameValue="NameOrPhoneNumber" />
+                            </InputScope.Names>
+                        </InputScope>
+                    </TextBox.InputScope>
+                </TextBox>
+                <TextBox x:Name="CardNumBox" Header="Card Number" PlaceholderText="4242-4242-4242-4242" KeyDown="CardNumBox_KeyDown" TextChanged="CardNumBox_TextChanged">
+                    <TextBox.InputScope>
+                        <InputScope>
+                            <InputScope.Names>
+                                <InputScopeName NameValue="Number" />
+                            </InputScope.Names>
+                        </InputScope>
+                    </TextBox.InputScope>
+                </TextBox>
+                <TextBox x:Name="CardSecurityCode" Header="Card Security Code (CVC)" PlaceholderText="123" />
+                <StackPanel Orientation="Horizontal">
+                    <ComboBox x:Name="ExpMonthBox" PlaceholderText="01" Header="Expiration Month"/>
+                    <ComboBox x:Name="ExpYearBox" Header="Expiration Year" PlaceholderText="2020" Margin="20,0,0,0"/>
+                </StackPanel>
+                <ComboBox x:Name="PlanBox" Header="Plan" SelectedIndex="0">
+                    <x:String>Monthly  ($2.00)</x:String>
+                    <x:String>Biyearly ($9.00)</x:String>
+                    <x:String>Yearly ($12.00)</x:String>
+                </ComboBox>
+                <TextBlock FontSize="20" TextWrapping="Wrap" Text="Your credit card won't be charged until the end of your 7 day trial.  To cancel contact help@audiotica.fm" Margin="0,10,0,0" />
+                <Button Content="Start Trial" HorizontalAlignment="Stretch" Margin="0,0,0,20" Click="Button_Click" />
             </StackPanel>
-        </Grid>
+        </ScrollViewer>
     </Grid>
 </Page>

@@ -57,7 +57,7 @@
                             <TextBlock FontSize="26" Style="{StaticResource SubtleTextBlockStyle}" Text="{Binding Service.CurrentUser.Subscription}" />
                             <StackPanel Visibility="{Binding Service.CurrentUser.Subscription, Converter={StaticResource NoneSubscriptionVisibilityConverter}}">
                                 <TextBlock FontSize="26" Text="To take advantage of the Audiotica Cloud you'll need a subscription." TextWrapping="Wrap" />
-                                <Button Content="Get started!" HorizontalAlignment="Stretch" />
+                                <Button Command="{Binding SubscribeCommand}" Content="Get started!" HorizontalAlignment="Stretch" />
                             </StackPanel>
                         </StackPanel>
                         <Button Foreground="Red" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Content="Logout" />

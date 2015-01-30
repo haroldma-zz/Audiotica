@@ -18,7 +18,7 @@ namespace Audiotica.Data.Service.Interfaces
         Task<BaseAudioticaResponse> RegisterAsync(string username, string password, string email);
         void Logout();
         Task<BaseAudioticaResponse<AudioticaUser>> GetProfileAsync();
-
+        Task<BaseAudioticaResponse> SubscribeAsync(SubscriptionType plan, SubcriptionTimeFrame timeFrame, AudioticaStripeCard card, string coupon = null);
         Task<BaseAudioticaResponse<List<WebSong>>> GetMatchesAsync(string title, string artist, int limit = 1);
     }
 }
