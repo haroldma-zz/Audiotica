@@ -43,11 +43,20 @@
             </SupportedFileTypes>
           </FileTypeAssociation>
         </Extension>
+        <Extension Category="windows.fileTypeAssociation">
+          <FileTypeAssociation Name=".mp3">
+            <DisplayName>MP3</DisplayName>
+            <SupportedFileTypes>
+              <FileType ContentType="audio/mpeg">.mp3</FileType>
+            </SupportedFileTypes>
+          </FileTypeAssociation>
+        </Extension>
       </Extensions>
     </Application>
   </Applications>
   <Capabilities>
     <Capability Name="internetClientServer" />
     <Capability Name="musicLibrary" />
+    <Capability Name="removableStorage" />
   </Capabilities>
 </Package>
