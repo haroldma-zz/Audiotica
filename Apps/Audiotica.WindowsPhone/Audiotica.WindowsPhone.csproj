@@ -115,6 +115,15 @@
     <Compile Include="PartialView\AdMediatorBar.xaml.cs">
       <DependentUpon>AdMediatorBar.xaml</DependentUpon>
     </Compile>
+    <Compile Include="PartialView\AudioticaSubscribeSheet.xaml.cs">
+      <DependentUpon>AudioticaSubscribeSheet.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="PartialView\EmailSignInSheet.xaml.cs">
+      <DependentUpon>EmailSignInSheet.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="PartialView\EmailSignUpSheet.xaml.cs">
+      <DependentUpon>EmailSignUpSheet.xaml</DependentUpon>
+    </Compile>
     <Compile Include="PartialView\NowPlayingBar.xaml.cs">
       <DependentUpon>NowPlayingBar.xaml</DependentUpon>
     </Compile>
@@ -224,6 +233,18 @@
     <Page Include="PartialView\AdMediatorBar.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="PartialView\AudioticaSubscribeSheet.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="PartialView\EmailSignInSheet.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="PartialView\EmailSignUpSheet.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="PartialView\NowPlayingBar.xaml">
       <Generator>MSBuild:Compile</Generator>

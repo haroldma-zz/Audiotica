@@ -50,6 +50,8 @@
     <Compile Include="Model\EchoNest\EchoResponse.cs" />
     <Compile Include="Model\EchoNest\EchoSong.cs" />
     <Compile Include="Model\Mp3ClanRoot.cs" />
+    <Compile Include="Service\DesignTime\DesignAudioticaService.cs" />
+    <Compile Include="Service\Interfaces\IAudioticaService.cs" />
     <Compile Include="Service\Interfaces\IDeezerService.cs" />
     <Compile Include="Service\RunTime\AudioticaService.cs" />
     <Compile Include="Service\RunTime\DeezerService.cs" />

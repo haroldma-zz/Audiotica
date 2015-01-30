@@ -16,6 +16,7 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)AppBarHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AudioticaSubscriptionVisibilityConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AutcpHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CollectionHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CollectionCommandHelper.cs" />
@@ -44,6 +45,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)PageTransition.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TransitionHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UiBlockerUtility.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModel\AudioticaCloudViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModel\CollectionStatisticsViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModel\SpotifyArtistViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModel\SpotifyAlbumViewModel.cs" />

@@ -4,7 +4,6 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:Audiotica"
     xmlns:common="using:Audiotica.Core.Common"
-    xmlns:partialView="using:Audiotica.PartialView"
     RequestedTheme="Dark">
     <Application.Resources>
         <vm:ViewModelLocator xmlns:vm="using:Audiotica.ViewModel"

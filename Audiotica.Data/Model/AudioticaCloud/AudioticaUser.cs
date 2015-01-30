@@ -1,6 +1,6 @@
 ﻿namespace Audiotica.Data.Model.AudioticaCloud
 {
-    public class LoginResponse : BaseAudioticaResponse
+    public class LoginData : BaseAudioticaResponse
     {
         public string RefreshToken { get; set; }
         public string AuthenticationToken { get; set; }
