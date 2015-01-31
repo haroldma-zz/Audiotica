@@ -99,6 +99,7 @@ namespace Audiotica.ViewModel
             SimpleIoc.Default.Register<SpotifyArtistViewModel>();
             SimpleIoc.Default.Register<SettingsViewModel>();
             SimpleIoc.Default.Register<CollectionStatisticsViewModel>();
+            SimpleIoc.Default.Register<ManualMatchViewModel>();
         }
 
         public IAudioticaService AudioticaService
@@ -168,6 +169,11 @@ namespace Audiotica.ViewModel
         public ArtistViewModel Artist
         {
             get { return ServiceLocator.Current.GetInstance<ArtistViewModel>(); }
+        }
+
+        public ManualMatchViewModel Manual
+        {
+            get { return ServiceLocator.Current.GetInstance<ManualMatchViewModel>(); }
         }
 
         public CollectionPlaylistViewModel CollectionPlaylist

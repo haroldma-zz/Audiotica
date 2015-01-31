@@ -1,0 +1,51 @@
+﻿<audiotica:PageBase
+    x:Class="Audiotica.View.ManualMatchPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Audiotica.View"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:audiotica="using:Audiotica"
+    mc:Ignorable="d"
+    DataContext="{Binding Source={StaticResource Locator}, Path=Manual}"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Grid>
+        <Grid.Resources>
+            <DataTemplate x:Name="WebSongTemplate">
+                <StackPanel Margin="0,0,0,15">
+                    <TextBlock Text="{Binding Name}" FontSize="22" TextWrapping="Wrap"
+                                    TextTrimming="CharacterEllipsis" FontWeight="Bold" />
+                    <TextBlock FontSize="16" FontWeight="Thin" Foreground="#89FFFFFF"
+                                     TextTrimming="CharacterEllipsis" TextWrapping="Wrap">
+                                <Run Text="{Binding Artist}" />
+                                <Run Text=" - " />
+                                <Run Text="{Binding ByteSize}" />
+                                <Run Text="MB" />
+                                <Run Text=" - " />
+                                <Run Text="{Binding Duration, Converter={StaticResource TimespanToStringConverter}}" />
+                    </TextBlock>
+                </StackPanel>
+            </DataTemplate>
+        </Grid.Resources>
+        <Pivot Title="MANUAL MATCHING" HeaderTemplate="{StaticResource PivotHeaderTemplate}">
+            <PivotItem Header="MP3TRUCK">
+                <ListView ItemsSource="{Binding Mp3Truck}" ItemTemplate="{StaticResource WebSongTemplate}" />
+            </PivotItem>
+            <PivotItem Header="MP3CLAN" >
+                <ListView ItemsSource="{Binding Mp3Clan}" ItemTemplate="{StaticResource WebSongTemplate}" />
+            </PivotItem>
+            <PivotItem Header="NETEASE">
+                <ListView ItemsSource="{Binding Netease}" ItemTemplate="{StaticResource WebSongTemplate}" />
+            </PivotItem>
+            <PivotItem Header="MEILE">
+                <ListView ItemsSource="{Binding Meile}" ItemTemplate="{StaticResource WebSongTemplate}" />
+            </PivotItem>
+            <PivotItem Header="MP3SKULL" >
+                <ListView ItemsSource="{Binding Mp3Skull}" ItemTemplate="{StaticResource WebSongTemplate}" />
+            </PivotItem>
+            <PivotItem Header="SOUNDCLOUD" />
+            <PivotItem Header="YOUTUBE" />
+        </Pivot>
+    </Grid>
+</audiotica:PageBase>

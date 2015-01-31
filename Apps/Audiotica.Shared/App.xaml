@@ -284,16 +284,7 @@
         </DataTemplate>
 
         <DataTemplate x:Key="SpotifyTrackDataTemplate">
-            <StackPanel Margin="0,0,0,15">
-                <TextBlock Text="{Binding Name}" FontSize="22" TextWrapping="Wrap"
-                           TextTrimming="CharacterEllipsis" FontWeight="Bold" />
-                <TextBlock FontSize="16" FontWeight="Thin" Foreground="#89FFFFFF"
-                           TextTrimming="CharacterEllipsis" TextWrapping="Wrap">
-                    <Run Text="{Binding Artist.Name}" />
-                    <Run Text="{Binding Album.Name, Converter={StaticResource DashNotEmptyToStringConverter}}" />
-                    <Run Text="{Binding Album.Name}" />
-                </TextBlock>
-            </StackPanel>
+           <local:SpotifyTrackViewer />
         </DataTemplate>
         <DataTemplate x:Key="SpotifyTrackNoAlbumDataTemplate">
             <StackPanel Margin="0,0,0,15">

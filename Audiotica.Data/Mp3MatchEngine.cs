@@ -113,7 +113,8 @@ namespace Audiotica.Data
                     break;
             }
 
-            return webSongs != null && webSongs.Any() ? webSongs.FirstOrDefault().AudioUrl : null;
+            var bestWebSong = webSongs != null && webSongs.Any() ? webSongs.FirstOrDefault(p => p.IsBestMatch) : null;
+            return bestWebSong == null ? null : bestWebSong.AudioUrl;
         }
     }
 }

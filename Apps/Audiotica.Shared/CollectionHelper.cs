@@ -385,7 +385,7 @@ namespace Audiotica
             }
         }
 
-        public static async Task<SavingError> SaveTrackAsync(FullTrack track)
+        public static async Task<SavingError> SaveTrackAsync(FullTrack track, bool manualMatch = false)
         {
             if (App.Locator.CollectionService.SongAlreadyExists(
                 "spotify." + track.Id, 
@@ -409,10 +409,18 @@ namespace Audiotica
                         { "ArtistName", track.Artist.Name }
                     }))
             {
-                CurtainPrompt.Show("SongSavingFindingMp3".FromLanguageResource(), track.Name);
+                if (!manualMatch)
+                {
+                    CurtainPrompt.Show("SongSavingFindingMp3".FromLanguageResource(), track.Name);
+                }
+                else
+                {
+                    UiBlockerUtility.Block("Fetching track data...");
+                }
                 var album = await App.Locator.Spotify.GetAlbum(track.Album.Id);
 
-                var result = await SaveTrackAsync(track, album, false, false);
+                UiBlockerUtility.Unblock();
+                var result = await SaveTrackAsync(track, album, false, false, manualMatch);
 
                 handle.Data.Add("SavingError", result.ToString());
                 return result;
@@ -423,7 +431,8 @@ namespace Audiotica
             SimpleTrack track, 
             FullAlbum album, 
             bool showFindingMessage = true, 
-            bool trackTime = true)
+            bool trackTime = true,
+            bool manualMatch = false)
         {
             var handle = Insights.TrackTime(
                 "Save Song", 
@@ -441,12 +450,12 @@ namespace Audiotica
                 handle.Start();
             }
 
-            if (showFindingMessage)
+            if (showFindingMessage && !manualMatch)
             {
                 CurtainPrompt.Show("SongSavingFindingMp3".FromLanguageResource(), track.Name);
             }
 
-            var result = await _SaveTrackAsync(track, album);
+            var result = await _SaveTrackAsync(track, album, manualMatch: manualMatch);
             ShowResults(result, track.Name);
 
             if (trackTime)
@@ -967,7 +976,7 @@ namespace Audiotica
         private static async Task<SavingError> _SaveTrackAsync(
             SimpleTrack track, 
             FullAlbum album, 
-            bool onFinishDownloadArtwork = true)
+            bool onFinishDownloadArtwork = true, bool manualMatch = false)
         {
             var alreadySaving = SpotifySavingTracks.FirstOrDefault(p => p == track.Id) != null;
 
@@ -989,14 +998,17 @@ namespace Audiotica
                 App.Locator.SqlService.BeginTransaction();
             }
 
-            var result = await SpotifyHelper.SaveTrackAsync(track, album);
+            var result = await SpotifyHelper.SaveTrackAsync(track, album, manualMatch);
 
             if (startTransaction)
             {
                 App.Locator.SqlService.Commit();
             }
 
-            ShowErrorResults(result, track.Name);
+            if (result != SavingError.NoMatch || !manualMatch)
+            {
+                ShowErrorResults(result, track.Name);
+            }
 
             SpotifySavingTracks.Remove(track.Id);
 

@@ -132,12 +132,18 @@
     </Compile>
     <Compile Include="PlayerViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SpotifyTrackViewer.xaml.cs">
+      <DependentUpon>SpotifyTrackViewer.xaml</DependentUpon>
+    </Compile>
     <Compile Include="StatusBarHelper.cs" />
     <Compile Include="View\CollectionStatisticsPage.xaml.cs">
       <DependentUpon>CollectionStatisticsPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\FirstRunPage.xaml.cs">
       <DependentUpon>FirstRunPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\ManualMatchPage.xaml.cs">
+      <DependentUpon>ManualMatchPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\RestorePage.xaml.cs">
       <DependentUpon>RestorePage.xaml</DependentUpon>
@@ -254,11 +260,19 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="SpotifyTrackViewer.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\CollectionStatisticsPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\FirstRunPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\ManualMatchPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

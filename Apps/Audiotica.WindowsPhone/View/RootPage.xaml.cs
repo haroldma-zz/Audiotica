@@ -30,6 +30,7 @@ namespace Audiotica.View
             App.Navigator.AddPage(new SpotifyAlbumPage());
             App.Navigator.AddPage(new SpotifyArtistPage());
             App.Navigator.AddPage(new SearchPage());
+            App.Navigator.AddPage(new ManualMatchPage());
             App.Navigator.AddPage(new SettingsPage());
             App.Navigator.AddPage(new ApplicationPage());
             App.Navigator.AddPage(new PlayerPage());

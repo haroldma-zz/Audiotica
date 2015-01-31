@@ -47,6 +47,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)UiBlockerUtility.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModel\AudioticaCloudViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModel\CollectionStatisticsViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModel\ManualMatchViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModel\SpotifyArtistViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModel\SpotifyAlbumViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModel\AlbumViewModel.cs" />

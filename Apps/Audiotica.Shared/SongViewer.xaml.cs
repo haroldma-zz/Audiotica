@@ -43,7 +43,7 @@ namespace Audiotica
         }
 
         /// <summary> 
-        /// Visualize the Title by updating the TextBlock for Title and setting Opacity 
+        /// Visualize the Name by updating the TextBlock for Name and setting Opacity 
         /// to 1. 
         /// </summary> 
         public void ShowTitle()
