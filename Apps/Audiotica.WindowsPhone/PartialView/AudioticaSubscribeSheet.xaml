@@ -38,6 +38,7 @@
                     </TextBox.InputScope>
                 </TextBox>
                 <TextBox x:Name="CardSecurityCode" Header="Card Security Code (CVC)" PlaceholderText="123" />
+                <TextBox x:Name="CouponCode" Header="Coupon" PlaceholderText="SAVE10" />
                 <StackPanel Orientation="Horizontal">
                     <ComboBox x:Name="ExpMonthBox" PlaceholderText="01" Header="Expiration Month"/>
                     <ComboBox x:Name="ExpYearBox" Header="Expiration Year" PlaceholderText="2020" Margin="20,0,0,0"/>
@@ -47,7 +48,6 @@
                     <x:String>Biyearly ($9.00)</x:String>
                     <x:String>Yearly ($12.00)</x:String>
                 </ComboBox>
-                <TextBlock FontSize="20" TextWrapping="Wrap" Text="Your credit card won't be charged until the end of your 7 day trial.  To cancel contact help@audiotica.fm" Margin="0,10,0,0" />
                 <Button Content="Start Trial" HorizontalAlignment="Stretch" Margin="0,0,0,20" Click="Button_Click" />
             </StackPanel>
         </ScrollViewer>

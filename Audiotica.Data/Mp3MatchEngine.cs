@@ -1,11 +1,14 @@
 ﻿#region
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
+using Audiotica.Core.Utils;
 using Audiotica.Core.Utils.Interfaces;
 using Audiotica.Data.Model;
+using Audiotica.Data.Model.AudioticaCloud;
+using Audiotica.Data.Service.Interfaces;
 using Audiotica.Data.Service.RunTime;
 
 #endregion
@@ -31,18 +34,21 @@ namespace Audiotica.Data
 
     public class Mp3MatchEngine
     {
+        private readonly IAudioticaService audioticaService;
+        private readonly INotificationManager notificationManager;
+
         private readonly Mp3Provider[] providers =
         {
              Mp3Provider.Netease, Mp3Provider.Mp3Truck, Mp3Provider.Mp3Clan, Mp3Provider.Mp3Skull, 
              Mp3Provider.Meile, Mp3Provider.SoundCloud
-
-            // Mp3Provider.YouTube <- links expire, not good for streaming
         };
 
         private readonly Mp3SearchService service;
 
-        public Mp3MatchEngine(IAppSettingsHelper settingsHelper)
+        public Mp3MatchEngine(IAppSettingsHelper settingsHelper, IAudioticaService audioticaService, INotificationManager notificationManager)
         {
+            this.audioticaService = audioticaService;
+            this.notificationManager = notificationManager;
             this.service = new Mp3SearchService(settingsHelper);
         }
 
@@ -64,6 +70,19 @@ namespace Audiotica.Data
                 .Replace("- ep version", string.Empty)
                 .Replace("- deluxe edition", string.Empty)
                 .Trim();
+
+            if (audioticaService.IsAuthenticated && audioticaService.CurrentUser.Subscription != SubscriptionType.None)
+            {
+                var matchResp = await audioticaService.GetMatchesAsync(title, artist);
+
+                if (matchResp.Success && matchResp.Data != null && matchResp.Data.Count > 0)
+                {
+                    return matchResp.Data.FirstOrDefault().AudioUrl;
+                }
+                
+                notificationManager.ShowError("Problem with Audiotica Cloud \"{0}\", finding mp3 locally.", matchResp.Message ?? "unknown");
+            }
+
 
             var currentProvider = 0;
             string url = null;
@@ -92,9 +111,6 @@ namespace Audiotica.Data
             {
                 case Mp3Provider.Netease:
                     webSongs = await this.service.SearchNetease(title, artist, album).ConfigureAwait(false);
-                    break;
-                case Mp3Provider.YouTube:
-                    webSongs = await this.service.SearchYoutube(title, artist, album).ConfigureAwait(false);
                     break;
                 case Mp3Provider.Mp3Clan:
                     webSongs = await this.service.SearchMp3Clan(title, artist, album).ConfigureAwait(false);

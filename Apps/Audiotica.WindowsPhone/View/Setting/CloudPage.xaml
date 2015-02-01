@@ -13,6 +13,8 @@
     <Grid>
         <Grid.Resources>
             <audiotica:AudioticaSubscriptionVisibilityConverter x:Name="NoneSubscriptionVisibilityConverter" SubscriptionType="None" />
+            <audiotica:AudioticaSubscriptionVisibilityConverter x:Name="HideIfCancelledVisibilityConverter" SubscriptionStatus="Canceled" IsOpposite="True" />
+            <audiotica:AudioticaSubscriptionVisibilityConverter x:Name="ShowIfCancelledVisibilityConverter" SubscriptionStatus="Canceled" />
         </Grid.Resources>
         <Grid.Background>
             <ImageBrush ImageSource="/Assets/ListeningToMusic.jpg" Stretch="UniformToFill" Opacity=".25" />
@@ -55,12 +57,18 @@
                             <TextBlock Text="{Binding Service.CurrentUser.Email}" FontSize="26" />
                             <TextBlock Text="Membership" Style="{StaticResource SubtleTextBlockStyle}" Margin="0,20,0,0" />
                             <TextBlock FontSize="26" Style="{StaticResource SubtleTextBlockStyle}" Text="{Binding Service.CurrentUser.Subscription}" />
-                            <StackPanel Visibility="{Binding Service.CurrentUser.Subscription, Converter={StaticResource NoneSubscriptionVisibilityConverter}}">
-                                <TextBlock FontSize="26" Text="To take advantage of the Audiotica Cloud you'll need a subscription." TextWrapping="Wrap" />
-                                <Button Command="{Binding SubscribeCommand}" Content="Get started!" HorizontalAlignment="Stretch" />
-                            </StackPanel>
+                            <Grid Visibility="{Binding Service.CurrentUser.Subscription, Converter={StaticResource NoneSubscriptionVisibilityConverter}}">
+                                <StackPanel Visibility="{Binding Service.CurrentUser.SubscriptionStatus, Converter={StaticResource HideIfCancelledVisibilityConverter}}">
+                                    <TextBlock FontSize="26"
+                                               Text="To take advantage of the Audiotica Cloud you'll need a subscription.  Start now and get a 7 day trial at no charge."
+                                               TextWrapping="Wrap" />
+                                    <Button Command="{Binding SubscribeCommand}" Content="Get started!"
+                                            HorizontalAlignment="Stretch" />
+                                </StackPanel>
+                                <TextBlock TextWrapping="Wrap" Text="Your subscription was cancelled, to reactivate it just email help@audiotica.fm" Visibility="{Binding Service.CurrentUser.SubscriptionStatus, Converter={StaticResource ShowIfCancelledVisibilityConverter}}" FontSize="26" />
+                            </Grid>
                         </StackPanel>
-                        <Button Foreground="Red" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Content="Logout" />
+                        <Button Foreground="Red" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Content="Logout" Command="{Binding LogoutCommand}" />
                     </Grid>
                 </Grid>
             </ScrollViewer>

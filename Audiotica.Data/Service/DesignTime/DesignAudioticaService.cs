@@ -14,12 +14,12 @@ namespace Audiotica.Data.Service.DesignTime
     {
         public AudioticaUser CurrentUser
         {
-            get { return new AudioticaUser() { Email = "hello@audiotica.fm", Username = "ILoveAudiotica6" }; }
+            get { return new AudioticaUser() { Email = "hello@audiotica.fm", Username = "ILoveAudiotica6"}; }
         }
 
         public bool IsAuthenticated
         {
-            get { return false; }
+            get { return true; }
         }
 
         public HttpClient CreateHttpClient()

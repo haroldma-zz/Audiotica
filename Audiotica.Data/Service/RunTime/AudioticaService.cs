@@ -23,11 +23,11 @@ namespace Audiotica.Data.Service.RunTime
         private readonly ICredentialHelper credentialHelper;
         private readonly IAppSettingsHelper appSettingsHelper;
 #if DEBUG
-        private const string BaseApiPath = "http://localhost:48065/api/";
-        private const string AppToken = "LOCALTESTING";
+        public const string BaseApiPath = "http://localhost:48065/api/";
+        public const string AppToken = "LOCALTESTING";
 #else
-        private const string BaseApiPath = "https://audiotica-cloud.azure-mobile.net/api/";
-        private const string AppToken = "AypzKLKRIDPGkXXzCGYGqjJNliXTwp74";
+        public const string BaseApiPath = "https://audiotica-cloud.azure-mobile.net/api/";
+        public const string AppToken = "AypzKLKRIDPGkXXzCGYGqjJNliXTwp74";
 #endif
 
         private const string UsersPath = BaseApiPath + "users";

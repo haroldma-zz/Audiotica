@@ -158,7 +158,7 @@ namespace Audiotica.PartialView
                 }
 
                 UiBlockerUtility.Block("Subscribing...");
-                var result = await App.Locator.AudioticaService.SubscribeAsync(SubscriptionType.Silver, term, card);
+                var result = await App.Locator.AudioticaService.SubscribeAsync(SubscriptionType.Silver, term, card, CouponCode.Text.Trim());
                 UiBlockerUtility.Unblock();
 
                 if (result.Success)

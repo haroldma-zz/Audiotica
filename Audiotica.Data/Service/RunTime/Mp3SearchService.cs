@@ -462,80 +462,6 @@ namespace Audiotica.Data.Service.RunTime
             }
         }
 
-        public async Task<List<WebSong>> SearchYoutube(string title, string artist, string album = null, int limit = 10, bool checkAllLinks = false)
-        {
-            var youtubeService =
-                new YouTubeService(
-                    new BaseClientService.Initializer { ApiKey = ApiKeys.YoutubeId, ApplicationName = "Audiotica" });
-            youtubeService.HttpClient.DefaultRequestHeaders.Referrer = new Uri("http://audiotica.fm");
-
-            var searchListRequest = youtubeService.Search.List("snippet");
-            searchListRequest.Q = this.CreateQuery(title, artist, album, false) + " (Audio)";
-            searchListRequest.MaxResults = limit;
-
-            try
-            {
-                // Call the search.list method to retrieve results matching the specified query term.
-                var searchListResponse = await searchListRequest.ExecuteAsync().ConfigureAwait(false);
-
-                var songs = new List<WebSong>();
-
-                foreach (var vid in from searchResult in searchListResponse.Items
-                                    where searchResult.Id.Kind == "youtube#video"
-                                    select new WebSong(searchResult))
-                {
-                    using (var client = new HttpClient())
-                    {
-                        var resp =
-                            await
-                            client.GetAsync(
-                                string.Format(
-                                    "http://www.youtube-mp3.org/a/itemInfo/?video_id={0}&ac=www&t=grp&r=1419628947067&s=139194", 
-                                    vid.Id));
-                        if (!resp.IsSuccessStatusCode)
-                        {
-                            continue;
-                        }
-
-                        var json = await resp.Content.ReadAsStringAsync();
-                        json = json.Replace(";", string.Empty).Replace("info = ", string.Empty);
-
-                        // must be a valid json to continue
-                        if (!json.StartsWith("{") || !json.EndsWith("}"))
-                        {
-                            continue;
-                        }
-
-                        var o = JToken.Parse(json);
-
-                        if (o.Value<string>("status") != "serving")
-                        {
-                            continue;
-                        }
-
-                        var length = o.Value<string>("length");
-                        if (!string.IsNullOrEmpty(length))
-                        {
-                            vid.Duration = TimeSpan.FromMinutes(int.Parse(length));
-                        }
-
-                        vid.AudioUrl =
-                            string.Format(
-                                "http://www.youtube-mp3.org/get?ab=128&video_id={0}&h={1}&r=1419629380530.1463092791&s=36098", 
-                                vid.Id, 
-                                o.Value<string>("h"));
-                        songs.Add(vid);
-                    }
-                }
-
-                return await this.IdentifyMatches(songs, title, artist, checkAllLinks);
-            }
-            catch
-            {
-                return null;
-            }
-        }
-
         private string CreateQuery(string title, string artist, string album, bool urlEncode = true)
         {
             var query = ((title + " " + artist).Trim() + album).Trim();
@@ -689,6 +615,11 @@ namespace Audiotica.Data.Service.RunTime
                             new HttpRequestMessage(HttpMethod.Head, new Uri(song.AudioUrl)), 
                             HttpCompletionOption.ResponseHeadersRead);
                     resp.EnsureSuccessStatusCode();
+
+                    if (!resp.Content.Headers.ContentType.MediaType.Contains("audio"))
+                    {
+                        return false;
+                    }
 
                     if (song.ByteSize.Equals(0))
                     {

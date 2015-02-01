@@ -1,6 +1,5 @@
 ﻿using Audiotica.Core.WinRt.Common;
 using Audiotica.Data.Service.Interfaces;
-using Audiotica.Data.Service.RunTime;
 using Audiotica.PartialView;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
@@ -15,22 +14,20 @@ namespace Audiotica.ViewModel
             SignInCommand = new RelayCommand(SignInExecute);
             SignUpCommand = new RelayCommand(SignUpExecute);
             SubscribeCommand = new RelayCommand(SubscribeExecute);
+            LogoutCommand = new RelayCommand(LogoutExecute);
         }
 
-        private async void SubscribeExecute()
-        {
-            var subscribeSheet = new AudioticaSubscribeSheet();
-            var success = await ModalSheetUtility.ShowAsync(subscribeSheet);
-
-            if (success)
-                CurtainPrompt.Show("Welcome to the cloud club!");
-        }
-
-        public RelayCommand SubscribeCommand { get; set; }
-
+        public RelayCommand LogoutCommand { get; set; }
         public IAudioticaService Service { get; private set; }
         public RelayCommand SignInCommand { get; set; }
         public RelayCommand SignUpCommand { get; set; }
+        public RelayCommand SubscribeCommand { get; set; }
+
+        private void LogoutExecute()
+        {
+            Service.Logout();
+            CurtainPrompt.Show("Goodbye!");
+        }
 
         private async void SignInExecute()
         {
@@ -48,6 +45,15 @@ namespace Audiotica.ViewModel
 
             if (success)
                 CurtainPrompt.Show("Welcome!");
+        }
+
+        private async void SubscribeExecute()
+        {
+            var subscribeSheet = new AudioticaSubscribeSheet();
+            var success = await ModalSheetUtility.ShowAsync(subscribeSheet);
+
+            if (success)
+                CurtainPrompt.Show("Welcome to the cloud club!");
         }
     }
 }
