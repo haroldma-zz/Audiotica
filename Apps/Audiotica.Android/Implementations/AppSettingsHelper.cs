@@ -91,7 +91,7 @@ namespace Audiotica.Android.Implementations
                 editor.PutInt(key, (int) value);
             else if (type == typeof (long))
                 editor.PutLong(key, (long) value);
-            else if (type == typeof (float))
+            else if (type == typeof(float) || type == typeof(double))
                 editor.PutFloat(key, (float) value);
             else if (type == typeof (bool))
                 editor.PutBoolean(key, (bool) value);

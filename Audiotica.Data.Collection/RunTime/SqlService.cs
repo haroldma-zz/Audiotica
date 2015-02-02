@@ -14,11 +14,13 @@ namespace Audiotica.Data.Collection.RunTime
 {
     public class SqlService : ISqlService
     {
-        private readonly SqlServiceConfig config;
+        private readonly SqlServiceConfig _config;
+
+        private bool _isInit;
 
         public SqlService(SqlServiceConfig config)
         {
-            this.config = config;
+            this._config = config;
         }
 
         public SQLiteConnection DbConnection { get; set; }
@@ -26,33 +28,42 @@ namespace Audiotica.Data.Collection.RunTime
         public void Dispose()
         {
             this.DbConnection.Dispose();
+            this._isInit = false;
             GC.Collect();
         }
 
         public void Initialize(bool walMode = true, bool readOnlyMode = false)
         {
+            if (this._isInit)
+            {
+                return;
+            }
+
             var flags = SQLiteOpenFlags.ReadWrite | SQLiteOpenFlags.Create;
             if (readOnlyMode)
             {
                 flags = SQLiteOpenFlags.ReadOnly;
             }
 
-            this.DbConnection = new SQLiteConnection(this.config.Path, flags);
+            this.DbConnection = new SQLiteConnection(this._config.Path, flags);
 
             // using wal so the player and app can access the db without worrying about it being locked
             this.DbConnection.ExecuteScalar<string>("PRAGMA journal_mode = " + (walMode ? "WAL" : "DELETE"));
 
             var sqlVersion = this.DbConnection.ExecuteScalar<int>("PRAGMA user_version");
-            if (sqlVersion == this.config.CurrentVersion)
+
+            this._isInit = true;
+
+            if (sqlVersion == this._config.CurrentVersion)
             {
                 return;
             }
 
-            if (this.config.OnUpdate != null)
+            if (this._config.OnUpdate != null)
             {
                 try
                 {
-                    this.config.OnUpdate(this.DbConnection, sqlVersion);
+                    this._config.OnUpdate(this.DbConnection, sqlVersion);
                 }
                 catch (Exception exception)
                 {
@@ -198,10 +209,10 @@ namespace Audiotica.Data.Collection.RunTime
         {
             return Task.Run(
                 () =>
-                    {
-                        this.DbConnection.DeleteAll<T>();
-                        this.DbConnection.Execute("DELETE FROM sqlite_sequence  WHERE name = '" + typeof(T).Name + "'");
-                    });
+                {
+                    this.DbConnection.DeleteAll<T>();
+                    this.DbConnection.Execute("DELETE FROM sqlite_sequence  WHERE name = '" + typeof(T).Name + "'");
+                });
         }
 
         public Task DeleteWhereAsync(BaseEntry entry)
@@ -233,12 +244,12 @@ namespace Audiotica.Data.Collection.RunTime
 
         private void CreateTablesIfNotExists()
         {
-            foreach (var type in this.config.Tables)
+            foreach (var type in this._config.Tables)
             {
                 this.DbConnection.CreateTable(type);
             }
 
-            this.UpdateDbVersion(this.config.CurrentVersion);
+            this.UpdateDbVersion(this._config.CurrentVersion);
         }
 
         private void UpdateDbVersion(double version)
