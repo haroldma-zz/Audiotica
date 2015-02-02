@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Audiotica.Core.Utils;
 using Audiotica.Core.Utils.Interfaces;
@@ -79,8 +80,10 @@ namespace Audiotica.Data
                 {
                     return matchResp.Data.FirstOrDefault().AudioUrl;
                 }
-                
-                notificationManager.ShowError("Problem with Audiotica Cloud \"{0}\", finding mp3 locally.", matchResp.Message ?? "unknown");
+
+                if (matchResp.StatusCode != HttpStatusCode.Unauthorized)
+                    notificationManager.ShowError("Problem with Audiotica Cloud \"{0}\", finding mp3 locally.",
+                        matchResp.Message ?? "Unknown");
             }
 
 

@@ -22,7 +22,7 @@ namespace Audiotica.Data.Service.RunTime
 {
     public class AudioticaService : ObservableObject, IAudioticaService
     {
-#if DEBUG_WEB
+#if !DEBUG_WEB
         private const string BaseApiPath = "http://localhost:48065/api/";
         private const string AppToken = "LOCALTESTING";
 #else
@@ -42,6 +42,8 @@ namespace Audiotica.Data.Service.RunTime
         private readonly ICredentialHelper credentialHelper;
 
         private readonly IAppSettingsHelper appSettingsHelper;
+        private readonly IDispatcherHelper _dispatcherHelper;
+        private readonly INotificationManager _notificationManager;
 
         private string authenticationToken;
 
@@ -49,10 +51,12 @@ namespace Audiotica.Data.Service.RunTime
 
         private AudioticaUser currentUser;
 
-        public AudioticaService(ICredentialHelper credentialHelper, IAppSettingsHelper appSettingsHelper)
+        public AudioticaService(ICredentialHelper credentialHelper, IAppSettingsHelper appSettingsHelper, IDispatcherHelper dispatcherHelper, INotificationManager notificationManager)
         {
             this.credentialHelper = credentialHelper;
             this.appSettingsHelper = appSettingsHelper;
+            _dispatcherHelper = dispatcherHelper;
+            _notificationManager = notificationManager;
 
             var cred = this.credentialHelper.GetCredentials("AudioticaCloud");
             if (cred == null)
@@ -158,6 +162,12 @@ namespace Audiotica.Data.Service.RunTime
             this.Logout();
 
             var resp = await this.LoginAsync(data);
+
+            if (!resp.Success && resp.Message != null && resp.Message.Contains("expired"))
+            {
+                await _dispatcherHelper.RunAsync(() => _notificationManager.ShowError("Please relogin to the Audiotica Cloud."));
+            }
+
             return resp.Success;
         }
 
@@ -228,12 +238,15 @@ namespace Audiotica.Data.Service.RunTime
         private void SaveLoginState(BaseAudioticaResponse<LoginData> resp)
         {
             this.authenticationToken = resp.Data.AuthenticationToken;
-            this.CurrentUser = resp.Data.User;
+            _dispatcherHelper.RunAsync(() => this.CurrentUser = resp.Data.User);
 
-            this.refreshToken = resp.Data.RefreshToken;
+            if (!string.IsNullOrEmpty(resp.Data.RefreshToken))
+            {
+                this.refreshToken = resp.Data.RefreshToken;
+                this.credentialHelper.SaveCredentials("AudioticaCloudRefreshToken", resp.Data.User.Id, this.refreshToken);
+            }
             this.appSettingsHelper.WriteAsJson("AudioticaCloudUser", this.CurrentUser);
             this.credentialHelper.SaveCredentials("AudioticaCloud", resp.Data.User.Id, resp.Data.AuthenticationToken);
-            this.credentialHelper.SaveCredentials("AudioticaCloudRefreshToken", resp.Data.User.Id, this.refreshToken);
             this.RaisePropertyChanged(() => this.IsAuthenticated);
         }
 
@@ -305,12 +318,11 @@ namespace Audiotica.Data.Service.RunTime
             planId += "_" + timeFrame.ToString().ToLower();
             var url = string.Format(SubscribePath, planId, coupon);
 
-            var resp = await this.PostAsync<object>(url, creditCardData);
+            var resp = await this.PostAsync<LoginData>(url, creditCardData);
 
             if (resp.Success)
             {
-                // update the subscription details
-                await this.GetProfileAsync();
+                SaveLoginState(resp);
             }
 
             return resp;
