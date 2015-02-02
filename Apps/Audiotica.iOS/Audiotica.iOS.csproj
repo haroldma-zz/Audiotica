@@ -161,6 +161,24 @@
       <Link>Resources\MissingArtwork.png</Link>
     </BundleResource>
     <Content Include="Entitlements.plist" />
+    <BundleResource Include="Resources\ArtistsIcon.png" />
+    <BundleResource Include="Resources\ArtistsIcon%402.png" />
+    <BundleResource Include="Resources\ArtistsIcon%403.png" />
+    <BundleResource Include="Resources\AlbumsIcon.png" />
+    <BundleResource Include="Resources\AlbumsIcon%402x.png" />
+    <BundleResource Include="Resources\AlbumsIcon%403x.png" />
+    <BundleResource Include="Resources\SongsIcon%403.png" />
+    <BundleResource Include="Resources\SongsIcon.png" />
+    <BundleResource Include="Resources\SongsIcon%402.png" />
+    <BundleResource Include="Resources\MoreIcon.png" />
+    <BundleResource Include="Resources\MoreIcon%402.png" />
+    <BundleResource Include="Resources\MoreIcon%403.png" />
+    <BundleResource Include="Resources\PlaylistsIcon%403.png" />
+    <BundleResource Include="Resources\PlaylistsIcon.png" />
+    <BundleResource Include="Resources\PlaylistsIcon%402.png" />
+    <BundleResource Include="Resources\TopChartsIcon%403.png" />
+    <BundleResource Include="Resources\TopChartsIcon.png" />
+    <BundleResource Include="Resources\TopChartsIcon%402.png" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Audiotica.Core\Audiotica.Core.csproj">

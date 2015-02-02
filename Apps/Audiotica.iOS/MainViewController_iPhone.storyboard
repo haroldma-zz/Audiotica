@@ -15,8 +15,8 @@
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                     </tabBar>
                     <connections>
-                        <segue id="198" destination="29" kind="relationship" relationship="viewControllers"/>
-                        <segue id="391" destination="297" kind="relationship" relationship="viewControllers"/>
+                        <segue id="601" destination="29" kind="relationship" relationship="viewControllers"/>
+                        <segue id="847" destination="297" kind="relationship" relationship="viewControllers"/>
                     </connections>
                 </tabBarController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="16" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -45,12 +45,12 @@
                             <outlet property="delegate" destination="29" id="32"/>
                         </connections>
                     </tableView>
-                    <tabBarItem key="tabBarItem" title="Songs" id="70"/>
+                    <tabBarItem key="tabBarItem" title="Music" id="70" image="SongsIcon.png"/>
                     <simulatedTabBarMetrics key="simulatedBottomBarMetrics"/>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="35" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2255" y="279"/>
+            <point key="canvasLocation" x="1815" y="1182"/>
         </scene>
         <scene sceneID="81">
             <objects>
@@ -98,6 +98,7 @@
                             <outlet property="dataSource" destination="82" id="84"/>
                             <outlet property="delegate" destination="82" id="85"/>
                         </connections>
+                        <color key="backgroundColor" colorSpace="calibratedRGB" red="1" green="1" blue="1" alpha="1"/>
                     </collectionView>
                     <navigationItem title="Random Top 20" id="341" key="navigationItem">
                         <barButtonItem title="Refresh" id="398" translatesAutoresizingMaskIntoConstraints="NO" key="rightBarButtonItem">
@@ -108,6 +109,7 @@
                     <connections>
                         <outlet property="RefreshButton" destination="398" id="name-outlet-398"/>
                     </connections>
+                    <tabBarItem key="tabBarItem" title="Item" id="762"/>
                 </collectionViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="88" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -120,14 +122,101 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
                     </navigationBar>
                     <connections>
-                        <segue id="342" destination="82" kind="relationship" relationship="rootViewController"/>
+                        <segue id="814" destination="82" kind="relationship" relationship="rootViewController"/>
                     </connections>
-                    <tabBarItem key="tabBarItem" id="390" systemItem="featured"/>
+                    <tabBarItem key="tabBarItem" id="390" title="Spotlight" image="TopChartsIcon.png"/>
                     <simulatedTabBarMetrics key="simulatedBottomBarMetrics"/>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="301" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1175" y="132"/>
+        </scene>
+        <scene sceneID="683">
+            <objects>
+                <tableViewController id="684" sceneMemberID="viewController">
+                    <tableView key="view" opaque="NO" clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="685">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <prototypes>
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" id="688">
+                                <rect key="frame" x="0.0" y="22" width="320" height="44"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="688" id="689">
+                                    <rect key="frame" x="0.0" y="0.0" width="320" height="43.5"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                </tableViewCellContentView>
+                            </tableViewCell>
+                        </prototypes>
+                        <connections>
+                            <outlet property="dataSource" destination="684" id="686"/>
+                            <outlet property="delegate" destination="684" id="687"/>
+                        </connections>
+                    </tableView>
+                    <tabBarItem key="tabBarItem" title="Playlists" id="721" image="PlaylistsIcon.png"/>
+                    <simulatedTabBarMetrics key="simulatedBottomBarMetrics"/>
+                </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="690" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="3399" y="1167"/>
+        </scene>
+        <scene sceneID="849">
+            <objects>
+                <tableViewController id="850" sceneMemberID="viewController">
+                    <tableView key="view" opaque="NO" clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="851">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <prototypes>
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" id="854">
+                                <rect key="frame" x="0.0" y="22" width="320" height="44"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="854" id="855">
+                                    <rect key="frame" x="0.0" y="0.0" width="320" height="43.5"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                </tableViewCellContentView>
+                            </tableViewCell>
+                        </prototypes>
+                        <connections>
+                            <outlet property="dataSource" destination="850" id="852"/>
+                            <outlet property="delegate" destination="850" id="853"/>
+                        </connections>
+                    </tableView>
+                    <tabBarItem key="tabBarItem" id="904" systemItem="search"/>
+                    <simulatedTabBarMetrics key="simulatedBottomBarMetrics"/>
+                </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="856" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="3987" y="1150"/>
+        </scene>
+        <scene sceneID="858">
+            <objects>
+                <tableViewController id="859" sceneMemberID="viewController">
+                    <tableView key="view" opaque="NO" clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="860">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <prototypes>
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" id="863">
+                                <rect key="frame" x="0.0" y="22" width="320" height="44"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="863" id="864">
+                                    <rect key="frame" x="0.0" y="0.0" width="320" height="43.5"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                </tableViewCellContentView>
+                            </tableViewCell>
+                        </prototypes>
+                        <connections>
+                            <outlet property="dataSource" destination="859" id="861"/>
+                            <outlet property="delegate" destination="859" id="862"/>
+                        </connections>
+                    </tableView>
+                    <tabBarItem key="tabBarItem" title="More" id="930" image="MoreIcon.png"/>
+                    <simulatedTabBarMetrics key="simulatedBottomBarMetrics"/>
+                </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="865" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="4518" y="1142"/>
         </scene>
     </scenes>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
@@ -141,5 +230,20 @@
         <image name="second.png" width="30" height="30"/>
         <image name="ElectricDaisyCarnival.jpg" width="1905" height="1080"/>
         <image name="MissingArtwork.png" width="378" height="378"/>
+        <image name="music_record-50.png" width="50" height="50"/>
+        <image name="music-50.png" width="50" height="50"/>
+        <image name="SongIcon.png" width="50" height="50"/>
+        <image name="AlbumIcon.png" width="50" height="50"/>
+        <image name="users_three_2.png" width="96" height="96"/>
+        <image name="ArtistIcon.png" width="96" height="96"/>
+        <image name="ArtistIcon!2.png" width="96" height="96"/>
+        <image name="albums.png" width="96" height="96"/>
+        <image name="AlbumsIcon.png" width="32" height="32"/>
+        <image name="ArtistsIcon.png" width="32" height="32"/>
+        <image name="music_note.png" width="64" height="64"/>
+        <image name="SongsIcon.png" width="32" height="32"/>
+        <image name="MoreIcon.png" width="32" height="32"/>
+        <image name="PlaylistsIcon.png" width="32" height="32"/>
+        <image name="TopChartsIcon.png" width="32" height="32"/>
     </resources>
 </document>
