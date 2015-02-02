@@ -105,7 +105,14 @@ namespace Audiotica.Data.Spotify
         #region Util
         public async Task<T> DownloadDataAsync<T>(String url)
         {
-            return await (await DownloadStringAsync(url)).DeserializeAsync<T>();
+            try
+            {
+                return await (await DownloadStringAsync(url)).DeserializeAsync<T>();
+            }
+            catch
+            {
+                return default (T);
+            }
         }
 
         public async Task<string> DownloadStringAsync(String url)

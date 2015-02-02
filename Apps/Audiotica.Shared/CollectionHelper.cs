@@ -327,7 +327,7 @@ namespace Audiotica
             var tileActivationArguments = arguments;
 
             var image = string.IsNullOrEmpty(artwork) ? null : new Uri(AppConstant.LocalStorageAppPath + artwork);
-
+            
             var secondaryTile = new SecondaryTile(
                 id,
                 displayName,

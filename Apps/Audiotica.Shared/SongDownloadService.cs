@@ -38,6 +38,7 @@ namespace Audiotica
             this.service = service;
             this.sqlService = sqlService;
             this.dispatcher = dispatcher;
+            ActiveDownloads = new ObservableCollection<Song>();
         }
 
         #endregion
@@ -248,6 +249,11 @@ namespace Audiotica
         /// </param>
         private async void HandleDownload(Song song, DownloadOperation download, bool start)
         {
+            if (song == null || download == null)
+            {
+                return;
+            }
+
             song.Download = new BackgroundDownload(download);
             this.ActiveDownloads.Add(song);
 
@@ -300,8 +306,6 @@ namespace Audiotica
 
         public async void LoadDownloads()
         {
-            // Create empty collection for the song downloads
-            this.ActiveDownloads = new ObservableCollection<Song>();
             await this.DiscoverActiveDownloadsAsync();
 
             Debug.WriteLine("Loaded downloads.");

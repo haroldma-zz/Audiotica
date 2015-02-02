@@ -31,19 +31,19 @@ namespace Audiotica.Data
 
     public class Mp3MatchEngine
     {
-        private readonly Mp3Provider[] providers =
+        private readonly Mp3Provider[] _providers =
         {
-             Mp3Provider.Netease, Mp3Provider.Mp3Truck, Mp3Provider.Mp3Clan, Mp3Provider.Mp3Skull, 
+             Mp3Provider.Mp3Skull, Mp3Provider.Netease, Mp3Provider.Mp3Truck, Mp3Provider.Mp3Clan, 
              Mp3Provider.Meile, Mp3Provider.SoundCloud
 
             // Mp3Provider.YouTube <- links expire, not good for streaming
         };
 
-        private readonly Mp3SearchService service;
+        private readonly Mp3SearchService _service;
 
         public Mp3MatchEngine(IAppSettingsHelper settingsHelper)
         {
-            this.service = new Mp3SearchService(settingsHelper);
+            this._service = new Mp3SearchService(settingsHelper);
         }
 
         public async Task<string> FindMp3For(string title, string artist)
@@ -68,9 +68,9 @@ namespace Audiotica.Data
             var currentProvider = 0;
             string url = null;
 
-            while (currentProvider < this.providers.Length)
+            while (currentProvider < this._providers.Length)
             {
-                var mp3Provider = this.providers[currentProvider];
+                var mp3Provider = this._providers[currentProvider];
                 url = await this.GetMatch(mp3Provider, title, artist).ConfigureAwait(false);
 
                 if (url != null)
@@ -91,25 +91,25 @@ namespace Audiotica.Data
             switch (provider)
             {
                 case Mp3Provider.Netease:
-                    webSongs = await this.service.SearchNetease(title, artist, album).ConfigureAwait(false);
+                    webSongs = await this._service.SearchNetease(title, artist, album).ConfigureAwait(false);
                     break;
                 case Mp3Provider.YouTube:
-                    webSongs = await this.service.SearchYoutube(title, artist, album).ConfigureAwait(false);
+                    webSongs = await this._service.SearchYoutube(title, artist, album).ConfigureAwait(false);
                     break;
                 case Mp3Provider.Mp3Clan:
-                    webSongs = await this.service.SearchMp3Clan(title, artist, album).ConfigureAwait(false);
+                    webSongs = await this._service.SearchMp3Clan(title, artist, album).ConfigureAwait(false);
                     break;
                 case Mp3Provider.Meile:
-                    webSongs = await this.service.SearchMeile(title, artist, album).ConfigureAwait(false);
+                    webSongs = await this._service.SearchMeile(title, artist, album).ConfigureAwait(false);
                     break;
                 case Mp3Provider.Mp3Truck:
-                    webSongs = await this.service.SearchMp3Truck(title, artist, album).ConfigureAwait(false);
+                    webSongs = await this._service.SearchMp3Truck(title, artist, album).ConfigureAwait(false);
                     break;
                 case Mp3Provider.SoundCloud:
-                    webSongs = await this.service.SearchSoundCloud(title, artist, album).ConfigureAwait(false);
+                    webSongs = await this._service.SearchSoundCloud(title, artist, album).ConfigureAwait(false);
                     break;
                 case Mp3Provider.Mp3Skull:
-                    webSongs = await this.service.SearchMp3Skull(title, artist, album).ConfigureAwait(false);
+                    webSongs = await this._service.SearchMp3Skull(title, artist, album).ConfigureAwait(false);
                     break;
             }
 

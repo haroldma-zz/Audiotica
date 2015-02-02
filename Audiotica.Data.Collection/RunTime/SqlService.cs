@@ -218,6 +218,9 @@ namespace Audiotica.Data.Collection.RunTime
             catch (InvalidOperationException)
             {
             }
+            catch (SQLiteException)
+            {
+            }
         }
 
         public void Commit()
@@ -227,6 +230,9 @@ namespace Audiotica.Data.Collection.RunTime
                 this.DbConnection.Commit();
             }
             catch (InvalidOperationException)
+            {
+            }
+            catch (SQLiteException)
             {
             }
         }

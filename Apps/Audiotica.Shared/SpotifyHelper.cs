@@ -29,18 +29,7 @@ namespace Audiotica
                     return SavingError.AlreadyExists;
                 }
 
-                var fullTrack = track as FullTrack;
-                if (fullTrack == null)
-                {
-                    try
-                    {
-                        fullTrack = await App.Locator.Spotify.GetTrack(track.Id);
-                    }
-                    catch
-                    {
-                        // ignored
-                    }
-                }
+                var fullTrack = track as FullTrack ?? await App.Locator.Spotify.GetTrack(track.Id);
 
                 var artist = fullTrack != null ? fullTrack.Artist : track.Artist;
 
