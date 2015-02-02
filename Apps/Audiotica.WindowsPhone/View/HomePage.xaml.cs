@@ -64,7 +64,8 @@ namespace Audiotica.View
 
         private void AppBarButton_Click_1(object sender, RoutedEventArgs e)
         {
-            Launcher.LaunchUriAsync(new Uri("mailto:help@audiotica.fm"));
+            const string Subject = "Audiotica App";
+            Launcher.LaunchUriAsync(new Uri("mailto:?to=help@zumicts.com&subject=" + Uri.EscapeDataString(Subject)));
         }
 
         private void AppBarButton_Click_2(object sender, RoutedEventArgs e)

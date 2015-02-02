@@ -115,9 +115,6 @@
     <Compile Include="PartialView\AdMediatorBar.xaml.cs">
       <DependentUpon>AdMediatorBar.xaml</DependentUpon>
     </Compile>
-    <Compile Include="PartialView\AudioticaSubscribeSheet.xaml.cs">
-      <DependentUpon>AudioticaSubscribeSheet.xaml</DependentUpon>
-    </Compile>
     <Compile Include="PartialView\EmailSignInSheet.xaml.cs">
       <DependentUpon>EmailSignInSheet.xaml</DependentUpon>
     </Compile>
@@ -156,6 +153,9 @@
     </Compile>
     <Compile Include="View\Setting\CloudPage.xaml.cs">
       <DependentUpon>CloudPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Setting\CloudSubscribePage.xaml.cs">
+      <DependentUpon>CloudSubscribePage.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Setting\LastFmPage.xaml.cs">
       <DependentUpon>LastFmPage.xaml</DependentUpon>
@@ -240,10 +240,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="PartialView\AudioticaSubscribeSheet.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="PartialView\EmailSignInSheet.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -291,6 +287,10 @@
     <Page Include="View\Setting\CloudPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\Setting\CloudSubscribePage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\Setting\LastFmPage.xaml">
       <Generator>MSBuild:Compile</Generator>

@@ -345,7 +345,7 @@ namespace Audiotica
             request.Data.Properties.Title = "Checkout Audiotica!";
             request.Data.Properties.Description = "A sleek and sexy music app for Windows Phone!";
 
-            const string url = "http://www.windowsphone.com/s?appid=c02aae72-99d3-480f-b6d2-3fac2fed08a7";
+            var url = "http://www.windowsphone.com/s?appid=" + CurrentApp.AppId;
             request.Data.SetText(request.Data.Properties.Description + " " + url);
         }
 

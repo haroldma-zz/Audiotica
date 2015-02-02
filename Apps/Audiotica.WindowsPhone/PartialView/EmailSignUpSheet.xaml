@@ -20,7 +20,7 @@
         <Grid Grid.Row="1" Margin="19,9.5,19,0" >
             <StackPanel>
                 <TextBox x:Name="UserBox" PlaceholderText="ILoveAudiotica6" Header="Username" />
-                <TextBox x:Name="EmailBox" PlaceholderText="you@lol.com" Header="Email" />
+                <TextBox x:Name="EmailBox" PlaceholderText="you@lol.com" Header="Email" InputScope="EmailSmtpAddress" />
                 <PasswordBox x:Name="PasswordBox" PlaceholderText="supersecret" Header="Password" />
                 <Button Content="Done" HorizontalAlignment="Stretch" Click="LoginButtonClick" />
             </StackPanel>

@@ -7,11 +7,13 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+
 using Audiotica.Core.Utils;
 using Audiotica.Core.Utils.Interfaces;
 using Audiotica.Data.Model;
 using Audiotica.Data.Model.AudioticaCloud;
 using Audiotica.Data.Service.Interfaces;
+
 using GalaSoft.MvvmLight;
 
 #endregion
@@ -20,22 +22,32 @@ namespace Audiotica.Data.Service.RunTime
 {
     public class AudioticaService : ObservableObject, IAudioticaService
     {
-        private readonly ICredentialHelper credentialHelper;
-        private readonly IAppSettingsHelper appSettingsHelper;
-#if DEBUG
-        public const string BaseApiPath = "http://localhost:48065/api/";
-        public const string AppToken = "LOCALTESTING";
+#if DEBUG_WEB
+        private const string BaseApiPath = "http://localhost:48065/api/";
+        private const string AppToken = "LOCALTESTING";
 #else
-        public const string BaseApiPath = "https://audiotica-cloud.azure-mobile.net/api/";
-        public const string AppToken = "AypzKLKRIDPGkXXzCGYGqjJNliXTwp74";
+        private const string BaseApiPath = "https://audiotica-cloud.azure-mobile.net/api/";
+
+        private const string AppToken = "AypzKLKRIDPGkXXzCGYGqjJNliXTwp74";
 #endif
 
         private const string UsersPath = BaseApiPath + "users";
+
         private const string SubscribePath = UsersPath + "/me/subscribe?planId={0}&coupon={1}";
+
         private const string TokenPath = UsersPath + "/token";
+
         private const string MatchPath = BaseApiPath + "match?title={0}&artist={1}&limit={2}";
 
+        private readonly ICredentialHelper credentialHelper;
+
+        private readonly IAppSettingsHelper appSettingsHelper;
+
         private string authenticationToken;
+
+        private string refreshToken;
+
+        private AudioticaUser currentUser;
 
         public AudioticaService(ICredentialHelper credentialHelper, IAppSettingsHelper appSettingsHelper)
         {
@@ -43,30 +55,44 @@ namespace Audiotica.Data.Service.RunTime
             this.appSettingsHelper = appSettingsHelper;
 
             var cred = this.credentialHelper.GetCredentials("AudioticaCloud");
-            if (cred == null) return;
+            if (cred == null)
+            {
+                return;
+            }
 
-            authenticationToken = cred.GetPassword();
+            this.authenticationToken = cred.GetPassword();
 
-            CurrentUser = this.appSettingsHelper.ReadJsonAs<AudioticaUser>("AudioticaCloudUser");
-            
+            this.CurrentUser = this.appSettingsHelper.ReadJsonAs<AudioticaUser>("AudioticaCloudUser");
+
             var refreshCred = this.credentialHelper.GetCredentials("AudioticaCloudRefreshToken");
 
-            if (refreshCred == null) return;
-            refreshToken = refreshCred.GetPassword();
-        }
+            if (refreshCred == null)
+            {
+                return;
+            }
 
-        private string refreshToken;
-        private AudioticaUser currentUser;
+            this.refreshToken = refreshCred.GetPassword();
+        }
 
         public AudioticaUser CurrentUser
         {
-            get { return currentUser; }
-            private set { Set(ref currentUser, value); }
+            get
+            {
+                return this.currentUser;
+            }
+
+            private set
+            {
+                this.Set(ref this.currentUser, value);
+            }
         }
 
         public bool IsAuthenticated
         {
-            get { return authenticationToken != null; }
+            get
+            {
+                return this.authenticationToken != null;
+            }
         }
 
         public HttpClient CreateHttpClient()
@@ -74,12 +100,16 @@ namespace Audiotica.Data.Service.RunTime
             var httpClient = new HttpClient();
 
             var token = ":" + AppToken;
-            token = authenticationToken ?? Convert.ToBase64String(Encoding.UTF8.GetBytes(token));
+            token = this.authenticationToken ?? Convert.ToBase64String(Encoding.UTF8.GetBytes(token));
 
-            if (authenticationToken != null)
+            if (this.authenticationToken != null)
+            {
                 httpClient.DefaultRequestHeaders.Add("X-ZUMO-AUTH", token);
+            }
             else
+            {
                 httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", token);
+            }
 
             return httpClient;
         }
@@ -88,28 +118,32 @@ namespace Audiotica.Data.Service.RunTime
 
         private async Task<BaseAudioticaResponse<T>> GetAsync<T>(string url)
         {
-            using (var client = CreateHttpClient())
+            using (var client = this.CreateHttpClient())
             {
                 var resp = await client.GetAsync(url).ConfigureAwait(false);
                 var json = await resp.Content.ReadAsStringAsync().ConfigureAwait(false);
-                var httpData = await json.DeserializeAsync<BaseAudioticaResponse<T>>().ConfigureAwait(false) ??
-                               new BaseAudioticaResponse<T>();
+                var httpData = await json.DeserializeAsync<BaseAudioticaResponse<T>>().ConfigureAwait(false)
+                               ?? new BaseAudioticaResponse<T>();
 
                 httpData.StatusCode = resp.StatusCode;
                 httpData.Success = resp.IsSuccessStatusCode;
 
                 if (resp.StatusCode != HttpStatusCode.Unauthorized)
+                {
                     return httpData;
+                }
 
-                if (string.IsNullOrEmpty(refreshToken))
+                if (string.IsNullOrEmpty(this.refreshToken))
+                {
                     return httpData;
+                }
 
                 // token expired, refresh it
-                var success = await RefreshTokenAsync();
+                var success = await this.RefreshTokenAsync();
                 if (success)
                 {
                     // manage to refresh it, repeat the request
-                    return await GetAsync<T>(url);
+                    return await this.GetAsync<T>(url);
                 }
 
                 // failed to refresh the token, return the original error response
@@ -119,47 +153,48 @@ namespace Audiotica.Data.Service.RunTime
 
         private async Task<bool> RefreshTokenAsync()
         {
-            var data = new Dictionary<string, string>
-            {
-                {"RefreshToken", refreshToken}
-            };
+            var data = new Dictionary<string, string> { { "RefreshToken", this.refreshToken } };
 
-            Logout();
+            this.Logout();
 
-            var resp = await LoginAsync(data);
+            var resp = await this.LoginAsync(data);
             return resp.Success;
         }
 
         private async Task<BaseAudioticaResponse> PostAsync(string url, Dictionary<string, string> data)
         {
-            return await PostAsync<object>(url, data).ConfigureAwait(false) as BaseAudioticaResponse;
+            return await this.PostAsync<object>(url, data).ConfigureAwait(false) as BaseAudioticaResponse;
         }
 
         private async Task<BaseAudioticaResponse<T>> PostAsync<T>(string url, Dictionary<string, string> data)
         {
-            using (var client = CreateHttpClient())
+            using (var client = this.CreateHttpClient())
             using (var content = new FormUrlEncodedContent(data))
             {
                 var resp = await client.PostAsync(url, content).ConfigureAwait(false);
                 var json = await resp.Content.ReadAsStringAsync().ConfigureAwait(false);
-                var httpData = await json.DeserializeAsync<BaseAudioticaResponse<T>>().ConfigureAwait(false) ??
-                               new BaseAudioticaResponse<T>();
+                var httpData = await json.DeserializeAsync<BaseAudioticaResponse<T>>().ConfigureAwait(false)
+                               ?? new BaseAudioticaResponse<T>();
 
                 httpData.Success = resp.IsSuccessStatusCode;
                 httpData.StatusCode = resp.StatusCode;
 
                 if (resp.StatusCode != HttpStatusCode.Unauthorized)
+                {
                     return httpData;
+                }
 
-                if (string.IsNullOrEmpty(refreshToken))
+                if (string.IsNullOrEmpty(this.refreshToken))
+                {
                     return httpData;
+                }
 
                 // token expired, refresh it
-                var success = await RefreshTokenAsync();
+                var success = await this.RefreshTokenAsync();
                 if (success)
                 {
                     // manage to refresh it, repeat the request
-                    return await PostAsync<T>(url, data);
+                    return await this.PostAsync<T>(url, data);
                 }
 
                 // failed to refresh the token, return the original error response
@@ -171,93 +206,98 @@ namespace Audiotica.Data.Service.RunTime
 
         public async Task<BaseAudioticaResponse> LoginAsync(string username, string password)
         {
-            var data = new Dictionary<string, string>
-            {
-                {"username", username},
-                {"password", password}
-            };
+            var data = new Dictionary<string, string> { { "username", username }, { "password", password } };
 
-            return await LoginAsync(data);
+            return await this.LoginAsync(data);
         }
 
         private async Task<BaseAudioticaResponse> LoginAsync(Dictionary<string, string> data)
         {
-            var resp = await PostAsync<LoginData>(TokenPath, data);
+            var resp = await this.PostAsync<LoginData>(TokenPath, data);
 
             if (!resp.Success)
+            {
                 return resp;
+            }
 
-            SaveLoginState(resp);
+            this.SaveLoginState(resp);
 
             return resp;
         }
 
         private void SaveLoginState(BaseAudioticaResponse<LoginData> resp)
         {
-            authenticationToken = resp.Data.AuthenticationToken;
-            CurrentUser = resp.Data.User;
+            this.authenticationToken = resp.Data.AuthenticationToken;
+            this.CurrentUser = resp.Data.User;
 
-            refreshToken = resp.Data.RefreshToken;
-            appSettingsHelper.WriteAsJson("AudioticaCloudUser", CurrentUser);
-            credentialHelper.SaveCredentials("AudioticaCloud", resp.Data.User.Id,
-                resp.Data.AuthenticationToken);
-            credentialHelper.SaveCredentials("AudioticaCloudRefreshToken", resp.Data.User.Id,
-                refreshToken);
-            RaisePropertyChanged(() => IsAuthenticated);
+            this.refreshToken = resp.Data.RefreshToken;
+            this.appSettingsHelper.WriteAsJson("AudioticaCloudUser", this.CurrentUser);
+            this.credentialHelper.SaveCredentials("AudioticaCloud", resp.Data.User.Id, resp.Data.AuthenticationToken);
+            this.credentialHelper.SaveCredentials("AudioticaCloudRefreshToken", resp.Data.User.Id, this.refreshToken);
+            this.RaisePropertyChanged(() => this.IsAuthenticated);
         }
 
         public async Task<BaseAudioticaResponse> RegisterAsync(string username, string password, string email)
         {
             var data = new Dictionary<string, string>
             {
-                {"username", username},
-                {"email", email},
-                {"password", password}
+                { "username", username }, 
+                { "email", email }, 
+                { "password", password }
             };
 
-            var resp = await PostAsync<LoginData>(UsersPath, data);
+            var resp = await this.PostAsync<LoginData>(UsersPath, data);
 
             if (!resp.Success)
+            {
                 return resp;
+            }
 
-            SaveLoginState(resp);
+            this.SaveLoginState(resp);
 
             return resp;
         }
 
         public void Logout()
         {
-            authenticationToken = null;
-            refreshToken = null;
-            CurrentUser = null;
-            appSettingsHelper.Write("AudioticaCloudRefreshToken", null);
-            appSettingsHelper.Write("AudioticaCloudUser", null);
-            credentialHelper.DeleteCredentials("AudioticaCloud");
-            RaisePropertyChanged(() => IsAuthenticated);
+            this.authenticationToken = null;
+            this.refreshToken = null;
+            this.CurrentUser = null;
+            this.appSettingsHelper.Write("AudioticaCloudRefreshToken", null);
+            this.appSettingsHelper.Write("AudioticaCloudUser", null);
+            this.credentialHelper.DeleteCredentials("AudioticaCloud");
+            this.RaisePropertyChanged(() => this.IsAuthenticated);
         }
 
         public async Task<BaseAudioticaResponse<AudioticaUser>> GetProfileAsync()
         {
-            var resp = await GetAsync<AudioticaUser>(UsersPath + "/me");
+            var resp = await this.GetAsync<AudioticaUser>(UsersPath + "/me");
 
-            if (!resp.Success) return resp;
+            if (!resp.Success)
+            {
+                return resp;
+            }
 
-            //keping the user object updated
-            CurrentUser = resp.Data;
-            appSettingsHelper.WriteAsJson("AudioticaCloudUser", CurrentUser);
+            // keping the user object updated
+            this.CurrentUser = resp.Data;
+            this.appSettingsHelper.WriteAsJson("AudioticaCloudUser", this.CurrentUser);
 
             return resp;
         }
 
-        public async Task<BaseAudioticaResponse> SubscribeAsync(SubscriptionType plan, SubcriptionTimeFrame timeFrame, AudioticaStripeCard card, string coupon = null)
+        public async Task<BaseAudioticaResponse> SubscribeAsync(
+            SubscriptionType plan, 
+            SubcriptionTimeFrame timeFrame, 
+            AudioticaStripeCard card, 
+            string coupon = null)
         {
             var creditCardData = new Dictionary<string, string>
             {
-                {"name", card.Name},
-                {"number", card.Number},
-                {"expMonth", card.ExpMonth.ToString()},
-                {"expYear", card.ExpYear.ToString()},
-                {"cvc", card.Cvc}
+                { "name", card.Name }, 
+                { "number", card.Number }, 
+                { "expMonth", card.ExpMonth.ToString() }, 
+                { "expYear", card.ExpYear.ToString() }, 
+                { "cvc", card.Cvc }
             };
 
             // plan id and coupon are passed in url query
@@ -265,22 +305,26 @@ namespace Audiotica.Data.Service.RunTime
             planId += "_" + timeFrame.ToString().ToLower();
             var url = string.Format(SubscribePath, planId, coupon);
 
-            var resp = await PostAsync<object>(url, creditCardData);
+            var resp = await this.PostAsync<object>(url, creditCardData);
 
             if (resp.Success)
             {
                 // update the subscription details
-                await GetProfileAsync();
+                await this.GetProfileAsync();
             }
 
             return resp;
         }
 
-        public async Task<BaseAudioticaResponse<List<WebSong>>> GetMatchesAsync(string title, string artist,
-                                                                                int limit = 1)
+        public async Task<BaseAudioticaResponse<List<WebSong>>> GetMatchesAsync(
+            string title, 
+            string artist, 
+            int limit = 1)
         {
-            var resp = await GetAsync<List<WebSong>>(string.Format(MatchPath,
-                Uri.EscapeDataString(title), Uri.EscapeDataString(artist), limit));
+            var resp =
+                await
+                this.GetAsync<List<WebSong>>(
+                    string.Format(MatchPath, Uri.EscapeDataString(title), Uri.EscapeDataString(artist), limit));
             return resp;
         }
     }
