@@ -38,7 +38,7 @@ namespace Audiotica
     /// </summary>
     public sealed partial class App
     {
-        public const bool IsProduction = true;
+        public const bool IsProduction = false;
 
         #region Fields
 
