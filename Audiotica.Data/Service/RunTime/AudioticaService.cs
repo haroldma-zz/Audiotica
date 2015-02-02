@@ -22,7 +22,7 @@ namespace Audiotica.Data.Service.RunTime
 {
     public class AudioticaService : ObservableObject, IAudioticaService
     {
-#if !DEBUG_WEB
+#if DEBUG_WEB
         private const string BaseApiPath = "http://localhost:48065/api/";
         private const string AppToken = "LOCALTESTING";
 #else
@@ -247,7 +247,7 @@ namespace Audiotica.Data.Service.RunTime
             }
             this.appSettingsHelper.WriteAsJson("AudioticaCloudUser", this.CurrentUser);
             this.credentialHelper.SaveCredentials("AudioticaCloud", resp.Data.User.Id, resp.Data.AuthenticationToken);
-            this.RaisePropertyChanged(() => this.IsAuthenticated);
+            _dispatcherHelper.RunAsync(() => this.RaisePropertyChanged(() => this.IsAuthenticated));
         }
 
         public async Task<BaseAudioticaResponse> RegisterAsync(string username, string password, string email)
@@ -275,11 +275,11 @@ namespace Audiotica.Data.Service.RunTime
         {
             this.authenticationToken = null;
             this.refreshToken = null;
-            this.CurrentUser = null;
+            _dispatcherHelper.RunAsync(() =>this.CurrentUser = null);
             this.appSettingsHelper.Write("AudioticaCloudRefreshToken", null);
             this.appSettingsHelper.Write("AudioticaCloudUser", null);
             this.credentialHelper.DeleteCredentials("AudioticaCloud");
-            this.RaisePropertyChanged(() => this.IsAuthenticated);
+            _dispatcherHelper.RunAsync(() =>this.RaisePropertyChanged(() => this.IsAuthenticated));
         }
 
         public async Task<BaseAudioticaResponse<AudioticaUser>> GetProfileAsync()
