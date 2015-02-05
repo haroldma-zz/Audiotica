@@ -182,7 +182,7 @@ namespace Audiotica
 
             try
             {
-                await App.Locator.CollectionService.AddSongAsync(song)
+                await App.Locator.CollectionService.AddSongAsync(song, tags)
                     .ConfigureAwait(false);
                 return SavingError.None;
             }

@@ -397,7 +397,7 @@ namespace Audiotica.Data.Collection.RunTime
             }
         }
 
-        public async Task AddSongAsync(Song song)
+        public async Task AddSongAsync(Song song, Tag tags = null)
         {
             var primaryArtist = (song.Album == null ? song.Artist : song.Album.PrimaryArtist)
                                 ?? new Artist { Name = "Unknown Artist", ProviderId = "autc.unknown" };
@@ -461,6 +461,68 @@ namespace Audiotica.Data.Collection.RunTime
                     song.Album.MediumArtwork = this._missingArtwork;
                     song.Album.SmallArtwork = this._missingArtwork;
                 });
+
+                if (tags != null && tags.Pictures != null && tags.Pictures.Length > 0)
+                {
+                    var albumFilePath = string.Format(this._artworkFilePath, song.Album.Id);
+                    Stream artwork = null;
+
+                    var image = tags.Pictures.FirstOrDefault();
+                    if (image != null)
+                    {
+                        artwork = new MemoryStream(image.Data.Data);
+                    }
+
+                    if (artwork != null)
+                    {
+                        try
+                        {
+                            var file =
+                                await
+                                StorageHelper.CreateFileAsync(
+                                    albumFilePath,
+                                    option: CreationCollisionOption.ReplaceExisting);
+
+                            using (var fileStream = await file.OpenAsync(FileAccess.ReadAndWrite))
+                            {
+                                var bytes = tags.Pictures[0].Data.Data;
+                                await fileStream.WriteAsync(bytes, 0, bytes.Length);
+                                song.Album.HasArtwork = true;
+                                await this._sqlService.UpdateItemAsync(song.Album);
+                            }
+                        }
+                        catch
+                        {
+                            // ignored
+                        }
+                        artwork.Dispose();
+                    }
+
+                    // set it
+                    if (song.Album.HasArtwork)
+                    {
+                        await this._dispatcher.RunAsync(
+                            () =>
+                            {
+                                var path = this._localFilePrefix + albumFilePath;
+
+                                song.Album.Artwork = this._bitmapFactory.CreateImage(new Uri(path));
+
+                                if (this.ScaledImageSize == 0)
+                                {
+                                    return;
+                                }
+
+                                song.Album.Artwork.SetDecodedPixel(this.ScaledImageSize);
+
+                                song.Album.MediumArtwork = this._bitmapFactory.CreateImage(new Uri(path));
+                                song.Album.MediumArtwork.SetDecodedPixel(this.ScaledImageSize / 2);
+
+                                song.Album.SmallArtwork = this._bitmapFactory.CreateImage(new Uri(path));
+                                song.Album.SmallArtwork.SetDecodedPixel(50);
+                            });
+                    }
+                }
             }
 
             song.AlbumId = song.Album.Id;
@@ -477,7 +539,6 @@ namespace Audiotica.Data.Collection.RunTime
                         var index = orderedAlbumSong.IndexOf(song);
                         song.Album.Songs.Insert(index, song);
 
-                        
 
                         var orderedArtistSong = song.Artist.Songs.ToList();
                         orderedArtistSong.Add(song);
@@ -486,7 +547,6 @@ namespace Audiotica.Data.Collection.RunTime
                         index = orderedArtistSong.IndexOf(song);
                         song.Artist.Songs.Insert(index, song);
 
-                        
 
                         #region Order artist album
 
