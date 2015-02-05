@@ -47,6 +47,9 @@ namespace Audiotica.Data.Collection.Model
             }
         }
 
+        [JsonIgnore]
+        public bool NoArtworkFound { get; set; }
+
         [Ignore]
         [JsonIgnore]
         public ObservableCollection<Song> Songs { get; set; }

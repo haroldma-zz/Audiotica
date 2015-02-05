@@ -63,6 +63,9 @@ namespace Audiotica.Data.Collection.Model
             }
         }
 
+        [JsonIgnore]
+        public bool NoArtworkFound { get; set; }
+
         [Ignore]
         [JsonIgnore]
         public IBitmapImage SmallArtwork

@@ -625,7 +625,7 @@ namespace Audiotica
 
             if (missingOnly)
             {
-                artists = artists.Where(p => !p.HasArtwork).ToList();
+                artists = artists.Where(p => !p.HasArtwork && !p.NoArtworkFound).ToList();
             }
 
             var tasks = artists.Select(
@@ -647,6 +647,11 @@ namespace Audiotica
 
                                 if (lastArtist.MainImage == null || lastArtist.MainImage.Largest == null)
                                 {
+                                    artist.HasArtwork = false;
+
+                                    // By setting no artwork found we know not to try again, saving precious data!
+                                    artist.NoArtworkFound = true;
+                                    await App.Locator.SqlService.UpdateItemAsync(artist);
                                     return;
                                 }
 
@@ -699,7 +704,7 @@ namespace Audiotica
 
             if (missingOnly)
             {
-                albums = albums.Where(p => !p.HasArtwork).ToList();
+                albums = albums.Where(p => !p.HasArtwork && !p.NoArtworkFound).ToList();
             }
 
             var tasks = albums.Select(
@@ -725,6 +730,9 @@ namespace Audiotica
 
                                 if (spotifyAlbum == null)
                                 {
+                                    album.HasArtwork = false;
+                                    album.NoArtworkFound = true;
+                                    await App.Locator.SqlService.UpdateItemAsync(album);
                                     return;
                                 }
 
@@ -743,6 +751,9 @@ namespace Audiotica
                                    !album.PrimaryArtist.Name.ToLower().Contains(deezerAlbum.artist.name.ToLower()) ||
                                     deezerAlbum.bigCover == null))
                                 {
+                                    album.HasArtwork = false;
+                                    album.NoArtworkFound = true;
+                                    await App.Locator.SqlService.UpdateItemAsync(album);
                                     return;
                                 }
 
