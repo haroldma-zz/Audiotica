@@ -55,6 +55,7 @@ namespace Audiotica.ViewModel
             }
             else
             {
+                SimpleIoc.Default.Register<IDeezerService, DeezerService>();
                 SimpleIoc.Default.Register<IDispatcherHelper>(() => new PclDispatcherHelper(DispatcherHelper.UIDispatcher));
                 SimpleIoc.Default.Register<IBitmapFactory, PclBitmapFactory>();
 
@@ -100,6 +101,11 @@ namespace Audiotica.ViewModel
             SimpleIoc.Default.Register<SettingsViewModel>();
             SimpleIoc.Default.Register<CollectionStatisticsViewModel>();
             SimpleIoc.Default.Register<ManualMatchViewModel>();
+        }
+
+        public IDeezerService DeezerService
+        {
+            get { return ServiceLocator.Current.GetInstance<IDeezerService>(); }
         }
 
         public IAudioticaService AudioticaService

@@ -454,7 +454,13 @@ namespace Audiotica.Data.Collection.RunTime
             else
             {
                 await this._sqlService.InsertAsync(song.Album);
-                await this._dispatcher.RunAsync(() => this.Albums.Insert(0, song.Album));
+                await this._dispatcher.RunAsync(() =>
+                {
+                    this.Albums.Insert(0, song.Album);
+                    song.Album.Artwork = this._missingArtwork;
+                    song.Album.MediumArtwork = this._missingArtwork;
+                    song.Album.SmallArtwork = this._missingArtwork;
+                });
             }
 
             song.AlbumId = song.Album.Id;
@@ -528,46 +534,6 @@ namespace Audiotica.Data.Collection.RunTime
                     // ignored
                 }
             }
-        }
-
-        private async Task<bool> GetArtworkAsync(string filePath, Stream stream)
-        {
-            try
-            {
-                using (
-                    var fileStream =
-                        await
-                        (await StorageHelper.CreateFileAsync(filePath, option: CreationCollisionOption.ReplaceExisting))
-                            .OpenAsync(FileAccess.ReadAndWrite))
-                {
-                    await stream.CopyToAsync(fileStream);
-                    return true;
-                }
-            }
-            catch
-            {
-                return false;
-            }
-        }
-
-        private async Task<bool> GetArtworkAsync(string filePath, string artworkUrl)
-        {
-            try
-            {
-                using (var client = new HttpClient())
-                {
-                    using (var stream = await client.GetStreamAsync(artworkUrl))
-                    {
-                        return await this.GetArtworkAsync(filePath, stream);
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                Debug.WriteLine("Some shit happened saving the artwork, here: " + e);
-            }
-
-            return false;
         }
 
         #region Playback Queue

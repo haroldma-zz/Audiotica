@@ -45,6 +45,8 @@ namespace Audiotica
 
                 await App.Locator.CollectionService.AddSongAsync(preparedSong.Song)
                     .ConfigureAwait(false);
+
+                CollectionHelper.DownloadAlbumsArtworkAsync();
                 CollectionHelper.DownloadArtistsArtworkAsync();
                 return SavingError.None;
             }

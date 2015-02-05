@@ -19,6 +19,7 @@ using Audiotica.Core.Utils;
 using Audiotica.Core.WinRt;
 using Audiotica.Core.WinRt.Common;
 using Audiotica.Data.Collection.RunTime;
+using Audiotica.Data.Model.AudioticaCloud;
 using Audiotica.View;
 using Audiotica.ViewModel;
 using GalaSoft.MvvmLight.Threading;
@@ -205,22 +206,33 @@ namespace Audiotica
                 if (Locator.AudioticaService.IsAuthenticated)
                 {
                     await Locator.AudioticaService.GetProfileAsync();
-                    var mobileService = new MobileServiceClient("https://audiotica-cloud.azure-mobile.net/",
-                "AypzKLKRIDPGkXXzCGYGqjJNliXTwp74");
-                    mobileService.CurrentUser = new MobileServiceUser(Locator.AudioticaService.CurrentUser.Id)
-                    {
-                        MobileServiceAuthenticationToken = Locator.AudioticaService.AuthenticationToken
-                    };
-                    var sync = new CloudSyncService(mobileService, Locator.CollectionService, Locator.AppSettingsHelper, Locator.SqlService);
 
-                    // always pull before pushing, unless is the first sync
-                    await sync.PullAsync();
-                    await sync.PushAsync();
+                    if (Locator.AudioticaService.CurrentUser.Subscription != SubscriptionType.None)
+                    {
+                        var mobileService = new MobileServiceClient("https://audiotica-cloud.azure-mobile.net/",
+                            "AypzKLKRIDPGkXXzCGYGqjJNliXTwp74")
+                        {
+                            CurrentUser = new MobileServiceUser(Locator.AudioticaService.CurrentUser.Id)
+                            {
+                                MobileServiceAuthenticationToken = Locator.AudioticaService.AuthenticationToken
+                            }
+                        };
+                        var sync = new CloudSyncService(mobileService, Locator.CollectionService,
+                            Locator.AppSettingsHelper, Locator.SqlService);
+
+                        // always pull before pushing
+                        await sync.PullAsync();
+                        await sync.PushAsync();
+                    }
                 }
             }
             catch
             {
             }
+
+            // downloading missing artwork
+            await CollectionHelper.DownloadAlbumsArtworkAsync();
+            await CollectionHelper.DownloadArtistsArtworkAsync();
         }
 
         private int GetScaledImageSize()
@@ -255,10 +267,8 @@ namespace Audiotica
             return scaledImageSize;
         }
 
-        private async void OnUpdate()
+        private void OnUpdate()
         {
-            // download missing artwork for artist
-            await CollectionHelper.DownloadArtistsArtworkAsync();
         }
 
         private void OnVisibleBoundsChanged(ApplicationView sender, object args)

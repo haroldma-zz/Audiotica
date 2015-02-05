@@ -81,6 +81,7 @@ namespace Audiotica.View.Setting
                     handle.Data.Add("Failed", failedCount.ToString());
                 }
             }
+            await CollectionHelper.DownloadAlbumsArtworkAsync();
             await CollectionHelper.DownloadArtistsArtworkAsync();
         }
 

@@ -607,9 +607,15 @@ namespace Audiotica
                     CurtainPrompt.ShowError("EntrySavingError".FromLanguageResource(), album.Name);
                 }
 
+
                 SpotifySavingAlbums.Remove(album.Id);
 
-                DownloadArtistsArtworkAsync();
+                if (collAlbum == null)
+                {
+                    collAlbum = App.Locator.CollectionService.Albums.FirstOrDefault(p => p.ProviderId.Contains(album.Id));
+                    await SaveAlbumImageAsync(collAlbum, album.Images[0].Url);
+                    await DownloadArtistsArtworkAsync();
+                }
             }
         }
 
@@ -685,6 +691,122 @@ namespace Audiotica
                         })).Cast<Task>().ToList();
 
             await Task.WhenAll(tasks);
+        }
+
+        public static async Task DownloadAlbumsArtworkAsync(bool missingOnly = true)
+        {
+            var albums = App.Locator.CollectionService.Albums.ToList();
+
+            if (missingOnly)
+            {
+                albums = albums.Where(p => !p.HasArtwork).ToList();
+            }
+
+            var tasks = albums.Select(
+                album => Task.Factory.StartNew(
+                    async () =>
+                    {
+                        if (string.IsNullOrEmpty(album.Name))
+                        {
+                            return;
+                        }
+
+                        // don't want to retry getting this pic while we're downloading it
+                        album.HasArtwork = true;
+
+                        try
+                        {
+                            string artworkUrl;
+                            // All spotify albums have artwork
+                            if (album.ProviderId.StartsWith("spotify."))
+                            {
+                                var spotifyAlbum =
+                                    await App.Locator.Spotify.GetAlbum(album.ProviderId.Replace("spotify.", ""));
+
+                                if (spotifyAlbum == null)
+                                {
+                                    return;
+                                }
+
+                                artworkUrl = spotifyAlbum.Images[0].Url;
+                            }
+
+                            else
+                            {
+                                var results =
+                                    await
+                                    App.Locator.DeezerService.SearchAlbumsAsync(album.Name + " " +
+                                                                                album.PrimaryArtist.Name);
+                                var deezerAlbum = results.data.FirstOrDefault();
+
+                                if (deezerAlbum == null || (!album.Name.ToLower().Contains(deezerAlbum.title.ToLower()) &&
+                                   !album.PrimaryArtist.Name.ToLower().Contains(deezerAlbum.artist.name.ToLower()) ||
+                                    deezerAlbum.bigCover == null))
+                                {
+                                    return;
+                                }
+
+                                artworkUrl = deezerAlbum.bigCover;
+                            }
+
+                            await SaveAlbumImageAsync(album, artworkUrl);
+                        }
+                        catch
+                        {
+                            album.HasArtwork = false;
+                        }
+                    })).Cast<Task>().ToList();
+
+            await Task.WhenAll(tasks);
+        }
+
+        public static async Task SaveAlbumImageAsync(Album album, string url)
+        {
+            var filePath = string.Format(AppConstant.ArtworkPath, album.Id);
+            await SaveImageAsync(filePath, url);
+            album.HasArtwork = true;
+            await App.Locator.SqlService.UpdateItemAsync(album);
+
+            await DispatcherHelper.RunAsync(
+                () =>
+                {
+                    album.Artwork =
+                        new PclBitmapImage(
+                            new Uri(AppConstant.LocalStorageAppPath + filePath));
+                    album.Artwork.SetDecodedPixel(
+                        App.Locator.CollectionService.ScaledImageSize);
+
+                    album.MediumArtwork =
+                        new PclBitmapImage(
+                            new Uri(AppConstant.LocalStorageAppPath + filePath));
+                    album.MediumArtwork.SetDecodedPixel(
+                        App.Locator.CollectionService.ScaledImageSize / 2);
+
+                    album.SmallArtwork =
+                        new PclBitmapImage(
+                            new Uri(AppConstant.LocalStorageAppPath + filePath));
+                    album.SmallArtwork.SetDecodedPixel(50);
+                });
+        }
+
+        private static async Task SaveImageAsync(string filePath, string url)
+        {
+            var file =
+                await
+                StorageHelper.CreateFileAsync(
+                    filePath,
+                    option: CreationCollisionOption.ReplaceExisting);
+
+            using (var client = new HttpClient())
+            {
+                using (var stream = await client.GetStreamAsync(url))
+                {
+                    using (var fileStream = await file.OpenAsync(FileAccess.ReadAndWrite))
+                    {
+                        await stream.CopyToAsync(fileStream);
+                    }
+                }
+            }
         }
 
         #endregion
@@ -1012,10 +1134,11 @@ namespace Audiotica
 
             SpotifySavingTracks.Remove(track.Id);
 
-            if (onFinishDownloadArtwork)
-            {
-                DownloadArtistsArtworkAsync();
-            }
+            if (!onFinishDownloadArtwork) return result;
+
+            var collAlbum = App.Locator.CollectionService.Albums.FirstOrDefault(p => p.ProviderId.Contains(album.Id));
+            SaveAlbumImageAsync(collAlbum, album.Images[0].Url);
+            DownloadArtistsArtworkAsync();
 
             return result;
         }
@@ -1053,6 +1176,7 @@ namespace Audiotica
 
             LastfmSavingTracks.Remove(track.Id);
 
+            DownloadAlbumsArtworkAsync();
             DownloadArtistsArtworkAsync();
             return result;
         }
