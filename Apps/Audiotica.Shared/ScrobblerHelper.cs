@@ -43,7 +43,7 @@ namespace Audiotica
                 preparedSong.Song.AudioUrl = url;
 
 
-                await App.Locator.CollectionService.AddSongAsync(preparedSong.Song, preparedSong.ArtworkUrl)
+                await App.Locator.CollectionService.AddSongAsync(preparedSong.Song)
                     .ConfigureAwait(false);
                 CollectionHelper.DownloadArtistsArtworkAsync();
                 return SavingError.None;

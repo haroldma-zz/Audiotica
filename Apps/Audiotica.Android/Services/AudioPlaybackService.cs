@@ -382,14 +382,6 @@ namespace Audiotica.Android.Services
             return sql;
         }
 
-        private ISqlService CreateCollectionSqlService()
-        {
-            var factory = new AudioticaFactory(null, null, null);
-            var sql = factory.CreateCollectionSqlService(9);
-            sql.Initialize();
-            return sql;
-        }
-
         public QueueSong GetCurrentQueueSong()
         {
             return GetQueueSong(p => p.Id == SettingsHelper.CurrentQueueId);

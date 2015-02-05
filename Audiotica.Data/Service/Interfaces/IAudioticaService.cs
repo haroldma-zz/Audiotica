@@ -13,6 +13,7 @@ namespace Audiotica.Data.Service.Interfaces
     {
         AudioticaUser CurrentUser { get;}
         bool IsAuthenticated { get; }
+        string AuthenticationToken { get; }
         HttpClient CreateHttpClient();
         Task<BaseAudioticaResponse> LoginAsync(string username, string password);
         Task<BaseAudioticaResponse> RegisterAsync(string username, string password, string email);

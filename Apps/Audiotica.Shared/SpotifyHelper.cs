@@ -75,8 +75,7 @@ namespace Audiotica
 
                 preparedSong.AudioUrl = url;
 
-                await App.Locator.CollectionService.AddSongAsync(preparedSong,
-                    album.Images[0].Url).ConfigureAwait(false);
+                await App.Locator.CollectionService.AddSongAsync(preparedSong).ConfigureAwait(false);
                 return SavingError.None;
             }
             catch (NetworkException)

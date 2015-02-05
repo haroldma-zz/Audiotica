@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.ObjectModel;
+using Newtonsoft.Json;
 using SQLite;
 
 #endregion
@@ -18,6 +19,20 @@ namespace Audiotica.Data.Collection.Model
             AddableTo = new ObservableCollection<AddableCollectionItem>();
         }
 
+        public Song(CloudSong cloud) : this()
+        {
+            Name = cloud.Name;
+            ArtistName = cloud.ArtistName;
+            ProviderId = cloud.ProviderId;
+            TrackNumber = cloud.TrackNumber;
+            Duration = cloud.Duration;
+            SongState = SongState.JustSynced;
+            HeartState = cloud.HeartState;
+            PlayCount = cloud.PlayCount;
+            LastPlayed = cloud.LastPlayed;
+            CloudId = cloud.Id;
+        }
+
         public string ProviderId { get; set; }
 
         [Indexed]
@@ -32,6 +47,7 @@ namespace Audiotica.Data.Collection.Model
         public int TrackNumber { get; set; }
         public string AudioUrl { get; set; }
 
+        [JsonIgnore]
         public SongState SongState
         {
             get { return _songState; }
@@ -47,7 +63,14 @@ namespace Audiotica.Data.Collection.Model
         public HeartState HeartState { get; set; }
         public TimeSpan Duration { get; set; }
 
+        [JsonIgnore]
+        public string CloudId { get; set; }
+
+        [JsonIgnore]
+        public DateTime LastUpdated { get; set; }
+
         [Ignore]
+        [JsonIgnore]
         public bool IsStreaming
         {
             get
@@ -58,12 +81,15 @@ namespace Audiotica.Data.Collection.Model
         }
 
         [Ignore]
+        [JsonIgnore]
         public Artist Artist { get; set; }
 
         [Ignore]
+        [JsonIgnore]
         public Album Album { get; set; }
 
         [Ignore]
+        [JsonIgnore]
         public BackgroundDownload Download
         {
             get { return _download; }
@@ -74,9 +100,11 @@ namespace Audiotica.Data.Collection.Model
             }
         }
 
+        [JsonIgnore]
         public string DownloadId { get; set; }
 
         [Ignore]
+        [JsonIgnore]
         public ObservableCollection<AddableCollectionItem> AddableTo { get; set; }
     }
 
@@ -99,7 +127,8 @@ namespace Audiotica.Data.Collection.Model
         Downloading,
         Downloaded,
         Local,
-        Temp
+        Temp,
+        JustSynced
         //still playing with different states
     }
 }

@@ -45,7 +45,7 @@ namespace Audiotica.Data.Service.RunTime
         private readonly IDispatcherHelper _dispatcherHelper;
         private readonly INotificationManager _notificationManager;
 
-        private string authenticationToken;
+        public string AuthenticationToken { get; private set; }
 
         private string refreshToken;
 
@@ -64,7 +64,7 @@ namespace Audiotica.Data.Service.RunTime
                 return;
             }
 
-            this.authenticationToken = cred.GetPassword();
+            this.AuthenticationToken = cred.GetPassword();
 
             this.CurrentUser = this.appSettingsHelper.ReadJsonAs<AudioticaUser>("AudioticaCloudUser");
 
@@ -95,7 +95,7 @@ namespace Audiotica.Data.Service.RunTime
         {
             get
             {
-                return this.authenticationToken != null;
+                return this.AuthenticationToken != null;
             }
         }
 
@@ -104,9 +104,9 @@ namespace Audiotica.Data.Service.RunTime
             var httpClient = new HttpClient();
 
             var token = ":" + AppToken;
-            token = this.authenticationToken ?? Convert.ToBase64String(Encoding.UTF8.GetBytes(token));
+            token = this.AuthenticationToken ?? Convert.ToBase64String(Encoding.UTF8.GetBytes(token));
 
-            if (this.authenticationToken != null)
+            if (this.AuthenticationToken != null)
             {
                 httpClient.DefaultRequestHeaders.Add("X-ZUMO-AUTH", token);
             }
@@ -237,7 +237,7 @@ namespace Audiotica.Data.Service.RunTime
 
         private void SaveLoginState(BaseAudioticaResponse<LoginData> resp)
         {
-            this.authenticationToken = resp.Data.AuthenticationToken;
+            this.AuthenticationToken = resp.Data.AuthenticationToken;
             _dispatcherHelper.RunAsync(() => this.CurrentUser = resp.Data.User);
 
             if (!string.IsNullOrEmpty(resp.Data.RefreshToken))
@@ -273,7 +273,7 @@ namespace Audiotica.Data.Service.RunTime
 
         public void Logout()
         {
-            this.authenticationToken = null;
+            this.AuthenticationToken = null;
             this.refreshToken = null;
             _dispatcherHelper.RunAsync(() =>this.CurrentUser = null);
             this.appSettingsHelper.Write("AudioticaCloudRefreshToken", null);

@@ -2,18 +2,6 @@
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-
-using Audiotica.Core.Utilities;
-using Audiotica.Core.Utils;
-using Audiotica.Core.WinRt;
-using Audiotica.Core.WinRt.Common;
-using Audiotica.View;
-using Audiotica.ViewModel;
-
-using GalaSoft.MvvmLight.Threading;
-
-using GoogleAnalytics;
-
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.ApplicationModel.DataTransfer;
@@ -26,19 +14,43 @@ using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
-
+using Audiotica.Core.Utilities;
+using Audiotica.Core.Utils;
+using Audiotica.Core.WinRt;
+using Audiotica.Core.WinRt.Common;
+using Audiotica.Data.Collection.RunTime;
+using Audiotica.View;
+using Audiotica.ViewModel;
+using GalaSoft.MvvmLight.Threading;
+using GoogleAnalytics;
+using Microsoft.WindowsAzure.MobileServices;
 using SQLite;
-
 using Xamarin;
 
 namespace Audiotica
 {
     /// <summary>
-    /// Class App. This class cannot be inherited.
+    ///     Class App. This class cannot be inherited.
     /// </summary>
     public sealed partial class App
     {
         public const bool IsProduction = false;
+
+        #region Constructor
+
+        public App()
+        {
+            InitializeComponent();
+            HardwareButtons.BackPressed += HardwareButtonsOnBackPressed;
+            continuationManager = new ContinuationManager();
+            Suspending += OnSuspending;
+            Resuming += OnResuming;
+            UnhandledException += OnUnhandledException;
+        }
+
+        #endregion
+
+        public static event EventHandler<BackPressedEventArgs> SupressBackEvent;
 
         #region Fields
 
@@ -52,42 +64,20 @@ namespace Audiotica
 
         #endregion
 
-        public static event EventHandler<BackPressedEventArgs> SupressBackEvent;
-
         #region Properties
 
         public static Navigator Navigator { get; set; }
 
         public static ViewModelLocator Locator
         {
-            get
-            {
-                return locator ?? (locator = Current.Resources["Locator"] as ViewModelLocator);
-            }
+            get { return locator ?? (locator = Current.Resources["Locator"] as ViewModelLocator); }
         }
 
         public static Frame RootFrame { get; private set; }
 
         public static LicenseInformation LicenseInformation
         {
-            get
-            {
-                return Debugger.IsAttached ? CurrentAppSimulator.LicenseInformation : CurrentApp.LicenseInformation;
-            }
-        }
-
-        #endregion
-
-        #region Constructor
-
-        public App()
-        {
-            this.InitializeComponent();
-            HardwareButtons.BackPressed += this.HardwareButtonsOnBackPressed;
-            this.continuationManager = new ContinuationManager();
-            this.Suspending += this.OnSuspending;
-            this.Resuming += this.OnResuming;
-            this.UnhandledException += this.OnUnhandledException;
+            get { return Debugger.IsAttached ? CurrentAppSimulator.LicenseInformation : CurrentApp.LicenseInformation; }
         }
 
         #endregion
@@ -98,27 +88,25 @@ namespace Audiotica
         {
             base.OnActivated(e);
 
-            this.CreateRootFrame();
+            CreateRootFrame();
 
             if (RootFrame.Content == null)
             {
-                RootFrame.Navigated += this.RootFrame_FirstNavigated;
-                RootFrame.Navigate(typeof(RootPage));
+                RootFrame.Navigated += RootFrame_FirstNavigated;
+                RootFrame.Navigate(typeof (RootPage));
             }
 
             var continuationEventArgs = e as IContinuationActivatedEventArgs;
 
             if (continuationEventArgs != null)
-            {
-                this.continuationManager.Continue(continuationEventArgs);
-            }
+                continuationManager.Continue(continuationEventArgs);
 
             Window.Current.Activate();
         }
 
         protected override async void OnLaunched(LaunchActivatedEventArgs e)
         {
-            this.CreateRootFrame();
+            CreateRootFrame();
 
             var restore = Locator.AppSettingsHelper.Read<bool>("FactoryReset")
                           || await StorageHelper.FileExistsAsync("_current_restore.autcp");
@@ -126,10 +114,10 @@ namespace Audiotica
             if (RootFrame.Content == null)
             {
                 Insights.Initialize("38cc9488b4e09fd2c316617d702838ca43a473d4");
-                RootFrame.Navigated += this.RootFrame_FirstNavigated;
+                RootFrame.Navigated += RootFrame_FirstNavigated;
 
                 // MainPage is always in rootFrame so we don't have to worry about restoring the navigation state on resume
-                RootFrame.Navigate(typeof(RootPage), e.Arguments);
+                RootFrame.Navigate(typeof (RootPage), e.Arguments);
             }
 
             if (e.Arguments.StartsWith("artists/"))
@@ -137,24 +125,20 @@ namespace Audiotica
                 NowPlayingSheetUtility.CloseNowPlaying();
 
                 if (Navigator.CurrentPage is CollectionArtistPage)
-                {
                     Navigator.GoBack();
-                }
 
                 var id = int.Parse(e.Arguments.Replace("artists/", string.Empty));
 
                 if (Locator.CollectionService.Artists.FirstOrDefault(p => p.Id == id) != null)
-                {
                     Navigator.GoTo<CollectionArtistPage, ZoomInTransition>(id);
-                }
                 else if (!Locator.CollectionService.IsLibraryLoaded)
                 {
                     UiBlockerUtility.Block("Loading collection...");
                     Locator.CollectionService.LibraryLoaded += (sender, args) =>
-                        {
-                            UiBlockerUtility.Unblock();
-                            Navigator.GoTo<CollectionArtistPage, ZoomInTransition>(id);
-                        };
+                    {
+                        UiBlockerUtility.Unblock();
+                        Navigator.GoTo<CollectionArtistPage, ZoomInTransition>(id);
+                    };
                 }
             }
             else if (e.Arguments.StartsWith("albums/"))
@@ -162,24 +146,20 @@ namespace Audiotica
                 NowPlayingSheetUtility.CloseNowPlaying();
 
                 if (Navigator.CurrentPage is CollectionAlbumPage)
-                {
                     Navigator.GoBack();
-                }
 
                 var id = int.Parse(e.Arguments.Replace("albums/", string.Empty));
 
                 if (Locator.CollectionService.Albums.FirstOrDefault(p => p.Id == id) != null)
-                {
                     Navigator.GoTo<CollectionAlbumPage, ZoomInTransition>(id);
-                }
                 else if (!Locator.CollectionService.IsLibraryLoaded)
                 {
                     UiBlockerUtility.Block("Loading collection...");
                     Locator.CollectionService.LibraryLoaded += (sender, args) =>
-                        {
-                            UiBlockerUtility.Unblock();
-                            Navigator.GoTo<CollectionAlbumPage, ZoomInTransition>(id);
-                        };
+                    {
+                        UiBlockerUtility.Unblock();
+                        Navigator.GoTo<CollectionAlbumPage, ZoomInTransition>(id);
+                    };
                 }
             }
 
@@ -188,21 +168,15 @@ namespace Audiotica
 
             // ReSharper disable once CSharpWarnings::CS4014
             if (!restore)
-            {
-                this.BootAppServicesAsync();
-            }
+                BootAppServicesAsync();
 
             var dataManager = DataTransferManager.GetForCurrentView();
-            dataManager.DataRequested += this.DataTransferManagerOnDataRequested;
+            dataManager.DataRequested += DataTransferManagerOnDataRequested;
 
             if (Locator.AppVersionHelper.JustUpdated)
-            {
-                this.OnUpdate();
-            }
+                OnUpdate();
             else if (Locator.AppVersionHelper.IsFirstRun)
-            {
                 Locator.AppSettingsHelper.WriteAsJson("LastRunVersion", Locator.AppVersionHelper.CurrentVersion);
-            }
         }
 
         #endregion
@@ -211,23 +185,19 @@ namespace Audiotica
 
         private async void RootFrame_FirstNavigated(object sender, NavigationEventArgs e)
         {
-            RootFrame.Navigated -= this.RootFrame_FirstNavigated;
+            RootFrame.Navigated -= RootFrame_FirstNavigated;
 
             ScreenTimeoutHelper.OnLaunched();
 
             ApplicationView.GetForCurrentView().SetDesiredBoundsMode(ApplicationViewBoundsMode.UseCoreWindow);
-            ApplicationView.GetForCurrentView().VisibleBoundsChanged += this.OnVisibleBoundsChanged;
-            this.OnVisibleBoundsChanged(null, null);
+            ApplicationView.GetForCurrentView().VisibleBoundsChanged += OnVisibleBoundsChanged;
+            OnVisibleBoundsChanged(null, null);
 
             var crash = Locator.AppSettingsHelper.ReadJsonAs<Exception>("CrashingException");
             if (crash != null && !Locator.AppVersionHelper.JustUpdated)
-            {
-                await this.WarnAboutCrashAsync("Application Crashed", crash);
-            }
+                await WarnAboutCrashAsync("Application Crashed", crash);
             else
-            {
-                await this.ReviewReminderAsync();
-            }
+                await ReviewReminderAsync();
 
             try
             {
@@ -235,9 +205,22 @@ namespace Audiotica
                 if (Locator.AudioticaService.IsAuthenticated)
                 {
                     await Locator.AudioticaService.GetProfileAsync();
+                    var mobileService = new MobileServiceClient("https://audiotica-cloud.azure-mobile.net/",
+                "AypzKLKRIDPGkXXzCGYGqjJNliXTwp74");
+                    mobileService.CurrentUser = new MobileServiceUser(Locator.AudioticaService.CurrentUser.Id)
+                    {
+                        MobileServiceAuthenticationToken = Locator.AudioticaService.AuthenticationToken
+                    };
+                    var sync = new CloudSyncService(mobileService, Locator.CollectionService, Locator.AppSettingsHelper, Locator.SqlService);
+
+                    // always pull before pushing, unless is the first sync
+                    await sync.PullAsync();
+                    await sync.PushAsync();
                 }
             }
-            catch { }
+            catch
+            {
+            }
         }
 
         private int GetScaledImageSize()
@@ -268,7 +251,7 @@ namespace Audiotica
                     break;
             }
 
-            scaledImageSize = (int)(scaledImageSize * factor);
+            scaledImageSize = (int) (scaledImageSize*factor);
             return scaledImageSize;
         }
 
@@ -309,10 +292,10 @@ namespace Audiotica
 
             DispatcherHelper.CheckBeginInvokeOnUI(
                 async () =>
-                    {
-                        UiBlockerUtility.Unblock();
-                        await this.WarnAboutCrashAsync("Crash prevented", e.Exception);
-                    });
+                {
+                    UiBlockerUtility.Unblock();
+                    await WarnAboutCrashAsync("Crash prevented", e.Exception);
+                });
         }
 
         private async Task WarnAboutCrashAsync(string title, Exception e)
@@ -328,12 +311,10 @@ namespace Audiotica
             if (
                 await
                 MessageBox.ShowAsync(
-                    "There was a problem with the application. Do you want to send a crash report so the developer can fix it?", 
-                    title, 
+                    "There was a problem with the application. Do you want to send a crash report so the developer can fix it?",
+                    title,
                     MessageBoxButton.OkCancel) == MessageBoxResult.Ok)
-            {
                 await Launcher.LaunchUriAsync(new Uri(url));
-            }
 
             // made it so far, no need to save the crash details
             Locator.AppSettingsHelper.Write("CrashingException", null);
@@ -357,14 +338,10 @@ namespace Audiotica
             {
                 e.Handled = true;
                 if (SupressBackEvent != null)
-                {
                     SupressBackEvent(this, e);
-                }
             }
             else if (Navigator.GoBack())
-            {
                 e.Handled = true;
-            }
         }
 
         private void CreateRootFrame()
@@ -372,9 +349,7 @@ namespace Audiotica
             RootFrame = Window.Current.Content as Frame;
 
             if (RootFrame != null)
-            {
                 return;
-            }
 
             DispatcherHelper.Initialize();
 
@@ -385,15 +360,15 @@ namespace Audiotica
             Current.DebugSettings.EnableFrameRateCounter = Locator.AppSettingsHelper.Read<bool>("FrameRateCounter");
             Current.DebugSettings.EnableRedrawRegions = Locator.AppSettingsHelper.Read<bool>("RedrawRegions");
 
-            RootFrame = new Frame { Style = this.Resources["AppFrame"] as Style };
+            RootFrame = new Frame {Style = Resources["AppFrame"] as Style};
             Window.Current.Content = RootFrame;
         }
 
         public async Task BootAppServicesAsync()
         {
-            if (!this._init)
+            if (!_init)
             {
-                Locator.CollectionService.ScaledImageSize = this.GetScaledImageSize();
+                Locator.CollectionService.ScaledImageSize = GetScaledImageSize();
 
                 using (var handle = Insights.TrackTime("Boot App Services"))
                 {
@@ -445,7 +420,7 @@ namespace Audiotica
                             () => CurtainPrompt.ShowError("AppErrorBooting".FromLanguageResource()));
                     }
 
-                    this._init = true;
+                    _init = true;
                 }
             }
 
@@ -457,14 +432,12 @@ namespace Audiotica
             var launchCount = Locator.AppSettingsHelper.Read<int>("LaunchCount");
             Locator.AppSettingsHelper.Write("LaunchCount", ++launchCount);
             if (launchCount != 5)
-            {
                 return;
-            }
 
             var rate = "FeedbackDialogRateButton".FromLanguageResource();
 
             var md = new MessageDialog(
-                "FeedbackDialogContent".FromLanguageResource(), 
+                "FeedbackDialogContent".FromLanguageResource(),
                 "FeedbackDialogTitle".FromLanguageResource());
             md.Commands.Add(new UICommand(rate));
             md.Commands.Add(new UICommand("FeedbackDialogNoButton".FromLanguageResource()));
@@ -477,9 +450,7 @@ namespace Audiotica
                 Launcher.LaunchUriAsync(new Uri("ms-windows-store:reviewapp?appid=" + CurrentApp.AppId));
             }
             else
-            {
                 Insights.Track("Review Reminder", "Accepted", "False");
-            }
         }
     }
 }

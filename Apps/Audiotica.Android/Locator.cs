@@ -27,7 +27,7 @@ namespace Audiotica.Android
             Container.Register<SpotifyWebApi>(Reuse.Singleton);
             Container.Register<ISpotifyService, SpotifyService>(Reuse.Singleton);
 
-            Container.RegisterDelegate(r => factory.CreateCollectionSqlService(9), Reuse.Singleton);
+            Container.RegisterDelegate(r => factory.CreateCollectionSqlService(10), Reuse.Singleton);
             Container.RegisterDelegate(r => factory.CreatePlayerSqlService(4), Reuse.Singleton, named: "BackgroundSql");
             Container.RegisterDelegate(r => factory.CreateCollectionService(SqlService, BgSqlService), Reuse.Singleton);
 

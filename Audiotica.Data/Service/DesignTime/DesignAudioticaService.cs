@@ -22,6 +22,11 @@ namespace Audiotica.Data.Service.DesignTime
             get { return true; }
         }
 
+        public string AuthenticationToken
+        {
+            get { throw new NotImplementedException(); }
+        }
+
         public HttpClient CreateHttpClient()
         {
             throw new NotImplementedException();
