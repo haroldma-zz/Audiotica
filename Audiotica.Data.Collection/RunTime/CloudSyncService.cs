@@ -54,9 +54,9 @@ namespace Audiotica.Data.Collection.RunTime
         public async Task SyncAsync()
         {
             // Start by getting all cloud songs
-            var onlineSongs = await _mobileServiceClient.GetTable<CloudSong>().ToListAsync();
-            var onlineArtists = await _mobileServiceClient.GetTable<CloudArtist>().ToListAsync();
-            var onlineAlbums = await _mobileServiceClient.GetTable<CloudAlbum>().ToListAsync();
+            var onlineSongs = await _mobileServiceClient.GetTable<CloudSong>().ToListAsync().ConfigureAwait(false);
+            var onlineArtists = await _mobileServiceClient.GetTable<CloudArtist>().ToListAsync().ConfigureAwait(false);
+            var onlineAlbums = await _mobileServiceClient.GetTable<CloudAlbum>().ToListAsync().ConfigureAwait(false);
 
             foreach (var onlineAlbum in onlineAlbums)
             {
@@ -104,7 +104,7 @@ namespace Audiotica.Data.Collection.RunTime
                                  select song)
             {
                 // If the local song is not in the cloud delete it.
-                await _collectionService.DeleteSongAsync(song);
+                await _collectionService.DeleteSongAsync(song).ConfigureAwait(false);
             }
         }
 
@@ -127,7 +127,7 @@ namespace Audiotica.Data.Collection.RunTime
                 if (collSong != null)
                 {
                     collSong.CloudId = onlineSong.Id;
-                    await _sqlService.UpdateItemAsync(collSong);
+                    await _sqlService.UpdateItemAsync(collSong).ConfigureAwait(false);
                 }
                 else
                 {
@@ -139,7 +139,7 @@ namespace Audiotica.Data.Collection.RunTime
                     };
 
                     // By setting it to just synced, the app knows it has to match an audio url to it
-                    await _collectionService.AddSongAsync(newSong);
+                    await _collectionService.AddSongAsync(newSong).ConfigureAwait(false);
                 }
             }
         }
@@ -159,7 +159,7 @@ namespace Audiotica.Data.Collection.RunTime
                                        select onlineSong)
             {
                 // Delete it
-                await _mobileServiceClient.GetTable<CloudSong>().DeleteAsync(onlineSong);
+                await _mobileServiceClient.GetTable<CloudSong>().DeleteAsync(onlineSong).ConfigureAwait(false);
             }
         }
 
@@ -212,7 +212,7 @@ namespace Audiotica.Data.Collection.RunTime
                         Name = collectionSong.Artist.Name, 
                         ProviderId = collectionSong.Artist.ProviderId
                     };
-                    await _mobileServiceClient.GetTable<CloudArtist>().InsertAsync(cloudArtist);
+                    await _mobileServiceClient.GetTable<CloudArtist>().InsertAsync(cloudArtist).ConfigureAwait(false);
                 }
 
                 if (cloudAlbum == null)
@@ -226,7 +226,7 @@ namespace Audiotica.Data.Collection.RunTime
                             Name = collectionSong.Album.PrimaryArtist.Name, 
                             ProviderId = collectionSong.Album.PrimaryArtist.ProviderId
                         };
-                        await _mobileServiceClient.GetTable<CloudArtist>().InsertAsync(cloaudAlbumArtist);
+                        await _mobileServiceClient.GetTable<CloudArtist>().InsertAsync(cloaudAlbumArtist).ConfigureAwait(false);
                     }
 
                     cloudAlbum = new CloudAlbum
@@ -243,9 +243,9 @@ namespace Audiotica.Data.Collection.RunTime
                 cloudSong.ArtistId = cloudArtist.Id;
                 cloudSong.AlbumId = cloudAlbum.Id;
 
-                await _mobileServiceClient.GetTable<CloudSong>().InsertAsync(cloudSong);
+                await _mobileServiceClient.GetTable<CloudSong>().InsertAsync(cloudSong).ConfigureAwait(false);
                 collectionSong.CloudId = cloudSong.Id;
-                await _sqlService.UpdateItemAsync(collectionSong);
+                await _sqlService.UpdateItemAsync(collectionSong).ConfigureAwait(false);
             }
 
             LastSyncTime = syncTime;
