@@ -97,6 +97,16 @@ namespace Audiotica.Data.Collection.Model
 
         [Ignore]
         [JsonIgnore]
+        public bool IsMatched
+        {
+            get
+            {
+                return SongState != SongState.Matching && SongState != SongState.NoMatch;
+            }
+        }
+
+        [Ignore]
+        [JsonIgnore]
         public Artist Artist { get; set; }
 
         [Ignore]

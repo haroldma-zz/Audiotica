@@ -49,23 +49,6 @@ namespace Audiotica
 
         private static bool _currentlyPreparing;
 
-        public static void IdentifyXamarin()
-        {
-            var user = App.Locator.AudioticaService.CurrentUser;
-            if (user != null)
-            {
-                Insights.Identify(
-                    user.Id,
-                    new Dictionary<string, string>
-                    {
-                        { Insights.Traits.Email, user.Email },
-                        { "Subscription", user.Subscription.ToString() },
-                        { "SubscriptionStatus", user.SubscriptionStatus.ToString() },
-                        { Insights.Traits.Name, user.Username }
-                    });
-            }
-        }
-
         public static async Task CloudSync(bool refreshProfile = true)
         {
             try
@@ -217,6 +200,23 @@ namespace Audiotica
             catch
             {
                 CurtainPrompt.ShowError("EntryDeletingError".FromLanguageResource(), name);
+            }
+        }
+
+        public static void IdentifyXamarin()
+        {
+            var user = App.Locator.AudioticaService.CurrentUser;
+            if (user != null)
+            {
+                Insights.Identify(
+                    user.Id, 
+                    new Dictionary<string, string>
+                    {
+                        { Insights.Traits.Email, user.Email }, 
+                        { "Subscription", user.Subscription.ToString() }, 
+                        { "SubscriptionStatus", user.SubscriptionStatus.ToString() }, 
+                        { Insights.Traits.Name, user.Username }
+                    });
             }
         }
 
@@ -954,6 +954,14 @@ namespace Audiotica
                 return;
             }
 
+            songs = songs.Where(p => p.IsMatched).ToList();
+
+            if (songs.Count == 0)
+            {
+                CurtainPrompt.ShowError("The songs haven't been matched yet.");
+                return;
+            }
+
             var skip = songs.IndexOf(song);
             var ordered = songs.Skip(skip).ToList();
             ordered.AddRange(songs.Take(skip));
@@ -1080,6 +1088,21 @@ namespace Audiotica
 
         public static async Task AddToQueueAsync(List<Song> songs, bool ignoreInsertMode = false)
         {
+            var originalCount = songs.Count;
+            songs = songs.Where(p => p.IsMatched).ToList();
+
+            if (originalCount > 0 && songs.Count == 0)
+            {
+                CurtainPrompt.ShowError("The songs haven't been matched yet.");
+                return;
+            }
+
+            if (originalCount == 0)
+            {
+                CurtainPrompt.ShowError("Item has no songs.");
+                return;
+            }
+
             using (var handle = Insights.TrackTime("AddListToQueue", "Count", songs.Count.ToString()))
             {
                 App.Locator.SqlService.BeginTransaction();
@@ -1125,6 +1148,11 @@ namespace Audiotica
             bool clearIfNotActive = true, 
             bool ignoreInsertMode = false)
         {
+            if (!song.IsMatched)
+            {
+                CurtainPrompt.ShowError("Can't add unmatch songs to queue.");
+            }
+
             QueueSong queueSong;
             using (var handle = Insights.TrackTime("Add Song To Queue"))
             {
