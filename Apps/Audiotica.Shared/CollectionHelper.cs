@@ -1080,7 +1080,7 @@ namespace Audiotica
             }
             else
             {
-                UiBlockerUtility.Block("Loading collection...");
+                UiBlockerUtility.Block("Waiting for collection to load...");
                 App.Locator.CollectionService.LibraryLoaded += (sender, args) =>
                 {
                     action();
