@@ -13,12 +13,16 @@ using Audiotica.Core.WinRt.Common;
 using Audiotica.Core.WinRt.Utilities;
 using Audiotica.Data.Collection;
 using Audiotica.Data.Collection.Model;
+using Audiotica.Data.Collection.RunTime;
+using Audiotica.Data.Model.AudioticaCloud;
 using Audiotica.Data.Spotify.Models;
 using Audiotica.View;
 
 using GalaSoft.MvvmLight.Threading;
 
 using IF.Lastfm.Core.Objects;
+
+using Microsoft.WindowsAzure.MobileServices;
 
 using PCLStorage;
 
@@ -39,11 +43,52 @@ namespace Audiotica
     {
         private static readonly List<string> SpotifySavingTracks = new List<string>();
 
-        private static List<string> LastfmSavingTracks = new List<string>();
+        private static readonly List<string> LastfmSavingTracks = new List<string>();
 
-        private static List<string> SpotifySavingAlbums = new List<string>();
+        private static readonly List<string> SpotifySavingAlbums = new List<string>();
 
         private static bool currentlyPreparing;
+
+        public static async Task CloudSync(bool refreshProfile = true)
+        {
+            try
+            {
+                // refreshing user profile info
+                if (App.Locator.AudioticaService.IsAuthenticated)
+                {
+                    if (refreshProfile)
+                    {
+                        await App.Locator.AudioticaService.GetProfileAsync();
+                    }
+
+                    if (App.Locator.AudioticaService.CurrentUser.Subscription != SubscriptionType.None)
+                    {
+                        var mobileService = new MobileServiceClient(
+                            "https://audiotica-cloud.azure-mobile.net/", 
+                            "AypzKLKRIDPGkXXzCGYGqjJNliXTwp74")
+                        {
+                            CurrentUser =
+                                new MobileServiceUser(App.Locator.AudioticaService.CurrentUser.Id)
+                                {
+                                    MobileServiceAuthenticationToken =
+                                        App.Locator.AudioticaService.AuthenticationToken
+                                }
+                        };
+                        var sync = new CloudSyncService(
+                            mobileService, 
+                            App.Locator.CollectionService, 
+                            App.Locator.AppSettingsHelper, 
+                            App.Locator.SqlService);
+
+                        await sync.SyncAsync();
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Insights.Report(e, "Where", "CloudSync");
+            }
+        }
 
         public static async Task DeleteEntryAsync(BaseEntry item, bool showSuccessMessage = true)
         {
@@ -311,7 +356,11 @@ namespace Audiotica
                     });
                 created =
                     await
-                    CreatePin(id, album.Name, "albums/" + album.Id, album.HasArtwork ? string.Format(AppConstant.ArtworkPath, album.Id) : null);
+                    CreatePin(
+                        id, 
+                        album.Name, 
+                        "albums/" + album.Id, 
+                        album.HasArtwork ? string.Format(AppConstant.ArtworkPath, album.Id) : null);
             }
             else
             {
@@ -322,6 +371,38 @@ namespace Audiotica
             return created;
         }
 
+        public static void RequiresCollectionToLoad(Action action)
+        {
+            if (App.Locator.CollectionService.IsLibraryLoaded)
+            {
+                try
+                {
+                    action();
+                }
+                catch (Exception e)
+                {
+                    Insights.Report(e, "Where", "RequiresCollectionToLoad-Loaded");
+                }
+            }
+            else
+            {
+                UiBlockerUtility.Block("Waiting for collection to load...");
+                App.Locator.CollectionService.LibraryLoaded += (sender, args) =>
+                {
+                    try
+                    {
+                        action();
+                    }
+                    catch (Exception e)
+                    {
+                        Insights.Report(e, "Where", "RequiresCollectionToLoad");
+                    }
+
+                    UiBlockerUtility.Unblock();
+                };
+            }
+        }
+
         private static async Task<bool> CreatePin(string id, string displayName, string arguments, string artwork)
         {
             var tileActivationArguments = arguments;
@@ -329,11 +410,13 @@ namespace Audiotica
             var image = string.IsNullOrEmpty(artwork) ? null : new Uri(AppConstant.LocalStorageAppPath + artwork);
 
             var secondaryTile = new SecondaryTile(
-                id,
-                displayName,
-                tileActivationArguments,
-                image,
-                TileSize.Square150x150) { ShortName = displayName };
+                id, 
+                displayName, 
+                tileActivationArguments, 
+                image, 
+                TileSize.Square150x150) {
+                                           ShortName = displayName 
+                                        };
 
             secondaryTile.VisualElements.ShowNameOnSquare150x150Logo = true;
 
@@ -417,6 +500,7 @@ namespace Audiotica
                 {
                     UiBlockerUtility.Block("Fetching track data...");
                 }
+
                 var album = await App.Locator.Spotify.GetAlbum(track.Album.Id);
 
                 UiBlockerUtility.Unblock();
@@ -431,7 +515,7 @@ namespace Audiotica
             SimpleTrack track, 
             FullAlbum album, 
             bool showFindingMessage = true, 
-            bool trackTime = true,
+            bool trackTime = true, 
             bool manualMatch = false)
         {
             var handle = Insights.TrackTime(
@@ -607,12 +691,12 @@ namespace Audiotica
                     CurtainPrompt.ShowError("EntrySavingError".FromLanguageResource(), album.Name);
                 }
 
-
                 SpotifySavingAlbums.Remove(album.Id);
 
                 if (collAlbum == null)
                 {
-                    collAlbum = App.Locator.CollectionService.Albums.FirstOrDefault(p => p.ProviderId.Contains(album.Id));
+                    collAlbum = App.Locator.CollectionService.Albums.FirstOrDefault(
+                        p => p.ProviderId.Contains(album.Id));
                     await SaveAlbumImageAsync(collAlbum, album.Images[0].Url);
                     await DownloadArtistsArtworkAsync();
                 }
@@ -631,69 +715,67 @@ namespace Audiotica
             var tasks = artists.Select(
                 artist => Task.Factory.StartNew(
                     async () =>
+                    {
+                        if (artist.ProviderId == "autc.unknown" || string.IsNullOrEmpty(artist.Name))
                         {
-                            if (artist.ProviderId == "autc.unknown" || string.IsNullOrEmpty(artist.Name))
+                            return;
+                        }
+
+                        // don't want to retry getting this pic while we're downloading it
+                        var hadArtwork = artist.HasArtwork;
+                        artist.HasArtwork = true;
+
+                        try
+                        {
+                            var lastArtist = await App.Locator.ScrobblerService.GetDetailArtist(artist.Name);
+
+                            if (lastArtist.MainImage == null || lastArtist.MainImage.Largest == null)
                             {
+                                artist.HasArtwork = false;
+
+                                // By setting no artwork found we know not to try again, saving precious data!
+                                artist.NoArtworkFound = true;
+                                await App.Locator.SqlService.UpdateItemAsync(artist);
                                 return;
                             }
 
-                            // don't want to retry getting this pic while we're downloading it
-                            var hadArtwork = artist.HasArtwork;
-                            artist.HasArtwork = true;
+                            var artistFilePath = string.Format(AppConstant.ArtistsArtworkPath, artist.Id);
+                            var file =
+                                await
+                                StorageHelper.CreateFileAsync(
+                                    artistFilePath, 
+                                    option: CreationCollisionOption.ReplaceExisting);
 
-                            try
+                            using (var client = new HttpClient())
                             {
-                                var lastArtist = await App.Locator.ScrobblerService.GetDetailArtist(artist.Name);
-
-                                if (lastArtist.MainImage == null || lastArtist.MainImage.Largest == null)
+                                using (var stream = await client.GetStreamAsync(lastArtist.MainImage.Largest))
                                 {
-                                    artist.HasArtwork = false;
-
-                                    // By setting no artwork found we know not to try again, saving precious data!
-                                    artist.NoArtworkFound = true;
-                                    await App.Locator.SqlService.UpdateItemAsync(artist);
-                                    return;
-                                }
-
-                                var artistFilePath = string.Format(AppConstant.ArtistsArtworkPath, artist.Id);
-                                var file =
-                                    await
-                                    StorageHelper.CreateFileAsync(
-                                        artistFilePath, 
-                                        option: CreationCollisionOption.ReplaceExisting);
-
-                                using (var client = new HttpClient())
-                                {
-                                    using (var stream = await client.GetStreamAsync(lastArtist.MainImage.Largest))
+                                    using (var fileStream = await file.OpenAsync(FileAccess.ReadAndWrite))
                                     {
-                                        using (var fileStream = await file.OpenAsync(FileAccess.ReadAndWrite))
-                                        {
-                                            await stream.CopyToAsync(fileStream);
-                                        }
+                                        await stream.CopyToAsync(fileStream);
                                     }
                                 }
-
-                                if (!hadArtwork)
-                                {
-                                    artist.HasArtwork = true;
-                                    await App.Locator.SqlService.UpdateItemAsync(artist);
-                                }
-
-                                await DispatcherHelper.RunAsync(
-                                    () =>
-                                        {
-                                            artist.Artwork =
-                                                new PclBitmapImage(
-                                                    new Uri(AppConstant.LocalStorageAppPath + artistFilePath));
-                                            artist.Artwork.SetDecodedPixel(
-                                                App.Locator.CollectionService.ScaledImageSize);
-                                        });
                             }
-                            catch
+
+                            if (!hadArtwork)
                             {
-                                artist.HasArtwork = false;
+                                artist.HasArtwork = true;
+                                await App.Locator.SqlService.UpdateItemAsync(artist);
                             }
-                        })).Cast<Task>().ToList();
+
+                            await DispatcherHelper.RunAsync(
+                                () =>
+                                {
+                                    artist.Artwork =
+                                        new PclBitmapImage(new Uri(AppConstant.LocalStorageAppPath + artistFilePath));
+                                    artist.Artwork.SetDecodedPixel(App.Locator.CollectionService.ScaledImageSize);
+                                });
+                        }
+                        catch
+                        {
+                            artist.HasArtwork = false;
+                        }
+                    })).Cast<Task>().ToList();
 
             await Task.WhenAll(tasks);
         }
@@ -722,11 +804,13 @@ namespace Audiotica
                         try
                         {
                             string artworkUrl;
+
                             // All spotify albums have artwork
                             if (album.ProviderId.StartsWith("spotify."))
                             {
                                 var spotifyAlbum =
-                                    await App.Locator.Spotify.GetAlbum(album.ProviderId.Replace("spotify.", ""));
+                                    await
+                                    App.Locator.Spotify.GetAlbum(album.ProviderId.Replace("spotify.", string.Empty));
 
                                 if (spotifyAlbum == null)
                                 {
@@ -738,18 +822,19 @@ namespace Audiotica
 
                                 artworkUrl = spotifyAlbum.Images[0].Url;
                             }
-
                             else
                             {
                                 var results =
                                     await
-                                    App.Locator.DeezerService.SearchAlbumsAsync(album.Name + " " +
-                                                                                album.PrimaryArtist.Name);
+                                    App.Locator.DeezerService.SearchAlbumsAsync(
+                                        album.Name + " " + album.PrimaryArtist.Name);
                                 var deezerAlbum = results.data.FirstOrDefault();
 
-                                if (deezerAlbum == null || (!album.Name.ToLower().Contains(deezerAlbum.title.ToLower()) &&
-                                   !album.PrimaryArtist.Name.ToLower().Contains(deezerAlbum.artist.name.ToLower()) ||
-                                    deezerAlbum.bigCover == null))
+                                if (deezerAlbum == null
+                                    || (!album.Name.ToLower().Contains(deezerAlbum.title.ToLower())
+                                        && !album.PrimaryArtist.Name.ToLower()
+                                                .Contains(deezerAlbum.artist.name.ToLower())
+                                        || deezerAlbum.bigCover == null))
                                 {
                                     album.HasArtwork = false;
                                     album.NoArtworkFound = true;
@@ -781,32 +866,20 @@ namespace Audiotica
             await DispatcherHelper.RunAsync(
                 () =>
                 {
-                    album.Artwork =
-                        new PclBitmapImage(
-                            new Uri(AppConstant.LocalStorageAppPath + filePath));
-                    album.Artwork.SetDecodedPixel(
-                        App.Locator.CollectionService.ScaledImageSize);
+                    album.Artwork = new PclBitmapImage(new Uri(AppConstant.LocalStorageAppPath + filePath));
+                    album.Artwork.SetDecodedPixel(App.Locator.CollectionService.ScaledImageSize);
 
-                    album.MediumArtwork =
-                        new PclBitmapImage(
-                            new Uri(AppConstant.LocalStorageAppPath + filePath));
-                    album.MediumArtwork.SetDecodedPixel(
-                        App.Locator.CollectionService.ScaledImageSize / 2);
+                    album.MediumArtwork = new PclBitmapImage(new Uri(AppConstant.LocalStorageAppPath + filePath));
+                    album.MediumArtwork.SetDecodedPixel(App.Locator.CollectionService.ScaledImageSize / 2);
 
-                    album.SmallArtwork =
-                        new PclBitmapImage(
-                            new Uri(AppConstant.LocalStorageAppPath + filePath));
+                    album.SmallArtwork = new PclBitmapImage(new Uri(AppConstant.LocalStorageAppPath + filePath));
                     album.SmallArtwork.SetDecodedPixel(50);
                 });
         }
 
         private static async Task SaveImageAsync(string filePath, string url)
         {
-            var file =
-                await
-                StorageHelper.CreateFileAsync(
-                    filePath,
-                    option: CreationCollisionOption.ReplaceExisting);
+            var file = await StorageHelper.CreateFileAsync(filePath, option: CreationCollisionOption.ReplaceExisting);
 
             using (var client = new HttpClient())
             {
@@ -935,30 +1008,30 @@ namespace Audiotica
             var picker = new PlaylistPicker(songs)
             {
                 Action = async playlist =>
+                {
+                    App.SupressBackEvent -= AppOnSupressBackEvent;
+                    UiBlockerUtility.Unblock();
+                    ModalSheetUtility.Hide();
+                    for (var i = 0; i < songs.Count; i++)
                     {
-                        App.SupressBackEvent -= AppOnSupressBackEvent;
-                        UiBlockerUtility.Unblock();
-                        ModalSheetUtility.Hide();
-                        for (var i = 0; i < songs.Count; i++)
+                        var song = songs[i];
+
+                        // only add if is not there already
+                        if (playlist.Songs.FirstOrDefault(p => p.SongId == song.Id) == null)
                         {
-                            var song = songs[i];
-
-                            // only add if is not there already
-                            if (playlist.Songs.FirstOrDefault(p => p.SongId == song.Id) == null)
-                            {
-                                await App.Locator.CollectionService.AddToPlaylistAsync(playlist, song).ConfigureAwait(false);
-                            }
-
-                            if (App.Locator.Player.CurrentQueue != null || !App.Locator.Settings.AddToInsert)
-                            {
-                                continue;
-                            }
-
-                            songs.RemoveAt(0);
-                            songs.Reverse();
-                            songs.Insert(0, song);
+                            await App.Locator.CollectionService.AddToPlaylistAsync(playlist, song).ConfigureAwait(false);
                         }
+
+                        if (App.Locator.Player.CurrentQueue != null || !App.Locator.Settings.AddToInsert)
+                        {
+                            continue;
+                        }
+
+                        songs.RemoveAt(0);
+                        songs.Reverse();
+                        songs.Insert(0, song);
                     }
+                }
             };
 
             App.SupressBackEvent += AppOnSupressBackEvent;
@@ -1072,37 +1145,6 @@ namespace Audiotica
 
         #endregion
 
-        public static void RequiresCollectionToLoad(Action action)
-        {
-            if (App.Locator.CollectionService.IsLibraryLoaded)
-            {
-                try
-                {
-                    action();
-                }
-                catch (Exception e)
-                {
-                    Insights.Report(e, "Where", "RequiresCollectionToLoad-Loaded");
-                }
-            }
-            else
-            {
-                UiBlockerUtility.Block("Waiting for collection to load...");
-                App.Locator.CollectionService.LibraryLoaded += (sender, args) =>
-                {
-                    try
-                    {
-                        action();
-                    }
-                    catch (Exception e)
-                    {
-                        Insights.Report(e, "Where", "RequiresCollectionToLoad");
-                    }
-                    UiBlockerUtility.Unblock();
-                };
-            }
-        }
-
         #region Heper methods
 
         private static void ExitIfArtistEmpty(Artist artist)
@@ -1142,7 +1184,8 @@ namespace Audiotica
         private static async Task<SavingError> _SaveTrackAsync(
             SimpleTrack track, 
             FullAlbum album, 
-            bool onFinishDownloadArtwork = true, bool manualMatch = false)
+            bool onFinishDownloadArtwork = true, 
+            bool manualMatch = false)
         {
             var alreadySaving = SpotifySavingTracks.FirstOrDefault(p => p == track.Id) != null;
 
@@ -1178,7 +1221,10 @@ namespace Audiotica
 
             SpotifySavingTracks.Remove(track.Id);
 
-            if (!onFinishDownloadArtwork) return result;
+            if (!onFinishDownloadArtwork)
+            {
+                return result;
+            }
 
             var collAlbum = App.Locator.CollectionService.Albums.FirstOrDefault(p => p.ProviderId.Contains(album.Id));
             SaveAlbumImageAsync(collAlbum, album.Images[0].Url);

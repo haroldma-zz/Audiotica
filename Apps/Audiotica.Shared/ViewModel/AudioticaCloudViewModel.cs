@@ -43,6 +43,11 @@ namespace Audiotica.ViewModel
             if (success)
             {
                 CurtainPrompt.Show("Welcome!");
+
+                // Sync collection
+                await CollectionHelper.CloudSync(false);
+                await CollectionHelper.DownloadAlbumsArtworkAsync();
+                await CollectionHelper.DownloadArtistsArtworkAsync();
             }
         }
 

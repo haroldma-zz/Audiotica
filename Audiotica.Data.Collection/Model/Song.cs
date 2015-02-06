@@ -26,7 +26,7 @@ namespace Audiotica.Data.Collection.Model
             ProviderId = cloud.ProviderId;
             TrackNumber = cloud.TrackNumber;
             Duration = cloud.Duration;
-            SongState = SongState.JustSynced;
+            SongState = SongState.Matching;
             HeartState = cloud.HeartState;
             PlayCount = cloud.PlayCount;
             LastPlayed = cloud.LastPlayed;
@@ -128,7 +128,8 @@ namespace Audiotica.Data.Collection.Model
         Downloaded,
         Local,
         Temp,
-        JustSynced
+        Matching,
+        NoMatch
         //still playing with different states
     }
 }
