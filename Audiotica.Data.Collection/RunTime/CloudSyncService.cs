@@ -32,6 +32,8 @@ namespace Audiotica.Data.Collection.RunTime
             _sqlService = sqlService;
         }
 
+        public event EventHandler AddedSong;
+
         public DateTime LastSyncTime
         {
             get
@@ -96,7 +98,7 @@ namespace Audiotica.Data.Collection.RunTime
         /// <returns>Task.</returns>
         private async Task PullSyncDeletedSongsAsync(IEnumerable<CloudSong> onlineSongs)
         {
-            var collectionSongs = _collectionService.Songs.Where(p => p.CloudId != null).ToList();
+            var collectionSongs = _collectionService.Songs.Where(p => p.CloudId != null && p.SongState != SongState.Local).ToList();
 
             foreach (var song in from song in collectionSongs
                                  let cloudSong = onlineSongs.FirstOrDefault(p => p.Id == song.CloudId)
@@ -115,13 +117,19 @@ namespace Audiotica.Data.Collection.RunTime
         /// <returns>Task.</returns>
         private async Task PullSyncNewSongsAsync(IEnumerable<CloudSong> onlineSongs)
         {
-            var collectionSongs = _collectionService.Songs.ToList();
+            var collectionSongs = _collectionService.Songs.Where(p => p.SongState != SongState.Local).ToList();
 
             foreach (var onlineSong in from onlineSong in onlineSongs
                                        let localSong = collectionSongs.FirstOrDefault(p => p.CloudId == onlineSong.Id)
                                        where localSong == null
                                        select onlineSong)
             {
+                if (LastSyncTime > onlineSong.CreatedAt)
+                {
+                    await _mobileServiceClient.GetTable<CloudSong>().DeleteAsync(onlineSong).ConfigureAwait(false);
+                    continue;
+                }
+
                 // Cloud song is not in the collection, check if it was saved before syncing
                 var collSong = collectionSongs.FirstOrDefault(p => p.ProviderId == onlineSong.ProviderId);
                 if (collSong != null)
@@ -131,6 +139,12 @@ namespace Audiotica.Data.Collection.RunTime
                 }
                 else
                 {
+                    if (onlineSong.Album == null | onlineSong.Artist == null)
+                    {
+                        await _mobileServiceClient.GetTable<CloudSong>().DeleteAsync(onlineSong);
+                        continue;
+                    }
+
                     // Can't change CloudSong to Song, so need to create a new song
                     var newSong = new Song(onlineSong)
                     {
@@ -140,6 +154,7 @@ namespace Audiotica.Data.Collection.RunTime
 
                     // By setting it to just synced, the app knows it has to match an audio url to it
                     await _collectionService.AddSongAsync(newSong).ConfigureAwait(false);
+                    OnAddedSong(newSong);
                 }
             }
         }
@@ -158,8 +173,11 @@ namespace Audiotica.Data.Collection.RunTime
                                        where collectionSong == null
                                        select onlineSong)
             {
-                // Delete it
-                await _mobileServiceClient.GetTable<CloudSong>().DeleteAsync(onlineSong).ConfigureAwait(false);
+                // Delete it, if it wasn't already
+                if (onlineSong.Id != null)
+                {
+                    await _mobileServiceClient.GetTable<CloudSong>().DeleteAsync(onlineSong).ConfigureAwait(false);
+                }
             }
         }
 
@@ -178,7 +196,7 @@ namespace Audiotica.Data.Collection.RunTime
             var syncTime = DateTime.UtcNow;
 
             // Only push songs that have been added since the last sync
-            var collectionSongs = _collectionService.Songs.Where(p => p.CreatedAt > LastSyncTime).ToList();
+            var collectionSongs = _collectionService.Songs.Where(p => p.CreatedAt > LastSyncTime && p.SongState != SongState.Local).ToList();
 
             foreach (var collectionSong in collectionSongs)
             {
@@ -249,6 +267,15 @@ namespace Audiotica.Data.Collection.RunTime
             }
 
             LastSyncTime = syncTime;
+        }
+
+        protected virtual void OnAddedSong(Song song)
+        {
+            var handler = AddedSong;
+            if (handler != null)
+            {
+                handler(song, EventArgs.Empty);
+            }
         }
     }
 }

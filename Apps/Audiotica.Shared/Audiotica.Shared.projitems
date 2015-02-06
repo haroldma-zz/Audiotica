@@ -18,6 +18,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)AppBarHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AudioticaSubscriptionVisibilityConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AutcpHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)BoolOpacityConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CollectionHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CollectionCommandHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ContinuationManager.cs" />

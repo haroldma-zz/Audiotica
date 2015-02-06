@@ -1,4 +1,5 @@
-﻿using Audiotica.Core.WinRt.Common;
+﻿using Audiotica.Core.Utils.Interfaces;
+using Audiotica.Core.WinRt.Common;
 using Audiotica.Data.Service.Interfaces;
 using Audiotica.PartialView;
 using Audiotica.View.Setting;
@@ -10,8 +11,11 @@ namespace Audiotica.ViewModel
 {
     public class AudioticaCloudViewModel : ViewModelBase
     {
-        public AudioticaCloudViewModel(IAudioticaService service)
+        private readonly IAppSettingsHelper _appSettingsHelper;
+
+        public AudioticaCloudViewModel(IAudioticaService service, IAppSettingsHelper appSettingsHelper)
         {
+            _appSettingsHelper = appSettingsHelper;
             this.Service = service;
             this.SignInCommand = new RelayCommand(this.SignInExecute);
             this.SignUpCommand = new RelayCommand(this.SignUpExecute);
@@ -32,6 +36,7 @@ namespace Audiotica.ViewModel
         private void LogoutExecute()
         {
             this.Service.Logout();
+            _appSettingsHelper.Write("LastSyncTime", null);
             CurtainPrompt.Show("Goodbye!");
         }
 

@@ -3,6 +3,9 @@
 using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+
+using Microsoft.WindowsAzure.MobileServices;
+
 using SQLite;
 
 #endregion
@@ -16,6 +19,7 @@ namespace Audiotica.Data.Collection
             CreatedAt = DateTime.UtcNow;
         }
 
+        [CreatedAt]
         public DateTime CreatedAt { get; set; }
 
         [PrimaryKey, AutoIncrement]

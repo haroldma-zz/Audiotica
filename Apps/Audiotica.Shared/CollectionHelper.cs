@@ -81,6 +81,10 @@ namespace Audiotica
                             App.Locator.AppSettingsHelper, 
                             App.Locator.SqlService);
 
+                        sync.AddedSong += (sender, args) =>
+                        {
+                            MatchSong(sender as Song);
+                        };
                         await sync.SyncAsync();
                     }
                 }
@@ -950,6 +954,11 @@ namespace Audiotica
         public static async Task PlaySongsAsync(Song song, List<Song> songs, bool forceClear = false)
         {
             if (song == null || songs == null || songs.Count == 0)
+            {
+                return;
+            }
+
+            if (!song.IsMatched)
             {
                 return;
             }

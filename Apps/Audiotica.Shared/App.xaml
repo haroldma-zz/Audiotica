@@ -19,8 +19,6 @@
         <common:TimespanToStringConverter x:Key="TimespanToStringConverter" />
         <common:UpperCaseConverter x:Key="UpperCaseConverter" />
         <common:NotEmptyToStringConverter x:Key="DashNotEmptyToStringConverter" NotEmptyText="-" />
-        <local:SongStateConverter x:Key="DownloadingSongStateConverter" SongState="Downloading" />
-        <local:SongStateConverter x:Key="NoneSongStateConverter" SongState="None" />
         <common:CountToPluralConverter x:Key="SongToPluralConverter" x:Uid="CountSong" SingularText="song"
                                        PluralText="songs" />
         <common:CountToPluralConverter x:Key="AlbumToPluralConverter" x:Uid="CountAlbumName" SingularText="album"

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 
 using Audiotica.Core.Exceptions;
 using Audiotica.Data.Collection;
+using Audiotica.Data.Collection.Model;
 using Audiotica.Data.Spotify.Models;
 
 #endregion
@@ -53,7 +54,6 @@ namespace Audiotica
                 preparedSong.Album = album.ToAlbum();
                 preparedSong.Artist = album.Artist.ToArtist();
                 preparedSong.Album.PrimaryArtist = preparedSong.Artist;
-
                 await App.Locator.CollectionService.AddSongAsync(preparedSong).ConfigureAwait(false);
                 CollectionHelper.MatchSong(preparedSong);
                 return SavingError.None;

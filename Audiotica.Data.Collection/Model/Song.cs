@@ -68,6 +68,7 @@ namespace Audiotica.Data.Collection.Model
             {
                 _songState = value;
                 OnPropertyChanged();
+                OnPropertyChanged("IsMatched");
             }
         }
 
