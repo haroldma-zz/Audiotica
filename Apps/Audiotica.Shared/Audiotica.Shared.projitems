@@ -31,6 +31,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Navigator.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PageBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ProductConstans.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SaveResults.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SavingError.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LocalMusicHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ScreenTimeoutHelper.cs" />

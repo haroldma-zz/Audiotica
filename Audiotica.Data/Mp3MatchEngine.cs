@@ -103,7 +103,11 @@ namespace Audiotica.Data
             while (currentProvider < this.providers.Length)
             {
                 var mp3Provider = this.providers[currentProvider];
-                url = await this.GetMatch(mp3Provider, title, artist).ConfigureAwait(false);
+                try
+                {
+                    url = await this.GetMatch(mp3Provider, title, artist).ConfigureAwait(false);
+                }
+                catch { }
 
                 if (url != null)
                 {

@@ -14,13 +14,13 @@ namespace Audiotica
 {
     public static class SpotifyHelper
     {
-        public static async Task<SavingError> SaveTrackAsync(SimpleTrack track, FullAlbum album)
+        public static async Task<SaveResults> SaveTrackAsync(SimpleTrack track, FullAlbum album)
         {
             try
             {
                 if (track == null || album == null)
                 {
-                    return SavingError.Unknown;
+                    return new SaveResults() { Error = SavingError.Unknown };
                 }
 
                 var preparedSong = track.ToSong();
@@ -30,7 +30,7 @@ namespace Audiotica
                     album.Name, 
                     album.Artist != null ? album.Artist.Name : track.Artist.Name))
                 {
-                    return SavingError.AlreadyExists;
+                    return new SaveResults() { Error = SavingError.AlreadyExists };
                 }
 
                 var fullTrack = track as FullTrack;
@@ -56,15 +56,15 @@ namespace Audiotica
                 preparedSong.Album.PrimaryArtist = preparedSong.Artist;
                 await App.Locator.CollectionService.AddSongAsync(preparedSong).ConfigureAwait(false);
                 CollectionHelper.MatchSong(preparedSong);
-                return SavingError.None;
+                return new SaveResults() { Error = SavingError.None, Song = preparedSong};
             }
             catch (NetworkException)
             {
-                return SavingError.Network;
+                return new SaveResults() { Error = SavingError.Network };
             }
             catch
             {
-                return SavingError.Unknown;
+                return new SaveResults() { Error = SavingError.Unknown };
             }
         }
     }

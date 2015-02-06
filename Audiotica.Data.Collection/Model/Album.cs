@@ -29,7 +29,11 @@ namespace Audiotica.Data.Collection.Model
             CloudId = cloud.Id;
             Genre = cloud.Genre;
             ReleaseDate = cloud.ReleaseDate;
-            PrimaryArtist = new Artist(cloud.PrimaryArtist);
+
+            if (cloud.PrimaryArtist != null)
+            {
+                PrimaryArtist = new Artist(cloud.PrimaryArtist);
+            }
         }
 
         public string ProviderId { get; set; }

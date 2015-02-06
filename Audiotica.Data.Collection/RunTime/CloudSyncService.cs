@@ -145,6 +145,11 @@ namespace Audiotica.Data.Collection.RunTime
                         continue;
                     }
 
+                    if (onlineSong.Album.PrimaryArtist == null)
+                    {
+                        onlineSong.Album.PrimaryArtist = onlineSong.Artist;
+                    }
+
                     // Can't change CloudSong to Song, so need to create a new song
                     var newSong = new Song(onlineSong)
                     {

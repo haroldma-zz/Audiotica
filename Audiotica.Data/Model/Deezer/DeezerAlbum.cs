@@ -8,7 +8,7 @@
 
         public string bigCover
         {
-            get { return cover += "?size=big"; }
+            get { return cover.Contains("?") ? cover : cover += "?size=big"; }
         }
 
         public string tracklist { get; set; }

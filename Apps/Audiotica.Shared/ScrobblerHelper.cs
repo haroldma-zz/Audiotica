@@ -14,7 +14,7 @@ namespace Audiotica
 {
     public static class ScrobblerHelper
     {
-        public static async Task<SavingError> SaveTrackAsync(LastTrack track)
+        public static async Task<SaveResults> SaveTrackAsync(LastTrack track)
         {
             try
             {
@@ -32,7 +32,7 @@ namespace Audiotica
                     track.AlbumName, 
                     track.ArtistName))
                 {
-                    return SavingError.AlreadyExists;
+                    return new SaveResults() { Error = SavingError.AlreadyExists };
                 }
 
                 if (preparedSong == null)
@@ -43,34 +43,34 @@ namespace Audiotica
                 await App.Locator.CollectionService.AddSongAsync(preparedSong).ConfigureAwait(false);
 
                 CollectionHelper.MatchSong(preparedSong);
-                return SavingError.None;
+                return new SaveResults{Error = SavingError.None, Song = preparedSong};
             }
             catch (NetworkException)
             {
-                return SavingError.Network;
+                return new SaveResults { Error = SavingError.Network };
             }
             catch
             {
-                return SavingError.Unknown;
+                return new SaveResults { Error = SavingError.Unknown };
             }
         }
 
-        internal static async Task<Song> PrepareTrackForDownloadAsync(LastTrack lastTrack)
+        internal static async Task<Song> PrepareTrackForDownloadAsync(LastTrack track)
         {
-            var track =
+            track =
                 await
-                App.Locator.ScrobblerService.GetDetailTrack(lastTrack.Name, lastTrack.ArtistName).ConfigureAwait(false);
+                App.Locator.ScrobblerService.GetDetailTrack(track.Name, track.ArtistName).ConfigureAwait(false);
             LastArtist artist;
 
             var preparedSong = track.ToSong();
             preparedSong.ArtistName = track.ArtistName;
 
-            if (!string.IsNullOrEmpty(lastTrack.AlbumName + track.AlbumName))
+            if (!string.IsNullOrEmpty(track.AlbumName + track.AlbumName))
             {
                 var lastAlbum =
                     await
                     App.Locator.ScrobblerService.GetDetailAlbum(
-                        string.IsNullOrEmpty(lastTrack.AlbumName) ? track.AlbumName : lastTrack.AlbumName, 
+                        string.IsNullOrEmpty(track.AlbumName) ? track.AlbumName : track.AlbumName, 
                         track.ArtistName);
 
                 artist = await App.Locator.ScrobblerService.GetDetailArtist(track.ArtistName).ConfigureAwait(false);

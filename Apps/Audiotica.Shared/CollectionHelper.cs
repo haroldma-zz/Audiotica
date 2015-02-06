@@ -732,8 +732,7 @@ namespace Audiotica
 
                 if (collAlbum == null)
                 {
-                    collAlbum = App.Locator.CollectionService.Albums.FirstOrDefault(
-                        p => p.ProviderId.Contains(album.Id));
+                    collAlbum = App.Locator.CollectionService.Albums.FirstOrDefault(p => p.ProviderId.Contains(album.Id));
                     await SaveAlbumImageAsync(collAlbum, album.Images[0].Url);
                     await DownloadArtistsArtworkAsync();
                 }
@@ -867,11 +866,7 @@ namespace Audiotica
                                         album.Name + " " + album.PrimaryArtist.Name);
                                 var deezerAlbum = results.data.FirstOrDefault();
 
-                                if (deezerAlbum == null
-                                    || (!album.Name.ToLower().Contains(deezerAlbum.title.ToLower())
-                                        && !album.PrimaryArtist.Name.ToLower()
-                                                .Contains(deezerAlbum.artist.name.ToLower())
-                                        || deezerAlbum.bigCover == null))
+                                if (deezerAlbum == null || (!album.Name.ToLower().Contains(deezerAlbum.title.ToLower()) && (!album.PrimaryArtist.Name.ToLower().Contains(deezerAlbum.artist.name.ToLower()) || deezerAlbum.bigCover == null)))
                                 {
                                     album.HasArtwork = false;
                                     album.NoArtworkFound = true;
@@ -881,7 +876,6 @@ namespace Audiotica
 
                                 artworkUrl = deezerAlbum.bigCover;
                             }
-
                             await SaveAlbumImageAsync(album, artworkUrl);
                         }
                         catch
@@ -1283,20 +1277,22 @@ namespace Audiotica
                 App.Locator.SqlService.Commit();
             }
 
-            ShowErrorResults(result, track.Name);
+            ShowErrorResults(result.Error, track.Name);
 
             SpotifySavingTracks.Remove(track.Id);
 
             if (!onFinishDownloadArtwork)
             {
-                return result;
+                return result.Error;
             }
 
-            var collAlbum = App.Locator.CollectionService.Albums.FirstOrDefault(p => p.ProviderId.Contains(album.Id));
-            SaveAlbumImageAsync(collAlbum, album.Images[0].Url);
+            if (!result.Song.Album.HasArtwork && !result.Song.Album.NoArtworkFound)
+            {
+                SaveAlbumImageAsync(result.Song.Album, album.Images[0].Url);
+            }
             DownloadArtistsArtworkAsync();
 
-            return result;
+            return result.Error;
         }
 
         private static async Task<SavingError> _SaveTrackAsync(LastTrack track)
@@ -1328,13 +1324,23 @@ namespace Audiotica
                 App.Locator.SqlService.Commit();
             }
 
-            ShowErrorResults(result, track.Name);
+            ShowErrorResults(result.Error, track.Name);
 
             LastfmSavingTracks.Remove(track.Id);
 
-            DownloadAlbumsArtworkAsync();
+            if (!result.Song.Album.HasArtwork && !result.Song.Album.NoArtworkFound)
+            {
+                if (track.Images != null && track.Images.Largest != null)
+                {
+                    SaveAlbumImageAsync(result.Song.Album, track.Images.Largest.AbsoluteUri);
+                }
+                else
+                {
+                    DownloadAlbumsArtworkAsync();
+                }
+            }
             DownloadArtistsArtworkAsync();
-            return result;
+            return result.Error;
         }
 
         private static void ShowErrorResults(SavingError result, string trackName)
