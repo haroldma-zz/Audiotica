@@ -58,5 +58,6 @@
     <Capability Name="internetClientServer" />
     <Capability Name="musicLibrary" />
     <Capability Name="removableStorage" />
+    <DeviceCapability Name="microphone" />
   </Capabilities>
 </Package>

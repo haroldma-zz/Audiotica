@@ -24,9 +24,9 @@ namespace Audiotica.View
             InitializeComponent();
         }
 
-        public override async void NavigatedTo(object parameter)
+        public async override void NavigatedTo(Windows.UI.Xaml.Navigation.NavigationMode mode, object parameter)
         {
-            base.NavigatedTo(parameter);
+            base.NavigatedTo(mode, parameter);
             
             var reset = App.Locator.AppSettingsHelper.Read<bool>("FactoryReset");
 

@@ -1012,7 +1012,7 @@ namespace Audiotica
             }
         }
 
-        public static async Task AddToQueueAsync(
+        public static async Task<QueueSong> AddToQueueAsync(
             Song song, 
             bool shuffleInsert = true, 
             bool playIfNotActive = true, 
@@ -1025,7 +1025,7 @@ namespace Audiotica
                 if (currentlyPreparing)
                 {
                     CurtainPrompt.ShowError("GenericTryAgain".FromLanguageResource());
-                    return;
+                    return null;
                 }
 
                 if (!App.Locator.Player.IsPlayerActive && clearIfNotActive)
@@ -1066,9 +1066,28 @@ namespace Audiotica
                     await App.Locator.CollectionService.DeleteFromQueueAsync(queueToRemove).ConfigureAwait(false);
                 }
             }
+
+            return queueSong;
         }
 
         #endregion
+
+        public static void RequiresCollectionToLoad(Action action)
+        {
+            if (App.Locator.CollectionService.IsLibraryLoaded)
+            {
+                action();
+            }
+            else
+            {
+                UiBlockerUtility.Block("Loading collection...");
+                App.Locator.CollectionService.LibraryLoaded += (sender, args) =>
+                {
+                    action();
+                    UiBlockerUtility.Unblock();
+                };
+            }
+        }
 
         #region Heper methods
 

@@ -18,9 +18,9 @@ namespace Audiotica.View
             HardwareButtons.BackPressed += this.HardwareButtonsBackPressed;
         }
 
-        public override void NavigatedTo(object parameter)
+        public override void NavigatedTo(Windows.UI.Xaml.Navigation.NavigationMode mode, object parameter)
         {
-            base.NavigatedTo(parameter);
+            base.NavigatedTo(mode, parameter);
             var song = parameter as Song;
             Messenger.Default.Send(song, "manual-match");
         }

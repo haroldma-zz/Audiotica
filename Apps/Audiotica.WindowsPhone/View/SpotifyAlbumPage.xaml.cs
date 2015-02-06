@@ -19,9 +19,9 @@ namespace Audiotica.View
             InitializeComponent();
         }
 
-        public override void NavigatedTo(object parameter)
+        public override void NavigatedTo(Windows.UI.Xaml.Navigation.NavigationMode mode, object parameter)
         {
-            base.NavigatedTo(parameter);
+            base.NavigatedTo(mode, parameter);
             var album = parameter as string;
 
             if (album == null) return;

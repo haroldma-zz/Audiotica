@@ -1,0 +1,48 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<VoiceCommands xmlns="http://schemas.microsoft.com/voicecommands/1.1">
+  <CommandSet xml:lang="en-us" Name="examplevcd">
+    <CommandPrefix>Audiotica</CommandPrefix>
+    <Example>Play and search for music</Example>
+
+    <Command Name="Search">
+      <Example>search for Maroon 5</Example>
+      <ListenFor>search for {term}</ListenFor>
+      <Feedback>Searching for {term}</Feedback>
+      <Navigate/>
+    </Command>
+
+    <Command Name="NowPlaying">
+      <Example>open now playing</Example>
+      <ListenFor>[open] now playing</ListenFor>
+      <Feedback>Opening now playing</Feedback>
+      <Navigate/>
+    </Command>
+
+    <Command Name="PlaySong">
+      <Example>play Maps by Maroon 5</Example>
+      <ListenFor>play {song} by {entry}</ListenFor>
+      <Feedback>Playing {song} by {entry}</Feedback>
+      <Navigate/>
+    </Command>
+
+    <Command Name="PlayEntry">
+      <Example>play Maroon 5</Example>
+      <ListenFor>play {entry}</ListenFor>
+      <Feedback>Playing {entry}</Feedback>
+      <Navigate/>
+    </Command>
+
+    <PhraseTopic Label="song" Scenario="Name">
+      <Subject>Song</Subject>
+    </PhraseTopic>
+
+    <PhraseTopic Label="entry" Scenario="Name">
+      <Subject>Artist or Album</Subject>
+    </PhraseTopic>
+
+    <PhraseTopic Label="term" Scenario="Search">
+      <Subject>Search term</Subject>
+    </PhraseTopic>
+
+  </CommandSet>
+</VoiceCommands>

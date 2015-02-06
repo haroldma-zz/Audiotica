@@ -36,7 +36,7 @@ namespace Audiotica
             _navigatedAway = false;
         }
 
-        public virtual void NavigatedTo(Object parameter)
+        public virtual void NavigatedTo(NavigationMode mode, Object parameter)
         {
             var pageName = "HomePage";
 

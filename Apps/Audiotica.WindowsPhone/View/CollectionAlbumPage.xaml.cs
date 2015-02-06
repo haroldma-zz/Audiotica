@@ -108,10 +108,9 @@ namespace Audiotica.View
             get { return _delegate ?? (_delegate = ItemListView_ContainerContentChanging); }
         }
 
-        public override void NavigatedTo(object e)
+        public override void NavigatedTo(Windows.UI.Xaml.Navigation.NavigationMode mode, object e)
         {
-            base.NavigatedTo(e);
-            base.NavigatedTo(e);
+            base.NavigatedTo(mode, e);
             var id = e as int?;
 
             if (id == null) return;
@@ -188,7 +187,7 @@ namespace Audiotica.View
                 AppBarHelper.SaveState(bar);
                 AppBarHelper.SwitchState(bar, _selectionModeCommands, _selectionSecondaryModeCommands);
             }
-            else
+            else if (!SongList.IsItemClickEnabled)
             {
                 HardwareButtons.BackPressed -= HardwareButtonsOnBackPressed;
                 UiBlockerUtility.Unblock();

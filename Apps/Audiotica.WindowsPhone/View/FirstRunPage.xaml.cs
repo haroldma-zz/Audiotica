@@ -22,9 +22,9 @@ namespace Audiotica.View
             this.InitializeComponent();
         }
 
-        public override void NavigatedTo(object parameter)
+        public override void NavigatedTo(Windows.UI.Xaml.Navigation.NavigationMode mode, object parameter)
         {
-            base.NavigatedTo(parameter);
+            base.NavigatedTo(mode, parameter);
             BackgroundAnimation.Begin();
         }
 

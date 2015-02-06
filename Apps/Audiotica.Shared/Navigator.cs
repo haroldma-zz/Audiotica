@@ -82,6 +82,7 @@ namespace Audiotica
             PageBase page;
             if (CurrentPage != null && CurrentPage.GetType() == typeof (TPage))
             {
+                CurrentPage.NavigatedTo(NavigationMode.Refresh, parameter);
                 return;
             }
             OnNavigating();
@@ -103,7 +104,7 @@ namespace Audiotica
 
                     _rootContainer.Children.Move((uint) from, (uint) to);
 
-                    page.NavigatedTo(parameter);
+                    page.NavigatedTo(NavigationMode.Forward,  parameter);
                     _rootPage.BottomAppBar = page.Bar;
                     OnNavigated();
                 });
@@ -122,7 +123,7 @@ namespace Audiotica
                         _rootPage.BottomAppBar = transition.FromPage.Bar;
                         transition.ToPage.NavigatedFrom(NavigationMode.Back);
                         transition.ToPage.IsHitTestVisible = false;
-                        transition.FromPage.NavigatedTo(null);
+                        transition.FromPage.NavigatedTo(NavigationMode.Back, null);
                         transition.FromPage.IsHitTestVisible = true;
                     }));
                     return;
@@ -132,7 +133,7 @@ namespace Audiotica
             page.IsHitTestVisible = true;
             page.BeforeNavigateTo();
             TransitionHelper.Show(page);
-            page.NavigatedTo(parameter);
+            page.NavigatedTo(NavigationMode.Forward, parameter);
             CurrentPage = page;
             _rootPage.BottomAppBar = page.Bar;
 

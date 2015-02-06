@@ -93,9 +93,9 @@ namespace Audiotica.View
             ToSingleMode();
         }
 
-        public override void NavigatedTo(object parameter)
+        public override void NavigatedTo(Windows.UI.Xaml.Navigation.NavigationMode mode, object parameter)
         {
-            base.NavigatedTo(parameter);
+            base.NavigatedTo(mode, parameter);
 
             var id = parameter as int?;
 

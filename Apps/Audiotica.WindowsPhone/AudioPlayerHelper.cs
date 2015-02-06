@@ -3,12 +3,15 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+
+using Audiotica.Core;
+using Audiotica.Data.Collection.Model;
+
+using GalaSoft.MvvmLight.Threading;
+
 using Windows.Foundation.Collections;
 using Windows.Media.Playback;
-using Audiotica.Core;
-using Audiotica.Core.Utilities;
-using Audiotica.Data.Collection.Model;
-using GalaSoft.MvvmLight.Threading;
+
 using Xamarin;
 
 #endregion
@@ -17,66 +20,25 @@ namespace Audiotica
 {
     public class AudioPlayerHelper
     {
-        private bool _isShutdown;
+        private bool _isShutdown = true;
+
         public event EventHandler Shutdown;
+
         public event EventHandler TrackChanged;
+
         public event EventHandler<PlaybackStateEventArgs> PlaybackStateChanged;
 
-        protected virtual void OnPlaybackStateChanged(MediaPlayerState state)
+        public void FullShutdown()
         {
-            DispatcherHelper.RunAsync(() =>
-            {
-                var handler = PlaybackStateChanged;
-                if (handler != null) handler(this, new PlaybackStateEventArgs(state));
-            });
+            RemoveMediaPlayerEventHandlers(BackgroundMediaPlayer.Current);
+            BackgroundMediaPlayer.Shutdown();
+            App.Locator.AppSettingsHelper.Write(PlayerConstants.CurrentTrack, null);
         }
 
-        private void RaiseEvent(EventHandler handler)
+        public void NextSong()
         {
-            DispatcherHelper.RunAsync(() =>
-            {
-                if (handler != null) handler(this, EventArgs.Empty);
-            });
-        }
-
-        private void AddMediaPlayerEventHandlers()
-        {
-            var player = BackgroundMediaPlayer.Current;
-
-            //avoid duplicate events
-            RemoveMediaPlayerEventHandlers(player);
-            player.CurrentStateChanged += MediaPlayer_CurrentStateChanged;
-            BackgroundMediaPlayer.MessageReceivedFromBackground += BackgroundMediaPlayer_MessageReceivedFromBackground;
-        }
-
-        private void RemoveMediaPlayerEventHandlers(MediaPlayer player)
-        {
-            player.CurrentStateChanged -= MediaPlayer_CurrentStateChanged;
-            BackgroundMediaPlayer.MessageReceivedFromBackground -= BackgroundMediaPlayer_MessageReceivedFromBackground;
-        }
-
-        private void MediaPlayer_CurrentStateChanged(MediaPlayer sender, object args)
-        {
-            OnPlaybackStateChanged(BackgroundMediaPlayer.Current.CurrentState);
-        }
-
-        private void BackgroundMediaPlayer_MessageReceivedFromBackground(object sender,
-            MediaPlayerDataReceivedEventArgs e)
-        {
-            foreach (var key in e.Data.Keys)
-            {
-                switch (key)
-                {
-                    case PlayerConstants.Trackchanged:
-                        RaiseEvent(TrackChanged);
-                        break;
-                }
-            }
-        }
-
-        public void OnShuffleChanged()
-        {
-            RaiseEvent(TrackChanged);
+            var value = new ValueSet { { PlayerConstants.SkipNext, string.Empty } };
+            BackgroundMediaPlayer.SendMessageToBackground(value);
         }
 
         public void OnAppActive()
@@ -102,26 +64,8 @@ namespace Audiotica
             RemoveMediaPlayerEventHandlers(BackgroundMediaPlayer.Current);
         }
 
-        public void PlaySong(QueueSong song)
+        public void OnShuffleChanged()
         {
-            if (song == null)
-                return;
-
-            Insights.Track("Play Song", new Dictionary<string, string>
-            {
-                {"Name",song.Song.Name},
-                {"ArtistName",song.Song.ArtistName},
-                {"ProviderId",song.Song.ProviderId}
-            });
-
-            if (_isShutdown)
-                AddMediaPlayerEventHandlers();
-
-            App.Locator.AppSettingsHelper.Write(PlayerConstants.CurrentTrack, song.Id);
-            
-            var message = new ValueSet {{PlayerConstants.StartPlayback, null}};
-            BackgroundMediaPlayer.SendMessageToBackground(message);
-
             RaiseEvent(TrackChanged);
         }
 
@@ -138,23 +82,39 @@ namespace Audiotica
             }
         }
 
+        public async void PlaySong(QueueSong song)
+        {
+            if (song == null)
+            {
+                return;
+            }
+
+            Insights.Track(
+                "Play Song", 
+                new Dictionary<string, string>
+                {
+                    { "Name", song.Song.Name }, 
+                    { "ArtistName", song.Song.ArtistName }, 
+                    { "ProviderId", song.Song.ProviderId }
+                });
+
+            if (_isShutdown)
+            {
+                await AddMediaPlayerEventHandlers();
+            }
+
+            App.Locator.AppSettingsHelper.Write(PlayerConstants.CurrentTrack, song.Id);
+
+            var message = new ValueSet { { PlayerConstants.StartPlayback, null } };
+            BackgroundMediaPlayer.SendMessageToBackground(message);
+
+            RaiseEvent(TrackChanged);
+        }
+
         public void PrevSong()
         {
-            var value = new ValueSet {{PlayerConstants.SkipPrevious, ""}};
+            var value = new ValueSet { { PlayerConstants.SkipPrevious, string.Empty } };
             BackgroundMediaPlayer.SendMessageToBackground(value);
-        }
-
-        public void NextSong()
-        {
-            var value = new ValueSet {{PlayerConstants.SkipNext, ""}};
-            BackgroundMediaPlayer.SendMessageToBackground(value);
-        }
-
-        public void FullShutdown()
-        {
-            RemoveMediaPlayerEventHandlers(BackgroundMediaPlayer.Current);
-            BackgroundMediaPlayer.Shutdown();
-            App.Locator.AppSettingsHelper.Write(PlayerConstants.CurrentTrack, null);
         }
 
         public async Task ShutdownPlayerAsync()
@@ -162,9 +122,72 @@ namespace Audiotica
             RemoveMediaPlayerEventHandlers(BackgroundMediaPlayer.Current);
             BackgroundMediaPlayer.Shutdown();
             App.Locator.AppSettingsHelper.Write(PlayerConstants.CurrentTrack, null);
-            await Task.Delay(1000);
+            await Task.Delay(500);
             _isShutdown = true;
             RaiseEvent(Shutdown);
+        }
+
+        protected virtual void OnPlaybackStateChanged(MediaPlayerState state)
+        {
+            DispatcherHelper.RunAsync(
+                () =>
+                {
+                    var handler = PlaybackStateChanged;
+                    if (handler != null)
+                    {
+                        handler(this, new PlaybackStateEventArgs(state));
+                    }
+                });
+        }
+
+        private async Task AddMediaPlayerEventHandlers()
+        {
+            var player = BackgroundMediaPlayer.Current;
+
+            // avoid duplicate events
+            RemoveMediaPlayerEventHandlers(player);
+            player.CurrentStateChanged += MediaPlayer_CurrentStateChanged;
+            BackgroundMediaPlayer.MessageReceivedFromBackground += BackgroundMediaPlayer_MessageReceivedFromBackground;
+            _isShutdown = false;
+            await Task.Delay(250);
+        }
+
+        private void BackgroundMediaPlayer_MessageReceivedFromBackground(
+            object sender, 
+            MediaPlayerDataReceivedEventArgs e)
+        {
+            foreach (var key in e.Data.Keys)
+            {
+                switch (key)
+                {
+                    case PlayerConstants.Trackchanged:
+                        RaiseEvent(TrackChanged);
+                        break;
+                }
+            }
+        }
+
+        private void MediaPlayer_CurrentStateChanged(MediaPlayer sender, object args)
+        {
+            OnPlaybackStateChanged(BackgroundMediaPlayer.Current.CurrentState);
+        }
+
+        private void RaiseEvent(EventHandler handler)
+        {
+            DispatcherHelper.RunAsync(
+                () =>
+                {
+                    if (handler != null)
+                    {
+                        handler(this, EventArgs.Empty);
+                    }
+                });
+        }
+
+        private void RemoveMediaPlayerEventHandlers(MediaPlayer player)
+        {
+            player.CurrentStateChanged -= MediaPlayer_CurrentStateChanged;
+            BackgroundMediaPlayer.MessageReceivedFromBackground -= BackgroundMediaPlayer_MessageReceivedFromBackground;
         }
     }
 
