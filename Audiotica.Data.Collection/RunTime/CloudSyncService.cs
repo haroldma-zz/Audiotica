@@ -45,21 +45,8 @@ namespace Audiotica.Data.Collection.RunTime
             }
         }
 
-        public async Task PullAsync(List<CloudSong> onlineSongs,
-            List<CloudArtist> onlineArtists,
-            List<CloudAlbum> onlineAlbums)
+        public async Task PullAsync(List<CloudSong> onlineSongs)
         {
-            foreach (var onlineAlbum in onlineAlbums)
-            {
-                onlineAlbum.PrimaryArtist = onlineArtists.FirstOrDefault(p => p.Id == onlineAlbum.PrimaryArtistId);
-            }
-
-            foreach (var onlineSong in onlineSongs)
-            {
-                onlineSong.Artist = onlineArtists.FirstOrDefault(p => p.Id == onlineSong.ArtistId);
-                onlineSong.Album = onlineAlbums.FirstOrDefault(p => p.Id == onlineSong.AlbumId);
-            }
-
             await PullSyncNewSongsAsync(onlineSongs);
             await PullSyncDeletedSongsAsync(onlineSongs);
         }
@@ -71,16 +58,30 @@ namespace Audiotica.Data.Collection.RunTime
             var onlineArtists = await _mobileServiceClient.GetTable<CloudArtist>().ToListAsync();
             var onlineAlbums = await _mobileServiceClient.GetTable<CloudAlbum>().ToListAsync();
 
-            await PullAsync(onlineSongs, onlineArtists, onlineAlbums);
+            foreach (var onlineAlbum in onlineAlbums)
+            {
+                onlineAlbum.PrimaryArtist = onlineArtists.FirstOrDefault(p => p.Id == onlineAlbum.PrimaryArtistId);
+            }
+
+            foreach (var onlineSong in onlineSongs)
+            {
+                onlineSong.Artist = onlineArtists.FirstOrDefault(p => p.Id == onlineSong.ArtistId);
+                onlineSong.Album = onlineAlbums.FirstOrDefault(p => p.Id == onlineSong.AlbumId);
+            }
+
+            await PullAsync(onlineSongs);
             await PushAsync(onlineSongs, onlineArtists, onlineAlbums);
         }
 
         /// <summary>
         /// Pushes changes to the cloud.
         /// </summary>
-        /// <returns>
-        /// </returns>
-        public async Task PushAsync(List<CloudSong> onlineSongs,
+        /// <param name="onlineSongs">The online songs.</param>
+        /// <param name="onlineArtists">The online artists.</param>
+        /// <param name="onlineAlbums">The online albums.</param>
+        /// <returns>Task.</returns>
+        public async Task PushAsync(
+            List<CloudSong> onlineSongs,
             List<CloudArtist> onlineArtists,
             List<CloudAlbum> onlineAlbums)
         {
@@ -126,6 +127,7 @@ namespace Audiotica.Data.Collection.RunTime
                 if (collSong != null)
                 {
                     collSong.CloudId = onlineSong.Id;
+                    await _sqlService.UpdateItemAsync(collSong);
                 }
                 else
                 {

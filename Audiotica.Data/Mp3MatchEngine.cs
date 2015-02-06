@@ -38,6 +38,8 @@ namespace Audiotica.Data
         private readonly IAudioticaService audioticaService;
         private readonly INotificationManager notificationManager;
 
+        private readonly IDispatcherHelper _dispatcherHelper;
+
         private readonly Mp3Provider[] providers =
         {
              Mp3Provider.Netease, Mp3Provider.Mp3Truck, Mp3Provider.Mp3Clan, Mp3Provider.Mp3Skull, 
@@ -46,10 +48,11 @@ namespace Audiotica.Data
 
         private readonly Mp3SearchService service;
 
-        public Mp3MatchEngine(IAppSettingsHelper settingsHelper, IAudioticaService audioticaService, INotificationManager notificationManager)
+        public Mp3MatchEngine(IAppSettingsHelper settingsHelper, IAudioticaService audioticaService, INotificationManager notificationManager, IDispatcherHelper dispatcherHelper)
         {
             this.audioticaService = audioticaService;
             this.notificationManager = notificationManager;
+            _dispatcherHelper = dispatcherHelper;
             this.service = new Mp3SearchService(settingsHelper);
         }
 
@@ -82,8 +85,15 @@ namespace Audiotica.Data
                 }
 
                 if (matchResp.StatusCode != HttpStatusCode.Unauthorized)
-                    notificationManager.ShowError("Problem with Audiotica Cloud \"{0}\", finding mp3 locally.",
-                        matchResp.Message ?? "Unknown");
+                {
+                    await _dispatcherHelper.RunAsync(
+                        () =>
+                        {
+                            notificationManager.ShowError(
+                                "Problem with Audiotica Cloud \"{0}\", finding mp3 locally.",
+                                matchResp.Message ?? "Unknown");
+                        });
+                }
             }
 
 

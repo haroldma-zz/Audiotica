@@ -47,7 +47,24 @@ namespace Audiotica
 
         private static readonly List<string> SpotifySavingAlbums = new List<string>();
 
-        private static bool currentlyPreparing;
+        private static bool _currentlyPreparing;
+
+        public static void IdentifyXamarin()
+        {
+            var user = App.Locator.AudioticaService.CurrentUser;
+            if (user != null)
+            {
+                Insights.Identify(
+                    user.Id,
+                    new Dictionary<string, string>
+                    {
+                        { Insights.Traits.Email, user.Email },
+                        { "Subscription", user.Subscription.ToString() },
+                        { "SubscriptionStatus", user.SubscriptionStatus.ToString() },
+                        { Insights.Traits.Name, user.Username }
+                    });
+            }
+        }
 
         public static async Task CloudSync(bool refreshProfile = true)
         {
@@ -59,6 +76,7 @@ namespace Audiotica
                     if (refreshProfile)
                     {
                         await App.Locator.AudioticaService.GetProfileAsync();
+                        IdentifyXamarin();
                     }
 
                     if (App.Locator.AudioticaService.CurrentUser.Subscription != SubscriptionType.None)
@@ -199,6 +217,46 @@ namespace Audiotica
             catch
             {
                 CurtainPrompt.ShowError("EntryDeletingError".FromLanguageResource(), name);
+            }
+        }
+
+        public static async void MatchSong(Song song)
+        {
+            using (var handler = Insights.TrackTime("Match Song"))
+            {
+                var url = await App.Locator.Mp3MatchEngine.FindMp3For(song.Name, song.Artist.Name);
+
+                if (string.IsNullOrEmpty(url) && song.ArtistName != song.Artist.Name)
+                {
+                    // try using the song artist name when is different than the album artist name
+                    url = await App.Locator.Mp3MatchEngine.FindMp3For(song.Name, song.ArtistName);
+                }
+
+                handler.Data.Add("FoundMatch", string.IsNullOrEmpty(url) ? "False" : "True");
+                await App.Locator.PclDispatcherHelper.RunAsync(
+                    () =>
+                    {
+                        if (string.IsNullOrEmpty(url))
+                        {
+                            song.SongState = SongState.NoMatch;
+                        }
+                        else
+                        {
+                            song.AudioUrl = url;
+                            song.SongState = SongState.None;
+                        }
+                    });
+                await App.Locator.SqlService.UpdateItemAsync(song);
+            }
+        }
+
+        public static void MatchSongs()
+        {
+            var songs = App.Locator.CollectionService.Songs.Where(p => p.SongState == SongState.Matching);
+
+            foreach (var song in songs)
+            {
+                MatchSong(song);
             }
         }
 
@@ -449,14 +507,13 @@ namespace Audiotica
                         { "ArtistName", chartTrack.ArtistName }
                     }))
             {
-                CurtainPrompt.Show("SongSavingFindingMp3".FromLanguageResource(), chartTrack.Name);
                 var track = await App.Locator.Spotify.GetTrack(chartTrack.track_id);
 
                 if (track != null)
                 {
                     var album = await App.Locator.Spotify.GetAlbum(track.Album.Id);
 
-                    var result = await SaveTrackAsync(track, album, false, false);
+                    var result = await SaveTrackAsync(track, album, false);
 
                     handle.Data.Add("SavingError", result.ToString());
                     return result;
@@ -492,31 +549,17 @@ namespace Audiotica
                         { "ArtistName", track.Artist.Name }
                     }))
             {
-                if (!manualMatch)
-                {
-                    CurtainPrompt.Show("SongSavingFindingMp3".FromLanguageResource(), track.Name);
-                }
-                else
-                {
-                    UiBlockerUtility.Block("Fetching track data...");
-                }
-
                 var album = await App.Locator.Spotify.GetAlbum(track.Album.Id);
 
                 UiBlockerUtility.Unblock();
-                var result = await SaveTrackAsync(track, album, false, false, manualMatch);
+                var result = await SaveTrackAsync(track, album, false);
 
                 handle.Data.Add("SavingError", result.ToString());
                 return result;
             }
         }
 
-        public static async Task<SavingError> SaveTrackAsync(
-            SimpleTrack track, 
-            FullAlbum album, 
-            bool showFindingMessage = true, 
-            bool trackTime = true, 
-            bool manualMatch = false)
+        public static async Task<SavingError> SaveTrackAsync(SimpleTrack track, FullAlbum album, bool trackTime = true)
         {
             var handle = Insights.TrackTime(
                 "Save Song", 
@@ -534,12 +577,7 @@ namespace Audiotica
                 handle.Start();
             }
 
-            if (showFindingMessage && !manualMatch)
-            {
-                CurtainPrompt.Show("SongSavingFindingMp3".FromLanguageResource(), track.Name);
-            }
-
-            var result = await _SaveTrackAsync(track, album, manualMatch: manualMatch);
+            var result = await _SaveTrackAsync(track, album);
             ShowResults(result, track.Name);
 
             if (trackTime)
@@ -551,7 +589,7 @@ namespace Audiotica
             return result;
         }
 
-        public static async Task<SavingError> SaveTrackAsync(LastTrack track, bool showFindingMessage = true)
+        public static async Task<SavingError> SaveTrackAsync(LastTrack track)
         {
             using (
                 var handle = Insights.TrackTime(
@@ -564,11 +602,6 @@ namespace Audiotica
                         { "ArtistName", track.ArtistName }
                     }))
             {
-                if (showFindingMessage)
-                {
-                    CurtainPrompt.Show("SongSavingFindingMp3".FromLanguageResource(), track.Name);
-                }
-
                 var result = await _SaveTrackAsync(track);
                 ShowResults(result, track.Name);
 
@@ -936,15 +969,15 @@ namespace Audiotica
 
             var playbackQueue = App.Locator.CollectionService.PlaybackQueue.ToList();
 
-            var sameLength = currentlyPreparing || songs.Count < playbackQueue.Count
+            var sameLength = _currentlyPreparing || songs.Count < playbackQueue.Count
                              || playbackQueue.Count >= MaxMassPlayQueueCount;
             var containsSong = playbackQueue.FirstOrDefault(p => p.SongId == song.Id) != null;
             var createQueue = forceClear || (!sameLength || !containsSong);
 
-            if (currentlyPreparing && createQueue)
+            if (_currentlyPreparing && createQueue)
             {
                 // cancel the previous
-                currentlyPreparing = false;
+                _currentlyPreparing = false;
 
                 // wait for it to stop
                 await Task.Delay(50);
@@ -958,7 +991,7 @@ namespace Audiotica
             {
                 using (Insights.TrackTime("Create Queue", "Count", ordered.Count.ToString()))
                 {
-                    currentlyPreparing = true;
+                    _currentlyPreparing = true;
 
                     try
                     {
@@ -986,7 +1019,7 @@ namespace Audiotica
                     App.Locator.SqlService.BeginTransaction();
                     for (var index = 1; index < ordered.Count; index++)
                     {
-                        if (!currentlyPreparing)
+                        if (!_currentlyPreparing)
                         {
                             break;
                         }
@@ -997,7 +1030,7 @@ namespace Audiotica
 
                     App.Locator.SqlService.Commit();
 
-                    currentlyPreparing = false;
+                    _currentlyPreparing = false;
                 }
             }
         }
@@ -1095,7 +1128,7 @@ namespace Audiotica
             QueueSong queueSong;
             using (var handle = Insights.TrackTime("Add Song To Queue"))
             {
-                if (currentlyPreparing)
+                if (_currentlyPreparing)
                 {
                     CurtainPrompt.ShowError("GenericTryAgain".FromLanguageResource());
                     return null;
@@ -1184,8 +1217,7 @@ namespace Audiotica
         private static async Task<SavingError> _SaveTrackAsync(
             SimpleTrack track, 
             FullAlbum album, 
-            bool onFinishDownloadArtwork = true, 
-            bool manualMatch = false)
+            bool onFinishDownloadArtwork = true)
         {
             var alreadySaving = SpotifySavingTracks.FirstOrDefault(p => p == track.Id) != null;
 
@@ -1207,17 +1239,14 @@ namespace Audiotica
                 App.Locator.SqlService.BeginTransaction();
             }
 
-            var result = await SpotifyHelper.SaveTrackAsync(track, album, manualMatch);
+            var result = await SpotifyHelper.SaveTrackAsync(track, album);
 
             if (startTransaction)
             {
                 App.Locator.SqlService.Commit();
             }
 
-            if (result != SavingError.NoMatch || !manualMatch)
-            {
-                ShowErrorResults(result, track.Name);
-            }
+            ShowErrorResults(result, track.Name);
 
             SpotifySavingTracks.Remove(track.Id);
 
@@ -1277,9 +1306,6 @@ namespace Audiotica
             {
                 case SavingError.Network:
                     CurtainPrompt.Show("SongSavingNetworkError".FromLanguageResource(), trackName);
-                    break;
-                case SavingError.NoMatch:
-                    CurtainPrompt.ShowError("SongSavingNoMatch".FromLanguageResource(), trackName);
                     break;
                 case SavingError.Unknown:
                     CurtainPrompt.ShowError("EntrySavingError".FromLanguageResource(), trackName);

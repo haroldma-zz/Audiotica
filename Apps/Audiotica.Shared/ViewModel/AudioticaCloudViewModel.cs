@@ -43,6 +43,7 @@ namespace Audiotica.ViewModel
             if (success)
             {
                 CurtainPrompt.Show("Welcome!");
+                CollectionHelper.IdentifyXamarin();
 
                 // Sync collection
                 await CollectionHelper.CloudSync(false);
@@ -59,6 +60,10 @@ namespace Audiotica.ViewModel
             if (success)
             {
                 CurtainPrompt.Show("Welcome!");
+                CollectionHelper.IdentifyXamarin();
+
+                // Sync collection
+                await CollectionHelper.CloudSync(false);
             }
         }
 

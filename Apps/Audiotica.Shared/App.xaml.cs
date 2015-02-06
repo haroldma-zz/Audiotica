@@ -291,7 +291,8 @@ namespace Audiotica
 
             await CollectionHelper.CloudSync();
 
-            // downloading missing artwork
+            // downloading missing artwork and match mp3 songs where they haven't been
+            CollectionHelper.MatchSongs();
             await CollectionHelper.DownloadAlbumsArtworkAsync();
             await CollectionHelper.DownloadArtistsArtworkAsync();
         }
@@ -415,6 +416,7 @@ namespace Audiotica
             if (RootFrame.Content == null)
             {
                 Insights.Initialize("38cc9488b4e09fd2c316617d702838ca43a473d4");
+                CollectionHelper.IdentifyXamarin();
                 RootFrame.Navigated += RootFrame_FirstNavigated;
 
                 // MainPage is always in rootFrame so we don't have to worry about restoring the navigation state on resume

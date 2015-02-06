@@ -2,7 +2,11 @@
 
 using System;
 using System.Collections.ObjectModel;
+
+using Audiotica.Data.Spotify.Models;
+
 using Newtonsoft.Json;
+
 using SQLite;
 
 #endregion
@@ -12,21 +16,23 @@ namespace Audiotica.Data.Collection.Model
     public class Song : BaseEntry
     {
         private BackgroundDownload _download;
+
         private SongState _songState;
 
         public Song()
         {
+            SongState = SongState.Matching;
             AddableTo = new ObservableCollection<AddableCollectionItem>();
         }
 
-        public Song(CloudSong cloud) : this()
+        public Song(CloudSong cloud)
+            : this()
         {
             Name = cloud.Name;
             ArtistName = cloud.ArtistName;
             ProviderId = cloud.ProviderId;
             TrackNumber = cloud.TrackNumber;
             Duration = cloud.Duration;
-            SongState = SongState.Matching;
             HeartState = cloud.HeartState;
             PlayCount = cloud.PlayCount;
             LastPlayed = cloud.LastPlayed;
@@ -42,15 +48,22 @@ namespace Audiotica.Data.Collection.Model
         public int AlbumId { get; set; }
 
         public string Name { get; set; }
-        //Artist prop is for the album (main), this one is specific to each song
+
+        // Artist prop is for the album (main), this one is specific to each song
         public string ArtistName { get; set; }
+
         public int TrackNumber { get; set; }
+
         public string AudioUrl { get; set; }
 
         [JsonIgnore]
         public SongState SongState
         {
-            get { return _songState; }
+            get
+            {
+                return _songState;
+            }
+
             set
             {
                 _songState = value;
@@ -59,8 +72,11 @@ namespace Audiotica.Data.Collection.Model
         }
 
         public int PlayCount { get; set; }
+
         public DateTime LastPlayed { get; set; }
+
         public HeartState HeartState { get; set; }
+
         public TimeSpan Duration { get; set; }
 
         [JsonIgnore]
@@ -75,8 +91,7 @@ namespace Audiotica.Data.Collection.Model
         {
             get
             {
-                return SongState != SongState.Downloaded
-                       && SongState != SongState.Local;
+                return SongState != SongState.Downloaded && SongState != SongState.Local;
             }
         }
 
@@ -92,7 +107,11 @@ namespace Audiotica.Data.Collection.Model
         [JsonIgnore]
         public BackgroundDownload Download
         {
-            get { return _download; }
+            get
+            {
+                return _download;
+            }
+
             set
             {
                 _download = value;
@@ -111,25 +130,35 @@ namespace Audiotica.Data.Collection.Model
     public class AddableCollectionItem
     {
         public string Name { get; set; }
+
         public Playlist Playlist { get; set; }
     }
 
     public enum HeartState
     {
-        None,
-        Like,
+        None, 
+
+        Like, 
+
         Dislike
     }
 
     public enum SongState
     {
-        None,
-        Downloading,
-        Downloaded,
-        Local,
-        Temp,
-        Matching,
+        None, 
+
+        Downloading, 
+
+        Downloaded, 
+
+        Local, 
+
+        Temp, 
+
+        Matching, 
+
         NoMatch
-        //still playing with different states
+
+        // still playing with different states
     }
 }
