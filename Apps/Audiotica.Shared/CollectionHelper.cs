@@ -1076,14 +1076,28 @@ namespace Audiotica
         {
             if (App.Locator.CollectionService.IsLibraryLoaded)
             {
-                action();
+                try
+                {
+                    action();
+                }
+                catch (Exception e)
+                {
+                    Insights.Report(e, "Where", "RequiresCollectionToLoad-Loaded");
+                }
             }
             else
             {
                 UiBlockerUtility.Block("Waiting for collection to load...");
                 App.Locator.CollectionService.LibraryLoaded += (sender, args) =>
                 {
-                    action();
+                    try
+                    {
+                        action();
+                    }
+                    catch (Exception e)
+                    {
+                        Insights.Report(e, "Where", "RequiresCollectionToLoad");
+                    }
                     UiBlockerUtility.Unblock();
                 };
             }
