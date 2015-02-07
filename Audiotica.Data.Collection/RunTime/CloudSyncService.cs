@@ -56,9 +56,36 @@ namespace Audiotica.Data.Collection.RunTime
         public async Task SyncAsync()
         {
             // Start by getting all cloud songs
-            var onlineSongs = await _mobileServiceClient.GetTable<CloudSong>().ToListAsync().ConfigureAwait(false);
-            var onlineArtists = await _mobileServiceClient.GetTable<CloudArtist>().ToListAsync().ConfigureAwait(false);
-            var onlineAlbums = await _mobileServiceClient.GetTable<CloudAlbum>().ToListAsync().ConfigureAwait(false);
+            bool hasMore = true;
+            var onlineSongs = new List<CloudSong>();
+            var onlineArtists = new List<CloudArtist>();
+            var onlineAlbums = new List<CloudAlbum>();
+
+            while (hasMore)
+            {
+                var resultEnumerable = (IQueryResultEnumerable<CloudSong>)await _mobileServiceClient.GetTable<CloudSong>().Skip(onlineSongs.Count).IncludeTotalCount().ToListAsync().ConfigureAwait(false);
+                onlineSongs.AddRange(resultEnumerable);
+                int totalCount = (int)resultEnumerable.TotalCount;
+                hasMore = totalCount > onlineSongs.Count;
+            }
+
+            hasMore = true;
+            while (hasMore)
+            {
+                var resultEnumerable = (IQueryResultEnumerable<CloudArtist>)await _mobileServiceClient.GetTable<CloudArtist>().Skip(onlineArtists.Count).IncludeTotalCount().ToListAsync().ConfigureAwait(false);
+                onlineArtists.AddRange(resultEnumerable);
+                int totalCount = (int)resultEnumerable.TotalCount;
+                hasMore = totalCount > onlineArtists.Count;
+            }
+
+            hasMore = true;
+            while (hasMore)
+            {
+                var resultEnumerable = (IQueryResultEnumerable<CloudAlbum>)await _mobileServiceClient.GetTable<CloudAlbum>().Skip(onlineAlbums.Count).IncludeTotalCount().ToListAsync().ConfigureAwait(false);
+                onlineAlbums.AddRange(resultEnumerable);
+                int totalCount = (int)resultEnumerable.TotalCount;
+                hasMore = totalCount > onlineAlbums.Count;
+            }
 
             foreach (var onlineAlbum in onlineAlbums)
             {
