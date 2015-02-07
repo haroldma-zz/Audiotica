@@ -1,9 +1,11 @@
 ﻿#region
 
+using GalaSoft.MvvmLight.Messaging;
+
+using IF.Lastfm.Core.Objects;
+
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
-using GalaSoft.MvvmLight.Messaging;
-using IF.Lastfm.Core.Objects;
 
 #endregion
 
@@ -16,12 +18,15 @@ namespace Audiotica.View
             InitializeComponent();
         }
 
-        protected override void OnNavigatedTo(NavigationEventArgs e)
+        public override void NavigatedTo(NavigationMode mode, object parameter)
         {
-            base.OnNavigatedTo(e);
-            var name = e.Parameter as string;
+            base.NavigatedTo(mode, parameter);
+            var name = parameter as string;
 
-            if (name == null) return;
+            if (name == null || mode == NavigationMode.Back)
+            {
+                return;
+            }
 
             var msg = new GenericMessage<string>(name);
             Messenger.Default.Send(msg, "artist-detail-name");
@@ -30,7 +35,10 @@ namespace Audiotica.View
         private void ListView_ItemClick(object sender, ItemClickEventArgs e)
         {
             var album = e.ClickedItem as LastAlbum;
-            if (album != null) Frame.Navigate(typeof (AlbumPage), album);
+            if (album != null)
+            {
+                App.Navigator.GoTo<AlbumPage, ZoomInTransition>(album);
+            }
         }
     }
 }

@@ -21,5 +21,7 @@ namespace Audiotica.Data.Service.Interfaces
         Task<BaseAudioticaResponse<AudioticaUser>> GetProfileAsync();
         Task<BaseAudioticaResponse> SubscribeAsync(SubscriptionType plan, SubcriptionTimeFrame timeFrame, AudioticaStripeCard card, string coupon = null);
         Task<BaseAudioticaResponse<List<WebSong>>> GetMatchesAsync(string title, string artist, int limit = 1);
+
+        Task<AudioticaSpotlight> GetSpotlightAsync();
     }
 }

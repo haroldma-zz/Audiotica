@@ -30,7 +30,7 @@ namespace Audiotica.View
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            App.Navigator.GoTo<HomePage, ZoomOutTransition>(null);
+            App.Navigator.GoTo<HomePage, ZoomOutTransition>(null, false);
         }
 
         private void FlipView_SelectionChanged(object sender, SelectionChangedEventArgs e)

@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
+
 using Audiotica.Data.Model;
 using Audiotica.Data.Model.AudioticaCloud;
 using Audiotica.Data.Service.Interfaces;
@@ -14,17 +13,26 @@ namespace Audiotica.Data.Service.DesignTime
     {
         public AudioticaUser CurrentUser
         {
-            get { return new AudioticaUser() { Email = "hello@audiotica.fm", Username = "ILoveAudiotica6"}; }
+            get
+            {
+                return new AudioticaUser { Email = "hello@audiotica.fm", Username = "ILoveAudiotica6" };
+            }
         }
 
         public bool IsAuthenticated
         {
-            get { return true; }
+            get
+            {
+                return true;
+            }
         }
 
         public string AuthenticationToken
         {
-            get { throw new NotImplementedException(); }
+            get
+            {
+                throw new NotImplementedException();
+            }
         }
 
         public HttpClient CreateHttpClient()
@@ -52,8 +60,11 @@ namespace Audiotica.Data.Service.DesignTime
             throw new NotImplementedException();
         }
 
-        public Task<BaseAudioticaResponse> SubscribeAsync(SubscriptionType plan, SubcriptionTimeFrame timeFrame, AudioticaStripeCard card,
-                                   string coupon = null)
+        public Task<BaseAudioticaResponse> SubscribeAsync(
+            SubscriptionType plan, 
+            SubcriptionTimeFrame timeFrame, 
+            AudioticaStripeCard card, 
+            string coupon = null)
         {
             throw new NotImplementedException();
         }
@@ -61,6 +72,35 @@ namespace Audiotica.Data.Service.DesignTime
         public Task<BaseAudioticaResponse<List<WebSong>>> GetMatchesAsync(string title, string artist, int limit = 1)
         {
             throw new NotImplementedException();
+        }
+
+        public Task<AudioticaSpotlight> GetSpotlightAsync()
+        {
+            return
+                Task.FromResult(
+                    new AudioticaSpotlight
+                    {
+                        LargeFeatures =
+                            new List<SpotlightFeature>
+                            {
+                                new SpotlightFeature
+                                {
+                                    Title = "Cloud sync and more!", 
+                                    Text = "Checkout the Audiotica Cloud and get your first month free!", 
+                                    ImageUri = "ms-appx:///Assets/ListeningToMusic.jpg"
+                                }
+                            }, 
+                        MediumFeatures =
+                            new List<SpotlightFeature>
+                            {
+                                new SpotlightFeature
+                                {
+                                    Title = "Cloud sync and more!", 
+                                    Text = "Checkout the Audiotica Cloud and get your first month free!", 
+                                    ImageUri = "ms-appx:///Assets/ListeningToMusic.jpg"
+                                }
+                            }
+                    });
         }
     }
 }

@@ -102,7 +102,7 @@ namespace Audiotica.WindowsPhone.Player
             var bgConfig = new SqlServiceConfig
             {
                 Tables = bgDbTypes,
-                CurrentVersion = 4,
+                CurrentVersion = 5,
                 Path = "player.sqldb"
             };
             var sql = new SqlService(bgConfig);

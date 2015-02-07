@@ -109,7 +109,7 @@
   <ItemGroup>
     <Reference Include="IF.Lastfm.Core, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\IF.Lastfm.Zumicts.0.3.3\lib\portable-net45+win+wpa81+wp80\IF.Lastfm.Core.dll</HintPath>
+      <HintPath>..\..\packages\IF.Lastfm.Zumicts.0.3.4\lib\portable-win8+net45+wp8+wpa81+MonoAndroid+MonoTouch\IF.Lastfm.Core.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\..\packages\Newtonsoft.Json.6.0.8\lib\portable-net40+sl5+wp80+win8+wpa81\Newtonsoft.Json.dll</HintPath>

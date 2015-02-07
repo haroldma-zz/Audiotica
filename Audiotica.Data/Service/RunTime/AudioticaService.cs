@@ -39,6 +39,8 @@ namespace Audiotica.Data.Service.RunTime
 
         private const string MatchPath = BaseApiPath + "match?title={0}&artist={1}&limit={2}";
 
+        private const string SpotlightPath = BaseApiPath + "spotlight?version={0}&os={1}";
+
         private readonly ICredentialHelper credentialHelper;
 
         private readonly IAppSettingsHelper appSettingsHelper;
@@ -242,6 +244,12 @@ namespace Audiotica.Data.Service.RunTime
             await SaveLoginStateAsync(resp);
 
             return resp;
+        }
+
+        public async Task<AudioticaSpotlight> GetSpotlightAsync()
+        {
+            var resp = await GetAsync<AudioticaSpotlight>(string.Format(SpotlightPath, "1", "wp81"));
+            return resp.Data;
         }
 
         private async Task SaveLoginStateAsync(BaseAudioticaResponse<LoginData> resp)

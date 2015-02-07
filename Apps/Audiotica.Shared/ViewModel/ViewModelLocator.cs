@@ -45,6 +45,10 @@ namespace Audiotica.ViewModel
             SimpleIoc.Default.Register<INotificationManager, NotificationManager>();
             SimpleIoc.Default.Register<ICredentialHelper, PclCredentialHelper>();
             SimpleIoc.Default.Register<IAppSettingsHelper, AppSettingsHelper>();
+            SimpleIoc.Default.Register<IBitmapFactory, PclBitmapFactory>();
+
+            SimpleIoc.Default.Register<SpotifyWebApi>();
+            SimpleIoc.Default.Register<ISpotifyService, SpotifyService>();
 
             if (ViewModelBase.IsInDesignModeStatic)
             {
@@ -57,13 +61,10 @@ namespace Audiotica.ViewModel
             {
                 SimpleIoc.Default.Register<IDeezerService, DeezerService>();
                 SimpleIoc.Default.Register<IDispatcherHelper>(() => new PclDispatcherHelper(DispatcherHelper.UIDispatcher));
-                SimpleIoc.Default.Register<IBitmapFactory, PclBitmapFactory>();
-
-                var factory = new AudioticaFactory(PclDispatcherHelper, AppSettingsHelper, BitmapFactory);
 
                 SimpleIoc.Default.Register<IScrobblerService, ScrobblerService>();
-                SimpleIoc.Default.Register<SpotifyWebApi>();
-                SimpleIoc.Default.Register<ISpotifyService, SpotifyService>();
+
+                var factory = new AudioticaFactory(PclDispatcherHelper, AppSettingsHelper, BitmapFactory);
 
                 SimpleIoc.Default.Register(() => factory.CreateCollectionSqlService(10, async (connection, d) =>
                 {
@@ -75,7 +76,7 @@ namespace Audiotica.ViewModel
                         App.Locator.CollectionService.LibraryLoaded += (sender, args) =>
                             CollectionHelper.MigrateAsync();
                 }));
-                SimpleIoc.Default.Register(() => factory.CreatePlayerSqlService(4), "BackgroundSql");
+                SimpleIoc.Default.Register(() => factory.CreatePlayerSqlService(5), "BackgroundSql");
                 SimpleIoc.Default.Register(() => factory.CreateCollectionService(SqlService, BgSqlService));
 
                 SimpleIoc.Default.Register<ISongDownloadService>(() => new SongDownloadService(CollectionService, SqlService, DispatcherHelper.UIDispatcher));

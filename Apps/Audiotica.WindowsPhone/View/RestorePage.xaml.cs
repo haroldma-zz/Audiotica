@@ -91,7 +91,7 @@ namespace Audiotica.View
             }
 
             (Application.Current as App).BootAppServicesAsync();
-            App.Navigator.GoTo<HomePage, ZoomOutTransition>(null);
+            App.Navigator.GoTo<HomePage, ZoomOutTransition>(null, false);
         }
     }
 }
