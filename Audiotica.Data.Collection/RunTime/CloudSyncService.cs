@@ -200,8 +200,7 @@ namespace Audiotica.Data.Collection.RunTime
         {
             var syncTime = DateTime.UtcNow;
 
-            // Only push songs that have been added since the last sync
-            var collectionSongs = _collectionService.Songs.Where(p => p.CreatedAt > LastSyncTime && p.SongState != SongState.Local && p.CloudId == null).ToList();
+            var collectionSongs = _collectionService.Songs.Where(p => p.SongState != SongState.Local && p.CloudId == null).ToList();
 
             foreach (var collectionSong in collectionSongs)
             {
