@@ -281,7 +281,7 @@ namespace Audiotica.ViewModel
                 MediumFeatures.Add(new SpotlightFeature
                 {
                     Title = lastArtist.Name,
-                    Text = string.Format("{0:N} plays", lastArtist.PlayCount),
+                    Text = string.Format("{0:#,###} plays", lastArtist.PlayCount),
                     ImageUri = lastArtist.MainImage.Largest.AbsoluteUri,
                     Action = "artist:" + lastArtist.Name
                 });
