@@ -17,6 +17,7 @@ using Audiotica.Data.Spotify.Models;
 
 using GalaSoft.MvvmLight;
 
+using IF.Lastfm.Core.Api.Helpers;
 using IF.Lastfm.Core.Objects;
 
 #endregion
@@ -213,13 +214,7 @@ namespace Audiotica.ViewModel
 
         public async Task LoadChartDataAsync()
         {
-            try
-            {
-                LoadSpotlight();
-            }
-            catch
-            {
-            }
+            LoadSpotlight();
 
             var rnd = new Random(DateTime.Now.Millisecond);
 
@@ -260,36 +255,76 @@ namespace Audiotica.ViewModel
 
         private async void LoadSpotlight()
         {
-            var spotlight = await _audioticaService.GetSpotlightAsync();
-            var topArtist = await _service.GetTopArtistsAsync(limit: 10);
+            AudioticaSpotlight spotlight = null;
+
+            try
+            {
+                spotlight = await _audioticaService.GetSpotlightAsync();
+            }
+            catch
+            {
+                // ignored
+            }
+
+            PageResponse<LastArtist> topArtist = null;
+
+            try
+            {
+                topArtist = await _service.GetTopArtistsAsync(limit: 10);
+            }
+            catch
+            {
+                // ignored
+            }
 
             LargeFeatures = new ObservableCollection<SpotlightFeature>();
             MediumFeatures = new ObservableCollection<SpotlightFeature>();
 
-            foreach (var spotlightFeature in spotlight.LargeFeatures.Where(p => ShouldShow(p.ShowTo, p.ShowToNot)))
+            if (spotlight != null)
             {
-                LargeFeatures.Add(spotlightFeature);
-            }
-
-            foreach (var spotlightFeature in spotlight.MediumFeatures.Where(p => p.InsertAtTop && ShouldShow(p.ShowTo, p.ShowToNot)))
-            {
-                MediumFeatures.Add(spotlightFeature);
-            }
-
-            foreach (var lastArtist in topArtist.Content)
-            {
-                MediumFeatures.Add(new SpotlightFeature
+                if (spotlight.LargeFeatures != null)
                 {
-                    Title = lastArtist.Name,
-                    Text = string.Format("{0:#,###} plays", lastArtist.PlayCount),
-                    ImageUri = lastArtist.MainImage.Largest.AbsoluteUri,
-                    Action = "artist:" + lastArtist.Name
-                });
+                    foreach (
+                        var spotlightFeature in spotlight.LargeFeatures.Where(p => ShouldShow(p.ShowTo, p.ShowToNot)))
+                    {
+                        LargeFeatures.Add(spotlightFeature);
+                    }
+                }
+
+                if (spotlight.MediumFeatures != null)
+                {
+                    foreach (
+                        var spotlightFeature in
+                            spotlight.MediumFeatures.Where(p => p.InsertAtTop && ShouldShow(p.ShowTo, p.ShowToNot)))
+                    {
+                        MediumFeatures.Add(spotlightFeature);
+                    }
+                }
             }
 
-            foreach (var spotlightFeature in spotlight.MediumFeatures.Where(p => !p.InsertAtTop && ShouldShow(p.ShowTo, p.ShowToNot)))
+            if (topArtist != null && topArtist.Content != null)
             {
-                MediumFeatures.Add(spotlightFeature);
+                foreach (var lastArtist in topArtist.Content)
+                {
+                    MediumFeatures.Add(
+                        new SpotlightFeature
+                        {
+                            Title = lastArtist.Name,
+                            Text = string.Format("{0:#,###} plays", lastArtist.PlayCount),
+                            ImageUri = lastArtist.MainImage.Largest.AbsoluteUri,
+                            Action = "artist:" + lastArtist.Name
+                        });
+                }
+            }
+
+            if (spotlight != null && spotlight.MediumFeatures != null)
+            {
+                foreach (
+                    var spotlightFeature in
+                        spotlight.MediumFeatures.Where(p => !p.InsertAtTop && ShouldShow(p.ShowTo, p.ShowToNot)))
+                {
+                    MediumFeatures.Add(spotlightFeature);
+                }
             }
         }
 

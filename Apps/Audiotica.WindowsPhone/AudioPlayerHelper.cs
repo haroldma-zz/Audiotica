@@ -12,6 +12,8 @@ using GalaSoft.MvvmLight.Threading;
 using Windows.Foundation.Collections;
 using Windows.Media.Playback;
 
+using Audiotica.Core.WinRt.Common;
+
 using Xamarin;
 
 #endregion
@@ -30,9 +32,42 @@ namespace Audiotica
 
         public void FullShutdown()
         {
-            RemoveMediaPlayerEventHandlers(BackgroundMediaPlayer.Current);
+            var player = SafeMediaPlayer;
+
+            if (player == null)
+            {
+                return;
+            }
+
+            RemoveMediaPlayerEventHandlers(player);
             BackgroundMediaPlayer.Shutdown();
             App.Locator.AppSettingsHelper.Write(PlayerConstants.CurrentTrack, null);
+        }
+
+        private MediaPlayer _player;
+        public MediaPlayer SafeMediaPlayer
+        {
+            get
+            {
+                try
+                {
+                    return _player ?? (_player = BackgroundMediaPlayer.Current);
+                }
+                catch
+                {
+                    _player = null;
+                    return null;
+                }
+            }
+        }
+
+        public MediaPlayerState SafePlayerState
+        {
+            get
+            {
+                var player = SafeMediaPlayer;
+                return player == null ? MediaPlayerState.Closed : player.CurrentState;
+            }
         }
 
         public void NextSong()
@@ -55,13 +90,13 @@ namespace Audiotica
             }
 
             RaiseEvent(TrackChanged);
-            OnPlaybackStateChanged(BackgroundMediaPlayer.Current.CurrentState);
+            OnPlaybackStateChanged(SafePlayerState);
         }
 
         public void OnAppSuspended()
         {
             App.Locator.AppSettingsHelper.Write(PlayerConstants.AppState, PlayerConstants.ForegroundAppSuspended);
-            RemoveMediaPlayerEventHandlers(BackgroundMediaPlayer.Current);
+            RemoveMediaPlayerEventHandlers(SafeMediaPlayer);
         }
 
         public void OnShuffleChanged()
@@ -71,21 +106,29 @@ namespace Audiotica
 
         public void PlayPauseToggle()
         {
-            switch (BackgroundMediaPlayer.Current.CurrentState)
+            var player = SafeMediaPlayer;
+
+            if (player == null)
+            {
+                return;
+            }
+
+            switch (SafePlayerState)
             {
                 case MediaPlayerState.Playing:
-                    BackgroundMediaPlayer.Current.Pause();
+                    player.Pause();
                     break;
                 case MediaPlayerState.Paused:
-                    BackgroundMediaPlayer.Current.Play();
+                    player.Play();
                     break;
             }
         }
 
         public async void PlaySong(QueueSong song)
         {
-            if (song == null)
+            if (song == null || song.Song == null)
             {
+                CurtainPrompt.ShowError("Song seems to be empty...");
                 return;
             }
 
@@ -119,7 +162,14 @@ namespace Audiotica
 
         public async Task ShutdownPlayerAsync()
         {
-            RemoveMediaPlayerEventHandlers(BackgroundMediaPlayer.Current);
+            var player = SafeMediaPlayer;
+
+            if (player == null)
+            {
+                return;
+            }
+
+            RemoveMediaPlayerEventHandlers(player);
             BackgroundMediaPlayer.Shutdown();
             App.Locator.AppSettingsHelper.Write(PlayerConstants.CurrentTrack, null);
             await Task.Delay(500);
@@ -142,7 +192,12 @@ namespace Audiotica
 
         private async Task AddMediaPlayerEventHandlers()
         {
-            var player = BackgroundMediaPlayer.Current;
+            var player = SafeMediaPlayer;
+
+            if (player == null)
+            {
+                return;
+            }
 
             // avoid duplicate events
             RemoveMediaPlayerEventHandlers(player);
@@ -169,7 +224,7 @@ namespace Audiotica
 
         private void MediaPlayer_CurrentStateChanged(MediaPlayer sender, object args)
         {
-            OnPlaybackStateChanged(BackgroundMediaPlayer.Current.CurrentState);
+            OnPlaybackStateChanged(SafePlayerState);
         }
 
         private void RaiseEvent(EventHandler handler)

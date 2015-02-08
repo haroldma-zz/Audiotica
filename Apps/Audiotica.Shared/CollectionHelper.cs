@@ -51,6 +51,7 @@ namespace Audiotica
 
         public static async Task CloudSync(bool refreshProfile = true)
         {
+            var displayingStatus = App.Locator.CollectionService.Songs.Count == 0;
             try
             {
                 // refreshing user profile info
@@ -58,11 +59,11 @@ namespace Audiotica
                 {
                     if (refreshProfile)
                     {
-                        await App.Locator.AudioticaService.GetProfileAsync();
+                        await App.Locator.AudioticaService.GetProfileAsync().ConfigureAwait(false);
                         IdentifyXamarin();
                     }
 
-                    if (App.Locator.AudioticaService.CurrentUser.Subscription != SubscriptionType.None)
+                    if (App.Locator.AudioticaService.CurrentUser != null && App.Locator.AudioticaService.CurrentUser.Subscription != SubscriptionType.None)
                     {
                         var mobileService = new MobileServiceClient(
                             "https://audiotica-cloud.azure-mobile.net/", 
@@ -79,19 +80,33 @@ namespace Audiotica
                             mobileService, 
                             App.Locator.CollectionService, 
                             App.Locator.AppSettingsHelper, 
-                            App.Locator.SqlService);
+                            App.Locator.SqlService,
+                            App.Locator.PclDispatcherHelper);
 
-                        sync.AddedSong += (sender, args) =>
+                        EventHandler handlerStarted = (sender, args) => UiBlockerUtility.Block("Syncing new songs...");
+                        sync.OnLargeSyncStarted += handlerStarted;
+                        EventHandler handlerFinish = (sender, args) => UiBlockerUtility.Unblock();
+                        sync.OnLargeSyncFinished += handlerFinish;
+
+                        if (displayingStatus)
                         {
-                            MatchSong(sender as Song);
-                        };
-                        await sync.SyncAsync();
+                            await App.Locator.PclDispatcherHelper.RunAsync(() => StatusBarHelper.ShowStatus("Starting sync...")).ConfigureAwait(false);
+                        }
+                        await sync.SyncAsync().ConfigureAwait(false);
+
+                        sync.OnLargeSyncStarted -= handlerStarted;
+                        sync.OnLargeSyncFinished -= handlerFinish;
                     }
                 }
             }
             catch (Exception e)
             {
                 Insights.Report(e, "Where", "CloudSync");
+            }
+
+            if (displayingStatus)
+            {
+                await App.Locator.PclDispatcherHelper.RunAsync(StatusBarHelper.HideStatus).ConfigureAwait(false);
             }
         }
 
@@ -224,16 +239,21 @@ namespace Audiotica
             }
         }
 
-        public static async void MatchSong(Song song)
+        public static void MatchSong(Song song)
+        {
+            TaskHelper.Enqueue(MatchSongAsync(song));
+        }
+
+        private static async Task MatchSongAsync(Song song)
         {
             using (var handler = Insights.TrackTime("Match Song"))
             {
-                var url = await App.Locator.Mp3MatchEngine.FindMp3For(song.Name, song.Artist.Name);
+                var url = await App.Locator.Mp3MatchEngine.FindMp3For(song.Name, song.Artist.Name).ConfigureAwait(false);
 
                 if (string.IsNullOrEmpty(url) && song.ArtistName != song.Artist.Name)
                 {
                     // try using the song artist name when is different than the album artist name
-                    url = await App.Locator.Mp3MatchEngine.FindMp3For(song.Name, song.ArtistName);
+                    url = await App.Locator.Mp3MatchEngine.FindMp3For(song.Name, song.ArtistName).ConfigureAwait(false);
                 }
 
                 handler.Data.Add("FoundMatch", string.IsNullOrEmpty(url) ? "False" : "True");
@@ -433,7 +453,7 @@ namespace Audiotica
             return created;
         }
 
-        public static void RequiresCollectionToLoad(Action action)
+        public static void RequiresCollectionToLoad(Action action, bool block = true)
         {
             if (App.Locator.CollectionService.IsLibraryLoaded)
             {
@@ -448,7 +468,10 @@ namespace Audiotica
             }
             else
             {
-                UiBlockerUtility.Block("Waiting for collection to load...");
+                if (block)
+                {
+                    UiBlockerUtility.Block("Waiting for collection to load...");
+                }
                 App.Locator.CollectionService.LibraryLoaded += (sender, args) =>
                 {
                     try
@@ -459,8 +482,10 @@ namespace Audiotica
                     {
                         Insights.Report(e, "Where", "RequiresCollectionToLoad");
                     }
-
-                    UiBlockerUtility.Unblock();
+                    if (block)
+                    {
+                        UiBlockerUtility.Unblock();
+                    }
                 };
             }
         }
@@ -553,10 +578,20 @@ namespace Audiotica
                         { "ArtistName", track.Artist.Name }
                     }))
             {
-                var album = await App.Locator.Spotify.GetAlbum(track.Album.Id);
+                SavingError result;
 
-                UiBlockerUtility.Unblock();
-                var result = await SaveTrackAsync(track, album, false);
+                try
+                {
+                    var album = await App.Locator.Spotify.GetAlbum(track.Album.Id);
+
+                    UiBlockerUtility.Unblock();
+                    result = await SaveTrackAsync(track, album, false);
+                }
+                catch
+                {
+                    UiBlockerUtility.Unblock();
+                    result = SavingError.Network;
+                }
 
                 handle.Data.Add("SavingError", result.ToString());
                 return result;
@@ -776,27 +811,13 @@ namespace Audiotica
                             }
 
                             var artistFilePath = string.Format(AppConstant.ArtistsArtworkPath, artist.Id);
-                            var file =
-                                await
-                                StorageHelper.CreateFileAsync(
-                                    artistFilePath, 
-                                    option: CreationCollisionOption.ReplaceExisting);
 
-                            using (var client = new HttpClient())
-                            {
-                                using (var stream = await client.GetStreamAsync(lastArtist.MainImage.Largest))
-                                {
-                                    using (var fileStream = await file.OpenAsync(FileAccess.ReadAndWrite))
-                                    {
-                                        await stream.CopyToAsync(fileStream);
-                                    }
-                                }
-                            }
+                            await SaveImageAsync(artistFilePath, lastArtist.MainImage.Largest.AbsoluteUri).ConfigureAwait(false);
 
                             if (!hadArtwork)
                             {
                                 artist.HasArtwork = true;
-                                await App.Locator.SqlService.UpdateItemAsync(artist);
+                                await App.Locator.SqlService.UpdateItemAsync(artist).ConfigureAwait(false);
                             }
 
                             await DispatcherHelper.RunAsync(
@@ -813,7 +834,13 @@ namespace Audiotica
                         }
                     })).Cast<Task>().ToList();
 
-            await Task.WhenAll(tasks);
+
+            App.Locator.SqlService.BeginTransaction();
+            foreach (var task in tasks)
+            {
+                await task.ConfigureAwait(false);
+            }
+            App.Locator.SqlService.Commit();
         }
 
         public static async Task DownloadAlbumsArtworkAsync(bool missingOnly = true)
@@ -846,13 +873,13 @@ namespace Audiotica
                             {
                                 var spotifyAlbum =
                                     await
-                                    App.Locator.Spotify.GetAlbum(album.ProviderId.Replace("spotify.", string.Empty));
+                                    App.Locator.Spotify.GetAlbum(album.ProviderId.Replace("spotify.", string.Empty)).ConfigureAwait(false);
 
                                 if (spotifyAlbum == null)
                                 {
                                     album.HasArtwork = false;
                                     album.NoArtworkFound = true;
-                                    await App.Locator.SqlService.UpdateItemAsync(album);
+                                    await App.Locator.SqlService.UpdateItemAsync(album).ConfigureAwait(false);
                                     return;
                                 }
 
@@ -863,20 +890,20 @@ namespace Audiotica
                                 var results =
                                     await
                                     App.Locator.DeezerService.SearchAlbumsAsync(
-                                        album.Name + " " + album.PrimaryArtist.Name);
+                                        album.Name + " " + album.PrimaryArtist.Name).ConfigureAwait(false);
                                 var deezerAlbum = results.data.FirstOrDefault();
 
                                 if (deezerAlbum == null || (!album.Name.ToLower().Contains(deezerAlbum.title.ToLower()) && (!album.PrimaryArtist.Name.ToLower().Contains(deezerAlbum.artist.name.ToLower()) || deezerAlbum.bigCover == null)))
                                 {
                                     album.HasArtwork = false;
                                     album.NoArtworkFound = true;
-                                    await App.Locator.SqlService.UpdateItemAsync(album);
+                                    await App.Locator.SqlService.UpdateItemAsync(album).ConfigureAwait(false);
                                     return;
                                 }
 
                                 artworkUrl = deezerAlbum.bigCover;
                             }
-                            await SaveAlbumImageAsync(album, artworkUrl);
+                            await SaveAlbumImageAsync(album, artworkUrl).ConfigureAwait(false);
                         }
                         catch
                         {
@@ -884,15 +911,21 @@ namespace Audiotica
                         }
                     })).Cast<Task>().ToList();
 
-            await Task.WhenAll(tasks);
+
+            App.Locator.SqlService.BeginTransaction();
+            foreach (var task in tasks)
+            {
+                await task.ConfigureAwait(false);
+            }
+            App.Locator.SqlService.Commit();
         }
 
         public static async Task SaveAlbumImageAsync(Album album, string url)
         {
             var filePath = string.Format(AppConstant.ArtworkPath, album.Id);
-            await SaveImageAsync(filePath, url);
+            await SaveImageAsync(filePath, url).ConfigureAwait(false);
             album.HasArtwork = true;
-            await App.Locator.SqlService.UpdateItemAsync(album);
+            await App.Locator.SqlService.UpdateItemAsync(album).ConfigureAwait(false);
 
             await DispatcherHelper.RunAsync(
                 () =>
@@ -910,16 +943,14 @@ namespace Audiotica
 
         private static async Task SaveImageAsync(string filePath, string url)
         {
-            var file = await StorageHelper.CreateFileAsync(filePath, option: CreationCollisionOption.ReplaceExisting);
+            var file = await StorageHelper.CreateFileAsync(filePath, option: CreationCollisionOption.ReplaceExisting).ConfigureAwait(false);
 
             using (var client = new HttpClient())
             {
-                using (var stream = await client.GetStreamAsync(url))
+                using (var fileStream = await file.OpenAsync(FileAccess.ReadAndWrite))
                 {
-                    using (var fileStream = await file.OpenAsync(FileAccess.ReadAndWrite))
-                    {
-                        await stream.CopyToAsync(fileStream);
-                    }
+                    var buffer = await client.GetByteArrayAsync(url).ConfigureAwait(false);
+                    await fileStream.WriteAsync(buffer, 0, buffer.Length).ConfigureAwait(false);
                 }
             }
         }

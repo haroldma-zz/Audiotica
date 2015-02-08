@@ -24,54 +24,46 @@
                 <RowDefinition Height="*" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
-            <Grid x:Name="RootGrid" Holding="Song_OnHolding">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
-                <FlyoutBase.AttachedFlyout>
-                    <MenuFlyout Opened="MenuFlyout_Opened">
-                        <MenuFlyoutItem x:Name="AddToOption" Text="Add to Queue..." Click="MenuFlyoutItem_Click" />
-                        <MenuFlyoutItem x:Name="AddToPlaylistOption" Text="Add to Playlist..." Click="AddToMenuFlyoutItem_OnClick" />
-                        <MenuFlyoutItem x:Name="DeleteOption" x:Uid="MenuItemDelete" Text="Delete"
+        <Grid x:Name="RootGrid" Holding="Song_OnHolding">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <FlyoutBase.AttachedFlyout>
+                <MenuFlyout Opened="MenuFlyout_Opened">
+                    <MenuFlyoutItem x:Name="AddToOption" Text="Add to Queue..." Click="MenuFlyoutItem_Click" />
+                    <MenuFlyoutItem x:Name="AddToPlaylistOption" Text="Add to Playlist..." Click="AddToMenuFlyoutItem_OnClick" />
+                    <MenuFlyoutItem x:Name="DeleteOption" x:Uid="MenuItemDelete" Text="Delete"
                                     Foreground="Red" Click="DeleteMenuFlyoutItem_OnClick" />
-                    </MenuFlyout>
-                </FlyoutBase.AttachedFlyout>
+                </MenuFlyout>
+            </FlyoutBase.AttachedFlyout>
             <StackPanel Opacity="{Binding IsMatched, Converter={StaticResource ReverseBoolOpacityConverter}}">
-                    <TextBlock x:Name="SongNameTextBlock"
+                <TextBlock x:Name="SongNameTextBlock"
                            FontSize="22"
                            FontFamily="Global User Interface" TextWrapping="Wrap"
                            TextTrimming="CharacterEllipsis" FontWeight="Bold" />
-                    <TextBlock x:Name="ArtistAlbumNameTextBlock"
+                <TextBlock x:Name="ArtistAlbumNameTextBlock"
                            FontSize="16" FontWeight="Thin"
                            Foreground="#89FFFFFF" TextTrimming="CharacterEllipsis"
                            Margin="0,-5,0,0" TextWrapping="Wrap" />
-                </StackPanel>
-                <Grid x:Name="DownloadOptionGrid" Grid.Column="1">
-                    <Grid
+            </StackPanel>
+            <Grid x:Name="DownloadOptionGrid" Grid.Column="1">
+                <Grid
                   Visibility="{Binding SongState, Converter={StaticResource NoneSongStateConverter}}">
-                        <AppBarButton Icon="Download" IsCompact="True" Margin="0,-5,0,0" Click="DownloadButtonBase_OnClick" />
-                    </Grid>
-                    <Grid
-                  Visibility="{Binding SongState, Converter={StaticResource DownloadingSongStateConverter}}">
-                        <AppBarButton Icon="Cancel" IsCompact="True" Margin="0,-5,0,0" Click="CancelButtonBase_OnClick" />
-                    </Grid>
+                    <AppBarButton Icon="Download" IsCompact="True" Margin="0,-5,0,0" Click="DownloadButtonBase_OnClick" />
                 </Grid>
+                <Grid
+                  Visibility="{Binding SongState, Converter={StaticResource DownloadingSongStateConverter}}">
+                    <AppBarButton Icon="Cancel" IsCompact="True" Margin="0,-5,0,0" Click="CancelButtonBase_OnClick" />
+                </Grid>
+            </Grid>
             <Grid
                 Grid.Column="1" Visibility="{Binding SongState, Converter={StaticResource NoMatchSongStateConverter}}">
                 <AppBarButton Icon="Find" IsCompact="True" Margin="0,-5,0,0" Click="ManualMatchButtonBase_OnClick" />
             </Grid>
         </Grid>
-            <Grid Grid.Row="1" Visibility="{Binding SongState, Converter={StaticResource MatchingSongStateConverter}}">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
-            <ProgressBar
-                         IsIndeterminate="{Binding IsMatched, Converter={StaticResource BoolToOppositeConverter}}" />
-            <TextBlock Grid.Row="1" Text="Finding audio for song..." FontSize="16" FontWeight="Thin"
+        <TextBlock Grid.Row="1" Visibility="{Binding SongState, Converter={StaticResource MatchingSongStateConverter}}" Text="Finding audio for song..." FontSize="16" FontWeight="Thin"
                            Foreground="#89FFFFFF" />
-            </Grid>
         <TextBlock Grid.Row="1" Visibility="{Binding SongState, Converter={StaticResource NoMatchSongStateConverter}}"  Text="Couldn't find mp3 for song." FontSize="16" FontWeight="Thin"
                            Foreground="Red" />
         <Grid x:Name="DownloadProgressGrid" Grid.Row="1">

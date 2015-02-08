@@ -54,6 +54,7 @@
     <Compile Include="Utils\StorageExtensions.cs" />
     <Compile Include="Utils\StorageHelper.cs" />
     <Compile Include="Utils\StringExtensions.cs" />
+    <Compile Include="Utils\TaskHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json">

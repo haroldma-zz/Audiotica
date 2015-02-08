@@ -239,7 +239,7 @@
                     </Grid.Background>
                 </Grid>
                 <Grid Background="#BF000000" VerticalAlignment="Bottom">
-                    <TextBlock TextTrimming="CharacterEllipsis" Margin="15,5" FontSize="22"
+                    <TextBlock TextTrimming="CharacterEllipsis" Margin="10,5" FontSize="22"
                                Text="{Binding Name}" HorizontalAlignment="Left"
                                VerticalAlignment="Bottom" />
                 </Grid>

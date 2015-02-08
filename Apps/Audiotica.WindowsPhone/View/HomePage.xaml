@@ -103,12 +103,12 @@
                                                     </Grid.Background>
                                                 </Grid>
                                                 <StackPanel Background="#BF000000" VerticalAlignment="Bottom">
-                                                    <TextBlock TextTrimming="CharacterEllipsis" Margin="5,5,5,0" FontSize="22"
+                                                    <TextBlock TextTrimming="CharacterEllipsis" Margin="10,5,10,0" FontSize="22"
                                                    Text="{Binding Title}"
                                                    VerticalAlignment="Bottom" TextWrapping="Wrap" />
                                                     <TextBlock FontSize="16" FontWeight="Thin" Text="{Binding Text}"
                                                    Foreground="#89FFFFFF" TextTrimming="CharacterEllipsis"
-                                                   TextWrapping="Wrap" Margin="5,0,5,5" />
+                                                   TextWrapping="Wrap" Margin="10,0,10,5" />
                                                 </StackPanel>
                                             </Grid>
                                         </Button>
@@ -127,12 +127,12 @@
                                     </Grid.Background>
                                 </Grid>
                                 <StackPanel Background="#BF000000" VerticalAlignment="Bottom">
-                                    <TextBlock TextTrimming="CharacterEllipsis" Margin="5,5,5,0" FontSize="22"
+                                    <TextBlock TextTrimming="CharacterEllipsis" Margin="10,5,10,0" FontSize="22"
                                                    Text="{Binding Title}"
                                                    VerticalAlignment="Bottom" TextWrapping="Wrap" />
                                     <TextBlock FontSize="16" FontWeight="Thin" Text="{Binding Text}"
                                                    Foreground="#89FFFFFF" TextTrimming="CharacterEllipsis"
-                                                   TextWrapping="Wrap" Margin="5,0,5,5" />
+                                                   TextWrapping="Wrap" Margin="10,0,10,5" />
                                 </StackPanel>
                             </Grid>
                         </DataTemplate>

@@ -289,12 +289,17 @@ namespace Audiotica
                 await ReviewReminderAsync();
             }
 
-            await CollectionHelper.CloudSync();
+            CollectionHelper.RequiresCollectionToLoad(
+                async () =>
+                {
+                    await CollectionHelper.CloudSync();
 
-            // downloading missing artwork and match mp3 songs where they haven't been
-            CollectionHelper.MatchSongs();
-            await CollectionHelper.DownloadAlbumsArtworkAsync();
-            await CollectionHelper.DownloadArtistsArtworkAsync();
+                    // downloading missing artwork and match mp3 songs where they haven't been
+                    CollectionHelper.MatchSongs();
+                    await CollectionHelper.DownloadAlbumsArtworkAsync();
+                    await CollectionHelper.DownloadArtistsArtworkAsync();
+                },
+                false);
         }
 
         private int GetScaledImageSize()
@@ -358,6 +363,13 @@ namespace Audiotica
         {
             Insights.Report(e.Exception);
             e.Handled = true;
+
+            if (e.Message.Contains("No installed components were detected."))
+            {
+                // bug with Mvvmlight, hoping they get it fix soon.  Does not affect the app at all, no need to bug the user with it.
+                // EDIT: seems to be another bug that happens with AdMediator also
+                return;
+            }
 
             // just in case it crashes, save it
             Locator.AppSettingsHelper.WriteAsJson("CrashingException", e.Exception);
