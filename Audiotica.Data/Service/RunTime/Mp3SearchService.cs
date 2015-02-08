@@ -441,10 +441,10 @@ namespace Audiotica.Data.Service.RunTime
                     if (sizeIndex > -1)
                     {
                         var sizeText = songInfo.Substring(0, sizeIndex);
-                        double size;
-                        if (double.TryParse(sizeText, out size))
+                        long size;
+                        if (long.TryParse(sizeText, out size))
                         {
-                            song.ByteSize = size;
+                            song.ByteSize = (long)(size * (1024 * 1024.0));
                         }
                     }
 
@@ -612,7 +612,7 @@ namespace Audiotica.Data.Service.RunTime
                     var resp =
                         await
                         client.SendAsync(
-                            new HttpRequestMessage(HttpMethod.Head, new Uri(song.AudioUrl)), 
+                            new HttpRequestMessage(HttpMethod.Head, new Uri(song.AudioUrl)),
                             HttpCompletionOption.ResponseHeadersRead);
                     resp.EnsureSuccessStatusCode();
 
@@ -621,13 +621,10 @@ namespace Audiotica.Data.Service.RunTime
                         return false;
                     }
 
-                    if (song.ByteSize.Equals(0))
+                    var size = resp.Content.Headers.ContentLength;
+                    if (size != null)
                     {
-                        var size = resp.Content.Headers.ContentLength;
-                        if (size != null)
-                        {
-                            song.ByteSize = (long)size;
-                        }
+                        song.ByteSize = (long)size;
                     }
                     return true;
                 }

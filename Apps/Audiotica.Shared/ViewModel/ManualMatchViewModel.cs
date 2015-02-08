@@ -2,7 +2,6 @@
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 
-using Audiotica.Core.Utils;
 using Audiotica.Core.Utils.Interfaces;
 using Audiotica.Data.Collection.Model;
 using Audiotica.Data.Model;
@@ -18,35 +17,105 @@ namespace Audiotica.ViewModel
 
         private readonly Mp3SearchService searchService;
 
-        private Song currentSong;
-
-        private ObservableCollection<WebSong> mp3Truck;
-
-        private ObservableCollection<WebSong> mp3Clan;
+        public Song CurrentSong { get; set; }
 
         private ObservableCollection<WebSong> meile;
 
-        private ObservableCollection<WebSong> netease;
+        private ObservableCollection<WebSong> mp3Clan;
 
         private ObservableCollection<WebSong> mp3Skull;
+
+        private ObservableCollection<WebSong> mp3Truck;
+
+        private ObservableCollection<WebSong> netease;
+
+        private bool _isNeteaseLoading;
+
+        private bool _isMp3TruckLoading;
+
+        private bool _isMp3ClanLoading;
+
+        private bool _isMeileLoading;
+
+        private bool _isMp3SkullLoading;
 
         public ManualMatchViewModel(IAppSettingsHelper appSettingsHelper, IDispatcherHelper dispatcherHelper)
         {
             this.dispatcherHelper = dispatcherHelper;
-            this.searchService = new Mp3SearchService(appSettingsHelper);
-            this.MessengerInstance.Register<Song>(this, "manual-match", this.ReceiveSong);
+            searchService = new Mp3SearchService(appSettingsHelper);
+            MessengerInstance.Register<Song>(this, "manual-match", ReceiveSong);
+        }
+
+        public bool IsNeteaseLoading
+        {
+            get
+            {
+                return _isNeteaseLoading;
+            }
+            set
+            {
+                Set(ref _isNeteaseLoading, value);
+            }
+        }
+
+        public bool IsMp3TruckLoading
+        {
+            get
+            {
+                return _isMp3TruckLoading;
+            }
+            set
+            {
+                Set(ref _isMp3TruckLoading, value);
+            }
+        }
+
+        public bool IsMp3ClanLoading
+        {
+            get
+            {
+                return _isMp3ClanLoading;
+            }
+            set
+            {
+                Set(ref _isMp3ClanLoading, value);
+            }
+        }
+
+        public bool IsMeileLoading
+        {
+            get
+            {
+                return _isMeileLoading;
+            }
+            set
+            {
+                Set(ref _isMeileLoading, value);
+            }
+        }
+
+        public bool IsMp3SkullLoading
+        {
+            get
+            {
+                return _isMp3SkullLoading;
+            }
+            set
+            {
+                Set(ref _isMp3SkullLoading, value);
+            }
         }
 
         public ObservableCollection<WebSong> Mp3Truck
         {
             get
             {
-                return this.mp3Truck;
+                return mp3Truck;
             }
 
             set
             {
-                this.Set(ref this.mp3Truck, value);
+                Set(ref mp3Truck, value);
             }
         }
 
@@ -54,12 +123,12 @@ namespace Audiotica.ViewModel
         {
             get
             {
-                return this.mp3Clan;
+                return mp3Clan;
             }
 
             set
             {
-                this.Set(ref this.mp3Clan, value);
+                Set(ref mp3Clan, value);
             }
         }
 
@@ -67,12 +136,12 @@ namespace Audiotica.ViewModel
         {
             get
             {
-                return this.netease;
+                return netease;
             }
 
             set
             {
-                this.Set(ref this.netease, value);
+                Set(ref netease, value);
             }
         }
 
@@ -80,12 +149,12 @@ namespace Audiotica.ViewModel
         {
             get
             {
-                return this.meile;
+                return meile;
             }
 
             set
             {
-                this.Set(ref this.meile, value);
+                Set(ref meile, value);
             }
         }
 
@@ -93,113 +162,143 @@ namespace Audiotica.ViewModel
         {
             get
             {
-                return this.mp3Skull;
+                return mp3Skull;
             }
 
             set
             {
-                this.Set(ref this.mp3Skull, value);
+                Set(ref mp3Skull, value);
             }
         }
 
         private async void ReceiveSong(Song song)
         {
-            this.currentSong = song;
-            this.Mp3Truck = null;
-            this.Mp3Clan = null;
-            this.Meile = null;
-            this.Netease = null;
-            this.Mp3Skull = null;
+            CurrentSong = song;
+            Mp3Truck = null;
+            Mp3Clan = null;
+            Meile = null;
+            Netease = null;
+            Mp3Skull = null;
 
             var tasks = new List<Task>
             {
                 Task.Factory.StartNew(
                     async () =>
                     {
+                        await dispatcherHelper.RunAsync(() => IsMp3TruckLoading = true);
                         var results =
                             await
-                            this.searchService.SearchMp3Truck(
-                                this.currentSong.Name, 
-                                this.currentSong.Artist.Name, 
-                                checkAllLinks: true);
+                            searchService.SearchMp3Truck(CurrentSong.Name, CurrentSong.Artist.Name, checkAllLinks: true);
 
-                        if (results == null)
-                        {
-                            return;
-                        }
+                        await dispatcherHelper.RunAsync(
+                            () =>
+                            {
+                                IsMp3TruckLoading = false;
 
-                        dispatcherHelper.RunAsync(() => this.Mp3Truck = new ObservableCollection<WebSong>(results));
+                                if (results == null)
+                                {
+                                    return;
+                                }
+
+                                Mp3Truck = new ObservableCollection<WebSong>(results);
+                            });
                     }), 
                 Task.Factory.StartNew(
                     async () =>
                     {
+                        await dispatcherHelper.RunAsync(() => IsMp3ClanLoading = true);
+
                         var results =
                             await
-                            this.searchService.SearchMp3Clan(
-                                this.currentSong.Name, 
-                                this.currentSong.Artist.Name, 
-                                limit: 25, 
-                                checkAllLinks: true);
+                            searchService.SearchMp3Clan(
+                                CurrentSong.Name, 
+                                CurrentSong.Artist.Name, 
+                                limit: 25, checkAllLinks: true);
 
-                        if (results == null)
-                        {
-                            return;
-                        }
+                        await dispatcherHelper.RunAsync(
+                            () =>
+                            {
+                                IsMp3ClanLoading = false;
 
-                        dispatcherHelper.RunAsync(() => this.Mp3Clan = new ObservableCollection<WebSong>(results));
+                                if (results == null)
+                                {
+                                    return;
+                                }
+
+                                Mp3Clan = new ObservableCollection<WebSong>(results);
+                            });
                     }), 
                 Task.Factory.StartNew(
                     async () =>
                     {
+                        await dispatcherHelper.RunAsync(() => IsNeteaseLoading = true);
+
                         var results =
                             await
-                            this.searchService.SearchNetease(
-                                this.currentSong.Name, 
-                                this.currentSong.Artist.Name, 
-                                limit: 25, 
-                                checkAllLinks: true);
+                            searchService.SearchNetease(
+                                CurrentSong.Name, 
+                                CurrentSong.Artist.Name, 
+                                limit: 25, checkAllLinks: true);
 
-                        if (results == null)
-                        {
-                            return;
-                        }
+                        await dispatcherHelper.RunAsync(
+                            () =>
+                            {
+                                IsNeteaseLoading = false;
 
-                        dispatcherHelper.RunAsync(() => this.Netease = new ObservableCollection<WebSong>(results));
+                                if (results == null)
+                                {
+                                    return;
+                                }
+
+                                Netease = new ObservableCollection<WebSong>(results);
+                            });
                     }), 
                 Task.Factory.StartNew(
                     async () =>
                     {
+
+                        await dispatcherHelper.RunAsync(() => IsMeileLoading = true);
                         var results =
                             await
-                            this.searchService.SearchMeile(
-                                this.currentSong.Name, 
-                                this.currentSong.Artist.Name, 
-                                limit: 25, 
-                                checkAllLinks: true);
+                            searchService.SearchMeile(
+                                CurrentSong.Name, 
+                                CurrentSong.Artist.Name, 
+                                limit: 25, checkAllLinks: true);
 
-                        if (results == null)
-                        {
-                            return;
-                        }
+                        await dispatcherHelper.RunAsync(
+                            () =>
+                            {
+                                IsMeileLoading = false;
 
-                        dispatcherHelper.RunAsync(() => this.Meile = new ObservableCollection<WebSong>(results));
+                                if (results == null)
+                                {
+                                    return;
+                                }
+
+                                Meile = new ObservableCollection<WebSong>(results);
+                            });
                     }), 
                 Task.Factory.StartNew(
                     async () =>
                     {
+                        await dispatcherHelper.RunAsync(() => IsMp3SkullLoading = true);
+
                         var results =
                             await
-                            this.searchService.SearchMp3Skull(
-                                this.currentSong.Name, 
-                                this.currentSong.Artist.Name, 
-                                checkAllLinks: true);
+                            searchService.SearchMp3Skull(CurrentSong.Name, CurrentSong.Artist.Name, checkAllLinks: true);
 
-                        if (results == null)
-                        {
-                            return;
-                        }
+                        await dispatcherHelper.RunAsync(
+                            () =>
+                            {
+                                IsMp3SkullLoading = false;
 
-                        dispatcherHelper.RunAsync(() => this.Mp3Skull = new ObservableCollection<WebSong>(results));
+                                if (results == null)
+                                {
+                                    return;
+                                }
+
+                                Mp3Skull = new ObservableCollection<WebSong>(results);
+                            });
                     })
             };
             await Task.WhenAll(tasks);

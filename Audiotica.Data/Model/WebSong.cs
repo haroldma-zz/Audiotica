@@ -69,7 +69,7 @@ namespace Audiotica.Data.Model
         public Uri ArtworkImage { get; set; }
         public string AudioUrl { get; set; }
         public int BitRate { get; set; }
-        public double ByteSize { get; set; }
+        public long ByteSize { get; set; }
         public TimeSpan Duration { get; set; }
         public string Id { get; set; }
         public bool IsBestMatch { get; set; }
@@ -77,5 +77,24 @@ namespace Audiotica.Data.Model
         public bool IsMatch { get; set; }
         public string Name { get; set; }
         public Mp3Provider Provider { get; set; }
+
+        public string FormattedBytes
+        {
+            get
+            {
+                return BytesToString(ByteSize);
+            }
+        }
+
+        private string BytesToString(long byteCount)
+        {
+            string[] suf = { "B", "KB", "MB", "GB", "TB", "PB", "EB" }; //Longs run out around EB
+            if (byteCount == 0)
+                return "0" + suf[0];
+            long bytes = Math.Abs(byteCount);
+            int place = Convert.ToInt32(Math.Floor(Math.Log(bytes, 1024)));
+            double num = Math.Round(bytes / Math.Pow(1024, place), 1);
+            return (Math.Sign(byteCount) * num).ToString() + suf[place];
+        }
     }
 }
