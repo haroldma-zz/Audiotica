@@ -204,6 +204,7 @@ namespace Audiotica.View.Setting
                             "To finish applying the restore the app will close. Next time you start the app, it will finish restoring.", 
                             "Application Restart Required");
 
+                    App.Locator.AppSettingsHelper.Write("Restore", true);
                     Application.Current.Exit();
                 }
                 else

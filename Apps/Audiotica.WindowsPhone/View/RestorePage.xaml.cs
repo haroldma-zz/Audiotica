@@ -73,6 +73,8 @@ namespace Audiotica.View
                     {
                         await CollectionHelper.DownloadArtistsArtworkAsync(false);
                     };
+
+                    App.Locator.AppSettingsHelper.Write("Restore", false);
                 }
                 else
                 {

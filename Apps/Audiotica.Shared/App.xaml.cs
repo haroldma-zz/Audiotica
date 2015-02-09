@@ -423,7 +423,7 @@ namespace Audiotica
             CreateRootFrame();
 
             var restore = Locator.AppSettingsHelper.Read<bool>("FactoryReset")
-                          || await StorageHelper.FileExistsAsync("_current_restore.autcp");
+                          || Locator.AppSettingsHelper.Read<bool>("Restore");
 
             if (RootFrame.Content == null)
             {

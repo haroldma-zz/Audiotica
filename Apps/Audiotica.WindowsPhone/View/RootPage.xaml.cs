@@ -67,7 +67,7 @@ namespace Audiotica.View
         private bool IsRestore()
         {
             return App.Locator.AppSettingsHelper.Read<bool>("FactoryReset")
-                   || StorageHelper.FileExistsAsync("_current_restore.autcp").Result;
+                   || App.Locator.AppSettingsHelper.Read<bool>("Restore");
         }
     }
 }
