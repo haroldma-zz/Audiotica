@@ -66,7 +66,15 @@ namespace Audiotica
             get
             {
                 var player = SafeMediaPlayer;
-                return player == null ? MediaPlayerState.Closed : player.CurrentState;
+
+                try
+                {
+                    return player == null ? MediaPlayerState.Closed : player.CurrentState;
+                }
+                catch
+                {
+                    return MediaPlayerState.Closed;
+                }
             }
         }
 
