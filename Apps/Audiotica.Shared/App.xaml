@@ -23,6 +23,11 @@
                                        PluralText="songs" />
         <common:CountToPluralConverter x:Key="AlbumToPluralConverter" x:Uid="CountAlbumName" SingularText="album"
                                        PluralText="albums" />
+        <local:BoolOpacityConverter x:Name="ReverseBoolOpacityConverter" IsReverse="True" />
+        <local:SongStateConverter x:Key="DownloadingSongStateConverter" SongState="Downloading" />
+        <local:SongStateConverter x:Key="NoneSongStateConverter" SongState="None" />
+        <local:SongStateConverter x:Key="MatchingSongStateConverter" SongState="Matching" />
+        <local:SongStateConverter x:Key="NoMatchSongStateConverter" SongState="NoMatch" />
 
         <Style x:Key="AppFrame" TargetType="Frame">
             <Setter Property="HorizontalContentAlignment" Value="Stretch" />

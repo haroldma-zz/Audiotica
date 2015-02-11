@@ -160,9 +160,15 @@ namespace Audiotica
         private void MenuFlyout_Opened(object sender, object e)
         {
             AddToOption.IsEnabled = _song.IsMatched;
+            ManualMatch.IsEnabled = _song.IsMatched;
         }
 
         private void ManualMatchButtonBase_OnClick(object sender, RoutedEventArgs e)
+        {
+            App.Navigator.GoTo<ManualMatchPage, ZoomInTransition>(_song);
+        }
+
+        private void ManualMatch_Click(object sender, RoutedEventArgs e)
         {
             App.Navigator.GoTo<ManualMatchPage, ZoomInTransition>(_song);
         }

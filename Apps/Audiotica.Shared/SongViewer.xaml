@@ -13,13 +13,6 @@
     d:DesignWidth="400">
 
     <Grid Margin="0,0,0,15">
-        <Grid.Resources>
-            <local:BoolOpacityConverter x:Name="ReverseBoolOpacityConverter" IsReverse="True" />
-            <local:SongStateConverter x:Key="DownloadingSongStateConverter" SongState="Downloading" />
-            <local:SongStateConverter x:Key="NoneSongStateConverter" SongState="None" />
-            <local:SongStateConverter x:Key="MatchingSongStateConverter" SongState="Matching" />
-            <local:SongStateConverter x:Key="NoMatchSongStateConverter" SongState="NoMatch" />
-        </Grid.Resources>
             <Grid.RowDefinitions>
                 <RowDefinition Height="*" />
                 <RowDefinition Height="Auto" />
@@ -33,6 +26,8 @@
                 <MenuFlyout Opened="MenuFlyout_Opened">
                     <MenuFlyoutItem x:Name="AddToOption" Text="Add to Queue..." Click="MenuFlyoutItem_Click" />
                     <MenuFlyoutItem x:Name="AddToPlaylistOption" Text="Add to Playlist..." Click="AddToMenuFlyoutItem_OnClick" />
+
+                    <MenuFlyoutItem x:Name="ManualMatch" Text="Manual Match Audio..." Click="ManualMatch_Click" />
                     <MenuFlyoutItem x:Name="DeleteOption" x:Uid="MenuItemDelete" Text="Delete"
                                     Foreground="Red" Click="DeleteMenuFlyoutItem_OnClick" />
                 </MenuFlyout>
