@@ -822,23 +822,29 @@ namespace Audiotica
 
                             var artistFilePath = string.Format(AppConstant.ArtistsArtworkPath, artist.Id);
 
-                            await
+                            if (await
                                 SaveImageAsync(artistFilePath, lastArtist.MainImage.Largest.AbsoluteUri)
-                                    .ConfigureAwait(false);
-
-                            if (!hadArtwork)
+                                    .ConfigureAwait(false))
                             {
-                                artist.HasArtwork = true;
-                                await App.Locator.SqlService.UpdateItemAsync(artist).ConfigureAwait(false);
-                            }
 
-                            await DispatcherHelper.RunAsync(
-                                () =>
+                                if (!hadArtwork)
                                 {
-                                    artist.Artwork =
-                                        new PclBitmapImage(new Uri(AppConstant.LocalStorageAppPath + artistFilePath));
-                                    artist.Artwork.SetDecodedPixel(App.Locator.CollectionService.ScaledImageSize);
-                                });
+                                    artist.HasArtwork = true;
+                                    await App.Locator.SqlService.UpdateItemAsync(artist).ConfigureAwait(false);
+                                }
+
+                                await DispatcherHelper.RunAsync(
+                                    () =>
+                                    {
+                                        artist.Artwork =
+                                            new PclBitmapImage(new Uri(AppConstant.LocalStorageAppPath + artistFilePath));
+                                        artist.Artwork.SetDecodedPixel(App.Locator.CollectionService.ScaledImageSize);
+                                    });
+                            }
+                            else
+                            {
+                                artist.HasArtwork = false;
+                            }
                         }
                         catch
                         {
@@ -941,38 +947,49 @@ namespace Audiotica
         public static async Task SaveAlbumImageAsync(Album album, string url)
         {
             var filePath = string.Format(AppConstant.ArtworkPath, album.Id);
-            await SaveImageAsync(filePath, url).ConfigureAwait(false);
-            album.HasArtwork = true;
-            await App.Locator.SqlService.UpdateItemAsync(album).ConfigureAwait(false);
+            if (await SaveImageAsync(filePath, url).ConfigureAwait(false))
+            {
+                album.HasArtwork = true;
+                await App.Locator.SqlService.UpdateItemAsync(album).ConfigureAwait(false);
 
-            await DispatcherHelper.RunAsync(
-                () =>
-                {
-                    album.Artwork = new PclBitmapImage(new Uri(AppConstant.LocalStorageAppPath + filePath));
-                    album.Artwork.SetDecodedPixel(App.Locator.CollectionService.ScaledImageSize);
+                await DispatcherHelper.RunAsync(
+                    () =>
+                    {
+                        album.Artwork = new PclBitmapImage(new Uri(AppConstant.LocalStorageAppPath + filePath));
+                        album.Artwork.SetDecodedPixel(App.Locator.CollectionService.ScaledImageSize);
 
-                    album.MediumArtwork = new PclBitmapImage(new Uri(AppConstant.LocalStorageAppPath + filePath));
-                    album.MediumArtwork.SetDecodedPixel(App.Locator.CollectionService.ScaledImageSize / 2);
+                        album.MediumArtwork = new PclBitmapImage(new Uri(AppConstant.LocalStorageAppPath + filePath));
+                        album.MediumArtwork.SetDecodedPixel(App.Locator.CollectionService.ScaledImageSize/2);
 
-                    album.SmallArtwork = new PclBitmapImage(new Uri(AppConstant.LocalStorageAppPath + filePath));
-                    album.SmallArtwork.SetDecodedPixel(50);
-                });
+                        album.SmallArtwork = new PclBitmapImage(new Uri(AppConstant.LocalStorageAppPath + filePath));
+                        album.SmallArtwork.SetDecodedPixel(50);
+                    });
+            }
         }
 
-        private static async Task SaveImageAsync(string filePath, string url)
+        private static async Task<bool> SaveImageAsync(string filePath, string url)
         {
-            var file =
-                await
-                StorageHelper.CreateFileAsync(filePath, option: CreationCollisionOption.ReplaceExisting)
-                    .ConfigureAwait(false);
-
-            using (var client = new HttpClient())
+            try
             {
-                using (var fileStream = await file.OpenAsync(FileAccess.ReadAndWrite))
+                var file =
+                    await
+                    StorageHelper.CreateFileAsync(filePath, option: CreationCollisionOption.ReplaceExisting)
+                        .ConfigureAwait(false);
+
+                using (var client = new HttpClient())
                 {
-                    var buffer = await client.GetByteArrayAsync(url).ConfigureAwait(false);
-                    await fileStream.WriteAsync(buffer, 0, buffer.Length).ConfigureAwait(false);
+                    using (var fileStream = await file.OpenAsync(FileAccess.ReadAndWrite))
+                    {
+                        var buffer = await client.GetByteArrayAsync(url).ConfigureAwait(false);
+                        await fileStream.WriteAsync(buffer, 0, buffer.Length).ConfigureAwait(false);
+                    }
                 }
+
+                return true;
+            }
+            catch
+            {
+                return false;
             }
         }
 
