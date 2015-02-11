@@ -1319,6 +1319,11 @@ namespace Audiotica
             FullAlbum album, 
             bool onFinishDownloadArtwork = true)
         {
+            if (track == null || album == null)
+            {
+                return SavingError.Unknown;
+            }
+
             var alreadySaving = SpotifySavingTracks.FirstOrDefault(p => p == track.Id) != null;
 
             if (alreadySaving)
@@ -1355,12 +1360,15 @@ namespace Audiotica
                 return result.Error;
             }
 
-            if (!result.Song.Album.HasArtwork && !result.Song.Album.NoArtworkFound)
+            if (result.Song != null))
             {
-                SaveAlbumImageAsync(result.Song.Album, album.Images[0].Url);
-            }
+                if (!result.Song.Album.HasArtwork && !result.Song.Album.NoArtworkFound)
+                {
+                    SaveAlbumImageAsync(result.Song.Album, album.Images[0].Url);
+                }
 
-            DownloadArtistsArtworkAsync();
+                DownloadArtistsArtworkAsync();
+            }
 
             return result.Error;
         }
