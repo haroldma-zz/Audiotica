@@ -387,7 +387,7 @@ namespace Audiotica
                         id, 
                         artist.Name, 
                         "artists/" + artist.Id, 
-                        artist.HasArtwork ? string.Format(AppConstant.ArtistsArtworkPath, artist.Id) : null);
+                        string.Format(AppConstant.ArtistsArtworkPath, artist.Id));
             }
             else
             {
@@ -419,7 +419,7 @@ namespace Audiotica
                         id, 
                         album.Name, 
                         "albums/" + album.Id, 
-                        album.HasArtwork ? string.Format(AppConstant.ArtworkPath, album.Id) : null);
+                        string.Format(AppConstant.ArtworkPath, album.Id));
             }
             else
             {
@@ -473,7 +473,7 @@ namespace Audiotica
         {
             var tileActivationArguments = arguments;
 
-            var image = string.IsNullOrEmpty(artwork) ? null : new Uri(AppConstant.LocalStorageAppPath + artwork);
+            var image = new Uri(AppConstant.LocalStorageAppPath + artwork);
 
             var secondaryTile = new SecondaryTile(
                 id, 
