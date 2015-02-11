@@ -1360,14 +1360,16 @@ namespace Audiotica
                 return result.Error;
             }
 
-            if (result.Song != null))
+            if (result.Song != null)
             {
+#pragma warning disable 4014
                 if (!result.Song.Album.HasArtwork && !result.Song.Album.NoArtworkFound)
                 {
                     SaveAlbumImageAsync(result.Song.Album, album.Images[0].Url);
                 }
 
                 DownloadArtistsArtworkAsync();
+#pragma warning restore 4014
             }
 
             return result.Error;
@@ -1375,6 +1377,11 @@ namespace Audiotica
 
         private static async Task<SavingError> _SaveTrackAsync(LastTrack track)
         {
+            if (track == null)
+            {
+                return SavingError.Unknown;
+            }
+
             var alreadySaving = LastfmSavingTracks.FirstOrDefault(p => p == track.Id) != null;
 
             if (alreadySaving)
@@ -1406,19 +1413,24 @@ namespace Audiotica
 
             LastfmSavingTracks.Remove(track.Id);
 
-            if (!result.Song.Album.HasArtwork && !result.Song.Album.NoArtworkFound)
+#pragma warning disable 4014
+            if (result.Song != null)
             {
-                if (track.Images != null && track.Images.Largest != null)
+                if (!result.Song.Album.HasArtwork && !result.Song.Album.NoArtworkFound)
                 {
-                    SaveAlbumImageAsync(result.Song.Album, track.Images.Largest.AbsoluteUri);
-                }
-                else
-                {
-                    DownloadAlbumsArtworkAsync();
+                    if (track.Images != null && track.Images.Largest != null)
+                    {
+                        SaveAlbumImageAsync(result.Song.Album, track.Images.Largest.AbsoluteUri);
+                    }
+                    else
+                    {
+                        DownloadAlbumsArtworkAsync();
+                    }
                 }
             }
 
             DownloadArtistsArtworkAsync();
+#pragma warning restore 4014
             return result.Error;
         }
 
