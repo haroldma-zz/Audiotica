@@ -471,13 +471,16 @@ namespace Audiotica.Data.Service.RunTime
         private async Task<List<WebSong>> IdentifyMatches(List<WebSong> songs, string title, string artist, bool checkAll)
         {
             var cleanTile = title;
-            if (title.Contains("("))
+
+            var index = cleanTile.IndexOf('(');
+            if (index > -1 && index < cleanTile.Length - 1)
             {
-                cleanTile = cleanTile.Remove(title.IndexOf('('));
+                cleanTile = cleanTile.Remove(index);
             }
-            if (title.Contains("-"))
+            index = cleanTile.IndexOf('-');
+            if (index > -1)
             {
-                cleanTile = cleanTile.Remove(title.IndexOf('-'));
+                cleanTile = cleanTile.Remove(index);
             }
 
             songs = songs.OrderBy(p => p.Duration.Minutes).ToList();
