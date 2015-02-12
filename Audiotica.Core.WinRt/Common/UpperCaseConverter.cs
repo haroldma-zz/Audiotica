@@ -12,6 +12,7 @@ namespace Audiotica.Core.Common
     {
         public object Convert(object value, Type targetType, object parameter, string culture)
         {
+            if (parameter == null) return "";
             return ((string)value).ToUpper();
         }
 

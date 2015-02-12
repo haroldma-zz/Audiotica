@@ -106,6 +106,7 @@ namespace Audiotica
             #region id3 tags
 
             Tag tags = null;
+            TimeSpan duration;
             if (file.FileType == ".mp3")
             {
                 var tryAsM4A = false;
@@ -135,6 +136,10 @@ namespace Audiotica
                 }
 
                 tags = tagFile == null ? null : tagFile.Tag;
+                if (tags != null)
+                {
+                    duration = tagFile.Properties.Duration;
+                }
                 fileStream.Dispose();
                 if (tagFile != null)
                     tagFile.Dispose();
@@ -159,6 +164,7 @@ namespace Audiotica
                     FilePath = audioPath,
                     Genre = tags.FirstGenre,
                     TrackNumber = (int) tags.Track,
+                    Duration = duration
                 };
             }
 

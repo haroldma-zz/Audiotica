@@ -3,6 +3,7 @@
 using System;
 using System.Collections.ObjectModel;
 using Audiotica.Core.Common;
+using Newtonsoft.Json;
 using SQLite;
 
 #endregion
@@ -21,6 +22,20 @@ namespace Audiotica.Data.Collection.Model
             AddableTo = new ObservableCollection<AddableCollectionItem>();
         }
 
+        public Album(CloudAlbum cloud) : this()
+        {
+            Name = cloud.Name;
+            ProviderId = cloud.ProviderId;
+            CloudId = cloud.Id;
+            Genre = cloud.Genre;
+            ReleaseDate = cloud.ReleaseDate;
+
+            if (cloud.PrimaryArtist != null)
+            {
+                PrimaryArtist = new Artist(cloud.PrimaryArtist);
+            }
+        }
+
         public string ProviderId { get; set; }
 
         [Indexed]
@@ -30,10 +45,18 @@ namespace Audiotica.Data.Collection.Model
         public string Genre { get; set; }
         public DateTime ReleaseDate { get; set; }
 
+        [JsonIgnore]
+        public DateTime LastUpdated { get; set; }
+
+        [JsonIgnore]
+        public string CloudId { get; set; }
+
         [Ignore]
+        [JsonIgnore]
         public OptimizedObservableCollection<Song> Songs { get; set; }
 
         [Ignore]
+        [JsonIgnore]
         public IBitmapImage Artwork
         {
             get { return _artwork; }
@@ -44,7 +67,11 @@ namespace Audiotica.Data.Collection.Model
             }
         }
 
+        [JsonIgnore]
+        public bool NoArtworkFound { get; set; }
+
         [Ignore]
+        [JsonIgnore]
         public IBitmapImage SmallArtwork
         {
             get { return _smallArtwork; }
@@ -56,6 +83,7 @@ namespace Audiotica.Data.Collection.Model
         }
 
         [Ignore]
+        [JsonIgnore]
         public IBitmapImage MediumArtwork
         {
             get { return _mediumArtwork; }
@@ -67,11 +95,14 @@ namespace Audiotica.Data.Collection.Model
         }
 
         [Ignore]
+        [JsonIgnore]
         public Artist PrimaryArtist { get; set; }
 
+        [JsonIgnore]
         public bool HasArtwork { get; set; }
 
         [Ignore]
+        [JsonIgnore]
         public ObservableCollection<AddableCollectionItem> AddableTo { get; set; }
     }
 }

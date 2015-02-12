@@ -24,25 +24,25 @@ namespace Audiotica.Data.Collection.RunTime
 {
     public class CollectionService : INotifyPropertyChanged, ICollectionService
     {
-        private readonly IAppSettingsHelper appSettingsHelper;
+        private readonly IAppSettingsHelper _appSettingsHelper;
 
-        private readonly string artistArtworkFilePath;
+        private readonly string _artistArtworkFilePath;
 
-        private readonly string artworkFilePath;
+        private readonly string _artworkFilePath;
 
-        private readonly ISqlService bgSqlService;
+        private readonly ISqlService _bgSqlService;
 
-        private readonly IBitmapFactory bitmapFactory;
+        private readonly IBitmapFactory _bitmapFactory;
 
-        private readonly IDispatcherHelper dispatcher;
+        private readonly IDispatcherHelper _dispatcher;
 
-        private readonly string localFilePrefix;
+        private readonly string _localFilePrefix;
 
-        private readonly ConcurrentDictionary<long, QueueSong> lookupMap = new ConcurrentDictionary<long, QueueSong>();
+        private readonly ConcurrentDictionary<long, QueueSong> _lookupMap = new ConcurrentDictionary<long, QueueSong>();
 
-        private readonly IBitmapImage missingArtwork;
+        private readonly IBitmapImage _missingArtwork;
 
-        private readonly ISqlService sqlService;
+        private readonly ISqlService _sqlService;
 
         public CollectionService(
             ISqlService sqlService, 
@@ -55,15 +55,15 @@ namespace Audiotica.Data.Collection.RunTime
             string artworkFilePath, 
             string artistArtworkFilePath)
         {
-            this.bgSqlService = bgSqlService;
-            this.sqlService = sqlService;
-            this.dispatcher = dispatcher;
-            this.appSettingsHelper = appSettingsHelper;
-            this.bitmapFactory = bitmapFactory;
-            this.missingArtwork = missingArtwork;
-            this.localFilePrefix = localFilePrefix;
-            this.artworkFilePath = artworkFilePath;
-            this.artistArtworkFilePath = artistArtworkFilePath;
+            this._bgSqlService = bgSqlService;
+            this._sqlService = sqlService;
+            this._dispatcher = dispatcher;
+            this._appSettingsHelper = appSettingsHelper;
+            this._bitmapFactory = bitmapFactory;
+            this._missingArtwork = missingArtwork;
+            this._localFilePrefix = localFilePrefix;
+            this._artworkFilePath = artworkFilePath;
+            this._artistArtworkFilePath = artistArtworkFilePath;
             this.Songs = new OptimizedObservableCollection<Song>();
             this.Artists = new OptimizedObservableCollection<Artist>();
             this.Albums = new OptimizedObservableCollection<Album>();
@@ -76,7 +76,7 @@ namespace Audiotica.Data.Collection.RunTime
         {
             get
             {
-                return this.appSettingsHelper.Read<bool>("Shuffle");
+                return this._appSettingsHelper.Read<bool>("Shuffle");
             }
         }
 
@@ -117,20 +117,20 @@ namespace Audiotica.Data.Collection.RunTime
              * Sqlite makes a transaction to create a shared lock
              * Wrapping it in one single transactions assures it is only lock and release once
              */
-            this.sqlService.BeginTransaction();
+            this._sqlService.BeginTransaction();
 
-            var songs = this.sqlService.SelectAll<Song>().OrderByDescending(p => p.Id).ToList();
-            var artists = this.sqlService.SelectAll<Artist>().OrderByDescending(p => p.Id).ToList();
+            var songs = this._sqlService.SelectAll<Song>().OrderByDescending(p => p.Id).ToList();
+            var artists = this._sqlService.SelectAll<Artist>().OrderByDescending(p => p.Id).ToList();
             var albums = new List<Album>();
             if (!loadEssentials)
             {
-                albums = this.sqlService.SelectAll<Album>().OrderByDescending(p => p.Id).ToList();
+                albums = this._sqlService.SelectAll<Album>().OrderByDescending(p => p.Id).ToList();
             }
 
             // Let go of the lock
-            this.sqlService.Commit();
+            this._sqlService.Commit();
 
-            var isForeground = this.dispatcher != null;
+            var isForeground = this._dispatcher != null;
 
             foreach (var song in songs)
             {
@@ -140,7 +140,7 @@ namespace Audiotica.Data.Collection.RunTime
 
             if (isForeground)
             {
-                this.dispatcher.RunAsync(() => this.Songs.AddRange(songs)).Wait();
+                this._dispatcher.RunAsync(() => this.Songs.AddRange(songs)).Wait();
             }
             else
             {
@@ -154,32 +154,32 @@ namespace Audiotica.Data.Collection.RunTime
 
                 if (isForeground)
                 {
-                    this.dispatcher.RunAsync(
+                    this._dispatcher.RunAsync(
                         () =>
                             {
-                                var artworkPath = string.Format(this.artworkFilePath, album.Id);
+                                var artworkPath = string.Format(this._artworkFilePath, album.Id);
                                 if (album.HasArtwork)
                                 {
-                                    var path = this.localFilePrefix + artworkPath;
+                                    var path = this._localFilePrefix + artworkPath;
 
-                                    album.Artwork = this.bitmapFactory.CreateImage(new Uri(path));
+                                    album.Artwork = this._bitmapFactory.CreateImage(new Uri(path));
 
                                     if (this.ScaledImageSize != 0)
                                     {
                                         album.Artwork.SetDecodedPixel(this.ScaledImageSize);
 
-                                        album.MediumArtwork = this.bitmapFactory.CreateImage(new Uri(path));
+                                        album.MediumArtwork = this._bitmapFactory.CreateImage(new Uri(path));
                                         album.MediumArtwork.SetDecodedPixel(this.ScaledImageSize / 2);
 
-                                        album.SmallArtwork = this.bitmapFactory.CreateImage(new Uri(path));
+                                        album.SmallArtwork = this._bitmapFactory.CreateImage(new Uri(path));
                                         album.SmallArtwork.SetDecodedPixel(50);
                                     }
                                 }
                                 else
                                 {
-                                    album.Artwork = this.missingArtwork;
-                                    album.MediumArtwork = this.missingArtwork;
-                                    album.SmallArtwork = this.missingArtwork;
+                                    album.Artwork = this._missingArtwork;
+                                    album.MediumArtwork = this._missingArtwork;
+                                    album.SmallArtwork = this._missingArtwork;
                                 }
                             }).Wait();
                 }
@@ -187,7 +187,7 @@ namespace Audiotica.Data.Collection.RunTime
 
             if (isForeground)
             {
-                this.dispatcher.RunAsync(() => this.Albums.AddRange(albums)).Wait();
+                this._dispatcher.RunAsync(() => this.Albums.AddRange(albums)).Wait();
             }
             else
             {
@@ -203,13 +203,13 @@ namespace Audiotica.Data.Collection.RunTime
                 artist.Albums.AddRange(songsAlbums.Where(p => !artist.Albums.Contains(p)));
                 if (isForeground)
                 {
-                    this.dispatcher.RunAsync(
+                    this._dispatcher.RunAsync(
                         () =>
                             {
-                                var artworkPath = string.Format(this.artistArtworkFilePath, artist.Id);
+                                var artworkPath = string.Format(this._artistArtworkFilePath, artist.Id);
                                 artist.Artwork = artist.HasArtwork
-                                                     ? this.bitmapFactory.CreateImage(
-                                                         new Uri(this.localFilePrefix + artworkPath))
+                                                     ? this._bitmapFactory.CreateImage(
+                                                         new Uri(this._localFilePrefix + artworkPath))
                                                      : null;
 
                                 if (this.ScaledImageSize != 0 && artist.Artwork != null)
@@ -222,7 +222,7 @@ namespace Audiotica.Data.Collection.RunTime
 
             if (isForeground)
             {
-                this.dispatcher.RunAsync(() => this.Artists.AddRange(artists)).Wait();
+                this._dispatcher.RunAsync(() => this.Artists.AddRange(artists)).Wait();
             }
             else
             {
@@ -252,7 +252,7 @@ namespace Audiotica.Data.Collection.RunTime
                 this.DeleteSongAsync(corruptSong).Wait();
             }
 
-            this.dispatcher.RunAsync(
+            this._dispatcher.RunAsync(
                 () =>
                     {
                         if (this.LibraryLoaded != null)
@@ -301,16 +301,6 @@ namespace Audiotica.Data.Collection.RunTime
                 != null;
         }
 
-        public Task AddSongAsync(Song song, string artworkUrl)
-        {
-            return this.AddSongAsync(song, null, artworkUrl);
-        }
-
-        public Task AddSongAsync(Song song, Tag tags)
-        {
-            return this.AddSongAsync(song, tags, null);
-        }
-
         public async Task DeleteSongAsync(Song song)
         {
             var queueSong = this.PlaybackQueue.FirstOrDefault(p => p.SongId == song.Id);
@@ -341,8 +331,8 @@ namespace Audiotica.Data.Collection.RunTime
                 song.Album.Songs.Remove(song);
                 if (song.Album.Songs.Count == 0)
                 {
-                    await this.sqlService.DeleteItemAsync(song.Album);
-                    await this.dispatcher.RunAsync(
+                    await this._sqlService.DeleteItemAsync(song.Album);
+                    await this._dispatcher.RunAsync(
                         () =>
                             {
                                 this.Albums.Remove(song.Album);
@@ -363,8 +353,8 @@ namespace Audiotica.Data.Collection.RunTime
                 song.Artist.Songs.Remove(song);
                 if (song.Artist.Songs.Count == 0)
                 {
-                    await this.sqlService.DeleteItemAsync(song.Artist);
-                    await this.dispatcher.RunAsync(
+                    await this._sqlService.DeleteItemAsync(song.Artist);
+                    await this._dispatcher.RunAsync(
                         () =>
                             {
                                 this.Artists.Remove(song.Artist);
@@ -380,14 +370,14 @@ namespace Audiotica.Data.Collection.RunTime
             }
 
             // good, now lets delete it from the db
-            await this.sqlService.DeleteItemAsync(song);
+            await this._sqlService.DeleteItemAsync(song);
 
-            await this.dispatcher.RunAsync(() => this.Songs.Remove(song));
+            await this._dispatcher.RunAsync(() => this.Songs.Remove(song));
         }
 
         public async Task<List<HistoryEntry>> FetchHistoryAsync()
         {
-            var list = await Task.FromResult(this.bgSqlService.SelectAll<HistoryEntry>().ToList());
+            var list = await Task.FromResult(this._bgSqlService.SelectAll<HistoryEntry>().ToList());
             foreach (var historyEntry in list)
             {
                 historyEntry.Song = this.Songs.FirstOrDefault(p => p.Id == historyEntry.SongId);
@@ -407,7 +397,7 @@ namespace Audiotica.Data.Collection.RunTime
             }
         }
 
-        private async Task AddSongAsync(Song song, Tag tags, string artworkUrl)
+        public async Task AddSongAsync(Song song, Tag tags = null)
         {
             var primaryArtist = (song.Album == null ? song.Artist : song.Album.PrimaryArtist)
                                 ?? new Artist { Name = "Unknown Artist", ProviderId = "autc.unknown" };
@@ -419,8 +409,8 @@ namespace Audiotica.Data.Collection.RunTime
                     || string.Equals(entry.Name, primaryArtist.Name, StringComparison.CurrentCultureIgnoreCase));
             if (artist == null)
             {
-                await this.sqlService.InsertAsync(primaryArtist);
-                await this.dispatcher.RunAsync(() => this.Artists.Insert(0, primaryArtist));
+                await this._sqlService.InsertAsync(primaryArtist);
+                await this._dispatcher.RunAsync(() => this.Artists.Insert(0, primaryArtist));
 
                 song.Artist = primaryArtist;
                 song.ArtistId = primaryArtist.Id;
@@ -463,13 +453,18 @@ namespace Audiotica.Data.Collection.RunTime
             }
             else
             {
-                await this.sqlService.InsertAsync(song.Album);
-                await this.dispatcher.RunAsync(() => this.Albums.Insert(0, song.Album));
-
-                var albumFilePath = string.Format(this.artworkFilePath, song.Album.Id);
-
-                if (tags != null && tags.Pictures != null)
+                await this._sqlService.InsertAsync(song.Album);
+                await this._dispatcher.RunAsync(() =>
                 {
+                    this.Albums.Insert(0, song.Album);
+                    song.Album.Artwork = this._missingArtwork;
+                    song.Album.MediumArtwork = this._missingArtwork;
+                    song.Album.SmallArtwork = this._missingArtwork;
+                });
+
+                if (tags != null && tags.Pictures != null && tags.Pictures.Length > 0)
+                {
+                    var albumFilePath = string.Format(this._artworkFilePath, song.Album.Id);
                     Stream artwork = null;
 
                     var image = tags.Pictures.FirstOrDefault();
@@ -480,53 +475,61 @@ namespace Audiotica.Data.Collection.RunTime
 
                     if (artwork != null)
                     {
-                        song.Album.HasArtwork = await this.GetArtworkAsync(albumFilePath, artwork);
-                        await this.sqlService.UpdateItemAsync(song.Album);
+                        try
+                        {
+                            var file =
+                                await
+                                StorageHelper.CreateFileAsync(
+                                    albumFilePath,
+                                    option: CreationCollisionOption.ReplaceExisting);
+
+                            using (var fileStream = await file.OpenAsync(FileAccess.ReadAndWrite))
+                            {
+                                var bytes = tags.Pictures[0].Data.Data;
+                                await fileStream.WriteAsync(bytes, 0, bytes.Length);
+                                song.Album.HasArtwork = true;
+                                await this._sqlService.UpdateItemAsync(song.Album);
+                            }
+                        }
+                        catch
+                        {
+                            // ignored
+                        }
                         artwork.Dispose();
                     }
-                }
-                else if (!string.IsNullOrEmpty(artworkUrl))
-                {
-                    song.Album.HasArtwork = await this.GetArtworkAsync(albumFilePath, artworkUrl);
-                    await this.sqlService.UpdateItemAsync(song.Album);
-                }
 
-                // set it
-                await this.dispatcher.RunAsync(
-                    () =>
-                        {
-                            var artworkPath = string.Format(this.artworkFilePath, song.Album.Id);
-                            if (song.Album.HasArtwork)
+                    // set it
+                    if (song.Album.HasArtwork)
+                    {
+                        await this._dispatcher.RunAsync(
+                            () =>
                             {
-                                var path = this.localFilePrefix + artworkPath;
+                                var path = this._localFilePrefix + albumFilePath;
 
-                                song.Album.Artwork = this.bitmapFactory.CreateImage(new Uri(path));
+                                song.Album.Artwork = this._bitmapFactory.CreateImage(new Uri(path));
 
-                                if (this.ScaledImageSize != 0)
+                                if (this.ScaledImageSize == 0)
                                 {
-                                    song.Album.Artwork.SetDecodedPixel(this.ScaledImageSize);
-
-                                    song.Album.MediumArtwork = this.bitmapFactory.CreateImage(new Uri(path));
-                                    song.Album.MediumArtwork.SetDecodedPixel(this.ScaledImageSize / 2);
-
-                                    song.Album.SmallArtwork = this.bitmapFactory.CreateImage(new Uri(path));
-                                    song.Album.SmallArtwork.SetDecodedPixel(50);
+                                    return;
                                 }
-                            }
-                            else
-                            {
-                                song.Album.Artwork = this.missingArtwork;
-                                song.Album.MediumArtwork = this.missingArtwork;
-                                song.Album.SmallArtwork = this.missingArtwork;
-                            }
-                        });
+
+                                song.Album.Artwork.SetDecodedPixel(this.ScaledImageSize);
+
+                                song.Album.MediumArtwork = this._bitmapFactory.CreateImage(new Uri(path));
+                                song.Album.MediumArtwork.SetDecodedPixel(this.ScaledImageSize / 2);
+
+                                song.Album.SmallArtwork = this._bitmapFactory.CreateImage(new Uri(path));
+                                song.Album.SmallArtwork.SetDecodedPixel(50);
+                            });
+                    }
+                }
             }
 
             song.AlbumId = song.Album.Id;
 
-            await this.sqlService.InsertAsync(song);
+            await this._sqlService.InsertAsync(song);
 
-            await this.dispatcher.RunAsync(
+            await this._dispatcher.RunAsync(
                 () =>
                     {
                         var orderedAlbumSong = song.Album.Songs.ToList();
@@ -536,7 +539,6 @@ namespace Audiotica.Data.Collection.RunTime
                         var index = orderedAlbumSong.IndexOf(song);
                         song.Album.Songs.Insert(index, song);
 
-                        
 
                         var orderedArtistSong = song.Artist.Songs.ToList();
                         orderedArtistSong.Add(song);
@@ -545,7 +547,6 @@ namespace Audiotica.Data.Collection.RunTime
                         index = orderedArtistSong.IndexOf(song);
                         song.Artist.Songs.Insert(index, song);
 
-                        
 
                         #region Order artist album
 
@@ -595,46 +596,6 @@ namespace Audiotica.Data.Collection.RunTime
             }
         }
 
-        private async Task<bool> GetArtworkAsync(string filePath, Stream stream)
-        {
-            try
-            {
-                using (
-                    var fileStream =
-                        await
-                        (await StorageHelper.CreateFileAsync(filePath, option: CreationCollisionOption.ReplaceExisting))
-                            .OpenAsync(FileAccess.ReadAndWrite))
-                {
-                    await stream.CopyToAsync(fileStream);
-                    return true;
-                }
-            }
-            catch
-            {
-                return false;
-            }
-        }
-
-        private async Task<bool> GetArtworkAsync(string filePath, string artworkUrl)
-        {
-            try
-            {
-                using (var client = new HttpClient())
-                {
-                    using (var stream = await client.GetStreamAsync(artworkUrl))
-                    {
-                        return await this.GetArtworkAsync(filePath, stream);
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                Debug.WriteLine("Some shit happened saving the artwork, here: " + e);
-            }
-
-            return false;
-        }
-
         #region Playback Queue
 
         public async Task ClearQueueAsync()
@@ -644,10 +605,10 @@ namespace Audiotica.Data.Collection.RunTime
                 return;
             }
 
-            await this.bgSqlService.DeleteTableAsync<QueueSong>();
+            await this._bgSqlService.DeleteTableAsync<QueueSong>();
 
-            this.lookupMap.Clear();
-            await this.dispatcher.RunAsync(
+            this._lookupMap.Clear();
+            await this._dispatcher.RunAsync(
                 () =>
                     {
                         this.PlaybackQueue.Clear();
@@ -661,7 +622,7 @@ namespace Audiotica.Data.Collection.RunTime
 
             if (unshuffle.Count >= 5)
             {
-                await this.dispatcher.RunAsync(() => this.ShufflePlaybackQueue.SwitchTo(unshuffle));
+                await this._dispatcher.RunAsync(() => this.ShufflePlaybackQueue.SwitchTo(unshuffle));
 
                 for (var i = 0; i < unshuffle.Count; i++)
                 {
@@ -674,7 +635,7 @@ namespace Audiotica.Data.Collection.RunTime
                         queueSong.ShuffleNextId = unshuffle[i + 1].Id;
                     }
 
-                    await this.bgSqlService.UpdateItemAsync(queueSong);
+                    await this._bgSqlService.UpdateItemAsync(queueSong);
                 }
             }
         }
@@ -709,7 +670,7 @@ namespace Audiotica.Data.Collection.RunTime
                 next = this.PlaybackQueue.ElementAtOrDefault(normalIndex);
                 if (next != null)
                 {
-                    this.lookupMap.TryGetValue(next.PrevId, out prev);
+                    this._lookupMap.TryGetValue(next.PrevId, out prev);
                 }
             }
             else
@@ -728,7 +689,7 @@ namespace Audiotica.Data.Collection.RunTime
                     shuffleNext = this.ShufflePlaybackQueue.ElementAtOrDefault(shuffleIndex);
                     if (shuffleNext != null)
                     {
-                        this.lookupMap.TryGetValue(shuffleNext.ShufflePrevId, out shufflePrev);
+                        this._lookupMap.TryGetValue(shuffleNext.ShufflePrevId, out shufflePrev);
                     }
                 }
             }
@@ -739,7 +700,7 @@ namespace Audiotica.Data.Collection.RunTime
                     shuffleIndex = rnd.Next(1, this.ShufflePlaybackQueue.Count - 1);
                     shuffleNext = this.ShufflePlaybackQueue.ElementAt(shuffleIndex);
 
-                    this.lookupMap.TryGetValue(shuffleNext.ShufflePrevId, out shufflePrev);
+                    this._lookupMap.TryGetValue(shuffleNext.ShufflePrevId, out shufflePrev);
                 }
                 else
                 {
@@ -760,36 +721,36 @@ namespace Audiotica.Data.Collection.RunTime
             };
 
             // Add it to the database
-            await this.bgSqlService.InsertAsync(newQueue).ConfigureAwait(false);
+            await this._bgSqlService.InsertAsync(newQueue).ConfigureAwait(false);
 
             if (next != null)
             {
                 // Update the prev id of the queue that was replaced
                 next.PrevId = newQueue.Id;
-                await this.bgSqlService.UpdateItemAsync(next).ConfigureAwait(false);
+                await this._bgSqlService.UpdateItemAsync(next).ConfigureAwait(false);
             }
 
             if (prev != null)
             {
                 // Update the next id of the previous tail
                 prev.NextId = newQueue.Id;
-                await this.bgSqlService.UpdateItemAsync(prev).ConfigureAwait(false);
+                await this._bgSqlService.UpdateItemAsync(prev).ConfigureAwait(false);
             }
 
             if (shuffleNext != null)
             {
                 shuffleNext.ShufflePrevId = newQueue.Id;
-                await this.bgSqlService.UpdateItemAsync(shuffleNext).ConfigureAwait(false);
+                await this._bgSqlService.UpdateItemAsync(shuffleNext).ConfigureAwait(false);
             }
 
             if (shufflePrev != null)
             {
                 shufflePrev.ShuffleNextId = newQueue.Id;
-                await this.bgSqlService.UpdateItemAsync(shufflePrev).ConfigureAwait(false);
+                await this._bgSqlService.UpdateItemAsync(shufflePrev).ConfigureAwait(false);
             }
 
             // Add the new queue entry to the collection and map
-            await this.dispatcher.RunAsync(
+            await this._dispatcher.RunAsync(
                 () =>
                     {
                         if (insert)
@@ -825,7 +786,7 @@ namespace Audiotica.Data.Collection.RunTime
                         }
                     }).ConfigureAwait(false);
 
-            this.lookupMap.TryAdd(newQueue.Id, newQueue);
+            this._lookupMap.TryAdd(newQueue.Id, newQueue);
 
             return newQueue;
         }
@@ -844,47 +805,47 @@ namespace Audiotica.Data.Collection.RunTime
                 return;
             }
 
-            if (this.lookupMap.TryGetValue(songToRemove.PrevId, out previousModel))
+            if (this._lookupMap.TryGetValue(songToRemove.PrevId, out previousModel))
             {
                 previousModel.NextId = songToRemove.NextId;
-                await this.bgSqlService.UpdateItemAsync(previousModel);
+                await this._bgSqlService.UpdateItemAsync(previousModel);
             }
 
-            if (this.lookupMap.TryGetValue(songToRemove.ShufflePrevId, out previousModel))
+            if (this._lookupMap.TryGetValue(songToRemove.ShufflePrevId, out previousModel))
             {
                 previousModel.ShuffleNextId = songToRemove.ShuffleNextId;
-                await this.bgSqlService.UpdateItemAsync(previousModel);
+                await this._bgSqlService.UpdateItemAsync(previousModel);
             }
 
             QueueSong nextModel;
 
-            if (this.lookupMap.TryGetValue(songToRemove.NextId, out nextModel))
+            if (this._lookupMap.TryGetValue(songToRemove.NextId, out nextModel))
             {
                 nextModel.PrevId = songToRemove.PrevId;
-                await this.bgSqlService.UpdateItemAsync(nextModel);
+                await this._bgSqlService.UpdateItemAsync(nextModel);
             }
 
-            if (this.lookupMap.TryGetValue(songToRemove.ShuffleNextId, out nextModel))
+            if (this._lookupMap.TryGetValue(songToRemove.ShuffleNextId, out nextModel))
             {
                 nextModel.ShufflePrevId = songToRemove.ShufflePrevId;
-                await this.bgSqlService.UpdateItemAsync(nextModel);
+                await this._bgSqlService.UpdateItemAsync(nextModel);
             }
 
-            await this.dispatcher.RunAsync(
+            await this._dispatcher.RunAsync(
                 () =>
                     {
                         this.PlaybackQueue.Remove(songToRemove);
                         this.CurrentPlaybackQueue.Remove(songToRemove);
                     });
-            this.lookupMap.TryRemove(songToRemove.Id, out songToRemove);
+            this._lookupMap.TryRemove(songToRemove.Id, out songToRemove);
 
             // Delete from database
-            await this.bgSqlService.DeleteItemAsync(songToRemove);
+            await this._bgSqlService.DeleteItemAsync(songToRemove);
         }
 
         private void LoadQueue(List<Song> songs)
         {
-            var queue = this.bgSqlService.SelectAll<QueueSong>();
+            var queue = this._bgSqlService.SelectAll<QueueSong>();
             QueueSong head = null;
             QueueSong shuffleHead = null;
 
@@ -892,7 +853,7 @@ namespace Audiotica.Data.Collection.RunTime
             {
                 queueSong.Song = songs.FirstOrDefault(p => p.Id == queueSong.SongId);
 
-                this.lookupMap.TryAdd(queueSong.Id, queueSong);
+                this._lookupMap.TryAdd(queueSong.Id, queueSong);
 
                 if (queueSong.ShufflePrevId == 0)
                 {
@@ -909,18 +870,18 @@ namespace Audiotica.Data.Collection.RunTime
             {
                 for (var i = 0; i < queue.Count; i++)
                 {
-                    if (this.dispatcher != null)
+                    if (this._dispatcher != null)
                     {
-                        this.dispatcher.RunAsync(() => this.PlaybackQueue.Add(head)).Wait();
+                        this._dispatcher.RunAsync(() => this.PlaybackQueue.Add(head)).Wait();
                     }
                     else
                     {
                         this.PlaybackQueue.Add(head);
                     }
 
-                    if (head.NextId != 0 && this.lookupMap.ContainsKey(head.NextId))
+                    if (head.NextId != 0 && this._lookupMap.ContainsKey(head.NextId))
                     {
-                        head = this.lookupMap[head.NextId];
+                        head = this._lookupMap[head.NextId];
                     }
                     else
                     {
@@ -933,18 +894,18 @@ namespace Audiotica.Data.Collection.RunTime
             {
                 for (var i = 0; i < queue.Count; i++)
                 {
-                    if (this.dispatcher != null)
+                    if (this._dispatcher != null)
                     {
-                        this.dispatcher.RunAsync(() => this.ShufflePlaybackQueue.Add(shuffleHead)).Wait();
+                        this._dispatcher.RunAsync(() => this.ShufflePlaybackQueue.Add(shuffleHead)).Wait();
                     }
                     else
                     {
                         this.ShufflePlaybackQueue.Add(shuffleHead);
                     }
 
-                    if (shuffleHead.ShuffleNextId != 0 && this.lookupMap.ContainsKey(shuffleHead.ShuffleNextId))
+                    if (shuffleHead.ShuffleNextId != 0 && this._lookupMap.ContainsKey(shuffleHead.ShuffleNextId))
                     {
-                        shuffleHead = this.lookupMap[shuffleHead.ShuffleNextId];
+                        shuffleHead = this._lookupMap[shuffleHead.ShuffleNextId];
                     }
                     else
                     {
@@ -966,7 +927,7 @@ namespace Audiotica.Data.Collection.RunTime
             }
 
             var playlist = new Playlist { Name = name };
-            await this.sqlService.InsertAsync(playlist);
+            await this._sqlService.InsertAsync(playlist);
 
             this.Playlists.Insert(0, playlist);
 
@@ -975,8 +936,8 @@ namespace Audiotica.Data.Collection.RunTime
 
         public async Task DeletePlaylistAsync(Playlist playlist)
         {
-            await this.sqlService.DeleteItemAsync(playlist);
-            await this.sqlService.DeleteWhereAsync(playlist);
+            await this._sqlService.DeleteItemAsync(playlist);
+            await this._sqlService.DeleteWhereAsync(playlist);
             this.Playlists.Remove(playlist);
         }
 
@@ -995,13 +956,13 @@ namespace Audiotica.Data.Collection.RunTime
             };
 
             // Add it to the database
-            await this.sqlService.InsertAsync(newSong);
+            await this._sqlService.InsertAsync(newSong);
 
             if (tail != null)
             {
                 // Update the next id of the previous tail
                 tail.NextId = newSong.Id;
-                await this.sqlService.UpdateItemAsync(tail);
+                await this._sqlService.UpdateItemAsync(tail);
             }
 
             // Add the new queue entry to the collection and map
@@ -1040,7 +1001,7 @@ namespace Audiotica.Data.Collection.RunTime
                     if (playlist.LookupMap.TryGetValue(song.PrevId, out prevSong))
                     {
                         prevSong.NextId = song.Id;
-                        await this.sqlService.UpdateItemAsync(prevSong);
+                        await this._sqlService.UpdateItemAsync(prevSong);
                     }
                 }
             }
@@ -1056,7 +1017,7 @@ namespace Audiotica.Data.Collection.RunTime
                     if (playlist.LookupMap.TryGetValue(song.NextId, out nextSong))
                     {
                         nextSong.PrevId = song.Id;
-                        await this.sqlService.UpdateItemAsync(nextSong);
+                        await this._sqlService.UpdateItemAsync(nextSong);
                     }
                 }
             }
@@ -1067,7 +1028,7 @@ namespace Audiotica.Data.Collection.RunTime
                 if (playlist.LookupMap.TryGetValue(songPrevId, out prevSong))
                 {
                     prevSong.NextId = songNextId;
-                    await this.sqlService.UpdateItemAsync(prevSong);
+                    await this._sqlService.UpdateItemAsync(prevSong);
                 }
             }
 
@@ -1077,12 +1038,12 @@ namespace Audiotica.Data.Collection.RunTime
                 if (playlist.LookupMap.TryGetValue(songNextId, out nextSong))
                 {
                     nextSong.PrevId = songPrevId;
-                    await this.sqlService.UpdateItemAsync(nextSong);
+                    await this._sqlService.UpdateItemAsync(nextSong);
                 }
             }
 
-            await this.sqlService.UpdateItemAsync(song);
-            await this.sqlService.UpdateItemAsync(originalSong);
+            await this._sqlService.UpdateItemAsync(song);
+            await this._sqlService.UpdateItemAsync(originalSong);
         }
 
         public async Task DeleteFromPlaylistAsync(Playlist playlist, PlaylistSong songToRemove)
@@ -1091,24 +1052,24 @@ namespace Audiotica.Data.Collection.RunTime
             {
                 var nextSong = playlist.LookupMap[songToRemove.NextId];
                 nextSong.PrevId = songToRemove.PrevId;
-                await this.sqlService.UpdateItemAsync(nextSong);
+                await this._sqlService.UpdateItemAsync(nextSong);
             }
 
             if (songToRemove.PrevId != 0)
             {
                 var prevSong = playlist.LookupMap[songToRemove.PrevId];
                 prevSong.NextId = songToRemove.NextId;
-                await this.sqlService.UpdateItemAsync(prevSong);
+                await this._sqlService.UpdateItemAsync(prevSong);
             }
 
-            await this.sqlService.DeleteItemAsync(songToRemove);
-            await this.dispatcher.RunAsync(() => playlist.Songs.Remove(songToRemove));
+            await this._sqlService.DeleteItemAsync(songToRemove);
+            await this._dispatcher.RunAsync(() => playlist.Songs.Remove(songToRemove));
         }
 
         private async void LoadPlaylists()
         {
-            var playlists = this.sqlService.SelectAll<Playlist>().OrderByDescending(p => p.Id);
-            var playlistSongs = this.sqlService.SelectAll<PlaylistSong>();
+            var playlists = this._sqlService.SelectAll<Playlist>().OrderByDescending(p => p.Id);
+            var playlistSongs = this._sqlService.SelectAll<PlaylistSong>();
 
             foreach (var playlist in playlists)
             {
@@ -1140,9 +1101,9 @@ namespace Audiotica.Data.Collection.RunTime
                     }
                 }
 
-                if (this.dispatcher != null)
+                if (this._dispatcher != null)
                 {
-                    await this.dispatcher.RunAsync(() => this.Playlists.Add(playlist));
+                    await this._dispatcher.RunAsync(() => this.Playlists.Add(playlist));
                 }
                 else
                 {

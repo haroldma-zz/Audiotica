@@ -4,7 +4,6 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:Audiotica"
     xmlns:common="using:Audiotica.Core.Common"
-    xmlns:partialView="using:Audiotica.PartialView"
     RequestedTheme="Dark">
     <Application.Resources>
         <vm:ViewModelLocator xmlns:vm="using:Audiotica.ViewModel"
@@ -20,12 +19,15 @@
         <common:TimespanToStringConverter x:Key="TimespanToStringConverter" />
         <common:UpperCaseConverter x:Key="UpperCaseConverter" />
         <common:NotEmptyToStringConverter x:Key="DashNotEmptyToStringConverter" NotEmptyText="-" />
-        <local:SongStateConverter x:Key="DownloadingSongStateConverter" SongState="Downloading" />
-        <local:SongStateConverter x:Key="NoneSongStateConverter" SongState="None" />
         <common:CountToPluralConverter x:Key="SongToPluralConverter" x:Uid="CountSong" SingularText="song"
                                        PluralText="songs" />
         <common:CountToPluralConverter x:Key="AlbumToPluralConverter" x:Uid="CountAlbumName" SingularText="album"
                                        PluralText="albums" />
+        <local:BoolOpacityConverter x:Name="ReverseBoolOpacityConverter" IsReverse="True" />
+        <local:SongStateConverter x:Key="DownloadingSongStateConverter" SongState="Downloading" />
+        <local:SongStateConverter x:Key="NoneSongStateConverter" SongState="None" />
+        <local:SongStateConverter x:Key="MatchingSongStateConverter" SongState="Matching" />
+        <local:SongStateConverter x:Key="NoMatchSongStateConverter" SongState="NoMatch" />
 
         <Style x:Key="AppFrame" TargetType="Frame">
             <Setter Property="HorizontalContentAlignment" Value="Stretch" />
@@ -242,7 +244,7 @@
                     </Grid.Background>
                 </Grid>
                 <Grid Background="#BF000000" VerticalAlignment="Bottom">
-                    <TextBlock TextTrimming="CharacterEllipsis" Margin="15,5" FontSize="22"
+                    <TextBlock TextTrimming="CharacterEllipsis" Margin="10,5" FontSize="22"
                                Text="{Binding Name}" HorizontalAlignment="Left"
                                VerticalAlignment="Bottom" />
                 </Grid>
@@ -285,16 +287,7 @@
         </DataTemplate>
 
         <DataTemplate x:Key="SpotifyTrackDataTemplate">
-            <StackPanel Margin="0,0,0,15">
-                <TextBlock Text="{Binding Name}" FontSize="22" TextWrapping="Wrap"
-                           TextTrimming="CharacterEllipsis" FontWeight="Bold" />
-                <TextBlock FontSize="16" FontWeight="Thin" Foreground="#89FFFFFF"
-                           TextTrimming="CharacterEllipsis" TextWrapping="Wrap">
-                    <Run Text="{Binding Artist.Name}" />
-                    <Run Text="{Binding Album.Name, Converter={StaticResource DashNotEmptyToStringConverter}}" />
-                    <Run Text="{Binding Album.Name}" />
-                </TextBlock>
-            </StackPanel>
+           <local:SpotifyTrackViewer />
         </DataTemplate>
         <DataTemplate x:Key="SpotifyTrackNoAlbumDataTemplate">
             <StackPanel Margin="0,0,0,15">

@@ -303,7 +303,7 @@ namespace Audiotica
 
             if (state != MediaPlayerState.Closed && state != MediaPlayerState.Stopped)
             {
-                if (this.CurrentQueue != null)
+                if (this.CurrentQueue != null && CurrentQueue.Song != null)
                 {
                     var lastPlayed = DateTime.Now - this.CurrentQueue.Song.LastPlayed;
 

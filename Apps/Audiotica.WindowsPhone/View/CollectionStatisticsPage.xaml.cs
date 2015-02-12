@@ -14,9 +14,9 @@ namespace Audiotica.View
             InitializeComponent();
         }
 
-        public override void NavigatedTo(object parameter)
+        public override void NavigatedTo(Windows.UI.Xaml.Navigation.NavigationMode mode, object parameter)
         {
-            base.NavigatedTo(parameter);
+            base.NavigatedTo(mode, parameter);
             (DataContext as CollectionStatisticsViewModel).UpdateData();
         }
     }

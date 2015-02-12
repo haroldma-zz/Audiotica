@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/2010/manifest" xmlns:m2="http://schemas.microsoft.com/appx/2013/manifest" xmlns:m3="http://schemas.microsoft.com/appx/2014/manifest" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest">
-  <Identity Name="3237Zumicts.Audiotica" Publisher="CN=E38C2EDA-A823-4D3D-BBB1-8F0B81FF4C7B" Version="1501.31.8.26" />
-  <mp:PhoneIdentity PhoneProductId="6160f81f-bde1-4eef-b594-5b7636f34e0c" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
+  <Identity Name="3237Zumicts.AudioticaBeta" Publisher="CN=E38C2EDA-A823-4D3D-BBB1-8F0B81FF4C7B" Version="1502.11.14.57" />
+  <mp:PhoneIdentity PhoneProductId="2ab60dbe-801f-4b06-8326-53b75c3b5d10" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
     <DisplayName>Audiotica</DisplayName>
     <PublisherDisplayName>Zumicts Studio</PublisherDisplayName>
@@ -57,5 +57,10 @@
   <Capabilities>
     <Capability Name="internetClientServer" />
     <Capability Name="musicLibrary" />
+<<<<<<< HEAD
+=======
+    <Capability Name="removableStorage" />
+    <DeviceCapability Name="microphone" />
+>>>>>>> origin/development
   </Capabilities>
 </Package>

@@ -4,14 +4,18 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+
+using Audiotica.Core.Utilities;
+using Audiotica.Core.Utils;
+using Audiotica.Core.WinRt.Common;
+
+using PCLStorage;
+
 using Windows.ApplicationModel.Activation;
 using Windows.Storage;
 using Windows.Storage.Pickers;
 using Windows.UI.Xaml;
-using Audiotica.Core.Utilities;
-using Audiotica.Core.Utils;
-using Audiotica.Core.WinRt.Common;
-using PCLStorage;
+
 using Xamarin;
 
 #endregion
@@ -25,19 +29,23 @@ namespace Audiotica.View.Setting
             InitializeComponent();
         }
 
-        private void ImportButton_Click(object sender, RoutedEventArgs e)
+        private void BackupButton_Click(object sender, RoutedEventArgs e)
         {
-            if (!App.Locator.CollectionService.IsLibraryLoaded)
+            if (App.Locator.Download.ActiveDownloads.Count > 0)
             {
-                UiBlockerUtility.Block("Loading collection...");
-                App.Locator.CollectionService.LibraryLoaded += (o, args) =>
-                {
-                    UiBlockerUtility.Unblock();
-                    Import();
-                };
+                CurtainPrompt.ShowError("Can't do a backup while there are active downloads.");
+                return;
             }
-            else
-                Import();
+
+            var savePicker = new FileSavePicker { SuggestedStartLocation = PickerLocationId.DocumentsLibrary };
+
+            // Dropdown of file types the user can save the file as
+            savePicker.FileTypeChoices.Add("Audiotica Backup", new List<string> { ".autcp" });
+
+            // Default file name if the user does not type one in or select a file to replace
+            savePicker.SuggestedFileName = string.Format("{0}-WP81", DateTime.Now.ToString("MM-dd-yy_H.mm"));
+
+            savePicker.PickSaveFileAndContinue();
         }
 
         private async void Import()
@@ -56,8 +64,9 @@ namespace Audiotica.View.Setting
                 App.Locator.SqlService.BeginTransaction();
                 for (var i = 0; i < localMusic.Count; i++)
                 {
-                    StatusBarHelper.ShowStatus(string.Format("Importing {0} of {1} items", i + 1, localMusic.Count),
-                        (double) i/localMusic.Count);
+                    StatusBarHelper.ShowStatus(
+                        string.Format("Importing {0} of {1} items", i + 1, localMusic.Count), 
+                        (double)i / localMusic.Count);
                     try
                     {
                         await LocalMusicHelper.SaveTrackAsync(localMusic[i]);
@@ -67,6 +76,7 @@ namespace Audiotica.View.Setting
                         failedCount++;
                     }
                 }
+
                 App.Locator.SqlService.Commit();
 
                 App.Locator.CollectionService.Songs.Reset();
@@ -81,43 +91,26 @@ namespace Audiotica.View.Setting
                     handle.Data.Add("Failed", failedCount.ToString());
                 }
             }
+
+            await CollectionHelper.DownloadAlbumsArtworkAsync();
             await CollectionHelper.DownloadArtistsArtworkAsync();
         }
 
-        private void BackupButton_Click(object sender, RoutedEventArgs e)
+        private void ImportButton_Click(object sender, RoutedEventArgs e)
         {
-            if (App.Locator.Download.ActiveDownloads.Count > 0)
+            if (!App.Locator.CollectionService.IsLibraryLoaded)
             {
-                CurtainPrompt.ShowError("Can't do a backup while there are active downloads.");
-                return;
+                UiBlockerUtility.Block("Loading collection...");
+                App.Locator.CollectionService.LibraryLoaded += (o, args) =>
+                {
+                    UiBlockerUtility.Unblock();
+                    Import();
+                };
             }
-
-            var savePicker = new FileSavePicker
+            else
             {
-                SuggestedStartLocation = PickerLocationId.DocumentsLibrary
-            };
-            // Dropdown of file types the user can save the file as
-            savePicker.FileTypeChoices.Add("Audiotica Backup", new List<string> {".autcp"});
-            // Default file name if the user does not type one in or select a file to replace
-            savePicker.SuggestedFileName = string.Format("{0}-WP81", DateTime.Now.ToString("MM-dd-yy_H.mm"));
-
-            savePicker.PickSaveFileAndContinue();
-        }
-
-        private async void RestoreButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (App.Locator.Download.ActiveDownloads.Count > 0)
-            {
-                CurtainPrompt.ShowError("Can't do a restore while there are active downloads.");
-                return;
+                Import();
             }
-
-            if (await MessageBox.ShowAsync("This will delete all your pre-existing data.", "Continue with Restore?",
-                MessageBoxButton.YesNo) != MessageBoxResult.Yes) return;
-
-            var fileOpenPicker = new FileOpenPicker {SuggestedStartLocation = PickerLocationId.DocumentsLibrary};
-            fileOpenPicker.FileTypeFilter.Add(".autcp");
-            fileOpenPicker.PickSingleFileAndContinue();
         }
 
         private async void ResetButton_Click(object sender, RoutedEventArgs e)
@@ -128,19 +121,51 @@ namespace Audiotica.View.Setting
                 return;
             }
 
-            if (await MessageBox.ShowAsync(
-                "This will delete completely all your downloaded and saved songs, along with their artwork. Imported songs will only be removed from the app.",
-                "ARE YOU SURE?", MessageBoxButton.YesNo) == MessageBoxResult.No) return;
+            if (
+                await
+                MessageBox.ShowAsync(
+                    "This will delete completely all your downloaded and saved songs, along with their artwork. Imported songs will only be removed from the app.", 
+                    "ARE YOU SURE?", 
+                    MessageBoxButton.YesNo) == MessageBoxResult.No)
+            {
+                return;
+            }
 
-            await MessageBox.ShowAsync(
-                "To continue with the factory reset the app will shutdown and continue once you open it again.",
-                "Application Restart Required");
+            await
+                MessageBox.ShowAsync(
+                    "To continue with the factory reset the app will shutdown and continue once you open it again.", 
+                    "Application Restart Required");
+
 
             App.Locator.AppSettingsHelper.Write("FactoryReset", true);
+            App.Locator.AppSettingsHelper.Write("LastSyncTime", null);
             App.Locator.AudioPlayerHelper.FullShutdown();
             App.Locator.SqlService.Dispose();
             App.Locator.BgSqlService.Dispose();
             Application.Current.Exit();
+        }
+
+        private async void RestoreButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (App.Locator.Download.ActiveDownloads.Count > 0)
+            {
+                CurtainPrompt.ShowError("Can't do a restore while there are active downloads.");
+                return;
+            }
+
+            if (
+                await
+                MessageBox.ShowAsync(
+                    "This will delete all your pre-existing data.", 
+                    "Continue with Restore?", 
+                    MessageBoxButton.YesNo) != MessageBoxResult.Yes)
+            {
+                return;
+            }
+
+            var fileOpenPicker = new FileOpenPicker { SuggestedStartLocation = PickerLocationId.DocumentsLibrary };
+            fileOpenPicker.FileTypeFilter.Add(".autcp");
+            fileOpenPicker.PickSingleFileAndContinue();
         }
 
         #region implementations
@@ -176,9 +201,10 @@ namespace Audiotica.View.Setting
 
                     await
                         MessageBox.ShowAsync(
-                            "To finish applying the restore the app will close. Next time you start the app, it will finish restoring.",
+                            "To finish applying the restore the app will close. Next time you start the app, it will finish restoring.", 
                             "Application Restart Required");
 
+                    App.Locator.AppSettingsHelper.Write("Restore", true);
                     Application.Current.Exit();
                 }
                 else
@@ -223,6 +249,7 @@ namespace Audiotica.View.Setting
                 App.Locator.BgSqlService.Initialize();
                 UiBlockerUtility.Unblock();
             }
+
             CurtainPrompt.Show("Backup completed.");
         }
 

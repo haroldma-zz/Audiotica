@@ -1,25 +1,58 @@
-﻿#region
-
-using System;
+﻿using System;
 using System.Threading.Tasks;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Media.Animation;
-
-#endregion
+using Xamarin;
 
 namespace Audiotica
 {
     public static class ModalSheetUtility
     {
-        private static IModalSheetPage _sheet;
+        private static IModalSheetPage currentSheet;
+
+        public static void Hide()
+        {
+            Hide(currentSheet);
+        }
+
+        public static void Hide(IModalSheetPage sheet)
+        {
+            App.RootFrame.SizeChanged -= PageOnSizeChanged;
+
+            #region Slide down animation
+
+            var slideAnimation = new DoubleAnimation
+            {
+                EnableDependentAnimation = true,
+                From = 0,
+                To = (currentSheet as FrameworkElement).Height,
+                Duration = new Duration(TimeSpan.FromMilliseconds(200))
+            };
+
+            var sb = new Storyboard();
+            sb.Children.Add(slideAnimation);
+            Storyboard.SetTarget(slideAnimation, sheet.Popup);
+            Storyboard.SetTargetProperty(slideAnimation, "VerticalOffset");
+
+            sb.Completed += (sender, o) =>
+            {
+                sheet.Popup.IsOpen = false;
+                sheet.OnClosed();
+                currentSheet = null;
+            };
+
+            sb.Begin();
+
+            #endregion
+        }
 
         public static void Show(IModalSheetPage sheet)
         {
-            if (_sheet != null) return;
+            if (currentSheet != null) return;
 
-            _sheet = sheet;
+            currentSheet = sheet;
             var size = App.RootFrame;
             var element = sheet as FrameworkElement;
 
@@ -56,59 +89,40 @@ namespace Audiotica
             sheet.OnOpened(popup);
         }
 
+        public static async Task<T> ShowAsync<T>(IModalSheetPageAsync<T> sheet)
+        {
+            UiBlockerUtility.BlockNavigation();
+            Show(sheet);
+            Insights.Track("Opened " + sheet.GetType().Name);
+            var results = await sheet.GetResultsAsync();
+            Hide(sheet);
+            Insights.Track("Closed " + typeof(T).Name);
+            UiBlockerUtility.Unblock();
+            return results;
+        }
+
         private static void PageOnSizeChanged(object sender, SizeChangedEventArgs sizeChangedEventArgs)
         {
             var size = App.RootFrame;
-            (_sheet as FrameworkElement).Width = size.ActualWidth;
-            (_sheet as FrameworkElement).Height = size.ActualHeight;
-        }
-
-        public static void Hide()
-        {
-            Hide(_sheet);
-        }
-
-        public static void Hide(IModalSheetPage sheet)
-        {
-            App.RootFrame.SizeChanged -= PageOnSizeChanged;
-
-            #region Slide down animation
-
-            var slideAnimation = new DoubleAnimation
-            {
-                EnableDependentAnimation = true,
-                From = 0,
-                To = (_sheet as FrameworkElement).Height,
-                Duration = new Duration(TimeSpan.FromMilliseconds(200))
-            };
-
-            var sb = new Storyboard();
-            sb.Children.Add(slideAnimation);
-            Storyboard.SetTarget(slideAnimation, sheet.Popup);
-            Storyboard.SetTargetProperty(slideAnimation, "VerticalOffset");
-
-            sb.Completed += (sender, o) =>
-            {
-                sheet.Popup.IsOpen = false;
-                sheet.OnClosed();
-                _sheet = null;
-            };
-
-            sb.Begin();
-
-            #endregion
+            (currentSheet as FrameworkElement).Width = size.ActualWidth;
+            (currentSheet as FrameworkElement).Height = size.ActualHeight;
         }
     }
 
     public interface IModalSheetPage
     {
         Popup Popup { get; }
-        void OnOpened(Popup popup);
         void OnClosed();
+        void OnOpened(Popup popup);
     }
 
     public interface IModalSheetPageWithAction<T> : IModalSheetPage
     {
         Action<T> Action { get; set; }
+    }
+
+    public interface IModalSheetPageAsync<T> : IModalSheetPage
+    {
+        Task<T> GetResultsAsync();
     }
 }

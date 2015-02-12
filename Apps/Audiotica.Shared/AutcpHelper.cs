@@ -70,7 +70,7 @@ namespace Audiotica
                         else if (item is StorageFolder)
                         {
                             var name = (item as StorageFolder).Name;
-                            if (name == "SOMA" || name == "Logs" || name == "AdMediator" || name == "artists")
+                            if (name == "SOMA" || name == "Logs" || name == "AdMediator" || name == "artists" || name == "artworks")
                             {
                                 continue;
                             }

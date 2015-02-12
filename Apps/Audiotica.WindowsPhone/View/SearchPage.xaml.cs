@@ -1,8 +1,9 @@
-﻿using Windows.UI.Xaml;
+﻿using Audiotica.Data.Spotify.Models;
+using Audiotica.ViewModel;
+
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
-using Audiotica.Data.Spotify.Models;
-using IF.Lastfm.Core.Objects;
 
 namespace Audiotica.View
 {
@@ -13,10 +14,30 @@ namespace Audiotica.View
             InitializeComponent();
         }
 
-        public override void NavigatedTo(object parameter)
+        public override async void NavigatedTo(NavigationMode mode, object parameter)
         {
-            base.NavigatedTo(parameter);
-            SearchTextBox.Focus(FocusState.Keyboard);
+            base.NavigatedTo(mode, parameter);
+
+            if (mode == NavigationMode.Back)
+            {
+                return;
+            }
+
+            var term = parameter as string;
+            if (!string.IsNullOrEmpty(term))
+            {
+                var vm = (SearchViewModel)DataContext;
+                SearchTextBox.Text = term;
+                SearchTextBox.IsEnabled = false;
+                vm.IsLoading = true;
+                await vm.SearchAsync(term);
+                SearchTextBox.IsEnabled = true;
+                vm.IsLoading = false;
+            }
+            else
+            {
+                SearchTextBox.Focus(FocusState.Keyboard);
+            }
         }
 
         private void ListView_ItemClick(object sender, ItemClickEventArgs e)

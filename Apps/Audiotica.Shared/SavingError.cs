@@ -4,7 +4,6 @@ namespace Audiotica
     {
         None,
         AlreadyExists,
-        NoMatch,
         Network,
         AlreadySaving,
         Unknown

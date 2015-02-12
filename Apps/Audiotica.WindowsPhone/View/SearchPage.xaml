@@ -19,7 +19,7 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <ProgressBar IsIndeterminate="{Binding IsLoading}" Visibility="{Binding IsLoading, Converter={StaticResource VisibilityConverter}}" />
-        <TextBox x:Uid="SearchBox" PlaceholderText="search" Name="SearchTextBox" Grid.Row="1" Text="{Binding SearchTerm, Mode=TwoWay}" GotFocus="SearchTextBox_GotFocus" Margin="15,30,15,0">
+        <TextBox x:Uid="SearchBox" PlaceholderText="search" Name="SearchTextBox" Grid.Row="1" Text="{Binding SearchTerm, Mode=TwoWay}" GotFocus="SearchTextBox_GotFocus" Margin="15,30,15,0" InputScope="Search">
             <interactivity:Interaction.Behaviors>
                 <Core:EventTriggerBehavior EventName="KeyDown">
                     <Core:InvokeCommandAction Command="{Binding KeyDownRelayCommand}" />

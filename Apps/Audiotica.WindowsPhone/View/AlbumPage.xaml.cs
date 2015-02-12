@@ -18,23 +18,16 @@ namespace Audiotica.View
             InitializeComponent();
         }
 
-        protected override void OnNavigatedTo(NavigationEventArgs e)
+        public override void NavigatedTo(NavigationMode mode, object parameter)
         {
-            base.OnNavigatedTo(e);
-            var album = e.Parameter as LastAlbum;
+            base.NavigatedTo(mode, parameter);
 
-            if (album == null) return;
+            var album = parameter as LastAlbum;
+
+            if (album == null || mode == NavigationMode.Back) return;
 
             var msg = new GenericMessage<LastAlbum>(album);
             Messenger.Default.Send(msg, "album-detail");
-        }
-
-        private void HyperlinkButton_Click(object sender, RoutedEventArgs e)
-        {
-            var vm = (sender as HyperlinkButton).DataContext as AlbumViewModel;
-
-            Frame.Navigate(typeof (ArtistPage), vm.Album.ArtistName
-                );
         }
     }
 }

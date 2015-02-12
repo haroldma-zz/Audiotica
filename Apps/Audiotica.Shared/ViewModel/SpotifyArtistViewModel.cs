@@ -3,11 +3,15 @@
 using System;
 using System.Collections.Generic;
 using Windows.UI.Xaml.Controls;
+
+using Audiotica.Core.Exceptions;
 using Audiotica.Core.Utils;
 using Audiotica.Core.WinRt;
 using Audiotica.Data.Service.Interfaces;
 using Audiotica.Data.Spotify;
 using Audiotica.Data.Spotify.Models;
+using Audiotica.View;
+
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Messaging;
@@ -86,12 +90,23 @@ namespace Audiotica.ViewModel
             {
                 if (id.StartsWith("name."))
                 {
-                    var spotify = await App.Locator.Spotify.SearchItems(id.Replace("name.", ""), SearchType.ARTIST, 1);
-                    id = spotify.Artists.Items[0].Id;
+                    var name = id.Replace("name.", string.Empty);
+                    var spotify = await App.Locator.Spotify.SearchItems(name, SearchType.ARTIST, 1);
+
+                    if (spotify != null && spotify.Artists != null && spotify.Artists.Items.Count > 0)
+                    {
+                        id = spotify.Artists.Items[0].Id;
+                    }
+                    else
+                    {
+                        // not found on spotify, go to lastfm
+                        App.Navigator.GoTo<ArtistPage, PageTransition>(name, false);
+                        return;
+                    }
                 }
                 Artist = await _service.GetArtistAsync(id);
             }
-            catch (Exception e)
+            catch (NetworkException e)
             {
                 _notificationManager.ShowError("AppNetworkIssue".FromLanguageResource());
             }

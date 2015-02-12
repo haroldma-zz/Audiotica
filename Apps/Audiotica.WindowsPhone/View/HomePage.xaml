@@ -5,6 +5,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:audiotica="using:Audiotica"
     xmlns:interactivity="using:Microsoft.Xaml.Interactivity" xmlns:core="using:Microsoft.Xaml.Interactions.Core"
+    xmlns:controls="using:MyToolkit.Controls"
     x:Class="Audiotica.View.HomePage"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
@@ -13,9 +14,45 @@
         <DataTemplate x:Key="HubHeaderTemplate">
             <TextBlock Text="{Binding}" FontSize="20" FontFamily="Segoe WP" FontWeight="Normal" Margin="-1,0,0,0" />
         </DataTemplate>
+        <Style x:Key="FlipViewStyle1" TargetType="FlipView">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="TabNavigation" Value="Once"/>
+            <Setter Property="IsTabStop" Value="False"/>
+            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Hidden"/>
+            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Hidden"/>
+            <Setter Property="ScrollViewer.IsHorizontalRailEnabled" Value="False"/>
+            <Setter Property="ScrollViewer.IsVerticalRailEnabled" Value="False"/>
+            <Setter Property="ScrollViewer.IsHorizontalScrollChainingEnabled" Value="True"/>
+            <Setter Property="ScrollViewer.IsVerticalScrollChainingEnabled" Value="True"/>
+            <Setter Property="ScrollViewer.IsDeferredScrollingEnabled" Value="False"/>
+            <Setter Property="ScrollViewer.BringIntoViewOnFocusChange" Value="True"/>
+            <Setter Property="ItemsPanel">
+                <Setter.Value>
+                    <ItemsPanelTemplate>
+                        <VirtualizingStackPanel AreScrollSnapPointsRegular="True" Orientation="Horizontal"/>
+                    </ItemsPanelTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="FlipView">
+                        <Grid>
+                            <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}">
+                                <Grid>
+                                    <ScrollViewer x:Name="ScrollingHost" AutomationProperties.AccessibilityView="Raw" BringIntoViewOnFocusChange="{TemplateBinding ScrollViewer.BringIntoViewOnFocusChange}" HorizontalScrollMode="{TemplateBinding ScrollViewer.HorizontalScrollMode}" HorizontalSnapPointsType="MandatorySingle" HorizontalScrollBarVisibility="{TemplateBinding ScrollViewer.HorizontalScrollBarVisibility}" IsTabStop="False" IsHorizontalRailEnabled="{TemplateBinding ScrollViewer.IsHorizontalRailEnabled}" IsHorizontalScrollChainingEnabled="{TemplateBinding ScrollViewer.IsHorizontalScrollChainingEnabled}" IsVerticalScrollChainingEnabled="{TemplateBinding ScrollViewer.IsVerticalScrollChainingEnabled}" IsVerticalRailEnabled="{TemplateBinding ScrollViewer.IsVerticalRailEnabled}" IsDeferredScrollingEnabled="{TemplateBinding ScrollViewer.IsDeferredScrollingEnabled}" Padding="{TemplateBinding Padding}" TabNavigation="{TemplateBinding TabNavigation}" VerticalSnapPointsType="MandatorySingle" VerticalScrollBarVisibility="{TemplateBinding ScrollViewer.VerticalScrollBarVisibility}" VerticalScrollMode="{TemplateBinding ScrollViewer.VerticalScrollMode}" ZoomMode="Disabled">
+                                        <ItemsPresenter/>
+                                    </ScrollViewer>
+                                </Grid>
+                            </Border>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </audiotica:PageBase.Resources>
 
-    <Hub Header="AUDIOTICA">
+    <Hub x:Name="MainHub" Header="AUDIOTICA">
         <Hub.HeaderTemplate>
             <DataTemplate>
                 <TextBlock Text="{Binding}" FontWeight="Bold" FontSize="24" Margin="2,35,15,-8" />
@@ -47,6 +84,60 @@
                         <TextBlock x:Uid="MenuItemSearch" Text="search" FontSize="40" />
                     </Button>
                 </Grid>
+            </DataTemplate>
+        </HubSection>
+        <HubSection x:Name="SpotlightSection" Header="SPOTLIGHT">
+            <DataTemplate>
+                <GridView ItemsSource="{Binding MediumFeatures}" IsItemClickEnabled="True" ItemClick="GridView_ItemClick">
+                    <GridView.HeaderTemplate>
+                        <DataTemplate>
+                            <FlipView Visibility="{Binding LargeFeatures.Count, Converter={StaticResource ReverseEmptyListToVisibilityConverter}}" Height="150" ItemsSource="{Binding LargeFeatures}" Style="{StaticResource FlipViewStyle1}" Width="336" HorizontalAlignment="Left">
+                                <FlipView.ItemTemplate>
+                                    <DataTemplate>
+                                        <Button Style="{StaticResource PlainButtonStyle}" Click="Button_Click">
+                                            <Grid Height="150" Background="{StaticResource PhoneAccentBrush}">
+                                                <Grid>
+                                                    <Grid.Background>
+                                                        <ImageBrush Stretch="UniformToFill" ImageSource="{Binding ImageUri}"
+                                                        AlignmentY="Center" />
+                                                    </Grid.Background>
+                                                </Grid>
+                                                <StackPanel Background="#BF000000" VerticalAlignment="Bottom">
+                                                    <TextBlock TextTrimming="CharacterEllipsis" Margin="10,5,10,0" FontSize="22"
+                                                   Text="{Binding Title}"
+                                                   VerticalAlignment="Bottom" TextWrapping="Wrap" />
+                                                    <TextBlock FontSize="16" FontWeight="Thin" Text="{Binding Text}"
+                                                   Foreground="#89FFFFFF" TextTrimming="CharacterEllipsis"
+                                                   TextWrapping="Wrap" Margin="10,0,10,5" />
+                                                </StackPanel>
+                                            </Grid>
+                                        </Button>
+                                    </DataTemplate>
+                                </FlipView.ItemTemplate>
+                            </FlipView>
+                        </DataTemplate>
+                    </GridView.HeaderTemplate>
+                    <GridView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Width="165" Height="165" Margin="0,5,5,0" Background="{StaticResource PhoneAccentBrush}">
+                                <Grid>
+                                    <Grid.Background>
+                                        <ImageBrush Stretch="UniformToFill" ImageSource="{Binding ImageUri}"
+                                                        AlignmentY="Center" />
+                                    </Grid.Background>
+                                </Grid>
+                                <StackPanel Background="#BF000000" VerticalAlignment="Bottom">
+                                    <TextBlock TextTrimming="CharacterEllipsis" Margin="10,5,10,0" FontSize="22"
+                                                   Text="{Binding Title}"
+                                                   VerticalAlignment="Bottom" TextWrapping="Wrap" />
+                                    <TextBlock FontSize="16" FontWeight="Thin" Text="{Binding Text}"
+                                                   Foreground="#89FFFFFF" TextTrimming="CharacterEllipsis"
+                                                   TextWrapping="Wrap" Margin="10,0,10,5" />
+                                </StackPanel>
+                            </Grid>
+                        </DataTemplate>
+                    </GridView.ItemTemplate>
+                </GridView>
             </DataTemplate>
         </HubSection>
         <HubSection x:Uid="HubMostPlayed" Header="MOST PLAYED BY YOU"
@@ -107,7 +198,7 @@
                         Visibility="{Binding TopTracks, Converter={StaticResource EmptyListToVisibilityConverter}}"
                         Text="Seems there was a problem loading top songs from Spotify." 
                         Style="{StaticResource SubtleTextBlockStyle}" />
-                    
+
                     <GridView ItemsSource="{Binding TopTracks}" SelectionMode="None" IsItemClickEnabled="True"
                               ItemClick="TopSongsGridView_ItemClick" Padding="0,0,0,10">
                         <GridView.ItemTemplate>

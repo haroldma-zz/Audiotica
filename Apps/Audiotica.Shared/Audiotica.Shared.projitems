@@ -16,7 +16,9 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)AppBarHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AudioticaSubscriptionVisibilityConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AutcpHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)BoolOpacityConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CollectionHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CollectionCommandHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ContinuationManager.cs" />
@@ -29,6 +31,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Navigator.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PageBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ProductConstans.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SaveResults.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SavingError.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LocalMusicHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ScreenTimeoutHelper.cs" />
@@ -44,7 +47,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)PageTransition.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TransitionHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UiBlockerUtility.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModel\AudioticaCloudViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModel\CollectionStatisticsViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModel\ManualMatchViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModel\SpotifyArtistViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModel\SpotifyAlbumViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModel\AlbumViewModel.cs" />
@@ -63,6 +68,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="$(MSBuildThisFileDirectory)analytics.xml" />
+    <Content Include="$(MSBuildThisFileDirectory)Assets\ListeningToMusic.jpg" />
     <Content Include="$(MSBuildThisFileDirectory)Assets\ElectricDaisyCarnival.jpg" />
     <Content Include="$(MSBuildThisFileDirectory)Assets\MissingArtwork.png" />
   </ItemGroup>

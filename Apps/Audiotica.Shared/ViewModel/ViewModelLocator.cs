@@ -42,27 +42,31 @@ namespace Audiotica.ViewModel
         {
             ServiceLocator.SetLocatorProvider(() => SimpleIoc.Default);
 
+            SimpleIoc.Default.Register<INotificationManager, NotificationManager>();
+            SimpleIoc.Default.Register<ICredentialHelper, PclCredentialHelper>();
+            SimpleIoc.Default.Register<IAppSettingsHelper, AppSettingsHelper>();
+            SimpleIoc.Default.Register<IBitmapFactory, PclBitmapFactory>();
+
+            SimpleIoc.Default.Register<SpotifyWebApi>();
+            SimpleIoc.Default.Register<ISpotifyService, SpotifyService>();
+
             if (ViewModelBase.IsInDesignModeStatic)
             {
+                SimpleIoc.Default.Register<IAudioticaService, DesignAudioticaService>();
                 SimpleIoc.Default.Register<IScrobblerService, DesignScrobblerService>();
                 SimpleIoc.Default.Register<ICollectionService, DesignCollectionService>();
                 SimpleIoc.Default.Register<ISqlService, DesignSqlService>();
             }
             else
             {
-                SimpleIoc.Default.Register<INotificationManager, NotificationManager>();
-                SimpleIoc.Default.Register<ICredentialHelper, PclCredentialHelper>();
-                SimpleIoc.Default.Register<IAppSettingsHelper, AppSettingsHelper>();
+                SimpleIoc.Default.Register<IDeezerService, DeezerService>();
                 SimpleIoc.Default.Register<IDispatcherHelper>(() => new PclDispatcherHelper(DispatcherHelper.UIDispatcher));
-                SimpleIoc.Default.Register<IBitmapFactory, PclBitmapFactory>();
+
+                SimpleIoc.Default.Register<IScrobblerService, ScrobblerService>();
 
                 var factory = new AudioticaFactory(PclDispatcherHelper, AppSettingsHelper, BitmapFactory);
 
-                SimpleIoc.Default.Register<IScrobblerService, ScrobblerService>();
-                SimpleIoc.Default.Register<SpotifyWebApi>();
-                SimpleIoc.Default.Register<ISpotifyService, SpotifyService>();
-
-                SimpleIoc.Default.Register(() => factory.CreateCollectionSqlService(9, async (connection, d) =>
+                SimpleIoc.Default.Register(() => factory.CreateCollectionSqlService(10, async (connection, d) =>
                 {
                     if (!(d > 0) || !(d < 8)) return;
 
@@ -72,20 +76,21 @@ namespace Audiotica.ViewModel
                         App.Locator.CollectionService.LibraryLoaded += (sender, args) =>
                             CollectionHelper.MigrateAsync();
                 }));
-                SimpleIoc.Default.Register(() => factory.CreatePlayerSqlService(4), "BackgroundSql");
+                SimpleIoc.Default.Register(() => factory.CreatePlayerSqlService(5), "BackgroundSql");
                 SimpleIoc.Default.Register(() => factory.CreateCollectionService(SqlService, BgSqlService));
 
                 SimpleIoc.Default.Register<ISongDownloadService>(() => new SongDownloadService(CollectionService, SqlService, DispatcherHelper.UIDispatcher));
+                SimpleIoc.Default.Register<IAudioticaService, AudioticaService>();
             }
 
             SimpleIoc.Default.Register<Mp3MatchEngine>();
             SimpleIoc.Default.Register<AppVersionHelper>();
-            SimpleIoc.Default.Register<AudioticaService>();
             SimpleIoc.Default.Register<CollectionCommandHelper>();
             SimpleIoc.Default.Register<AudioPlayerHelper>();
             SimpleIoc.Default.Register<CollectionViewModel>(true);
             SimpleIoc.Default.Register<MainViewModel>();
             SimpleIoc.Default.Register<PlayerViewModel>();
+            SimpleIoc.Default.Register<AudioticaCloudViewModel>();
             SimpleIoc.Default.Register<AlbumViewModel>();
             SimpleIoc.Default.Register<CollectionAlbumViewModel>();
             SimpleIoc.Default.Register<CollectionArtistViewModel>();
@@ -96,6 +101,17 @@ namespace Audiotica.ViewModel
             SimpleIoc.Default.Register<SpotifyArtistViewModel>();
             SimpleIoc.Default.Register<SettingsViewModel>();
             SimpleIoc.Default.Register<CollectionStatisticsViewModel>();
+            SimpleIoc.Default.Register<ManualMatchViewModel>();
+        }
+
+        public IDeezerService DeezerService
+        {
+            get { return ServiceLocator.Current.GetInstance<IDeezerService>(); }
+        }
+
+        public IAudioticaService AudioticaService
+        {
+            get { return ServiceLocator.Current.GetInstance<IAudioticaService>(); }
         }
 
         public SpotifyWebApi Spotify
@@ -142,6 +158,11 @@ namespace Audiotica.ViewModel
         {
             get { return ServiceLocator.Current.GetInstance<MainViewModel>(); }
         }
+        
+        public AudioticaCloudViewModel Cloud
+        {
+            get { return ServiceLocator.Current.GetInstance<AudioticaCloudViewModel>(); }
+        }
 
         public AlbumViewModel Album
         {
@@ -155,6 +176,11 @@ namespace Audiotica.ViewModel
         public ArtistViewModel Artist
         {
             get { return ServiceLocator.Current.GetInstance<ArtistViewModel>(); }
+        }
+
+        public ManualMatchViewModel Manual
+        {
+            get { return ServiceLocator.Current.GetInstance<ManualMatchViewModel>(); }
         }
 
         public CollectionPlaylistViewModel CollectionPlaylist

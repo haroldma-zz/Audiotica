@@ -19,7 +19,7 @@ namespace Audiotica
         private readonly Canvas _rootContainer;
         private readonly Page _rootPage;
 
-        private readonly Stack<Action> _stack = new Stack<Action>();
+        private readonly Stack<Func<bool, PageTransition>> _stack = new Stack<Func<bool, PageTransition>>();
 
         public Navigator(Page rootPage, Canvas rootContainer)
         {
@@ -50,7 +50,7 @@ namespace Audiotica
             _rootContainer.Children.Add(page);
         }
 
-        public void Commit(Action action)
+        public void Commit(Func<bool, PageTransition> action)
         {
             _stack.Push(action);
         }
@@ -71,17 +71,18 @@ namespace Audiotica
             {
                 return false;
             }
-            _stack.Pop().Invoke();
+            _stack.Pop().Invoke(true);
             return true;
         }
 
-        public void GoTo<TPage, TTransition>(Object parameter)
+        public void GoTo<TPage, TTransition>(Object parameter, bool includeInBackStack = true)
             where TPage : PageBase
             where TTransition : PageTransition, new()
         {
             PageBase page;
             if (CurrentPage != null && CurrentPage.GetType() == typeof (TPage))
             {
+                CurrentPage.NavigatedTo(NavigationMode.Refresh, parameter);
                 return;
             }
             OnNavigating();
@@ -92,6 +93,7 @@ namespace Audiotica
                 page = GetPage<TPage>();
                 page.BeforeNavigateTo();
                 var transition = Activator.CreateInstance<TTransition>();
+
                 transition.FromPage = CurrentPage;
                 transition.ToPage = page;
                 transition.Play(() =>
@@ -103,28 +105,49 @@ namespace Audiotica
 
                     _rootContainer.Children.Move((uint) from, (uint) to);
 
-                    page.NavigatedTo(parameter);
+                    page.NavigatedTo(NavigationMode.Forward,  parameter);
                     _rootPage.BottomAppBar = page.Bar;
                     OnNavigated();
                 });
 
-                if (!(transition.FromPage is FirstRunPage || transition.FromPage is RestorePage))
+                if (includeInBackStack || _stack.Count > 0)
                 {
-                    Commit(() => transition.PlayReverse(() =>
+                    PageTransition navTransition = null;
+                    if (!includeInBackStack)
                     {
-                        CurrentPage = transition.FromPage;
+                        navTransition = _stack.Pop().Invoke(false);
+                        navTransition.ToPage = transition.ToPage;
+                    }
+                    else
+                    {
+                        navTransition = transition;
+                    }
+                    Commit(
+                        execute =>
+                        {
+                            if (!execute)
+                            {
+                                return transition;
+                            }
 
-                        var from = _rootContainer.Children.IndexOf(transition.FromPage);
-                        var to = _rootContainer.Children.Count - 1;
+                            navTransition.PlayReverse(
+                                () =>
+                                {
+                                    CurrentPage = navTransition.FromPage;
 
-                        _rootContainer.Children.Move((uint) from, (uint) to);
+                                    var from = _rootContainer.Children.IndexOf(navTransition.FromPage);
+                                    var to = _rootContainer.Children.Count - 1;
 
-                        _rootPage.BottomAppBar = transition.FromPage.Bar;
-                        transition.ToPage.NavigatedFrom(NavigationMode.Back);
-                        transition.ToPage.IsHitTestVisible = false;
-                        transition.FromPage.NavigatedTo(null);
-                        transition.FromPage.IsHitTestVisible = true;
-                    }));
+                                    _rootContainer.Children.Move((uint)from, (uint)to);
+
+                                    _rootPage.BottomAppBar = navTransition.FromPage.Bar;
+                                    navTransition.ToPage.NavigatedFrom(NavigationMode.Back);
+                                    navTransition.ToPage.IsHitTestVisible = false;
+                                    navTransition.FromPage.NavigatedTo(NavigationMode.Back, null);
+                                    navTransition.FromPage.IsHitTestVisible = true;
+                                });
+                            return transition;
+                        });
                     return;
                 }
             }
@@ -132,7 +155,7 @@ namespace Audiotica
             page.IsHitTestVisible = true;
             page.BeforeNavigateTo();
             TransitionHelper.Show(page);
-            page.NavigatedTo(parameter);
+            page.NavigatedTo(NavigationMode.Forward, parameter);
             CurrentPage = page;
             _rootPage.BottomAppBar = page.Bar;
 

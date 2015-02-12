@@ -1,7 +1,11 @@
 ﻿#region
 
+using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+
+using Microsoft.WindowsAzure.MobileServices;
+
 using SQLite;
 
 #endregion
@@ -10,6 +14,14 @@ namespace Audiotica.Data.Collection
 {
     public class BaseEntry : INotifyPropertyChanged
     {
+        public BaseEntry()
+        {
+            CreatedAt = DateTime.UtcNow;
+        }
+
+        [CreatedAt]
+        public DateTime CreatedAt { get; set; }
+
         [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
 

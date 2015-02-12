@@ -88,6 +88,11 @@ namespace Audiotica.Data.Service.RunTime
 
         public void RemoveDuplicates(List<SimpleAlbum> albums)
         {
+            if (albums == null)
+            {
+                return;
+            }
+
             var toRemove = new Dictionary<string, List<SimpleAlbum>>();
 
             foreach (var album in albums)
@@ -112,6 +117,11 @@ namespace Audiotica.Data.Service.RunTime
 
         public void RemoveDuplicates(List<FullTrack> tracks)
         {
+            if (tracks == null)
+            {
+                return;
+            }
+
             var toRemove = new Dictionary<string, List<FullTrack>>();
 
             foreach (var track in tracks)

@@ -71,7 +71,7 @@ namespace Audiotica.Data.Service.RunTime
             string title, 
             string artist, 
             string album = null, 
-            int limit = 10)
+            int limit = 10, bool checkAllLinks = false)
         {
             var url = string.Format(
                 SoundCloudSearchUrl, 
@@ -116,11 +116,11 @@ namespace Audiotica.Data.Service.RunTime
 
                 return
                     await
-                    this.FilterByTypeAndMatch(parseResp.collection.Select(p => new WebSong(p)).ToList(), title, artist);
+                    this.IdentifyMatches(parseResp.collection.Select(p => new WebSong(p)).ToList(), title, artist, checkAllLinks);
             }
         }
 
-        public async Task<List<WebSong>> SearchMp3Clan(string title, string artist, string album = null, int limit = 10)
+        public async Task<List<WebSong>> SearchMp3Clan(string title, string artist, string album = null, int limit = 10, bool checkAllLinks = false)
         {
             // mp3clan search doesn't work that well with the pound key (even encoded)
             var url = string.Format(
@@ -139,13 +139,11 @@ namespace Audiotica.Data.Service.RunTime
                     return null;
                 }
 
-                return
-                    await
-                    this.FilterByTypeAndMatch(parseResp.response.Select(p => new WebSong(p)).ToList(), title, artist);
+                return await this.IdentifyMatches(parseResp.response.Select(p => new WebSong(p)).ToList(), title, artist, checkAllLinks);
             }
         }
 
-        public async Task<List<WebSong>> SearchMp3Truck(string title, string artist, string album = null)
+        public async Task<List<WebSong>> SearchMp3Truck(string title, string artist, string album = null, bool checkAllLinks = false)
         {
             using (var client = new HttpClient())
             {
@@ -229,7 +227,7 @@ namespace Audiotica.Data.Service.RunTime
                             songTitle = titlePart.Remove(0, 1).Trim();
                         }
 
-                        song.Title = songTitle;
+                        song.Name = songTitle;
 
                         var linkNode =
                             songNode.Descendants("a")
@@ -247,12 +245,12 @@ namespace Audiotica.Data.Service.RunTime
                         songs.Add(song);
                     }
 
-                    return songs.Any() ? await this.FilterByTypeAndMatch(songs, title, artist) : null;
+                    return songs.Any() ? await this.IdentifyMatches(songs, title, artist, checkAllLinks) : null;
                 }
             }
         }
 
-        public async Task<List<WebSong>> SearchMeile(string title, string artist, string album = null, int limit = 10)
+        public async Task<List<WebSong>> SearchMeile(string title, string artist, string album = null, int limit = 10, bool checkAllLinks = false)
         {
             var url = string.Format(MeileSearchUrl, this.CreateQuery(title, artist, album));
 
@@ -271,11 +269,6 @@ namespace Audiotica.Data.Service.RunTime
                     doc.DocumentNode.Descendants("a")
                         .Where(p => p.Attributes.Contains("class") && p.Attributes["class"].Value == "name");
 
-                if (songNameNodes == null)
-                {
-                    return null;
-                }
-
                 // in it there is an attribute that contains the url to the song
                 var songUrls = songNameNodes.Select(p => p.Attributes["href"].Value);
                 var songIds = songUrls.Where(p => p.Contains("/song/")).ToList();
@@ -292,11 +285,11 @@ namespace Audiotica.Data.Service.RunTime
                     }
                 }
 
-                return songs.Any() ? await this.FilterByTypeAndMatch(songs, title, artist) : null;
+                return songs.Any() ? await this.IdentifyMatches(songs, title, artist, checkAllLinks) : null;
             }
         }
 
-        public async Task<List<WebSong>> SearchNetease(string title, string artist, string album = null, int limit = 10)
+        public async Task<List<WebSong>> SearchNetease(string title, string artist, string album = null, int limit = 10, bool checkAllLinks = false)
         {
             using (var client = new HttpClient())
             {
@@ -336,7 +329,7 @@ namespace Audiotica.Data.Service.RunTime
                         }
                     }
 
-                    return songs.Any() ? await this.FilterByTypeAndMatch(songs, title, artist) : null;
+                    return songs.Any() ? await this.IdentifyMatches(songs, title, artist, checkAllLinks) : null;
                 }
             }
         }
@@ -346,7 +339,7 @@ namespace Audiotica.Data.Service.RunTime
             throw new NotImplementedException();
         }
 
-        public async Task<List<WebSong>> SearchMp3Skull(string title, string artist, string album = null)
+        public async Task<List<WebSong>> SearchMp3Skull(string title, string artist, string album = null, bool checkAllLinks = false)
         {
             using (var client = new HttpClient())
             {
@@ -386,11 +379,6 @@ namespace Audiotica.Data.Service.RunTime
                 // Get the div node
                 var songNodes = doc.DocumentNode.Descendants("div").Where(p => p.Id == "song_html");
 
-                if (songNodes == null)
-                {
-                    return null;
-                }
-
                 var songs = new List<WebSong>();
 
                 foreach (var songNode in songNodes)
@@ -405,16 +393,14 @@ namespace Audiotica.Data.Service.RunTime
                     }
 
                     song.AudioUrl = songUrlNode.Attributes["href"].Value;
-
                     var songInfo =
                         songNode.Descendants("div")
                             .FirstOrDefault(p => p.Attributes["class"].Value == "left")
                             .InnerText.Replace("<!-- info mp3 here -->", string.Empty)
                             .Trim();
-
                     
 
-                    var bitRateIndex = songInfo.IndexOf("kbps");
+                    var bitRateIndex = songInfo.IndexOf("kbps", StringComparison.Ordinal);
                     if (bitRateIndex > -1)
                     {
                         var bitrateTxt = songInfo.Substring(0, bitRateIndex);
@@ -425,8 +411,6 @@ namespace Audiotica.Data.Service.RunTime
                         }
                     }
 
-                    
-
                     #region Duration
 
                     if (bitRateIndex > -1)
@@ -434,7 +418,7 @@ namespace Audiotica.Data.Service.RunTime
                         songInfo = songInfo.Remove(0, bitRateIndex + 4);
                     }
 
-                    var durationIndex = songInfo.IndexOf(":");
+                    var durationIndex = songInfo.IndexOf(":", StringComparison.Ordinal);
                     if (durationIndex > -1)
                     {
                         var durationText = songInfo.Substring(0, durationIndex + 3);
@@ -453,14 +437,14 @@ namespace Audiotica.Data.Service.RunTime
                         songInfo = songInfo.Remove(0, durationIndex + 3);
                     }
 
-                    var sizeIndex = songInfo.IndexOf("mb");
+                    var sizeIndex = songInfo.IndexOf("mb", StringComparison.Ordinal);
                     if (sizeIndex > -1)
                     {
                         var sizeText = songInfo.Substring(0, sizeIndex);
-                        double size;
-                        if (double.TryParse(sizeText, out size))
+                        long size;
+                        if (long.TryParse(sizeText, out size))
                         {
-                            song.ByteSize = size;
+                            song.ByteSize = (long)(size * (1024 * 1024.0));
                         }
                     }
 
@@ -469,86 +453,12 @@ namespace Audiotica.Data.Service.RunTime
                     var songTitle = songNode.Descendants("b").FirstOrDefault().InnerText;
                     songTitle = songTitle.Substring(0, songTitle.Length - 4).Trim();
 
-                    song.Title = songTitle;
+                    song.Name = songTitle;
 
                     songs.Add(song);
                 }
 
-                return songs.Any() ? await this.FilterByTypeAndMatch(songs, title, artist) : null;
-            }
-        }
-
-        public async Task<List<WebSong>> SearchYoutube(string title, string artist, string album = null, int limit = 10)
-        {
-            var youtubeService =
-                new YouTubeService(
-                    new BaseClientService.Initializer { ApiKey = ApiKeys.YoutubeId, ApplicationName = "Audiotica" });
-            youtubeService.HttpClient.DefaultRequestHeaders.Referrer = new Uri("http://audiotica.fm");
-
-            var searchListRequest = youtubeService.Search.List("snippet");
-            searchListRequest.Q = this.CreateQuery(title, artist, album, false) + " (Audio)";
-            searchListRequest.MaxResults = limit;
-
-            try
-            {
-                // Call the search.list method to retrieve results matching the specified query term.
-                var searchListResponse = await searchListRequest.ExecuteAsync().ConfigureAwait(false);
-
-                var songs = new List<WebSong>();
-
-                foreach (var vid in from searchResult in searchListResponse.Items
-                                    where searchResult.Id.Kind == "youtube#video"
-                                    select new WebSong(searchResult))
-                {
-                    using (var client = new HttpClient())
-                    {
-                        var resp =
-                            await
-                            client.GetAsync(
-                                string.Format(
-                                    "http://www.youtube-mp3.org/a/itemInfo/?video_id={0}&ac=www&t=grp&r=1419628947067&s=139194", 
-                                    vid.Id));
-                        if (!resp.IsSuccessStatusCode)
-                        {
-                            continue;
-                        }
-
-                        var json = await resp.Content.ReadAsStringAsync();
-                        json = json.Replace(";", string.Empty).Replace("info = ", string.Empty);
-
-                        // must be a valid json to continue
-                        if (!json.StartsWith("{") || !json.EndsWith("}"))
-                        {
-                            continue;
-                        }
-
-                        var o = JToken.Parse(json);
-
-                        if (o.Value<string>("status") != "serving")
-                        {
-                            continue;
-                        }
-
-                        var length = o.Value<string>("length");
-                        if (!string.IsNullOrEmpty(length))
-                        {
-                            vid.Duration = TimeSpan.FromMinutes(int.Parse(length));
-                        }
-
-                        vid.AudioUrl =
-                            string.Format(
-                                "http://www.youtube-mp3.org/get?ab=128&video_id={0}&h={1}&r=1419629380530.1463092791&s=36098", 
-                                vid.Id, 
-                                o.Value<string>("h"));
-                        songs.Add(vid);
-                    }
-                }
-
-                return await this.FilterByTypeAndMatch(songs, title, artist);
-            }
-            catch
-            {
-                return null;
+                return songs.Any() ? await this.IdentifyMatches(songs, title, artist, checkAllLinks) : null;
             }
         }
 
@@ -558,44 +468,50 @@ namespace Audiotica.Data.Service.RunTime
             return urlEncode ? WebUtility.UrlEncode(query) : query;
         }
 
-        private async Task<List<WebSong>> FilterByTypeAndMatch(IEnumerable<WebSong> songs, string title, string artist)
+        private async Task<List<WebSong>> IdentifyMatches(List<WebSong> songs, string title, string artist, bool checkAll)
         {
             var cleanTile = title;
-            if (title.Contains("("))
+
+            var index = cleanTile.IndexOf('(');
+            if (index > -1 && index < cleanTile.Length - 1)
             {
-                cleanTile = cleanTile.Remove(title.IndexOf('('));
+                cleanTile = cleanTile.Remove(index);
             }
-            if (title.Contains("-"))
+            index = cleanTile.IndexOf('-');
+            if (index > -1)
             {
-                cleanTile = cleanTile.Remove(title.IndexOf('-'));
+                cleanTile = cleanTile.Remove(index);
             }
 
-            var filterSongs = songs.Where(
-                p =>
-                    {
-                        title = title.Replace(" )", ")").Replace("( ", "(");
+            songs = songs.OrderBy(p => p.Duration.Minutes).ToList();
 
-                        var isCorrectType = this.IsCorrectType(title, p.Title, "mix")
-                                            && this.IsCorrectType(title, p.Title, "cover")
-                                            && this.IsCorrectType(title, p.Title, "rmx")
-                                            && this.IsCorrectType(title, p.Title, "live")
-                                            && this.IsCorrectType(title, p.Title, "snipped")
-                                            && this.IsCorrectType(title, p.Title, "preview")
-                                            && this.IsCorrectType(title, p.Title, "acapella")
-                                            && this.IsCorrectType(title, p.Title, "radio")
-                                            && this.IsCorrectType(title, p.Title, "acoustic");
+            foreach (var webSong in songs)
+            {
+                title = title.Replace(" )", ")").Replace("( ", "(");
 
-                        var isCorrectTitle = p.Title.ToLower().Contains(cleanTile.ToLower())
-                                             || cleanTile.ToLower().Contains(p.Title.ToLower());
-                        var isCorrectArtist = p.Artist != null
-                                                  ? p.Artist.ToLower().Contains(artist.ToLower())
-                                                    || artist.ToLower().Contains(p.Artist.ToLower())
+                var isCorrectType = this.IsCorrectType(title, webSong.Name, "mix")
+                                    && this.IsCorrectType(title, webSong.Name, "cover")
+                                    && this.IsCorrectType(title, webSong.Name, "rmx")
+                                    && this.IsCorrectType(title, webSong.Name, "live")
+                                    && this.IsCorrectType(title, webSong.Name, "snipped")
+                                    && this.IsCorrectType(title, webSong.Name, "preview")
+                                    && this.IsCorrectType(title, webSong.Name, "acapella")
+                                    && this.IsCorrectType(title, webSong.Name, "radio")
+                                    && this.IsCorrectType(title, webSong.Name, "acoustic");
 
-                                                  // soundcloud doesnt have artist prop, check in title
-                                                  : p.Title.ToLower().Contains(artist.ToLower());
+                var isCorrectTitle = webSong.Name.ToLower().Contains(cleanTile.ToLower())
+                                     || cleanTile.ToLower().Contains(webSong.Name.ToLower());
+                var isCorrectArtist = webSong.Artist != null
+                                          ? webSong.Artist.ToLower().Contains(artist.ToLower())
+                                            || artist.ToLower().Contains(webSong.Artist.ToLower())
 
-                        return isCorrectType && isCorrectTitle && isCorrectArtist;
-                    }).OrderBy(p => p.Duration.Minutes).ToList();
+                                          // soundcloud doesnt have artist prop, check in title
+                                          : webSong.Name.ToLower().Contains(artist.ToLower());
+
+                webSong.IsMatch = isCorrectType && isCorrectTitle && isCorrectArtist;
+            }
+
+            var filterSongs = songs.Where(p => p.IsMatch).ToList();
 
             /*all the filter songs are candidates for being a match
              *but to improve it we can get how long do most songs last
@@ -605,17 +521,20 @@ namespace Audiotica.Data.Service.RunTime
              */
             var mostUsedMinute = this.GetMostUsedMinute(filterSongs);
             var filtered = filterSongs.Where(p => p.Duration.Minutes == mostUsedMinute).ToList();
-            var matches = new List<WebSong>();
 
-            foreach (var webSong in filtered)
+            foreach (var webSong in checkAll ? songs : filtered)
             {
                 if (await this.IsUrlOnlineAsync(webSong))
                 {
-                    matches.Add(webSong);
+                    webSong.IsBestMatch = webSong.IsMatch;
+                }
+                else
+                {
+                    webSong.IsLinkDeath = true;
                 }
             }
 
-            return matches.OrderByDescending(p => p.ByteSize).ToList();
+            return songs.OrderByDescending(p => p.ByteSize).ToList();
         }
 
         private async Task<MeileSong> GetDetailsForMeileSong(string songId, HttpClient client)
@@ -648,7 +567,7 @@ namespace Audiotica.Data.Service.RunTime
             return detailParseResp.songs == null ? null : detailParseResp.songs.FirstOrDefault();
         }
 
-        private int GetMostUsedMinute(IEnumerable<WebSong> songs)
+        private int GetMostUsedMinute(List<WebSong> songs)
         {
             var minuteDic = new Dictionary<int, int>();
             var minuteList = songs.Select(p => p.Duration.Minutes);
@@ -683,7 +602,7 @@ namespace Audiotica.Data.Service.RunTime
                                  || title.Contains("(" + type);
             var isType = songTitle.Contains(" " + type) || songTitle.Contains(type + " ")
                          || songTitle.Contains(type + ")") || songTitle.Contains("(" + type);
-            return isSupposedType && isType || !isSupposedType && !isType;
+            return (isSupposedType && isType) || (!isSupposedType && !isType);
         }
 
         private async Task<bool> IsUrlOnlineAsync(WebSong song)
@@ -696,17 +615,19 @@ namespace Audiotica.Data.Service.RunTime
                     var resp =
                         await
                         client.SendAsync(
-                            new HttpRequestMessage(HttpMethod.Head, new Uri(song.AudioUrl)), 
+                            new HttpRequestMessage(HttpMethod.Head, new Uri(song.AudioUrl)),
                             HttpCompletionOption.ResponseHeadersRead);
                     resp.EnsureSuccessStatusCode();
 
-                    if (song.ByteSize.Equals(0))
+                    if (!resp.Content.Headers.ContentType.MediaType.Contains("audio"))
                     {
-                        var size = resp.Content.Headers.ContentLength;
-                        if (size != null)
-                        {
-                            song.ByteSize = (long)size;
-                        }
+                        return false;
+                    }
+
+                    var size = resp.Content.Headers.ContentLength;
+                    if (size != null)
+                    {
+                        song.ByteSize = (long)size;
                     }
                     return true;
                 }
