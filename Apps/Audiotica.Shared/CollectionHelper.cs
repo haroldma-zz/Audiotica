@@ -49,7 +49,7 @@ namespace Audiotica
 
         private static bool _currentlyPreparing;
 
-        public static async Task CloudSync(bool refreshProfile = true)
+        public static async Task<bool> CloudSync(bool refreshProfile = true)
         {
             var displayingStatus = App.Locator.CollectionService.Songs.Count == 0;
             try
@@ -96,7 +96,15 @@ namespace Audiotica
                                     () => StatusBarHelper.ShowStatus("Starting sync...")).ConfigureAwait(false);
                         }
 
-                        await sync.SyncAsync().ConfigureAwait(false);
+                        await sync.PullAsync().ConfigureAwait(false);
+
+                        // update artwork and match new pulled songs
+                        MatchSongs();
+                        DownloadAlbumsArtworkAsync();
+                        DownloadArtistsArtworkAsync();
+
+                        // then continue with push
+                        await sync.PushAsync().ConfigureAwait(false);
 
                         sync.OnLargeSyncStarted -= handlerStarted;
                         sync.OnLargeSyncFinished -= handlerFinish;

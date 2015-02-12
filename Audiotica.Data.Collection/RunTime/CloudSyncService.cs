@@ -21,6 +21,9 @@ namespace Audiotica.Data.Collection.RunTime
         private readonly MobileServiceClient _mobileServiceClient;
 
         private readonly ISqlService _sqlService;
+        private List<CloudSong> _onlineSongs;
+        private List<CloudArtist> _onlineArtists;
+        private List<CloudAlbum> _onlineAlbums;
 
         public CloudSyncService(
             MobileServiceClient mobileServiceClient, 
@@ -53,43 +56,28 @@ namespace Audiotica.Data.Collection.RunTime
             }
         }
 
-        public async Task PullAsync(List<CloudSong> onlineSongs)
+        public async Task PullAsync()
         {
-            await PullSyncNewSongsAsync(onlineSongs).ConfigureAwait(false);
-            await PullSyncDeletedSongsAsync(onlineSongs).ConfigureAwait(false);
+            await PullSyncNewSongsAsync(_onlineSongs).ConfigureAwait(false);
+            await PullSyncDeletedSongsAsync(_onlineSongs).ConfigureAwait(false);
         }
 
         /// <summary>
         /// Pushes changes to the cloud.
         /// </summary>
-        /// <param name="onlineSongs">
-        /// The online songs.
-        /// </param>
-        /// <param name="onlineArtists">
-        /// The online artists.
-        /// </param>
-        /// <param name="onlineAlbums">
-        /// The online albums.
-        /// </param>
-        /// <returns>
-        /// Task.
-        /// </returns>
-        public async Task PushAsync(
-            List<CloudSong> onlineSongs, 
-            List<CloudArtist> onlineArtists, 
-            List<CloudAlbum> onlineAlbums)
+        /// <returns>Task.</returns>
+        public async Task PushAsync()
         {
-            await PushSyncNewSongsAsync(onlineSongs, onlineArtists, onlineAlbums).ConfigureAwait(false);
-            await PushSyncDeletedSongsAsync(onlineSongs).ConfigureAwait(false);
+            await PushSyncNewSongsAsync(_onlineSongs, _onlineArtists, _onlineAlbums).ConfigureAwait(false);
+            await PushSyncDeletedSongsAsync(_onlineSongs).ConfigureAwait(false);
         }
 
-        public async Task SyncAsync()
+        public async Task PrepareAsync()
         {
-            // Start by getting all cloud songs
             bool hasMore = true;
-            var onlineSongs = new List<CloudSong>();
-            var onlineArtists = new List<CloudArtist>();
-            var onlineAlbums = new List<CloudAlbum>();
+            _onlineSongs = new List<CloudSong>();
+            _onlineArtists = new List<CloudArtist>();
+            _onlineAlbums = new List<CloudAlbum>();
 
             while (hasMore)
             {
@@ -97,13 +85,13 @@ namespace Audiotica.Data.Collection.RunTime
                     (IQueryResultEnumerable<CloudSong>)
                     await
                     _mobileServiceClient.GetTable<CloudSong>()
-                        .Skip(onlineSongs.Count)
+                        .Skip(_onlineSongs.Count)
                         .IncludeTotalCount()
                         .ToListAsync()
                         .ConfigureAwait(false);
-                onlineSongs.AddRange(resultEnumerable);
-                int totalCount = (int)resultEnumerable.TotalCount;
-                hasMore = totalCount > onlineSongs.Count;
+                _onlineSongs.AddRange(resultEnumerable);
+                var totalCount = (int)resultEnumerable.TotalCount;
+                hasMore = totalCount > _onlineSongs.Count;
             }
 
             hasMore = true;
@@ -113,13 +101,13 @@ namespace Audiotica.Data.Collection.RunTime
                     (IQueryResultEnumerable<CloudArtist>)
                     await
                     _mobileServiceClient.GetTable<CloudArtist>()
-                        .Skip(onlineArtists.Count)
+                        .Skip(_onlineArtists.Count)
                         .IncludeTotalCount()
                         .ToListAsync()
                         .ConfigureAwait(false);
-                onlineArtists.AddRange(resultEnumerable);
-                int totalCount = (int)resultEnumerable.TotalCount;
-                hasMore = totalCount > onlineArtists.Count;
+                _onlineArtists.AddRange(resultEnumerable);
+                var totalCount = (int)resultEnumerable.TotalCount;
+                hasMore = totalCount > _onlineArtists.Count;
             }
 
             hasMore = true;
@@ -129,30 +117,26 @@ namespace Audiotica.Data.Collection.RunTime
                     (IQueryResultEnumerable<CloudAlbum>)
                     await
                     _mobileServiceClient.GetTable<CloudAlbum>()
-                        .Skip(onlineAlbums.Count)
+                        .Skip(_onlineAlbums.Count)
                         .IncludeTotalCount()
                         .ToListAsync()
                         .ConfigureAwait(false);
-                onlineAlbums.AddRange(resultEnumerable);
-                int totalCount = (int)resultEnumerable.TotalCount;
-                hasMore = totalCount > onlineAlbums.Count;
+                _onlineAlbums.AddRange(resultEnumerable);
+                var totalCount = (int)resultEnumerable.TotalCount;
+                hasMore = totalCount > _onlineAlbums.Count;
             }
 
-            foreach (var onlineAlbum in onlineAlbums)
+            foreach (var onlineAlbum in _onlineAlbums)
             {
-                onlineAlbum.PrimaryArtist = onlineArtists.FirstOrDefault(p => p.Id == onlineAlbum.PrimaryArtistId);
+                onlineAlbum.PrimaryArtist = _onlineArtists.FirstOrDefault(p => p.Id == onlineAlbum.PrimaryArtistId);
             }
 
-            foreach (var onlineSong in onlineSongs)
+            foreach (var onlineSong in _onlineSongs)
             {
-                onlineSong.Artist = onlineArtists.FirstOrDefault(p => p.Id == onlineSong.ArtistId);
-                onlineSong.Album = onlineAlbums.FirstOrDefault(p => p.Id == onlineSong.AlbumId);
+                onlineSong.Artist = _onlineArtists.FirstOrDefault(p => p.Id == onlineSong.ArtistId);
+                onlineSong.Album = _onlineAlbums.FirstOrDefault(p => p.Id == onlineSong.AlbumId);
             }
-
-            await PullAsync(onlineSongs).ConfigureAwait(false);
-            await PushAsync(onlineSongs, onlineArtists, onlineAlbums).ConfigureAwait(false);
         }
-
         /// <summary>
         /// Synchronizes the deleted online songs.
         /// </summary>

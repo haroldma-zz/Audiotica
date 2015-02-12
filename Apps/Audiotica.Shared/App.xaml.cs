@@ -292,12 +292,12 @@ namespace Audiotica
             CollectionHelper.RequiresCollectionToLoad(
                 async () =>
                 {
-                    await CollectionHelper.CloudSync();
-
                     // downloading missing artwork and match mp3 songs where they haven't been
                     CollectionHelper.MatchSongs();
                     await CollectionHelper.DownloadAlbumsArtworkAsync();
                     await CollectionHelper.DownloadArtistsArtworkAsync();
+
+                    await CollectionHelper.CloudSync();
                 },
                 false);
         }
