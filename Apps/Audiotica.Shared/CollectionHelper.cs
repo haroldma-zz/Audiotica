@@ -49,7 +49,7 @@ namespace Audiotica
 
         private static bool _currentlyPreparing;
 
-        public static async Task<bool> CloudSync(bool refreshProfile = true)
+        public static async Task CloudSync(bool refreshProfile = true)
         {
             var displayingStatus = App.Locator.CollectionService.Songs.Count == 0;
             try
