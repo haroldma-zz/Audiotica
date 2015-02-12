@@ -35,12 +35,12 @@ namespace Audiotica.Data
 
     public class Mp3MatchEngine
     {
-        private readonly IAudioticaService audioticaService;
-        private readonly INotificationManager notificationManager;
+        private readonly IAudioticaService _audioticaService;
+        private readonly INotificationManager _notificationManager;
 
         private readonly IDispatcherHelper _dispatcherHelper;
 
-        private readonly Mp3Provider[] providers =
+        private readonly Mp3Provider[] _providers =
         {
              Mp3Provider.Mp3Skull, Mp3Provider.Netease, Mp3Provider.Mp3Truck, Mp3Provider.Mp3Clan, 
              Mp3Provider.Meile, Mp3Provider.SoundCloud
@@ -50,10 +50,10 @@ namespace Audiotica.Data
 
         public Mp3MatchEngine(IAppSettingsHelper settingsHelper, IAudioticaService audioticaService, INotificationManager notificationManager, IDispatcherHelper dispatcherHelper)
         {
-            this.audioticaService = audioticaService;
-            this.notificationManager = notificationManager;
+            this._audioticaService = audioticaService;
+            this._notificationManager = notificationManager;
             _dispatcherHelper = dispatcherHelper;
-            this.service = new Mp3SearchService(settingsHelper);
+            this._service = new Mp3SearchService(settingsHelper);
         }
 
         public async Task<string> FindMp3For(string title, string artist)
@@ -75,9 +75,9 @@ namespace Audiotica.Data
                 .Replace("- deluxe edition", string.Empty)
                 .Trim();
 
-            if (audioticaService.IsAuthenticated && audioticaService.CurrentUser.Subscription != SubscriptionType.None)
+            if (_audioticaService.IsAuthenticated && _audioticaService.CurrentUser.Subscription != SubscriptionType.None)
             {
-                var matchResp = await audioticaService.GetMatchesAsync(title, artist);
+                var matchResp = await _audioticaService.GetMatchesAsync(title, artist);
 
                 if (matchResp.Success && matchResp.Data != null && matchResp.Data.Count > 0)
                 {
@@ -89,7 +89,7 @@ namespace Audiotica.Data
                     await _dispatcherHelper.RunAsync(
                         () =>
                         {
-                            notificationManager.ShowError(
+                            _notificationManager.ShowError(
                                 "Problem with Audiotica Cloud \"{0}\", finding mp3 locally.",
                                 matchResp.Message ?? "Unknown");
                         });
@@ -102,17 +102,12 @@ namespace Audiotica.Data
 
             while (currentProvider < this._providers.Length)
             {
-<<<<<<< HEAD
                 var mp3Provider = this._providers[currentProvider];
-                url = await this.GetMatch(mp3Provider, title, artist).ConfigureAwait(false);
-=======
-                var mp3Provider = this.providers[currentProvider];
                 try
                 {
                     url = await this.GetMatch(mp3Provider, title, artist).ConfigureAwait(false);
                 }
                 catch { }
->>>>>>> origin/development
 
                 if (url != null)
                 {
@@ -134,12 +129,6 @@ namespace Audiotica.Data
                 case Mp3Provider.Netease:
                     webSongs = await this._service.SearchNetease(title, artist, album).ConfigureAwait(false);
                     break;
-<<<<<<< HEAD
-                case Mp3Provider.YouTube:
-                    webSongs = await this._service.SearchYoutube(title, artist, album).ConfigureAwait(false);
-                    break;
-=======
->>>>>>> origin/development
                 case Mp3Provider.Mp3Clan:
                     webSongs = await this._service.SearchMp3Clan(title, artist, album).ConfigureAwait(false);
                     break;
