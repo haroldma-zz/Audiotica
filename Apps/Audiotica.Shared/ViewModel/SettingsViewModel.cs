@@ -9,6 +9,7 @@ using Audiotica.Core.Utils.Interfaces;
 using Audiotica.Core.WinRt;
 using Audiotica.Core.WinRt.Common;
 using Audiotica.Core.WinRt.Utilities;
+using Audiotica.Data.Model.AudioticaCloud;
 using Audiotica.Data.Service.Interfaces;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
@@ -165,7 +166,12 @@ namespace Audiotica.ViewModel
         {
             get
             {
+                var user = App.Locator.AudioticaService.CurrentUser;
+                var hasSubscription = user != null && user.Subscription != SubscriptionType.None;
+
+
                 return !App.IsProduction
+                    || hasSubscription
                        || App.LicenseInformation.ProductLicenses[ProductConstants.InAppAdvertisements].IsActive;
             }
         }
