@@ -52,7 +52,7 @@
         </Style>
     </audiotica:PageBase.Resources>
 
-    <Hub Header="AUDIOTICA">
+    <Hub x:Name="MainHub" Header="AUDIOTICA">
         <Hub.HeaderTemplate>
             <DataTemplate>
                 <TextBlock Text="{Binding}" FontWeight="Bold" FontSize="24" Margin="2,35,15,-8" />
@@ -86,12 +86,12 @@
                 </Grid>
             </DataTemplate>
         </HubSection>
-        <HubSection Header="SPOTLIGHT">
+        <HubSection x:Name="SpotlightSection" Header="SPOTLIGHT">
             <DataTemplate>
                 <GridView ItemsSource="{Binding MediumFeatures}" IsItemClickEnabled="True" ItemClick="GridView_ItemClick">
                     <GridView.HeaderTemplate>
                         <DataTemplate>
-                            <FlipView Height="150" ItemsSource="{Binding LargeFeatures}" Style="{StaticResource FlipViewStyle1}" Width="336" HorizontalAlignment="Left">
+                            <FlipView Visibility="{Binding LargeFeatures.Count, Converter={StaticResource ReverseEmptyListToVisibilityConverter}}" Height="150" ItemsSource="{Binding LargeFeatures}" Style="{StaticResource FlipViewStyle1}" Width="336" HorizontalAlignment="Left">
                                 <FlipView.ItemTemplate>
                                     <DataTemplate>
                                         <Button Style="{StaticResource PlainButtonStyle}" Click="Button_Click">

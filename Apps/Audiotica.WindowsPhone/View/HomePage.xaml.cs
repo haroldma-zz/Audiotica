@@ -17,6 +17,7 @@ using Audiotica.Data.Model;
 using Audiotica.Data.Spotify.Models;
 using Audiotica.View.Setting;
 using Audiotica.ViewModel;
+using GalaSoft.MvvmLight.Messaging;
 using IF.Lastfm.Core.Objects;
 
 #endregion
@@ -25,11 +26,24 @@ namespace Audiotica.View
 {
     public sealed partial class HomePage
     {
+        private readonly HubSection _spotlightSection;
+
         public HomePage()
         {
             InitializeComponent();
             Bar = BottomAppBar;
             BottomAppBar = null;
+            _spotlightSection = SpotlightSection;
+            MainHub.Sections.Remove(_spotlightSection);
+            Messenger.Default.Register<bool>(this, "spotlight", SpotlightLoaded);
+        }
+
+        private void SpotlightLoaded(bool loaded)
+        {
+            if (loaded)
+            {
+                MainHub.Sections.Insert(1, _spotlightSection);
+            }
         }
 
         //TODO [Harry,20140908] move this to view model with RelayCommand
@@ -39,12 +53,6 @@ namespace Audiotica.View
             if (chartTrack == null) return;
 
             await CollectionHelper.SaveTrackAsync(chartTrack);
-        }
-
-        private void Grid_Tapped(object sender, TappedRoutedEventArgs e)
-        {
-            var artist = ((Grid) sender).DataContext as LastArtist;
-            Frame.Navigate(typeof (SpotifyArtistPage), "name." + artist.Name);
         }
 
         private void AppBarButton_Click(object sender, RoutedEventArgs e)

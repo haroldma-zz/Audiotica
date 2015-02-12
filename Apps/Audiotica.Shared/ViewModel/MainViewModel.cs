@@ -326,6 +326,10 @@ namespace Audiotica.ViewModel
                     MediumFeatures.Add(spotlightFeature);
                 }
             }
+            if (spotlight != null || topArtist != null)
+            {
+                MessengerInstance.Send(true, "spotlight");
+            }
         }
 
         private async void ServiceOnAuthStateChanged(object sender, BoolEventArgs b)
