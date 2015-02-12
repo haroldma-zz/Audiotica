@@ -147,7 +147,7 @@
                     <TextBlock
                         x:Uid="HubMostPlayedEmpty"
                         Visibility="{Binding MostPlayed, Converter={StaticResource EmptyListToVisibilityConverter}}"
-                        Text="You haven't play any music in the past week." Style="{StaticResource SubtleTextBlockStyle}" />
+                        Text="You haven't played any music in the past week." Style="{StaticResource SubtleTextBlockStyle}" />
                     <GridView ItemsSource="{Binding MostPlayed}" SelectionMode="None" IsItemClickEnabled="True"
                               Padding="0,0,0,10" ItemClick="MostPlayedGridView_ItemClick">
                         <GridView.ItemTemplate>

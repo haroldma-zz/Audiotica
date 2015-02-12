@@ -62,14 +62,12 @@ namespace Audiotica.ViewModel
             var signInSheet = new EmailSignUpSheet();
             var success = await ModalSheetUtility.ShowAsync(signInSheet);
 
-            if (success)
-            {
-                CurtainPrompt.Show("Welcome!");
-                CollectionHelper.IdentifyXamarin();
+            if (!success) return;
 
-                // Sync collection
-                await CollectionHelper.CloudSync(false);
-            }
+            CurtainPrompt.Show("Welcome!");
+            CollectionHelper.IdentifyXamarin();
+
+            SubscribeExecute();
         }
 
         private void SubscribeExecute()
