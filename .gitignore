@@ -174,5 +174,5 @@ UpgradeLog*.htm
 FakesAssemblies/
 
 arm.txt
-[Rr]elease_static*/
-[Dd]ebug_static*/
+[Rr]elease_*/
+[Dd]ebug_*/
