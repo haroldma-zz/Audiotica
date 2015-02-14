@@ -324,6 +324,9 @@ namespace Audiotica.WindowsPhone.Player
             {
                 switch (key.ToLower())
                 {
+                    case PlayerConstants.LastFmLoginChanged:
+                        QueueManager.UpdateScrobblerInstance();
+                        break;
                     case PlayerConstants.AppSuspended:
                         Debug.WriteLine("App suspending");
                         // App is suspended, you can save your task state at this point

@@ -33,14 +33,6 @@ namespace Audiotica.Data.Spotify.Models
         public string ArtworkUrl { get; set; }
         public int num_streams { get; set; }
         public string window_type { get; set; }
-        public int percent_male { get; set; }
-        public int percent_age_group_0_17 { get; set; }
-        public int percent_age_group_18_24 { get; set; }
-        public int percent_age_group_25_29 { get; set; }
-        public int percent_age_group_30_34 { get; set; }
-        public int percent_age_group_35_44 { get; set; }
-        public int percent_age_group_45_54 { get; set; }
-        public int percent_age_group_55_plus { get; set; }
     }
 
     public class SpotifyChartsRoot

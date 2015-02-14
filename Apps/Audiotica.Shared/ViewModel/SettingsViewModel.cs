@@ -4,7 +4,10 @@ using System;
 using System.Diagnostics;
 
 using Windows.ApplicationModel.Store;
+using Windows.Foundation.Collections;
+using Windows.Media.Playback;
 using Windows.UI.Xaml;
+using Audiotica.Core;
 using Audiotica.Core.Utils.Interfaces;
 using Audiotica.Core.WinRt;
 using Audiotica.Core.WinRt.Common;
@@ -315,6 +318,10 @@ namespace Audiotica.ViewModel
                     }
                     UiBlockerUtility.Unblock();
                 }
+
+                // update the player also
+                var msg = new ValueSet { { PlayerConstants.LastFmLoginChanged, string.Empty } };
+                BackgroundMediaPlayer.SendMessageToBackground(msg);
             }
         }
     }

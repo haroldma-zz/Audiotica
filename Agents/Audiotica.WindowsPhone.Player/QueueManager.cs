@@ -13,6 +13,7 @@ using Audiotica.Core.WinRt.Utilities;
 using Audiotica.Data.Collection.Model;
 using Audiotica.Data.Collection.RunTime;
 using Audiotica.Data.Service.RunTime;
+using Audiotica.Flac.WindowsPhone;
 
 #endregion
 
@@ -138,7 +139,7 @@ namespace Audiotica.WindowsPhone.Player
         public QueueManager(IAppSettingsHelper appSettingsHelper)
         {
             _appSettingsHelper = appSettingsHelper;
-            _scrobbler = new ScrobblerHelper(_appSettingsHelper, new ScrobblerService(new PclCredentialHelper()));
+            UpdateScrobblerInstance();
 
             _mediaPlayer = BackgroundMediaPlayer.Current;
             _mediaPlayer.MediaOpened += MediaPlayer_MediaOpened;
@@ -168,8 +169,9 @@ namespace Audiotica.WindowsPhone.Player
 
         #region MediaPlayer Handlers
 
-        private readonly ScrobblerHelper _scrobbler;
+        private ScrobblerHelper _scrobbler;
         private int _retryCount;
+        private FlacMediaSourceAdapter _currentMediaSourceAdapter;
 
         /// <summary>
         ///     Handler for state changed event of Media Player
@@ -257,7 +259,7 @@ namespace Audiotica.WindowsPhone.Player
 
         #region Playlist command handlers
 
-        public void StartTrack(QueueSong track)
+        public async void StartTrack(QueueSong track)
         {
             if (track == null)
                 return;
@@ -265,6 +267,17 @@ namespace Audiotica.WindowsPhone.Player
             ScrobbleOnMediaEnded(_currentTrack);
 
             _currentTrack = track;
+            _mediaPlayer.Pause();
+
+            // If the flac media source adapter is not null, disposed of it
+            // since we won't be using it
+
+            if (_currentMediaSourceAdapter != null)
+            {
+                _currentMediaSourceAdapter.Dispose();
+                _currentMediaSourceAdapter = null;
+            }
+
             _mediaPlayer.AutoPlay = false;
 
             if (track.Song.IsStreaming)
@@ -279,7 +292,17 @@ namespace Audiotica.WindowsPhone.Player
                 {
                     try
                     {
-                        _mediaPlayer.SetFileSource(file);
+                        if (file.FileType != ".flac")
+                        {
+                            _mediaPlayer.SetFileSource(file);
+                        }
+                        else
+                        {
+                            // Use custom media source for FLAC support
+                            _currentMediaSourceAdapter =
+                                await FlacMediaSourceAdapter.CreateAsync(file);
+                            BackgroundMediaPlayer.Current.SetMediaSource(_currentMediaSourceAdapter.MediaSource);
+                        }
                     }
                     catch
                     {
@@ -306,6 +329,11 @@ namespace Audiotica.WindowsPhone.Player
         {
             var next = GetQueueSongWherePrevId(GetCurrentId()) ?? GetQueueSongWherePrevId(0);
             StartTrack(next);
+        }
+
+        public void UpdateScrobblerInstance()
+        {
+            _scrobbler = new ScrobblerHelper(_appSettingsHelper, new ScrobblerService(new PclCredentialHelper()));
         }
 
         private async void ScrobbleOnMediaEnded(QueueSong queue)

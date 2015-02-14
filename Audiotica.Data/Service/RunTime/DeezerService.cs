@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Net;
 using System.Net.Http;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Audiotica.Core.Exceptions;
 using Audiotica.Core.Utils;
@@ -32,22 +34,27 @@ namespace Audiotica.Data.Service.RunTime
         public Task<DeezerPageResponse<DeezerArtist>> SearchArtistsAsync(string query, int page = 0, int limit = 10)
         {
             return
-                GetAsync<DeezerPageResponse<DeezerArtist>>(string.Format(SearchArtistPath, Uri.EscapeDataString(query),
+                GetAsync<DeezerPageResponse<DeezerArtist>>(string.Format(SearchArtistPath, Clean(query),
                     page, limit));
         }
 
         public Task<DeezerPageResponse<DeezerSong>> SearchSongsAsync(string query, int page = 0, int limit = 10)
         {
             return
-                GetAsync<DeezerPageResponse<DeezerSong>>(string.Format(SearchTracksPath, Uri.EscapeDataString(query),
+                GetAsync<DeezerPageResponse<DeezerSong>>(string.Format(SearchTracksPath, Clean(query),
                     page, limit));
         }
 
         public Task<DeezerPageResponse<DeezerAlbum>> SearchAlbumsAsync(string query, int page = 0, int limit = 10)
         {
             return
-                GetAsync<DeezerPageResponse<DeezerAlbum>>(string.Format(SearchAlbumsPath, Uri.EscapeDataString(query),
+                GetAsync<DeezerPageResponse<DeezerAlbum>>(string.Format(SearchAlbumsPath, Clean(query),
                     page, limit));
+        }
+
+        private string Clean(string query)
+        {
+            return WebUtility.UrlEncode(query);
         }
 
         private async Task<T> GetAsync<T>(string url) where T : DeezerBaseResponse
@@ -58,7 +65,7 @@ namespace Audiotica.Data.Service.RunTime
                 var json = await resp.Content.ReadAsStringAsync();
                 var parseResp = await json.DeserializeAsync<T>();
 
-                if (parseResp.error != null)
+                if (parseResp != null && parseResp.error != null)
                     throw new Exception(parseResp.error.message);
                 if (!resp.IsSuccessStatusCode)
                     throw new NetworkException();

@@ -21,7 +21,10 @@ namespace Audiotica
         // first - a method to retrieve files from folder recursively 
         private static async Task RetriveFilesInFolder(List<StorageFile> list, StorageFolder parent)
         {
-            list.AddRange((await parent.GetFilesAsync()).Where(p => p.FileType == ".wma" || p.FileType == ".mp3"));
+            list.AddRange((await parent.GetFilesAsync()).Where(p => 
+                p.FileType == ".wma" 
+                || p.FileType == ".flac"
+                || p.FileType == ".mp3"));
 
             //avoiding DRM folder of xbox music
             foreach (var folder in (await parent.GetFoldersAsync()).Where(folder =>
@@ -107,43 +110,39 @@ namespace Audiotica
 
             Tag tags = null;
             TimeSpan duration;
-            if (file.FileType == ".mp3")
+            var tryAsM4A = false;
+            var fileStream = await file.OpenStreamForReadAsync();
+            File tagFile = null;
+            try
             {
-                var tryAsM4A = false;
-                var fileStream = await file.OpenStreamForReadAsync();
-                File tagFile = null;
+                tagFile = File.Create(new StreamFileAbstraction(file.Name, fileStream, fileStream));
+            }
+            catch (Exception e)
+            {
+                tryAsM4A = e is CorruptFileException;
+            }
+
+            if (tryAsM4A)
+            {
+                //need to reopen (when it fails to open it disposes of the stream
+                fileStream = await file.OpenStreamForReadAsync();
                 try
                 {
-                    tagFile = File.Create(new StreamFileAbstraction(file.Name, fileStream, fileStream));
+                    tagFile = File.Create(new StreamFileAbstraction(
+                        file.Name.Replace(".mp3", ".m4a"), fileStream, fileStream));
                 }
-                catch (Exception e)
+                catch
                 {
-                    tryAsM4A = e is CorruptFileException;
                 }
-
-                if (tryAsM4A)
-                {
-                    //need to reopen (when it fails to open it disposes of the stream
-                    fileStream = await file.OpenStreamForReadAsync();
-                    try
-                    {
-                        tagFile = File.Create(new StreamFileAbstraction(
-                            file.Name.Replace(".mp3", ".m4a"), fileStream, fileStream));
-                    }
-                    catch
-                    {
-                    }
-                }
-
-                tags = tagFile == null ? null : tagFile.Tag;
-                if (tags != null)
-                {
-                    duration = tagFile.Properties.Duration;
-                }
-                fileStream.Dispose();
-                if (tagFile != null)
-                    tagFile.Dispose();
             }
+
+            tags = tagFile == null ? null : tagFile.Tag;
+            if (tags != null)
+            {
+                duration = tagFile.Properties.Duration;
+            }
+            fileStream.Dispose();
+            if (tagFile != null) tagFile.Dispose();
 
             #endregion
 
@@ -159,7 +158,8 @@ namespace Audiotica
             }
             else
             {
-                track = new LocalSong(tags.Title, tags.JoinedPerformers.Replace(";", ","), tags.Album, tags.FirstAlbumArtist)
+                track = new LocalSong(tags.Title, tags.JoinedPerformers.Replace(";", ","), tags.Album,
+                    tags.FirstAlbumArtist)
                 {
                     FilePath = audioPath,
                     Genre = tags.FirstGenre,
@@ -189,7 +189,7 @@ namespace Audiotica
             try
             {
                 await App.Locator.CollectionService.AddSongAsync(song, tags)
-                    .ConfigureAwait(false);
+                         .ConfigureAwait(false);
                 return SavingError.None;
             }
             catch (NetworkException)

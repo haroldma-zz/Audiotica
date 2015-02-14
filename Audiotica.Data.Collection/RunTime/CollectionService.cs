@@ -527,6 +527,8 @@ namespace Audiotica.Data.Collection.RunTime
 
             song.AlbumId = song.Album.Id;
 
+            if (string.IsNullOrEmpty(song.ArtistName)) song.ArtistName = song.Artist.Name;
+
             await this._sqlService.InsertAsync(song);
 
             await this._dispatcher.RunAsync(

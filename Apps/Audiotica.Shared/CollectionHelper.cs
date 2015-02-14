@@ -900,7 +900,7 @@ namespace Audiotica
                                 var spotifyAlbum =
                                     await
                                     App.Locator.Spotify.GetAlbum(album.ProviderId.Replace("spotify.", string.Empty))
-                                        .ConfigureAwait(false);
+                                       .ConfigureAwait(false);
 
                                 if (spotifyAlbum == null)
                                 {
@@ -914,25 +914,41 @@ namespace Audiotica
                             }
                             else
                             {
-                                var results =
+                                // First, try using Last.FM
+                                var lastAlbum =
                                     await
-                                    App.Locator.DeezerService.SearchAlbumsAsync(
-                                        album.Name + " " + album.PrimaryArtist.Name).ConfigureAwait(false);
-                                var deezerAlbum = results.data.FirstOrDefault();
+                                    App.Locator.ScrobblerService.GetDetailAlbum(album.Name, album.PrimaryArtist.Name);
 
-                                if (deezerAlbum == null
-                                    || (!album.Name.ToLower().Contains(deezerAlbum.title.ToLower())
-                                        && (!album.PrimaryArtist.Name.ToLower()
-                                                 .Contains(deezerAlbum.artist.name.ToLower())
-                                            || deezerAlbum.bigCover == null)))
+                                if (lastAlbum == null ||
+                                    lastAlbum.Images == null ||
+                                    lastAlbum.Images.Largest == null)
                                 {
-                                    album.HasArtwork = false;
-                                    album.NoArtworkFound = true;
-                                    await App.Locator.SqlService.UpdateItemAsync(album).ConfigureAwait(false);
-                                    return;
-                                }
+                                    // Then Deezer
+                                    var results =
+                                        await
+                                        App.Locator.DeezerService.SearchAlbumsAsync(
+                                            album.Name + " " + album.PrimaryArtist.Name).ConfigureAwait(false);
+                                    var deezerAlbum = results.data.FirstOrDefault();
 
-                                artworkUrl = deezerAlbum.bigCover;
+                                    if (deezerAlbum == null
+                                        ||
+                                        (!album.Name.ToLower().Contains(deezerAlbum.title.ToLower())
+                                         && (!album.PrimaryArtist.Name.ToLower()
+                                                   .Contains(deezerAlbum.artist.name.ToLower())
+                                             || deezerAlbum.bigCover == null)))
+                                    {
+                                        album.HasArtwork = false;
+                                        album.NoArtworkFound = true;
+                                        await App.Locator.SqlService.UpdateItemAsync(album).ConfigureAwait(false);
+                                        return;
+                                    }
+
+                                    artworkUrl = deezerAlbum.bigCover;
+                                }
+                                else
+                                {
+                                    artworkUrl = lastAlbum.Images.Largest.AbsoluteUri;
+                                }
                             }
 
                             await SaveAlbumImageAsync(album, artworkUrl).ConfigureAwait(false);

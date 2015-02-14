@@ -17,5 +17,7 @@
         public const string Trackchanged = "songchanged";
         public const string ForegroundAppActive = "Active";
         public const string ForegroundAppSuspended = "Suspended";
+
+        public const string LastFmLoginChanged = "lastfmchanged";
     }
 }
