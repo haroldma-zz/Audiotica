@@ -478,7 +478,7 @@ namespace Audiotica.Data.Service.RunTime
                 cleanTile = cleanTile.Remove(index);
             }
             index = cleanTile.IndexOf('-');
-            if (index > -1)
+            if (index > -1 && index < cleanTile.Length - 1)
             {
                 cleanTile = cleanTile.Remove(index);
             }
