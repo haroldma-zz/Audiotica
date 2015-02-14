@@ -88,15 +88,7 @@ namespace Audiotica
         {
             App.Locator.AppSettingsHelper.Write(PlayerConstants.AppState, PlayerConstants.ForegroundAppActive);
 
-            try
-            {
-                AddMediaPlayerEventHandlers();
-            }
-            catch
-            {
-                _isShutdown = true;
-            }
-
+            AddMediaPlayerEventHandlers();
             RaiseEvent(TrackChanged);
             OnPlaybackStateChanged(SafePlayerState);
         }
@@ -207,12 +199,20 @@ namespace Audiotica
                 return;
             }
 
-            // avoid duplicate events
-            RemoveMediaPlayerEventHandlers(player);
-            player.CurrentStateChanged += MediaPlayer_CurrentStateChanged;
-            BackgroundMediaPlayer.MessageReceivedFromBackground += BackgroundMediaPlayer_MessageReceivedFromBackground;
-            _isShutdown = false;
-            await Task.Delay(250);
+            try
+            {
+                // avoid duplicate events
+                RemoveMediaPlayerEventHandlers(player);
+                player.CurrentStateChanged += MediaPlayer_CurrentStateChanged;
+                BackgroundMediaPlayer.MessageReceivedFromBackground += BackgroundMediaPlayer_MessageReceivedFromBackground;
+                _isShutdown = false;
+                await Task.Delay(250);
+            }
+            catch
+            {
+                // ignored
+                _isShutdown = true;
+            }
         }
 
         private void BackgroundMediaPlayer_MessageReceivedFromBackground(
