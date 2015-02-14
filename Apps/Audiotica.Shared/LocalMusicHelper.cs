@@ -24,6 +24,7 @@ namespace Audiotica
             list.AddRange((await parent.GetFilesAsync()).Where(p => 
                 p.FileType == ".wma" 
                 || p.FileType == ".flac"
+                || p.FileType == ".m4a"
                 || p.FileType == ".mp3"));
 
             //avoiding DRM folder of xbox music
