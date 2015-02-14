@@ -401,7 +401,6 @@ namespace Audiotica.Data.Collection.RunTime
         {
             var primaryArtist = (song.Album == null ? song.Artist : song.Album.PrimaryArtist)
                                 ?? new Artist { Name = "Unknown Artist", ProviderId = "autc.unknown" };
-
             var artist =
                 this.Artists.FirstOrDefault(
                     entry =>

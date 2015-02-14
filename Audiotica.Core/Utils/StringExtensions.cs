@@ -18,6 +18,8 @@ namespace Audiotica.Core.Utils
                 str = str.Substring(0, 35);
             }
 
+            str = str.ForceValidEnding();
+
             /*
              * A filename cannot contain any of the following characters:
              * \ / : * ? " < > |
@@ -34,6 +36,27 @@ namespace Audiotica.Core.Utils
                     .Replace("|", " ");
 
             return string.IsNullOrEmpty(name) ? invalidMessage : name;
+        }
+
+        public static string ForceValidEnding(this string str)
+        {
+            var isNonAccepted = true;
+
+            while (isNonAccepted)
+            {
+                var lastChar = str[str.Length - 1];
+
+                isNonAccepted = lastChar == ' ' || lastChar == '.' || lastChar == ';' || lastChar == ':';
+
+                if (isNonAccepted) str = str.Remove(str.Length - 1);
+                else break;
+
+                if (str.Length == 0) return str;
+
+                isNonAccepted = lastChar == ' ' || lastChar == '.' || lastChar == ';' || lastChar == ':';
+            }
+
+            return str;
         }
 
         public static async Task<T> DeserializeAsync<T>(this string json)
