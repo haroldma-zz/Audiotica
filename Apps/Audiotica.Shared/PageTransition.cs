@@ -1,8 +1,4 @@
-﻿#region
-
-using System;
-
-#endregion
+﻿using System;
 
 namespace Audiotica
 {
@@ -16,14 +12,22 @@ namespace Audiotica
         {
             TransitionHelper.Hide(FromPage);
             TransitionHelper.Show(ToPage);
-            completed.Invoke();
+
+            if (completed != null)
+            {
+                completed.Invoke();
+            }
         }
 
         public virtual void PlayReverse(Action completed)
         {
             TransitionHelper.Hide(ToPage);
             TransitionHelper.Show(FromPage);
-            completed.Invoke();
+
+            if (completed != null)
+            {
+                completed.Invoke();
+            }
         }
     }
 }

@@ -190,10 +190,18 @@ namespace Audiotica
             Storyboard.SetTarget(doubleAnimationUsingKeyFrame11, ToPage);
             Storyboard.SetTargetProperty(doubleAnimationUsingKeyFrame11, "(UIElement.Opacity)");
             storyboard.Children.Add(doubleAnimationUsingKeyFrame11);
-            storyboard.Begin();
-            if (completed != null)
+
+            try
             {
-                completed.Invoke();
+                storyboard.Begin();
+                if (completed != null)
+                {
+                    completed.Invoke();
+                }
+            }
+            catch
+            {
+                base.Play(completed);
             }
         }
 
@@ -337,10 +345,17 @@ namespace Audiotica
 
             #endregion
 
-            storyboard.Begin();
-            if (completed != null)
+            try
             {
-                completed.Invoke();
+                storyboard.Begin();
+                if (completed != null)
+                {
+                    completed.Invoke();
+                }
+            }
+            catch
+            {
+                base.Play(completed);
             }
         }
     }
