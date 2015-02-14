@@ -129,6 +129,8 @@ namespace Audiotica.Data.Service.RunTime
 
         public async Task<LastArtist> GetDetailArtist(string name)
         {
+            if (string.IsNullOrEmpty(name)) return null;
+
             var resp = await _artistApi.GetArtistInfoAsync(name);
             ThrowIfError(resp);
 
