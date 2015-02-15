@@ -44,18 +44,16 @@ namespace Audiotica
             App.Locator.AppSettingsHelper.Write(PlayerConstants.CurrentTrack, null);
         }
 
-        private MediaPlayer _player;
         public MediaPlayer SafeMediaPlayer
         {
             get
             {
                 try
                 {
-                    return _player ?? (_player = BackgroundMediaPlayer.Current);
+                    return BackgroundMediaPlayer.Current;
                 }
                 catch
                 {
-                    _player = null;
                     return null;
                 }
             }
