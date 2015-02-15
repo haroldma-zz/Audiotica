@@ -1,5 +1,6 @@
 ﻿using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Media;
 
 namespace Audiotica
 {
@@ -7,6 +8,8 @@ namespace Audiotica
     {
         public static void Hide(FrameworkElement element)
         {
+            // just in case, resetting scale
+            element.RenderTransform = new ScaleTransform();
             Canvas.SetTop(element, 0);
             Canvas.SetLeft(element, 0);
             element.Visibility = Visibility.Collapsed;
@@ -15,6 +18,8 @@ namespace Audiotica
 
         public static void Show(FrameworkElement element)
         {
+            // just in case, resetting scale
+            element.RenderTransform = new ScaleTransform();
             Canvas.SetTop(element, 0);
             Canvas.SetLeft(element, 0);
             element.Visibility = Visibility.Visible;
