@@ -316,12 +316,12 @@
                                 <TextBlock FontSize="30" Text="{Binding CurrentQueue.Song.Name}" TextTrimming="CharacterEllipsis" />
                                 <TextBlock FontSize="24" FontWeight="Thin" Foreground="#89FFFFFF"
                                    TextTrimming="CharacterEllipsis" TextWrapping="Wrap">
-                                    <Run Text="by " />
+                                    <Run Text="by" />
                                     <Run Text="{Binding CurrentQueue.Song.Artist.Name}" />
                                 </TextBlock>
                                 <TextBlock FontSize="24" FontWeight="Thin" Foreground="#89FFFFFF"
                                    TextTrimming="CharacterEllipsis" TextWrapping="Wrap">
-                                    <Run Text="on " />
+                                    <Run Text="on" />
                                     <Run Text="{Binding CurrentQueue.Song.Album.Name}" />
                                 </TextBlock>
                             </StackPanel>
