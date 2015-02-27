@@ -78,11 +78,10 @@ namespace Audiotica.ViewModel
                 }));
                 SimpleIoc.Default.Register(() => factory.CreatePlayerSqlService(5), "BackgroundSql");
                 SimpleIoc.Default.Register(() => factory.CreateCollectionService(SqlService, BgSqlService));
-
-                SimpleIoc.Default.Register<ISongDownloadService>(() => new SongDownloadService(CollectionService, SqlService, DispatcherHelper.UIDispatcher));
                 SimpleIoc.Default.Register<IAudioticaService, AudioticaService>();
             }
 
+            SimpleIoc.Default.Register<ISongDownloadService>(() => new SongDownloadService(CollectionService, SqlService, DispatcherHelper.UIDispatcher));
             SimpleIoc.Default.Register<Mp3MatchEngine>();
             SimpleIoc.Default.Register<AppVersionHelper>();
             SimpleIoc.Default.Register<CollectionCommandHelper>();

@@ -102,6 +102,7 @@
     <ProjectReference Include="..\..\Audiotica.Flac.WindowsPhone\Audiotica.Flac.WindowsPhone.csproj">
       <Project>{669cae39-f845-41b7-acfb-c43f9660b638}</Project>
       <Name>Audiotica.Flac.WindowsPhone</Name>
+      <Private>True</Private>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

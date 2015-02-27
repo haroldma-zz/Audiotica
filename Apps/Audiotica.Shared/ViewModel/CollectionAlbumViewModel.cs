@@ -24,10 +24,10 @@ namespace Audiotica.ViewModel
             _service = service;
             _commands = commands;
             _songClickCommand = new RelayCommand<ItemClickEventArgs>(SongClickExecute);
-            MessengerInstance.Register<GenericMessage<int>>(this, "album-coll-detail-id", ReceivedId);
-
+            
             if (IsInDesignMode)
                 SetAlbum(0);
+            else MessengerInstance.Register<GenericMessage<int>>(this, "album-coll-detail-id", ReceivedId);
         }
 
         private void ReceivedId(GenericMessage<int> obj)

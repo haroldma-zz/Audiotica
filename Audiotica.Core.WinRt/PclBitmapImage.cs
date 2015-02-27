@@ -2,7 +2,6 @@
 
 using System;
 using System.IO;
-using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 using Audiotica.Core.Common;
 
@@ -12,26 +11,38 @@ namespace Audiotica.Core.WinRt
 {
     public class PclBitmapImage : IBitmapImage
     {
+        private int _decoded;
+        private Uri _uri;
+
         public PclBitmapImage(Uri uri)
         {
-            Image = new BitmapImage(uri);
+            _uri = uri;
         }
 
-        public object Image { get; private set; }
+        public object Image
+        {
+            get
+            {
+                return new BitmapImage(_uri)
+                {
+                    DecodePixelWidth = _decoded
+                };
+            }
+        }
 
         public void SetUri(Uri uri)
         {
-            ((BitmapImage) Image).UriSource = uri;
+            _uri = uri;
         }
 
         public void SetStream(Stream stream)
         {
-            ((BitmapImage)Image).SetSource(stream.AsRandomAccessStream());
+            // TODO
         }
 
         public void SetDecodedPixel(int size)
         {
-            ((BitmapImage)Image).DecodePixelWidth = size;
+            _decoded = size;
         }
     }
 }

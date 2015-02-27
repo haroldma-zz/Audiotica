@@ -96,6 +96,7 @@ namespace Audiotica
                                     () => StatusBarHelper.ShowStatus("Starting sync...")).ConfigureAwait(false);
                         }
 
+                        await sync.PrepareAsync().ConfigureAwait(false);
                         await sync.PullAsync().ConfigureAwait(false);
 
                         // update artwork and match new pulled songs
@@ -458,8 +459,10 @@ namespace Audiotica
                     UiBlockerUtility.Block("Waiting for collection to load...");
                 }
 
-                App.Locator.CollectionService.LibraryLoaded += (sender, args) =>
+                EventHandler handler = null;
+                handler = (sender, args) =>
                 {
+                    App.Locator.CollectionService.LibraryLoaded -= handler;
                     try
                     {
                         action();
@@ -474,6 +477,7 @@ namespace Audiotica
                         UiBlockerUtility.Unblock();
                     }
                 };
+                App.Locator.CollectionService.LibraryLoaded += handler;
             }
         }
 
