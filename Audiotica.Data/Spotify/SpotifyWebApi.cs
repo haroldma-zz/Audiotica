@@ -119,9 +119,11 @@ namespace Audiotica.Data.Spotify
         {
             using (var client = new HttpClient())
             {
-                var resp = await client.GetAsync(url);
-                var text = await resp.Content.ReadAsStringAsync();
-                return text;
+                using (var resp = await client.GetAsync(url))
+                {
+                    var text = await resp.Content.ReadAsStringAsync();
+                    return text;
+                }
             }
         }
 

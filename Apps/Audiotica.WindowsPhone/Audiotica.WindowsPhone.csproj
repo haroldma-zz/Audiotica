@@ -367,23 +367,25 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="AdDuplex.Universal.Controls.WinPhone.XAML">
-      <HintPath>..\..\packages\AdDuplexWinPhone81.8.5.0.5\lib\portable-win81+wpa81\AdDuplex.Universal.Controls.WinPhone.XAML.winmd</HintPath>
-    </Reference>
-    <Reference Include="AdDuplex.Universal.WinPhone.WinRT">
-      <HintPath>..\..\packages\AdDuplexWinPhone81.8.5.0.5\lib\portable-win81+wpa81\AdDuplex.Universal.WinPhone.WinRT.winmd</HintPath>
-    </Reference>
-    <Reference Include="GalaSoft.MvvmLight, Version=5.1.0.21498, Culture=neutral, PublicKeyToken=e7570ab207bcb616, processorArchitecture=MSIL">
+    <Reference Include="AdDuplex.Universal.Controls.WinPhone.XAML, Version=9.0.0.1, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\MvvmLightLibs.5.1.0.1\lib\wpa81\GalaSoft.MvvmLight.dll</HintPath>
+      <HintPath>..\..\packages\AdDuplexWinPhone81.9.0.0.1\lib\portable-win81+wpa81\AdDuplex.Universal.Controls.WinPhone.XAML.dll</HintPath>
     </Reference>
-    <Reference Include="GalaSoft.MvvmLight.Extras, Version=5.1.0.21499, Culture=neutral, PublicKeyToken=669f0b5e8f868abf, processorArchitecture=MSIL">
+    <Reference Include="AdDuplex.Universal.WinPhone.WinRT, Version=9.0.0.1, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\MvvmLightLibs.5.1.0.1\lib\wpa81\GalaSoft.MvvmLight.Extras.dll</HintPath>
+      <HintPath>..\..\packages\AdDuplexWinPhone81.9.0.0.1\lib\portable-win81+wpa81\AdDuplex.Universal.WinPhone.WinRT.winmd</HintPath>
     </Reference>
-    <Reference Include="GalaSoft.MvvmLight.Platform, Version=5.1.0.21502, Culture=neutral, PublicKeyToken=2d6752c4fdf70b88, processorArchitecture=MSIL">
+    <Reference Include="GalaSoft.MvvmLight, Version=5.1.1.35049, Culture=neutral, PublicKeyToken=e7570ab207bcb616, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\MvvmLightLibs.5.1.0.1\lib\wpa81\GalaSoft.MvvmLight.Platform.dll</HintPath>
+      <HintPath>..\..\packages\MvvmLightLibs.5.1.1.0\lib\wpa81\GalaSoft.MvvmLight.dll</HintPath>
+    </Reference>
+    <Reference Include="GalaSoft.MvvmLight.Extras, Version=5.1.1.35049, Culture=neutral, PublicKeyToken=669f0b5e8f868abf, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\MvvmLightLibs.5.1.1.0\lib\wpa81\GalaSoft.MvvmLight.Extras.dll</HintPath>
+    </Reference>
+    <Reference Include="GalaSoft.MvvmLight.Platform, Version=5.1.1.35052, Culture=neutral, PublicKeyToken=2d6752c4fdf70b88, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\MvvmLightLibs.5.1.1.0\lib\wpa81\GalaSoft.MvvmLight.Platform.dll</HintPath>
     </Reference>
     <Reference Include="GoogleAnalytics">
       <HintPath>..\..\packages\GoogleAnalyticsSDK.1.2.12\lib\wpa81\GoogleAnalytics.winmd</HintPath>
@@ -393,7 +395,7 @@
     </Reference>
     <Reference Include="IF.Lastfm.Core, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\IF.Lastfm.Zumicts.0.3.4\lib\portable-win8+net45+wp8+wpa81+MonoAndroid+MonoTouch\IF.Lastfm.Core.dll</HintPath>
+      <HintPath>..\..\packages\IF.Lastfm.Zumicts.0.4.1\lib\portable-net45+win+wpa81+wp80+MonoAndroid+MonoTouch\IF.Lastfm.Core.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.AdMediator.WindowsPhone81.AdDuplex, Version=1.0.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -447,8 +449,9 @@
     <Reference Include="QKit">
       <HintPath>..\..\packages\QKit.0.4.1\lib\wpa81\QKit.dll</HintPath>
     </Reference>
-    <Reference Include="SOMAWP81">
-      <HintPath>..\..\packages\SOMAW81_Package.1.1.8\lib\wpa81\SOMAWP81.dll</HintPath>
+    <Reference Include="SOMAWP81, Version=1.1.5.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\SOMAW81_Package.1.1.9\lib\wpa81\SOMAWP81.dll</HintPath>
     </Reference>
     <Reference Include="SQLite-net, Version=1.0.9.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -458,11 +461,13 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\SQLitePCL.raw_basic.0.7.1\lib\wpa81\SQLitePCL.raw.dll</HintPath>
     </Reference>
-    <Reference Include="System.Net.Http.Extensions">
-      <HintPath>..\..\packages\Microsoft.Net.Http.2.2.28\lib\wpa81\System.Net.Http.Extensions.dll</HintPath>
+    <Reference Include="System.Net.Http.Extensions, Version=1.5.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Microsoft.Net.Http.2.2.29\lib\wpa81\System.Net.Http.Extensions.dll</HintPath>
     </Reference>
-    <Reference Include="System.Net.Http.Primitives">
-      <HintPath>..\..\packages\Microsoft.Net.Http.2.2.28\lib\wpa81\System.Net.Http.Primitives.dll</HintPath>
+    <Reference Include="System.Net.Http.Primitives, Version=4.2.29.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Microsoft.Net.Http.2.2.29\lib\wpa81\System.Net.Http.Primitives.dll</HintPath>
     </Reference>
     <Reference Include="TagLib.Portable, Version=2.1.0.0, Culture=neutral, PublicKeyToken=db62eba44689b5b0, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -471,8 +476,9 @@
     <Reference Include="WriteableBitmapEx.WinRT">
       <HintPath>..\..\packages\WriteableBitmapEx.1.0.14.0\lib\wpa81\WriteableBitmapEx.WinRT.dll</HintPath>
     </Reference>
-    <Reference Include="Xamarin.Insights">
-      <HintPath>..\..\packages\Xamarin.Insights.1.8.3\lib\wpa\Xamarin.Insights.dll</HintPath>
+    <Reference Include="Xamarin.Insights, Version=1.9.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Xamarin.Insights.1.9.1.107\lib\wpa\Xamarin.Insights.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

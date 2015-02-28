@@ -29,5 +29,16 @@ namespace Audiotica.View
             var msg = new GenericMessage<LastAlbum>(album);
             Messenger.Default.Send(msg, "album-detail");
         }
+
+        public override void NavigatedFrom(NavigationMode mode)
+        {
+            base.NavigatedFrom(mode);
+
+            if (mode != NavigationMode.Back) return;
+
+            var vm = DataContext as AlbumViewModel;
+            vm.Album = null;
+            vm.Tracks = null;
+        }
     }
 }

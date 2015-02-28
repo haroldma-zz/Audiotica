@@ -8,6 +8,7 @@ using Windows.Phone.UI.Input;
 using Windows.UI.StartScreen;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Navigation;
 using Audiotica.Data.Collection.Model;
 using Audiotica.ViewModel;
 using GalaSoft.MvvmLight.Messaging;
@@ -31,7 +32,7 @@ namespace Audiotica.View
             var playButton = new AppBarButton
             {
                 Icon = new SymbolIcon(Symbol.Play),
-                Label = "play",
+                Label = "play"
             };
             playButton.Click += async (o, p) =>
             {
@@ -81,7 +82,8 @@ namespace Audiotica.View
             };
             deleteButton.Click += async (o, p) =>
             {
-                var tasks = SongList.SelectedItems.Select(m => CollectionHelper.DeleteEntryAsync(m as Song, false)).ToList();
+                var tasks =
+                    SongList.SelectedItems.Select(m => CollectionHelper.DeleteEntryAsync(m as Song, false)).ToList();
                 if (tasks.Count == 0) return;
 
                 SongList.SelectionMode = ListViewSelectionMode.None;
@@ -108,7 +110,7 @@ namespace Audiotica.View
             get { return _delegate ?? (_delegate = ItemListView_ContainerContentChanging); }
         }
 
-        public override void NavigatedTo(Windows.UI.Xaml.Navigation.NavigationMode mode, object e)
+        public override void NavigatedTo(NavigationMode mode, object e)
         {
             base.NavigatedTo(mode, e);
             var id = e as int?;
@@ -119,6 +121,17 @@ namespace Audiotica.View
             Messenger.Default.Send(msg, "album-coll-detail-id");
 
             ToggleAppBarButton(SecondaryTile.Exists("album." + Vm.Album.Id));
+        }
+
+        public override void NavigatedFrom(NavigationMode mode)
+        {
+            base.NavigatedFrom(mode);
+
+            if (mode != NavigationMode.Back) return;
+
+            var vm = DataContext as CollectionAlbumViewModel;
+
+            vm.Album = null;
         }
 
         private void ToggleAppBarButton(bool isPinned)

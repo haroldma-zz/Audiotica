@@ -135,34 +135,36 @@ namespace Audiotica.Data.Service.RunTime
             {
                 try
                 {
-                    var resp = await client.GetAsync(url).ConfigureAwait(false);
-                    var json = await resp.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    var httpData = await json.DeserializeAsync<BaseAudioticaResponse<T>>().ConfigureAwait(false)
-                                   ?? new BaseAudioticaResponse<T>();
-
-                    httpData.StatusCode = resp.StatusCode;
-                    httpData.Success = resp.IsSuccessStatusCode;
-
-                    if (resp.StatusCode != HttpStatusCode.Unauthorized)
+                    using (var resp = await client.GetAsync(url).ConfigureAwait(false))
                     {
+                        var json = await resp.Content.ReadAsStringAsync().ConfigureAwait(false);
+                        var httpData = await json.DeserializeAsync<BaseAudioticaResponse<T>>().ConfigureAwait(false)
+                                       ?? new BaseAudioticaResponse<T>();
+
+                        httpData.StatusCode = resp.StatusCode;
+                        httpData.Success = resp.IsSuccessStatusCode;
+
+                        if (resp.StatusCode != HttpStatusCode.Unauthorized)
+                        {
+                            return httpData;
+                        }
+
+                        if (string.IsNullOrEmpty(refreshToken))
+                        {
+                            return httpData;
+                        }
+
+                        // token expired, refresh it
+                        var success = await RefreshTokenAsync();
+                        if (success)
+                        {
+                            // manage to refresh it, repeat the request
+                            return await GetAsync<T>(url);
+                        }
+
+                        // failed to refresh the token, return the original error response
                         return httpData;
                     }
-
-                    if (string.IsNullOrEmpty(refreshToken))
-                    {
-                        return httpData;
-                    }
-
-                    // token expired, refresh it
-                    var success = await RefreshTokenAsync();
-                    if (success)
-                    {
-                        // manage to refresh it, repeat the request
-                        return await GetAsync<T>(url);
-                    }
-
-                    // failed to refresh the token, return the original error response
-                    return httpData;
                 }
                 catch
                 {
@@ -199,34 +201,36 @@ namespace Audiotica.Data.Service.RunTime
             using (var client = CreateHttpClient())
             using (var content = new FormUrlEncodedContent(data))
             {
-                var resp = await client.PostAsync(url, content).ConfigureAwait(false);
-                var json = await resp.Content.ReadAsStringAsync().ConfigureAwait(false);
-                var httpData = await json.DeserializeAsync<BaseAudioticaResponse<T>>().ConfigureAwait(false)
-                               ?? new BaseAudioticaResponse<T>();
-
-                httpData.Success = resp.IsSuccessStatusCode;
-                httpData.StatusCode = resp.StatusCode;
-
-                if (resp.StatusCode != HttpStatusCode.Unauthorized)
+                using (var resp = await client.PostAsync(url, content).ConfigureAwait(false))
                 {
+                    var json = await resp.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    var httpData = await json.DeserializeAsync<BaseAudioticaResponse<T>>().ConfigureAwait(false)
+                                   ?? new BaseAudioticaResponse<T>();
+
+                    httpData.Success = resp.IsSuccessStatusCode;
+                    httpData.StatusCode = resp.StatusCode;
+
+                    if (resp.StatusCode != HttpStatusCode.Unauthorized)
+                    {
+                        return httpData;
+                    }
+
+                    if (string.IsNullOrEmpty(refreshToken))
+                    {
+                        return httpData;
+                    }
+
+                    // token expired, refresh it
+                    var success = await RefreshTokenAsync();
+                    if (success)
+                    {
+                        // manage to refresh it, repeat the request
+                        return await PostAsync<T>(url, data);
+                    }
+
+                    // failed to refresh the token, return the original error response
                     return httpData;
                 }
-
-                if (string.IsNullOrEmpty(refreshToken))
-                {
-                    return httpData;
-                }
-
-                // token expired, refresh it
-                var success = await RefreshTokenAsync();
-                if (success)
-                {
-                    // manage to refresh it, repeat the request
-                    return await PostAsync<T>(url, data);
-                }
-
-                // failed to refresh the token, return the original error response
-                return httpData;
             }
         }
 

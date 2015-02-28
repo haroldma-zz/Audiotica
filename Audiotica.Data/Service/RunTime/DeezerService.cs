@@ -61,16 +61,18 @@ namespace Audiotica.Data.Service.RunTime
         {
             using (var client = new HttpClient())
             {
-                var resp = await client.GetAsync(url);
-                var json = await resp.Content.ReadAsStringAsync();
-                var parseResp = await json.DeserializeAsync<T>();
+                using (var resp = await client.GetAsync(url))
+                {
+                    var json = await resp.Content.ReadAsStringAsync();
+                    var parseResp = await json.DeserializeAsync<T>();
 
-                if (parseResp != null && parseResp.error != null)
-                    throw new Exception(parseResp.error.message);
-                if (!resp.IsSuccessStatusCode)
-                    throw new NetworkException();
+                    if (parseResp != null && parseResp.error != null)
+                        throw new Exception(parseResp.error.message);
+                    if (!resp.IsSuccessStatusCode)
+                        throw new NetworkException();
 
-                return parseResp;
+                    return parseResp;
+                }
             }
         }
     }

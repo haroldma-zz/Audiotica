@@ -67,11 +67,13 @@ namespace Audiotica.Data.Service.RunTime
         {
             using (var client = new HttpClient())
             {
-                var resp = await client.GetAsync(url);
-                var json = await resp.Content.ReadAsStringAsync();
-                var parseResp = await json.DeserializeAsync<T>();
+                using (var resp = await client.GetAsync(url))
+                {
+                    var json = await resp.Content.ReadAsStringAsync();
+                    var parseResp = await json.DeserializeAsync<T>();
 
-                return parseResp;
+                    return parseResp;
+                }
             }
         }
     }

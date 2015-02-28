@@ -1,10 +1,8 @@
 ﻿#region
 
-using System.Linq;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
-using Audiotica.Core.Common;
 using Audiotica.ViewModel;
 using GalaSoft.MvvmLight.Messaging;
 
@@ -19,7 +17,7 @@ namespace Audiotica.View
             InitializeComponent();
         }
 
-        public override void NavigatedTo(Windows.UI.Xaml.Navigation.NavigationMode mode, object parameter)
+        public override void NavigatedTo(NavigationMode mode, object parameter)
         {
             base.NavigatedTo(mode, parameter);
             var album = parameter as string;
@@ -30,11 +28,14 @@ namespace Audiotica.View
             Messenger.Default.Send(msg, "spotify-album-detail");
         }
 
-        private void HyperlinkButton_Click(object sender, RoutedEventArgs e)
+        public override void NavigatedFrom(NavigationMode mode)
         {
-            var vm = (sender as HyperlinkButton).DataContext as AlbumViewModel;
+            base.NavigatedFrom(mode);
+            if (mode != NavigationMode.Back) return;
 
-            Frame.Navigate(typeof (ArtistPage), vm.Album.ArtistName);
+            var vm = DataContext as SpotifyAlbumViewModel;
+            vm.Album = null;
+            vm.Tracks = null;
         }
 
         private async void Button_Click(object sender, RoutedEventArgs e)

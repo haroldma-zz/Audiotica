@@ -31,6 +31,9 @@ namespace Audiotica.Data.Service.RunTime
 
         private const string Mp3ClanSearchUrl = "http://mp3clan.com/app/mp3Search.php?q={0}&count={1}";
 
+        private const string PleerSearchUrl = "http://pleer.com/search?page=1&q={0}&sort_mode=0&sort_by=0&quality=best&onlydata=true";
+        private const string PleerFileUrl = "http://pleer.com/site_api/files/get_url";
+
         private const string Mp3TruckSearchUrl = "https://mp3truck.net/ajaxRequest.php";
 
         private const string MeileSearchUrl = "http://www.meile.com/search?type=&q={0}";
@@ -81,42 +84,125 @@ namespace Audiotica.Data.Service.RunTime
 
             using (var client = new HttpClient())
             {
-                var resp = await client.GetAsync(new Uri(url));
-
-                var json = await resp.Content.ReadAsStringAsync().ConfigureAwait(false);
-                var parseResp = await json.DeserializeAsync<SoundCloudRoot>().ConfigureAwait(false);
-
-                if (parseResp == null || parseResp.collection == null || !resp.IsSuccessStatusCode)
+                using (var resp = await client.GetAsync(url))
                 {
-                    return null;
+                    var json = await resp.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    var parseResp = await json.DeserializeAsync<SoundCloudRoot>().ConfigureAwait(false);
+
+                    if (parseResp == null || parseResp.collection == null || !resp.IsSuccessStatusCode)
+                    {
+                        return null;
+                    }
+
+                    // Remove those that can't be stream
+                    parseResp.collection.RemoveAll(p => p.stream_url == null);
+
+                    foreach (var song in parseResp.collection)
+                    {
+                        if (song.stream_url.Contains("soundcloud") && !song.stream_url.Contains("client_id"))
+                        {
+                            song.stream_url += "?client_id=" + ApiKeys.SoundCloudId;
+                        }
+
+                        if (string.IsNullOrEmpty(song.artwork_url))
+                        {
+                            song.artwork_url = song.user.avatar_url;
+                        }
+
+                        if (song.artwork_url.IndexOf('?') > -1)
+                        {
+                            song.artwork_url = song.artwork_url.Remove(song.artwork_url.LastIndexOf('?'));
+                        }
+
+                        song.artwork_url = song.artwork_url.Replace("large", "t500x500");
+                    }
+
+                    return
+                        await
+                            this.IdentifyMatches(parseResp.collection.Select(p => new WebSong(p)).ToList(), title,
+                                artist, checkAllLinks);
                 }
+            }
+        }
 
-                // Remove those that can't be stream
-                parseResp.collection.RemoveAll(p => p.stream_url == null);
+        public async Task<List<WebSong>> SearchPleer(string title, string artist, string album = null,
+            bool checkAllLinks = false)
+        {
+            var url = string.Format(
+                PleerSearchUrl,
+                this.CreateQuery(title, artist, album));
 
-                foreach (var song in parseResp.collection)
+            using (var client = new HttpClient())
+            {
+                client.DefaultRequestHeaders.Add("X-Requested-With", "XMLHttpRequest");
+                using (var resp = await client.GetAsync(url))
                 {
-                    if (song.stream_url.Contains("soundcloud") && !song.stream_url.Contains("client_id"))
+                    if (!resp.IsSuccessStatusCode) return null;
+
+                    var json = await resp.Content.ReadAsStringAsync();
+                    var o = JToken.Parse(json);
+
+                    if (!o.Value<bool>("success")) return null;
+
+                    var html = o.Value<string>("html");
+
+                    var doc = new HtmlDocument();
+                    doc.LoadHtml(html);
+
+                    var songNodes = doc.DocumentNode.Descendants("li");
+
+                    var songs = new List<WebSong>();
+
+                    foreach (var songNode in songNodes)
                     {
-                        song.stream_url += "?client_id=" + ApiKeys.SoundCloudId;
+                        var song = new WebSong();
+
+                        song.Id = songNode.Attributes["file_id"].Value;
+                        song.Name = songNode.Attributes["song"].Value;
+                        song.Artist = songNode.Attributes["singer"].Value;
+
+                        int bitRate;
+                        if (int.TryParse(songNode.Attributes["rate"].Value.Replace(" Kb/s", ""), out bitRate))
+                        {
+                            song.BitRate = bitRate;
+                        }
+                        int seconds;
+                        if (int.TryParse(songNode.Attributes["duration"].Value, out seconds))
+                        {
+                            song.Duration = TimeSpan.FromSeconds(seconds);
+                        }
+
+                        var linkId = songNode.Attributes["link"].Value;
+                        song.AudioUrl = await GetPleerLinkAsync(client, linkId);
+
+                        if (string.IsNullOrEmpty(song.AudioUrl)) continue;
+
+                        songs.Add(song);
                     }
 
-                    if (string.IsNullOrEmpty(song.artwork_url))
-                    {
-                        song.artwork_url = song.user.avatar_url;
-                    }
-
-                    if (song.artwork_url.IndexOf('?') > -1)
-                    {
-                        song.artwork_url = song.artwork_url.Remove(song.artwork_url.LastIndexOf('?'));
-                    }
-
-                    song.artwork_url = song.artwork_url.Replace("large", "t500x500");
+                    return await IdentifyMatches(songs, title, artist, checkAllLinks);
                 }
+            }
+        }
 
-                return
-                    await
-                    this.IdentifyMatches(parseResp.collection.Select(p => new WebSong(p)).ToList(), title, artist, checkAllLinks);
+        private async Task<string> GetPleerLinkAsync(HttpClient client, string id)
+        {
+            var data = new Dictionary<string, string>
+            {
+                {"action", "download"},
+                {"id", id}
+            };
+
+            using (var content = new FormUrlEncodedContent(data))
+            {
+                using (var resp = await client.PostAsync(PleerFileUrl, content))
+                {
+                    if (!resp.IsSuccessStatusCode) return null;
+
+                    var json = await resp.Content.ReadAsStringAsync();
+                    var o = JToken.Parse(json);
+                    return o.Value<string>("track_link");
+                }
             }
         }
 
@@ -130,16 +216,21 @@ namespace Audiotica.Data.Service.RunTime
 
             using (var client = new HttpClient())
             {
-                var resp = await client.GetAsync(url).ConfigureAwait(false);
-                var json = await resp.Content.ReadAsStringAsync().ConfigureAwait(false);
-                var parseResp = await json.DeserializeAsync<Mp3ClanRoot>().ConfigureAwait(false);
-
-                if (parseResp == null || parseResp.response == null || !resp.IsSuccessStatusCode)
+                using (var resp = await client.GetAsync(url).ConfigureAwait(false))
                 {
-                    return null;
-                }
+                    var json = await resp.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    var parseResp = await json.DeserializeAsync<Mp3ClanRoot>().ConfigureAwait(false);
 
-                return await this.IdentifyMatches(parseResp.response.Select(p => new WebSong(p)).ToList(), title, artist, checkAllLinks);
+                    if (parseResp == null || parseResp.response == null || !resp.IsSuccessStatusCode)
+                    {
+                        return null;
+                    }
+
+                    return
+                        await
+                            this.IdentifyMatches(parseResp.response.Select(p => new WebSong(p)).ToList(), title, artist,
+                                checkAllLinks);
+                }
             }
         }
 
@@ -157,95 +248,98 @@ namespace Audiotica.Data.Service.RunTime
 
                 using (var content = new FormUrlEncodedContent(data))
                 {
-                    var resp = await client.PostAsync(Mp3TruckSearchUrl, content).ConfigureAwait(false);
-
-                    if (!resp.IsSuccessStatusCode)
+                    using (var resp = await client.PostAsync(Mp3TruckSearchUrl, content).ConfigureAwait(false))
                     {
-                        return null;
-                    }
-
-                    var html = await resp.Content.ReadAsStringAsync().ConfigureAwait(false);
-
-                    var doc = new HtmlDocument();
-                    doc.LoadHtml(html);
-
-                    // Get the div node with the class='actl'
-                    var songNodes =
-                        doc.DocumentNode.Descendants("div")
-                            .Where(p => p.Attributes.Contains("class") && p.Attributes["class"].Value.Contains("actl"));
-
-                    var songs = new List<WebSong>();
-
-                    foreach (var songNode in songNodes)
-                    {
-                        var song = new WebSong { Provider = Mp3Provider.Mp3Truck };
-
-                        if (songNode.Attributes.Contains("data-id"))
+                        if (!resp.IsSuccessStatusCode)
                         {
-                            song.Id = songNode.Attributes["data-id"].Value;
+                            return null;
                         }
 
-                        if (songNode.Attributes.Contains("data-bitrate"))
-                        {
-                            song.BitRate = int.Parse(songNode.Attributes["data-bitrate"].Value);
-                        }
+                        var html = await resp.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-                        if (songNode.Attributes.Contains("data-filesize"))
-                        {
-                            song.ByteSize = (int)double.Parse(songNode.Attributes["data-filesize"].Value);
-                        }
+                        var doc = new HtmlDocument();
+                        doc.LoadHtml(html);
 
-                        if (songNode.Attributes.Contains("data-duration"))
-                        {
-                            var duration = songNode.Attributes["data-duration"].Value;
+                        // Get the div node with the class='actl'
+                        var songNodes =
+                            doc.DocumentNode.Descendants("div")
+                                .Where(
+                                    p => p.Attributes.Contains("class") && p.Attributes["class"].Value.Contains("actl"));
 
-                            if (duration.Contains(":"))
+                        var songs = new List<WebSong>();
+
+                        foreach (var songNode in songNodes)
+                        {
+                            var song = new WebSong {Provider = Mp3Provider.Mp3Truck};
+
+                            if (songNode.Attributes.Contains("data-id"))
                             {
-                                var seconds = int.Parse(duration.Substring(duration.Length - 2, 2));
-                                var minutes = int.Parse(duration.Remove(duration.Length - 3));
-                                song.Duration = new TimeSpan(0, 0, minutes, seconds);
+                                song.Id = songNode.Attributes["data-id"].Value;
                             }
-                            else
+
+                            if (songNode.Attributes.Contains("data-bitrate"))
                             {
-                                song.Duration = new TimeSpan(0, 0, 0, int.Parse(duration));
+                                song.BitRate = int.Parse(songNode.Attributes["data-bitrate"].Value);
                             }
+
+                            if (songNode.Attributes.Contains("data-filesize"))
+                            {
+                                song.ByteSize = (int) double.Parse(songNode.Attributes["data-filesize"].Value);
+                            }
+
+                            if (songNode.Attributes.Contains("data-duration"))
+                            {
+                                var duration = songNode.Attributes["data-duration"].Value;
+
+                                if (duration.Contains(":"))
+                                {
+                                    var seconds = int.Parse(duration.Substring(duration.Length - 2, 2));
+                                    var minutes = int.Parse(duration.Remove(duration.Length - 3));
+                                    song.Duration = new TimeSpan(0, 0, minutes, seconds);
+                                }
+                                else
+                                {
+                                    song.Duration = new TimeSpan(0, 0, 0, int.Parse(duration));
+                                }
+                            }
+
+                            var songTitle =
+                                songNode.Descendants("div")
+                                    .FirstOrDefault(
+                                        p => p.Attributes.Contains("id") && p.Attributes["id"].Value == "title")
+                                    .InnerText;
+                            songTitle = WebUtility.HtmlDecode(songTitle.Substring(0, songTitle.Length - 4)).Trim();
+
+                            // artist - title
+                            var dashIndex = songTitle.IndexOf('-');
+                            if (dashIndex != -1)
+                            {
+                                var titlePart = songTitle.Substring(dashIndex, songTitle.Length - dashIndex);
+                                song.Artist = songTitle.Replace(titlePart, string.Empty).Trim();
+
+                                songTitle = titlePart.Remove(0, 1).Trim();
+                            }
+
+                            song.Name = songTitle;
+
+                            var linkNode =
+                                songNode.Descendants("a")
+                                    .FirstOrDefault(
+                                        p =>
+                                            p.Attributes.Contains("class")
+                                            && p.Attributes["class"].Value.Contains("mp3download"));
+                            if (linkNode == null)
+                            {
+                                continue;
+                            }
+
+                            song.AudioUrl = linkNode.Attributes["href"].Value.Replace("/idl.php?u=", string.Empty);
+
+                            songs.Add(song);
                         }
 
-                        var songTitle =
-                            songNode.Descendants("div")
-                                .FirstOrDefault(p => p.Attributes.Contains("id") && p.Attributes["id"].Value == "title")
-                                .InnerText;
-                        songTitle = WebUtility.HtmlDecode(songTitle.Substring(0, songTitle.Length - 4)).Trim();
-
-                        // artist - title
-                        var dashIndex = songTitle.IndexOf('-');
-                        if (dashIndex != -1)
-                        {
-                            var titlePart = songTitle.Substring(dashIndex, songTitle.Length - dashIndex);
-                            song.Artist = songTitle.Replace(titlePart, string.Empty).Trim();
-
-                            songTitle = titlePart.Remove(0, 1).Trim();
-                        }
-
-                        song.Name = songTitle;
-
-                        var linkNode =
-                            songNode.Descendants("a")
-                                .FirstOrDefault(
-                                    p =>
-                                    p.Attributes.Contains("class")
-                                    && p.Attributes["class"].Value.Contains("mp3download"));
-                        if (linkNode == null)
-                        {
-                            continue;
-                        }
-
-                        song.AudioUrl = linkNode.Attributes["href"].Value.Replace("/idl.php?u=", string.Empty);
-
-                        songs.Add(song);
+                        return songs.Any() ? await this.IdentifyMatches(songs, title, artist, checkAllLinks) : null;
                     }
-
-                    return songs.Any() ? await this.IdentifyMatches(songs, title, artist, checkAllLinks) : null;
                 }
             }
         }
@@ -256,36 +350,40 @@ namespace Audiotica.Data.Service.RunTime
 
             using (var client = new HttpClient())
             {
-                var resp = await client.GetAsync(url).ConfigureAwait(false);
-                var html = await resp.Content.ReadAsStringAsync().ConfigureAwait(false);
-
-                // Meile has no search api, so we go to old school web page scrapping
-                // using HtmlAgilityPack this is very easy
-                var doc = new HtmlDocument();
-                doc.LoadHtml(html);
-
-                // Get the hyperlink node with the class='name'
-                var songNameNodes =
-                    doc.DocumentNode.Descendants("a")
-                        .Where(p => p.Attributes.Contains("class") && p.Attributes["class"].Value == "name");
-
-                // in it there is an attribute that contains the url to the song
-                var songUrls = songNameNodes.Select(p => p.Attributes["href"].Value);
-                var songIds = songUrls.Where(p => p.Contains("/song/")).ToList();
-
-                var songs = new List<WebSong>();
-
-                foreach (var songId in songIds)
+                using (var resp = await client.GetAsync(url).ConfigureAwait(false))
                 {
-                    var song =
-                        await this.GetDetailsForMeileSong(songId.Replace("/song/", string.Empty), client).ConfigureAwait(false);
-                    if (song != null)
-                    {
-                        songs.Add(new WebSong(song));
-                    }
-                }
+                    var html = await resp.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-                return songs.Any() ? await this.IdentifyMatches(songs, title, artist, checkAllLinks) : null;
+                    // Meile has no search api, so we go to old school web page scrapping
+                    // using HtmlAgilityPack this is very easy
+                    var doc = new HtmlDocument();
+                    doc.LoadHtml(html);
+
+                    // Get the hyperlink node with the class='name'
+                    var songNameNodes =
+                        doc.DocumentNode.Descendants("a")
+                            .Where(p => p.Attributes.Contains("class") && p.Attributes["class"].Value == "name");
+
+                    // in it there is an attribute that contains the url to the song
+                    var songUrls = songNameNodes.Select(p => p.Attributes["href"].Value);
+                    var songIds = songUrls.Where(p => p.Contains("/song/")).ToList();
+
+                    var songs = new List<WebSong>();
+
+                    foreach (var songId in songIds)
+                    {
+                        var song =
+                            await
+                                this.GetDetailsForMeileSong(songId.Replace("/song/", string.Empty), client)
+                                    .ConfigureAwait(false);
+                        if (song != null)
+                        {
+                            songs.Add(new WebSong(song));
+                        }
+                    }
+
+                    return songs.Any() ? await this.IdentifyMatches(songs, title, artist, checkAllLinks) : null;
+                }
             }
         }
 
@@ -305,31 +403,33 @@ namespace Audiotica.Data.Service.RunTime
 
                 using (var data = new FormUrlEncodedContent(dict))
                 {
-                    var resp = await client.PostAsync(NeteaseSuggestApi, data).ConfigureAwait(false);
-                    var json = await resp.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    var parseResp = await json.DeserializeAsync<NeteaseRoot>();
-                    if (!resp.IsSuccessStatusCode)
+                    using (var resp = await client.PostAsync(NeteaseSuggestApi, data).ConfigureAwait(false))
                     {
-                        return null;
-                    }
-
-                    if (parseResp == null || parseResp.result == null || parseResp.result.songs == null)
-                    {
-                        return null;
-                    }
-
-                    var songs = new List<WebSong>();
-
-                    foreach (var neteaseSong in parseResp.result.songs)
-                    {
-                        var song = await this.GetDetailsForNeteaseSong(neteaseSong.id, client).ConfigureAwait(false);
-                        if (song != null)
+                        var json = await resp.Content.ReadAsStringAsync().ConfigureAwait(false);
+                        var parseResp = await json.DeserializeAsync<NeteaseRoot>();
+                        if (!resp.IsSuccessStatusCode)
                         {
-                            songs.Add(new WebSong(song));
+                            return null;
                         }
-                    }
 
-                    return songs.Any() ? await this.IdentifyMatches(songs, title, artist, checkAllLinks) : null;
+                        if (parseResp == null || parseResp.result == null || parseResp.result.songs == null)
+                        {
+                            return null;
+                        }
+
+                        var songs = new List<WebSong>();
+
+                        foreach (var neteaseSong in parseResp.result.songs)
+                        {
+                            var song = await this.GetDetailsForNeteaseSong(neteaseSong.id, client).ConfigureAwait(false);
+                            if (song != null)
+                            {
+                                songs.Add(new WebSong(song));
+                            }
+                        }
+
+                        return songs.Any() ? await this.IdentifyMatches(songs, title, artist, checkAllLinks) : null;
+                    }
                 }
             }
         }
@@ -344,121 +444,123 @@ namespace Audiotica.Data.Service.RunTime
             using (var client = new HttpClient())
             {
                 var url = string.Format(Mp3SkullSearchUrl, this.CreateQuery(title, artist, album), this.Mp3SkullFckh);
-                var resp = await client.GetAsync(url).ConfigureAwait(false);
-
-                if (!resp.IsSuccessStatusCode)
+                using (var resp = await client.GetAsync(url).ConfigureAwait(false))
                 {
-                    return null;
-                }
-
-                var html = await resp.Content.ReadAsStringAsync().ConfigureAwait(false);
-
-                var doc = new HtmlDocument();
-                doc.LoadHtml(html);
-
-                if (html.Contains("You have made too many request"))
-                {
-                    return null;
-                }
-
-                if (html.Contains("Your search session has expired"))
-                {
-                    var fckhNode =
-                        doc.DocumentNode.Descendants("input")
-                            .FirstOrDefault(p => p.Attributes.Contains("name") && p.Attributes["name"].Value == "fckh");
-                    if (fckhNode == null)
+                    if (!resp.IsSuccessStatusCode)
                     {
                         return null;
                     }
 
-                    this.Mp3SkullFckh = fckhNode.Attributes["value"].Value;
+                    var html = await resp.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-                    return await this.SearchMp3Skull(title, artist, album);
-                }
+                    var doc = new HtmlDocument();
+                    doc.LoadHtml(html);
 
-                // Get the div node
-                var songNodes = doc.DocumentNode.Descendants("div").Where(p => p.Id == "song_html");
-
-                var songs = new List<WebSong>();
-
-                foreach (var songNode in songNodes)
-                {
-                    var song = new WebSong { Provider = Mp3Provider.Mp3Skull };
-
-                    var songUrlNode = songNode.Descendants("a").FirstOrDefault(p => p.InnerText == "Download");
-
-                    if (songUrlNode == null)
+                    if (html.Contains("You have made too many request"))
                     {
-                        continue;
+                        return null;
                     }
 
-                    song.AudioUrl = songUrlNode.Attributes["href"].Value;
-                    var songInfo =
-                        songNode.Descendants("div")
-                            .FirstOrDefault(p => p.Attributes["class"].Value == "left")
-                            .InnerText.Replace("<!-- info mp3 here -->", string.Empty)
-                            .Trim();
-                    
-
-                    var bitRateIndex = songInfo.IndexOf("kbps", StringComparison.Ordinal);
-                    if (bitRateIndex > -1)
+                    if (html.Contains("Your search session has expired"))
                     {
-                        var bitrateTxt = songInfo.Substring(0, bitRateIndex);
-                        int bitrate;
-                        if (int.TryParse(bitrateTxt, out bitrate))
+                        var fckhNode =
+                            doc.DocumentNode.Descendants("input")
+                                .FirstOrDefault(
+                                    p => p.Attributes.Contains("name") && p.Attributes["name"].Value == "fckh");
+                        if (fckhNode == null)
                         {
-                            song.BitRate = bitrate;
+                            return null;
                         }
+
+                        this.Mp3SkullFckh = fckhNode.Attributes["value"].Value;
+
+                        return await this.SearchMp3Skull(title, artist, album);
                     }
 
-                    #region Duration
+                    // Get the div node
+                    var songNodes = doc.DocumentNode.Descendants("div").Where(p => p.Id == "song_html");
 
-                    if (bitRateIndex > -1)
+                    var songs = new List<WebSong>();
+
+                    foreach (var songNode in songNodes)
                     {
-                        songInfo = songInfo.Remove(0, bitRateIndex + 4);
-                    }
+                        var song = new WebSong {Provider = Mp3Provider.Mp3Skull};
 
-                    var durationIndex = songInfo.IndexOf(":", StringComparison.Ordinal);
-                    if (durationIndex > -1)
-                    {
-                        var durationText = songInfo.Substring(0, durationIndex + 3);
-                        var seconds = int.Parse(durationText.Substring(durationText.Length - 2, 2));
-                        var minutes = int.Parse(durationText.Remove(durationText.Length - 3));
+                        var songUrlNode = songNode.Descendants("a").FirstOrDefault(p => p.InnerText == "Download");
 
-                        song.Duration = new TimeSpan(0, 0, minutes, seconds);
-                    }
-
-                    #endregion
-
-                    #region Size
-
-                    if (durationIndex > -1)
-                    {
-                        songInfo = songInfo.Remove(0, durationIndex + 3);
-                    }
-
-                    var sizeIndex = songInfo.IndexOf("mb", StringComparison.Ordinal);
-                    if (sizeIndex > -1)
-                    {
-                        var sizeText = songInfo.Substring(0, sizeIndex);
-                        long size;
-                        if (long.TryParse(sizeText, out size))
+                        if (songUrlNode == null)
                         {
-                            song.ByteSize = (long)(size * (1024 * 1024.0));
+                            continue;
                         }
+
+                        song.AudioUrl = songUrlNode.Attributes["href"].Value;
+                        var songInfo =
+                            songNode.Descendants("div")
+                                .FirstOrDefault(p => p.Attributes["class"].Value == "left")
+                                .InnerText.Replace("<!-- info mp3 here -->", string.Empty)
+                                .Trim();
+
+
+                        var bitRateIndex = songInfo.IndexOf("kbps", StringComparison.Ordinal);
+                        if (bitRateIndex > -1)
+                        {
+                            var bitrateTxt = songInfo.Substring(0, bitRateIndex);
+                            int bitrate;
+                            if (int.TryParse(bitrateTxt, out bitrate))
+                            {
+                                song.BitRate = bitrate;
+                            }
+                        }
+
+                        #region Duration
+
+                        if (bitRateIndex > -1)
+                        {
+                            songInfo = songInfo.Remove(0, bitRateIndex + 4);
+                        }
+
+                        var durationIndex = songInfo.IndexOf(":", StringComparison.Ordinal);
+                        if (durationIndex > -1)
+                        {
+                            var durationText = songInfo.Substring(0, durationIndex + 3);
+                            var seconds = int.Parse(durationText.Substring(durationText.Length - 2, 2));
+                            var minutes = int.Parse(durationText.Remove(durationText.Length - 3));
+
+                            song.Duration = new TimeSpan(0, 0, minutes, seconds);
+                        }
+
+                        #endregion
+
+                        #region Size
+
+                        if (durationIndex > -1)
+                        {
+                            songInfo = songInfo.Remove(0, durationIndex + 3);
+                        }
+
+                        var sizeIndex = songInfo.IndexOf("mb", StringComparison.Ordinal);
+                        if (sizeIndex > -1)
+                        {
+                            var sizeText = songInfo.Substring(0, sizeIndex);
+                            long size;
+                            if (long.TryParse(sizeText, out size))
+                            {
+                                song.ByteSize = (long) (size*(1024*1024.0));
+                            }
+                        }
+
+                        #endregion
+
+                        var songTitle = songNode.Descendants("b").FirstOrDefault().InnerText;
+                        songTitle = songTitle.Substring(0, songTitle.Length - 4).Trim();
+
+                        song.Name = songTitle;
+
+                        songs.Add(song);
                     }
 
-                    #endregion
-
-                    var songTitle = songNode.Descendants("b").FirstOrDefault().InnerText;
-                    songTitle = songTitle.Substring(0, songTitle.Length - 4).Trim();
-
-                    song.Name = songTitle;
-
-                    songs.Add(song);
+                    return songs.Any() ? await this.IdentifyMatches(songs, title, artist, checkAllLinks) : null;
                 }
-
-                return songs.Any() ? await this.IdentifyMatches(songs, title, artist, checkAllLinks) : null;
             }
         }
 
@@ -488,6 +590,8 @@ namespace Audiotica.Data.Service.RunTime
             foreach (var webSong in songs)
             {
                 title = title.Replace(" )", ")").Replace("( ", "(");
+
+                if (string.IsNullOrEmpty(webSong.Name)) continue;
 
                 var isCorrectType = this.IsCorrectType(title, webSong.Name, "mix")
                                     && this.IsCorrectType(title, webSong.Name, "cover")
@@ -541,30 +645,34 @@ namespace Audiotica.Data.Service.RunTime
         {
             var url = string.Format(MeileDetailUrl, songId);
 
-            var resp = await client.GetAsync(url);
-            var json = await resp.Content.ReadAsStringAsync();
-
-            var parseResp = await json.DeserializeAsync<MeileDetailRoot>();
-
-            if (parseResp == null || !resp.IsSuccessStatusCode)
+            using (var resp = await client.GetAsync(url))
             {
-                return null;
-            }
+                var json = await resp.Content.ReadAsStringAsync();
 
-            return parseResp.values.songs.FirstOrDefault();
+                var parseResp = await json.DeserializeAsync<MeileDetailRoot>();
+
+                if (parseResp == null || !resp.IsSuccessStatusCode)
+                {
+                    return null;
+                }
+
+                return parseResp.values.songs.FirstOrDefault();
+            }
         }
 
         private async Task<NeteaseDetailSong> GetDetailsForNeteaseSong(int songId, HttpClient client)
         {
-            var detailResp = await client.GetAsync(string.Format(NeteaseDetailApi, songId));
-            var detailJson = await detailResp.Content.ReadAsStringAsync();
-            var detailParseResp = await detailJson.DeserializeAsync<NeteaseDetailRoot>();
-            if (!detailResp.IsSuccessStatusCode || detailParseResp == null)
+            using (var detailResp = await client.GetAsync(string.Format(NeteaseDetailApi, songId)))
             {
-                return null;
-            }
+                var detailJson = await detailResp.Content.ReadAsStringAsync();
+                var detailParseResp = await detailJson.DeserializeAsync<NeteaseDetailRoot>();
+                if (!detailResp.IsSuccessStatusCode || detailParseResp == null)
+                {
+                    return null;
+                }
 
-            return detailParseResp.songs == null ? null : detailParseResp.songs.FirstOrDefault();
+                return detailParseResp.songs == null ? null : detailParseResp.songs.FirstOrDefault();
+            }
         }
 
         private int GetMostUsedMinute(List<WebSong> songs)
@@ -612,24 +720,27 @@ namespace Audiotica.Data.Service.RunTime
                 using (var client = new HttpClient())
                 {
                     client.Timeout = TimeSpan.FromSeconds(10);
-                    var resp =
+                    using (var resp =
                         await
-                        client.SendAsync(
-                            new HttpRequestMessage(HttpMethod.Head, new Uri(song.AudioUrl)),
-                            HttpCompletionOption.ResponseHeadersRead);
-                    resp.EnsureSuccessStatusCode();
-
-                    if (!resp.Content.Headers.ContentType.MediaType.Contains("audio"))
+                            client.SendAsync(
+                                new HttpRequestMessage(HttpMethod.Head, new Uri(song.AudioUrl)),
+                                HttpCompletionOption.ResponseHeadersRead))
                     {
-                        return false;
-                    }
+                        if (!resp.IsSuccessStatusCode) return false;
 
-                    var size = resp.Content.Headers.ContentLength;
-                    if (size != null)
-                    {
-                        song.ByteSize = (long)size;
+                        if (!resp.Content.Headers.ContentType.MediaType.Contains("audio")
+                              && !resp.Content.Headers.ContentType.MediaType.Contains("octet-stream"))
+                        {
+                            return false;
+                        }
+
+                        var size = resp.Content.Headers.ContentLength;
+                        if (size != null)
+                        {
+                            song.ByteSize = (long) size;
+                        }
+                        return true;
                     }
-                    return true;
                 }
             }
             catch
