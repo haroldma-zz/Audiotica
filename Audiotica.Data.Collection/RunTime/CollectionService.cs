@@ -474,27 +474,29 @@ namespace Audiotica.Data.Collection.RunTime
 
                     if (artwork != null)
                     {
-                        try
+                        using (artwork)
                         {
-                            var file =
-                                await
-                                StorageHelper.CreateFileAsync(
-                                    albumFilePath,
-                                    option: CreationCollisionOption.ReplaceExisting);
-
-                            using (var fileStream = await file.OpenAsync(FileAccess.ReadAndWrite))
+                            try
                             {
-                                var bytes = tags.Pictures[0].Data.Data;
-                                await fileStream.WriteAsync(bytes, 0, bytes.Length);
-                                song.Album.HasArtwork = true;
-                                await this._sqlService.UpdateItemAsync(song.Album);
+                                var file =
+                                    await
+                                        StorageHelper.CreateFileAsync(
+                                            albumFilePath,
+                                            option: CreationCollisionOption.ReplaceExisting);
+
+                                using (var fileStream = await file.OpenAsync(FileAccess.ReadAndWrite))
+                                {
+                                    var bytes = tags.Pictures[0].Data.Data;
+                                    await fileStream.WriteAsync(bytes, 0, bytes.Length);
+                                    song.Album.HasArtwork = true;
+                                    await this._sqlService.UpdateItemAsync(song.Album);
+                                }
+                            }
+                            catch
+                            {
+                                // ignored
                             }
                         }
-                        catch
-                        {
-                            // ignored
-                        }
-                        artwork.Dispose();
                     }
 
                     // set it
