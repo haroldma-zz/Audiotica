@@ -39,7 +39,7 @@ namespace Audiotica.ViewModel
         {
             var song = e.ClickedItem as Song;
             var queueSong = _album.Songs.ToList();
-            await CollectionHelper.PlaySongsAsync(song, queueSong);
+            await CollectionHelper.PlaySongsAsync(song, queueSong, true);
         }
 
         public Album Album
