@@ -86,9 +86,17 @@ namespace Audiotica.Data.Collection.RunTime
 
         public OptimizedObservableCollection<Song> Songs { get; set; }
 
+        public OptimizedObservableCollection<Song> TempSongs { get; set; }
+
         public OptimizedObservableCollection<Album> Albums { get; set; }
 
+        public OptimizedObservableCollection<Album> TempAlbums { get; set; }
+
         public OptimizedObservableCollection<Artist> Artists { get; set; }
+
+        public OptimizedObservableCollection<Artist> TempArtists { get; set; }
+
+        public OptimizedObservableCollection<RadioStation> Stations { get; set; }
 
         public OptimizedObservableCollection<Playlist> Playlists { get; set; }
 
@@ -286,6 +294,16 @@ namespace Audiotica.Data.Collection.RunTime
                     && localSongPath == p.AudioUrl) != null;
         }
 
+        public Task AddStationAsync(RadioStation station)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task DeleteStationAsync(RadioStation station)
+        {
+            throw new NotImplementedException();
+        }
+
         public void ShuffleModeChanged()
         {
             this.OnPropertyChanged("CurrentPlaybackQueue");
@@ -301,7 +319,7 @@ namespace Audiotica.Data.Collection.RunTime
                 != null;
         }
 
-        public async Task DeleteSongAsync(Song song)
+        public async Task DeleteSongAsync(Song song, bool temp = false)
         {
             var queueSong = this.PlaybackQueue.FirstOrDefault(p => p.SongId == song.Id);
             if (queueSong != null)
@@ -397,7 +415,7 @@ namespace Audiotica.Data.Collection.RunTime
             }
         }
 
-        public async Task AddSongAsync(Song song, Tag tags = null)
+        public async Task AddSongAsync(Song song, Tag tags = null, bool temp = false)
         {
             var primaryArtist = (song.Album == null ? song.Artist : song.Album.PrimaryArtist)
                                 ?? new Artist { Name = "Unknown Artist", ProviderId = "autc.unknown" };
@@ -643,7 +661,7 @@ namespace Audiotica.Data.Collection.RunTime
             }
         }
 
-        public async Task<QueueSong> AddToQueueAsync(Song song, QueueSong position = null, bool shuffleInsert = true)
+        public async Task<QueueSong> AddToQueueAsync(Song song, QueueSong position = null, bool shuffleInsert = true, bool temp = false)
         {
             if (song == null)
             {

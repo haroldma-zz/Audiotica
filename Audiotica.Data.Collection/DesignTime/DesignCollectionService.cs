@@ -27,8 +27,19 @@ namespace Audiotica.Data.Collection.DesignTime
         public event EventHandler LibraryLoaded;
         public int ScaledImageSize { get; set; }
         public OptimizedObservableCollection<Song> Songs { get; set; }
+
+        public OptimizedObservableCollection<Song> TempSongs { get; set; }
+
         public OptimizedObservableCollection<Album> Albums { get; set; }
+
+        public OptimizedObservableCollection<Album> TempAlbums { get; set; }
+
         public OptimizedObservableCollection<Artist> Artists { get; set; }
+
+        public OptimizedObservableCollection<Artist> TempArtists { get; set; }
+
+        public OptimizedObservableCollection<RadioStation> Stations { get; set; }
+
         public OptimizedObservableCollection<Playlist> Playlists { get; set; }
         public OptimizedObservableCollection<QueueSong> PlaybackQueue { get; private set; }
         public OptimizedObservableCollection<QueueSong> ShufflePlaybackQueue { get; private set; }
@@ -129,17 +140,12 @@ namespace Audiotica.Data.Collection.DesignTime
             throw new NotImplementedException();
         }
 
-        public Task AddSongAsync(Song song)
+        public Task AddSongAsync(Song song, Tag tags, bool temp = false)
         {
             throw new NotImplementedException();
         }
 
-        public Task AddSongAsync(Song song, Tag tags)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task DeleteSongAsync(Song song)
+        public Task DeleteSongAsync(Song song, bool temp = false)
         {
             throw new NotImplementedException();
         }
@@ -159,6 +165,16 @@ namespace Audiotica.Data.Collection.DesignTime
             throw new NotImplementedException();
         }
 
+        public Task AddStationAsync(RadioStation station)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task DeleteStationAsync(RadioStation station)
+        {
+            throw new NotImplementedException();
+        }
+
         public void ShuffleModeChanged()
         {
             throw new NotImplementedException();
@@ -174,7 +190,7 @@ namespace Audiotica.Data.Collection.DesignTime
             throw new NotImplementedException();
         }
 
-        public Task<QueueSong> AddToQueueAsync(Song song, QueueSong position = null, bool shuffleInsert = true)
+        public Task<QueueSong> AddToQueueAsync(Song song, QueueSong position = null, bool shuffleInsert = true, bool temp = false)
         {
             throw new NotImplementedException();
         }

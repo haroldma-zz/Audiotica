@@ -16,8 +16,12 @@ namespace Audiotica.Data.Collection
         bool IsLibraryLoaded { get; }
         int ScaledImageSize { get; set; }
         OptimizedObservableCollection<Song> Songs { get; set; }
+        OptimizedObservableCollection<Song> TempSongs { get; set; }
         OptimizedObservableCollection<Album> Albums { get; set; }
+        OptimizedObservableCollection<Album> TempAlbums { get; set; }
         OptimizedObservableCollection<Artist> Artists { get; set; }
+        OptimizedObservableCollection<Artist> TempArtists { get; set; }
+        OptimizedObservableCollection<RadioStation> Stations { get; set; }
         OptimizedObservableCollection<Playlist> Playlists { get; set; }
         OptimizedObservableCollection<QueueSong> PlaybackQueue { get; }
         OptimizedObservableCollection<QueueSong> ShufflePlaybackQueue { get; }
@@ -34,16 +38,23 @@ namespace Audiotica.Data.Collection
         /// <summary>
         ///     Adds the song to the database and collection.
         /// </summary>
-        Task AddSongAsync(Song song, Tag tags = null);
+        Task AddSongAsync(Song song, Tag tags = null, bool temp = false);
 
         /// <summary>
         ///     Deletes the song from the database and collection.  Also all related files.
         /// </summary>
-        Task DeleteSongAsync(Song song);
+        Task DeleteSongAsync(Song song, bool temp = false);
 
         Task<List<HistoryEntry>> FetchHistoryAsync();
         bool SongAlreadyExists(string providerId, string name, string album, string artist);
         bool SongAlreadyExists(string localSongPath);
+
+        #region Radio Stations
+
+        Task AddStationAsync(RadioStation station);
+        Task DeleteStationAsync(RadioStation station);
+
+        #endregion
 
         #region Playback Queue
 
@@ -59,7 +70,7 @@ namespace Audiotica.Data.Collection
         /// <summary>
         ///     Adds the current song to the end of the queue.
         /// </summary>
-        Task<QueueSong> AddToQueueAsync(Song song, QueueSong position = null, bool shuffleInsert = true);
+        Task<QueueSong> AddToQueueAsync(Song song, QueueSong position = null, bool shuffleInsert = true, bool temp = false);
 
         /// <summary>
         ///     Moves the queue items at the old index to the new index
