@@ -31,6 +31,11 @@ namespace Audiotica.Data.Service.RunTime
         private const string AppToken = "AypzKLKRIDPGkXXzCGYGqjJNliXTwp74";
 #endif
 
+        private const string RadioBasePath = BaseApiPath + "radio";
+        private const string RadioCreatePath = RadioBasePath + "?artistName={0}";
+        private const string RadioLookaheadPath = RadioBasePath + "/{0}/lookahead";
+        private const string RadioEventPath = RadioBasePath + "/{0}/event?action={1}&trackId={2}";
+
         private const string UsersPath = BaseApiPath + "users";
 
         private const string SubscribePath = UsersPath + "/me/subscribe?planId={0}&coupon={1}";
@@ -41,9 +46,9 @@ namespace Audiotica.Data.Service.RunTime
 
         private const string SpotlightPath = BaseApiPath + "spotlight?version={0}&os={1}";
 
-        private readonly ICredentialHelper credentialHelper;
+        private readonly ICredentialHelper _credentialHelper;
 
-        private readonly IAppSettingsHelper appSettingsHelper;
+        private readonly IAppSettingsHelper _appSettingsHelper;
 
         private readonly IDispatcherHelper _dispatcherHelper;
 
@@ -51,9 +56,9 @@ namespace Audiotica.Data.Service.RunTime
 
         public string AuthenticationToken { get; private set; }
 
-        private string refreshToken;
+        private string _refreshToken;
 
-        private AudioticaUser currentUser;
+        private AudioticaUser _currentUser;
 
         public AudioticaService(
             ICredentialHelper credentialHelper, 
@@ -61,12 +66,12 @@ namespace Audiotica.Data.Service.RunTime
             IDispatcherHelper dispatcherHelper, 
             INotificationManager notificationManager)
         {
-            this.credentialHelper = credentialHelper;
-            this.appSettingsHelper = appSettingsHelper;
+            this._credentialHelper = credentialHelper;
+            this._appSettingsHelper = appSettingsHelper;
             _dispatcherHelper = dispatcherHelper;
             _notificationManager = notificationManager;
 
-            var cred = this.credentialHelper.GetCredentials("AudioticaCloud");
+            var cred = this._credentialHelper.GetCredentials("AudioticaCloud");
             if (cred == null)
             {
                 return;
@@ -74,29 +79,29 @@ namespace Audiotica.Data.Service.RunTime
 
             AuthenticationToken = cred.GetPassword();
 
-            CurrentUser = this.appSettingsHelper.ReadJsonAs<AudioticaUser>("AudioticaCloudUser");
+            CurrentUser = this._appSettingsHelper.ReadJsonAs<AudioticaUser>("AudioticaCloudUser");
 
-            var refreshCred = this.credentialHelper.GetCredentials("AudioticaCloudRefreshToken");
+            var refreshCred = this._credentialHelper.GetCredentials("AudioticaCloudRefreshToken");
 
             if (refreshCred == null)
             {
                 return;
             }
 
-            refreshToken = refreshCred.GetPassword();
+            _refreshToken = refreshCred.GetPassword();
         }
 
         public AudioticaUser CurrentUser
         {
             get
             {
-                return currentUser;
+                return _currentUser;
             }
 
             private set
             {
-                Set(ref currentUser, value);
-                appSettingsHelper.WriteAsJson("AudioticaCloudUser", value);
+                Set(ref _currentUser, value);
+                _appSettingsHelper.WriteAsJson("AudioticaCloudUser", value);
             }
         }
 
@@ -149,7 +154,7 @@ namespace Audiotica.Data.Service.RunTime
                             return httpData;
                         }
 
-                        if (string.IsNullOrEmpty(refreshToken))
+                        if (string.IsNullOrEmpty(_refreshToken))
                         {
                             return httpData;
                         }
@@ -175,7 +180,7 @@ namespace Audiotica.Data.Service.RunTime
 
         private async Task<bool> RefreshTokenAsync()
         {
-            var data = new Dictionary<string, string> { { "RefreshToken", refreshToken } };
+            var data = new Dictionary<string, string> { { "RefreshToken", _refreshToken } };
 
             Logout();
 
@@ -215,7 +220,7 @@ namespace Audiotica.Data.Service.RunTime
                         return httpData;
                     }
 
-                    if (string.IsNullOrEmpty(refreshToken))
+                    if (string.IsNullOrEmpty(_refreshToken))
                     {
                         return httpData;
                     }
@@ -270,11 +275,11 @@ namespace Audiotica.Data.Service.RunTime
 
             if (!string.IsNullOrEmpty(resp.Data.RefreshToken))
             {
-                refreshToken = resp.Data.RefreshToken;
-                credentialHelper.SaveCredentials("AudioticaCloudRefreshToken", resp.Data.User.Id, refreshToken);
+                _refreshToken = resp.Data.RefreshToken;
+                _credentialHelper.SaveCredentials("AudioticaCloudRefreshToken", resp.Data.User.Id, _refreshToken);
             }
 
-            credentialHelper.SaveCredentials("AudioticaCloud", resp.Data.User.Id, resp.Data.AuthenticationToken);
+            _credentialHelper.SaveCredentials("AudioticaCloud", resp.Data.User.Id, resp.Data.AuthenticationToken);
             await _dispatcherHelper.RunAsync(() => RaisePropertyChanged(() => IsAuthenticated));
         }
 
@@ -299,14 +304,32 @@ namespace Audiotica.Data.Service.RunTime
             return resp;
         }
 
+        public async Task<BaseAudioticaResponse<RadioData>> CreateStation(string artistName)
+        {
+            var url = string.Format(RadioCreatePath, artistName);
+            return await GetAsync<RadioData>(url);
+        }
+
+        public async Task<BaseAudioticaResponse<RadioData>> StationLookahead(string id)
+        {
+            var url = string.Format(RadioLookaheadPath, id);
+            return await GetAsync<RadioData>(url);
+        }
+
+        public async Task<BaseAudioticaResponse<RadioData>> StationEvent(string id, RadioEvent action, string trackId)
+        {
+            var url = string.Format(RadioEventPath, id, action.ToString().ToLower(), trackId);
+            return await GetAsync<RadioData>(url);
+        }
+
         public void Logout()
         {
             AuthenticationToken = null;
-            refreshToken = null;
+            _refreshToken = null;
             _dispatcherHelper.RunAsync(() => CurrentUser = null);
-            appSettingsHelper.Write("AudioticaCloudRefreshToken", null);
-            appSettingsHelper.Write("AudioticaCloudUser", null);
-            credentialHelper.DeleteCredentials("AudioticaCloud");
+            _appSettingsHelper.Write("AudioticaCloudRefreshToken", null);
+            _appSettingsHelper.Write("AudioticaCloudUser", null);
+            _credentialHelper.DeleteCredentials("AudioticaCloud");
             _dispatcherHelper.RunAsync(() => RaisePropertyChanged(() => IsAuthenticated));
         }
 

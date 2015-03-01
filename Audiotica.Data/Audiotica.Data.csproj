@@ -39,6 +39,7 @@
     <Compile Include="ApiKeys.cs" />
     <Compile Include="Model\AudioticaCloud\AudioticaUser.cs" />
     <Compile Include="Model\AudioticaCloud\BaseAudioticaResponse.cs" />
+    <Compile Include="Model\AudioticaCloud\RadioEvent.cs" />
     <Compile Include="Model\AudioticaStripeCard.cs" />
     <Compile Include="Model\Deezer\DeezerAlbum.cs" />
     <Compile Include="Model\Deezer\DeezerArtist.cs" />
@@ -51,6 +52,8 @@
     <Compile Include="Model\EchoNest\EchoResponse.cs" />
     <Compile Include="Model\EchoNest\EchoSong.cs" />
     <Compile Include="Model\Mp3ClanRoot.cs" />
+    <Compile Include="Model\AudioticaCloud\RadioData.cs" />
+    <Compile Include="Model\AudioticaCloud\RadioSong.cs" />
     <Compile Include="Model\SpotlightFeature.cs" />
     <Compile Include="Service\DesignTime\DesignAudioticaService.cs" />
     <Compile Include="Service\Interfaces\IAudioticaService.cs" />

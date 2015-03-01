@@ -55,6 +55,26 @@ namespace Audiotica.Data.Service.DesignTime
             throw new NotImplementedException();
         }
 
+        public Task<BaseAudioticaResponse<RadioData>> CreateStation(string artistName)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<BaseAudioticaResponse<RadioData>> StationLookahead(string id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<BaseAudioticaResponse<RadioData>> StationEvent(string id, RadioEvent action, string trackId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<BaseAudioticaResponse<RadioData>> StationEvent(string id, string action, string trackId)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<BaseAudioticaResponse<AudioticaUser>> GetProfileAsync()
         {
             throw new NotImplementedException();
