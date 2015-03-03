@@ -66,7 +66,7 @@ namespace Audiotica.ViewModel
 
                 var factory = new AudioticaFactory(PclDispatcherHelper, AppSettingsHelper, BitmapFactory);
 
-                SimpleIoc.Default.Register(() => factory.CreateCollectionSqlService(10, async (connection, d) =>
+                SimpleIoc.Default.Register(() => factory.CreateCollectionSqlService(11, async (connection, d) =>
                 {
                     if (!(d > 0) || !(d < 8)) return;
 

@@ -809,7 +809,7 @@ namespace Audiotica
                 artist => Task.Factory.StartNew(
                     async () =>
                     {
-                        if (artist.ProviderId == "autc.unknown" || string.IsNullOrEmpty(artist.Name))
+                        if (artist.ProviderId == "autc.unknown" || string.IsNullOrEmpty(artist.Name) || artist.Name.ToLower().Contains("various"))
                         {
                             return;
                         }

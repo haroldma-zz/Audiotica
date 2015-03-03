@@ -86,15 +86,9 @@ namespace Audiotica.Data.Collection.RunTime
 
         public OptimizedObservableCollection<Song> Songs { get; set; }
 
-        public OptimizedObservableCollection<Song> TempSongs { get; set; }
-
         public OptimizedObservableCollection<Album> Albums { get; set; }
 
-        public OptimizedObservableCollection<Album> TempAlbums { get; set; }
-
         public OptimizedObservableCollection<Artist> Artists { get; set; }
-
-        public OptimizedObservableCollection<Artist> TempArtists { get; set; }
 
         public OptimizedObservableCollection<RadioStation> Stations { get; set; }
 
@@ -114,7 +108,7 @@ namespace Audiotica.Data.Collection.RunTime
 
         public int ScaledImageSize { get; set; }
 
-        public void LoadLibrary(bool loadEssentials = false)
+        public void LoadLibrary()
         {
             if (this.IsLibraryLoaded)
             {
@@ -129,11 +123,7 @@ namespace Audiotica.Data.Collection.RunTime
 
             var songs = this._sqlService.SelectAll<Song>().OrderByDescending(p => p.Id).ToList();
             var artists = this._sqlService.SelectAll<Artist>().OrderByDescending(p => p.Id).ToList();
-            var albums = new List<Album>();
-            if (!loadEssentials)
-            {
-                albums = this._sqlService.SelectAll<Album>().OrderByDescending(p => p.Id).ToList();
-            }
+            var albums = this._sqlService.SelectAll<Album>().OrderByDescending(p => p.Id).ToList();
 
             // Let go of the lock
             this._sqlService.Commit();
@@ -157,7 +147,7 @@ namespace Audiotica.Data.Collection.RunTime
 
             foreach (var album in albums)
             {
-                album.Songs.AddRange(songs.Where(p => p.AlbumId == album.Id).OrderBy(p => p.TrackNumber));
+                album.Songs.AddRange(songs.Where(p => !p.IsTemp && p.AlbumId == album.Id).OrderBy(p => p.TrackNumber));
                 album.PrimaryArtist = artists.FirstOrDefault(p => p.Id == album.PrimaryArtistId);
 
                 if (isForeground)
@@ -204,11 +194,11 @@ namespace Audiotica.Data.Collection.RunTime
 
             foreach (var artist in artists)
             {
-                artist.Songs.AddRange(songs.Where(p => p.ArtistId == artist.Id).OrderBy(p => p.Name));
-                artist.Albums.AddRange(albums.Where(p => p.PrimaryArtistId == artist.Id).OrderBy(p => p.Name));
+                artist.Songs.AddRange(songs.Where(p => !p.IsTemp && p.ArtistId == artist.Id).OrderBy(p => p.Name));
+                artist.Albums.AddRange(albums.Where(p => p.PrimaryArtistId == artist.Id && p.Songs.Count > 0).OrderBy(p => p.Name));
 
                 var songsAlbums = artist.Songs.Select(p => p.Album);
-                artist.Albums.AddRange(songsAlbums.Where(p => !artist.Albums.Contains(p)));
+                artist.Albums.AddRange(songsAlbums.Where(p => p.Songs.Count > 0 && !artist.Albums.Contains(p)));
                 if (isForeground)
                 {
                     this._dispatcher.RunAsync(
@@ -240,11 +230,7 @@ namespace Audiotica.Data.Collection.RunTime
             this.IsLibraryLoaded = true;
 
             this.LoadQueue(songs);
-
-            if (!loadEssentials)
-            {
-                this.LoadPlaylists();
-            }
+            this.LoadPlaylists();
 
             if (!isForeground)
             {
@@ -279,10 +265,10 @@ namespace Audiotica.Data.Collection.RunTime
             }
         }
 
-        public Task LoadLibraryAsync(bool loadEssentials = false)
+        public Task LoadLibraryAsync()
         {
             // just return non async as a task
-            return Task.Factory.StartNew(() => this.LoadLibrary(loadEssentials));
+            return Task.Factory.StartNew(() => this.LoadLibrary());
         }
 
         public bool SongAlreadyExists(string localSongPath)
@@ -319,7 +305,7 @@ namespace Audiotica.Data.Collection.RunTime
                 != null;
         }
 
-        public async Task DeleteSongAsync(Song song, bool temp = false)
+        public async Task DeleteSongAsync(Song song)
         {
             var queueSong = this.PlaybackQueue.FirstOrDefault(p => p.SongId == song.Id);
             if (queueSong != null)
@@ -347,21 +333,16 @@ namespace Audiotica.Data.Collection.RunTime
             if (song.Album != null)
             {
                 song.Album.Songs.Remove(song);
-                if (song.Album.Songs.Count == 0)
+
+                // If the album is empty, make sure that is not being used by any temp song
+                if (song.Album.Songs.Count == 0 && Songs.Count(p => p.AlbumId == song.AlbumId) < 2)
                 {
-                    await this._sqlService.DeleteItemAsync(song.Album);
-                    await this._dispatcher.RunAsync(
+                    await _sqlService.DeleteItemAsync(song.Album);
+                    await _dispatcher.RunAsync(
                         () =>
                             {
                                 this.Albums.Remove(song.Album);
                                 song.Artist.Albums.Remove(song.Album);
-
-                                // var tileId = "album." + song.AlbumId;
-                                // if (SecondaryTile.Exists(tileId))
-                                // {
-                                // var secondaryTile = new SecondaryTile(tileId);
-                                // secondaryTile.RequestDeleteAsync();
-                                // }
                             });
                 }
             }
@@ -369,20 +350,13 @@ namespace Audiotica.Data.Collection.RunTime
             if (song.Artist != null)
             {
                 song.Artist.Songs.Remove(song);
-                if (song.Artist.Songs.Count == 0)
+                if (song.Artist.Songs.Count == 0 && Songs.Count(p => p.ArtistId == song.ArtistId) < 2)
                 {
                     await this._sqlService.DeleteItemAsync(song.Artist);
                     await this._dispatcher.RunAsync(
                         () =>
                             {
                                 this.Artists.Remove(song.Artist);
-
-                                // var tileId = "artist." + song.ArtistId;
-                                // if (SecondaryTile.Exists(tileId))
-                                // {
-                                // var secondaryTile = new SecondaryTile(tileId);
-                                // secondaryTile.RequestDeleteAsync();
-                                // }
                             });
                 }
             }
@@ -415,19 +389,22 @@ namespace Audiotica.Data.Collection.RunTime
             }
         }
 
-        public async Task AddSongAsync(Song song, Tag tags = null, bool temp = false)
+        private readonly List<Artist> _inProgressArtists = new List<Artist>();
+        private readonly List<Album> _inProgressAlbums = new List<Album>();
+
+        public async Task AddSongAsync(Song song, Tag tags = null)
         {
             var primaryArtist = (song.Album == null ? song.Artist : song.Album.PrimaryArtist)
                                 ?? new Artist { Name = "Unknown Artist", ProviderId = "autc.unknown" };
             var artist =
-                this.Artists.FirstOrDefault(
+                _inProgressArtists.Union(Artists).FirstOrDefault(
                     entry =>
                     entry.ProviderId == primaryArtist.ProviderId
                     || string.Equals(entry.Name, primaryArtist.Name, StringComparison.CurrentCultureIgnoreCase));
             if (artist == null)
             {
-                await this._sqlService.InsertAsync(primaryArtist);
-                await this._dispatcher.RunAsync(() => this.Artists.Insert(0, primaryArtist));
+                await _sqlService.InsertAsync(primaryArtist);
+                _inProgressArtists.Add(primaryArtist);
 
                 song.Artist = primaryArtist;
                 song.ArtistId = primaryArtist.Id;
@@ -462,7 +439,7 @@ namespace Audiotica.Data.Collection.RunTime
                 };
             }
 
-            var album = this.Albums.FirstOrDefault(p => p.ProviderId == song.Album.ProviderId);
+            var album = _inProgressAlbums.Union(Albums).FirstOrDefault(p => p.ProviderId == song.Album.ProviderId);
 
             if (album != null)
             {
@@ -471,9 +448,9 @@ namespace Audiotica.Data.Collection.RunTime
             else
             {
                 await this._sqlService.InsertAsync(song.Album);
+                _inProgressAlbums.Add(song.Album);
                 await this._dispatcher.RunAsync(() =>
                 {
-                    this.Albums.Insert(0, song.Album);
                     song.Album.Artwork = this._missingArtwork;
                     song.Album.MediumArtwork = this._missingArtwork;
                     song.Album.SmallArtwork = this._missingArtwork;
@@ -553,37 +530,63 @@ namespace Audiotica.Data.Collection.RunTime
             await this._dispatcher.RunAsync(
                 () =>
                     {
-                        var orderedAlbumSong = song.Album.Songs.ToList();
-                        orderedAlbumSong.Add(song);
-                        orderedAlbumSong = orderedAlbumSong.OrderBy(p => p.TrackNumber).ToList();
-
-                        var index = orderedAlbumSong.IndexOf(song);
-                        song.Album.Songs.Insert(index, song);
-
-
-                        var orderedArtistSong = song.Artist.Songs.ToList();
-                        orderedArtistSong.Add(song);
-                        orderedArtistSong = orderedArtistSong.OrderBy(p => p.Name).ToList();
-
-                        index = orderedArtistSong.IndexOf(song);
-                        song.Artist.Songs.Insert(index, song);
-
-
-                        #region Order artist album
-
-                        if (!song.Artist.Albums.Contains(song.Album))
+                        if (!song.IsTemp)
                         {
-                            var orderedArtistAlbum = song.Artist.Albums.ToList();
-                            orderedArtistAlbum.Add(song.Album);
-                            orderedArtistAlbum = orderedArtistAlbum.OrderBy(p => p.Name).ToList();
+                            var orderedAlbumSong = song.Album.Songs.ToList();
+                            orderedAlbumSong.Add(song);
+                            orderedAlbumSong = orderedAlbumSong.OrderBy(p => p.TrackNumber).ToList();
 
-                            index = orderedArtistAlbum.IndexOf(song.Album);
-                            song.Artist.Albums.Insert(index, song.Album);
+                            var index = orderedAlbumSong.IndexOf(song);
+                            song.Album.Songs.Insert(index, song);
+
+
+                            var orderedArtistSong = song.Artist.Songs.ToList();
+                            orderedArtistSong.Add(song);
+                            orderedArtistSong = orderedArtistSong.OrderBy(p => p.Name).ToList();
+
+                            index = orderedArtistSong.IndexOf(song);
+                            song.Artist.Songs.Insert(index, song);
+
+
+                            #region Order artist album
+
+                            if (!song.Artist.Albums.Contains(song.Album))
+                            {
+                                var orderedArtistAlbum = song.Artist.Albums.ToList();
+                                orderedArtistAlbum.Add(song.Album);
+                                orderedArtistAlbum = orderedArtistAlbum.OrderBy(p => p.Name).ToList();
+
+                                index = orderedArtistAlbum.IndexOf(song.Album);
+                                song.Artist.Albums.Insert(index, song.Album);
+                            }
+
+                            #endregion
                         }
 
-                        #endregion
+                        _inProgressAlbums.Remove(song.Album);
+                        _inProgressArtists.Remove(song.Artist);
 
-                        this.Songs.Insert(0, song);
+                        if (!Albums.Contains(song.Album))
+                            Albums.Add(song.Album);
+                        else if (song.Album.Songs.Count == 1)
+                        {
+                            // This means the album was added with a temp song
+                            // Have to remove and readd it to get it to show up
+                            Albums.Remove(song.Album);
+                            Albums.Add(song.Album);
+                        }
+
+                        if (!Artists.Contains(song.Artist))
+                            Artists.Add(song.Artist);
+                        else if (song.Artist.Songs.Count == 1)
+                        {
+                            // This means the album was added with a temp song
+                            // Have to remove and readd it to get it to show up
+                            Artists.Remove(song.Artist);
+                            Artists.Add(song.Artist);
+                        }
+
+                        Songs.Add(song);
                     });
         }
 
@@ -661,7 +664,7 @@ namespace Audiotica.Data.Collection.RunTime
             }
         }
 
-        public async Task<QueueSong> AddToQueueAsync(Song song, QueueSong position = null, bool shuffleInsert = true, bool temp = false)
+        public async Task<QueueSong> AddToQueueAsync(Song song, QueueSong position = null, bool shuffleInsert = true)
         {
             if (song == null)
             {

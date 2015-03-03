@@ -28,15 +28,9 @@ namespace Audiotica.Data.Collection.DesignTime
         public int ScaledImageSize { get; set; }
         public OptimizedObservableCollection<Song> Songs { get; set; }
 
-        public OptimizedObservableCollection<Song> TempSongs { get; set; }
-
         public OptimizedObservableCollection<Album> Albums { get; set; }
 
-        public OptimizedObservableCollection<Album> TempAlbums { get; set; }
-
         public OptimizedObservableCollection<Artist> Artists { get; set; }
-
-        public OptimizedObservableCollection<Artist> TempArtists { get; set; }
 
         public OptimizedObservableCollection<RadioStation> Stations { get; set; }
 
@@ -45,7 +39,7 @@ namespace Audiotica.Data.Collection.DesignTime
         public OptimizedObservableCollection<QueueSong> ShufflePlaybackQueue { get; private set; }
         public OptimizedObservableCollection<QueueSong> CurrentPlaybackQueue { get; private set; }
 
-        public void LoadLibrary(bool loadEssentials = true)
+        public void LoadLibrary()
         {
             Songs = new OptimizedObservableCollection<Song>
             {
@@ -135,17 +129,17 @@ namespace Audiotica.Data.Collection.DesignTime
             PlaybackQueue = new OptimizedObservableCollection<QueueSong>(pSongs);
         }
 
-        public Task LoadLibraryAsync(bool loadEssentials = true)
+        public Task LoadLibraryAsync()
         {
             throw new NotImplementedException();
         }
 
-        public Task AddSongAsync(Song song, Tag tags, bool temp = false)
+        public Task AddSongAsync(Song song, Tag tags)
         {
             throw new NotImplementedException();
         }
 
-        public Task DeleteSongAsync(Song song, bool temp = false)
+        public Task DeleteSongAsync(Song song)
         {
             throw new NotImplementedException();
         }
@@ -190,7 +184,7 @@ namespace Audiotica.Data.Collection.DesignTime
             throw new NotImplementedException();
         }
 
-        public Task<QueueSong> AddToQueueAsync(Song song, QueueSong position = null, bool shuffleInsert = true, bool temp = false)
+        public Task<QueueSong> AddToQueueAsync(Song song, QueueSong position = null, bool shuffleInsert = true)
         {
             throw new NotImplementedException();
         }
