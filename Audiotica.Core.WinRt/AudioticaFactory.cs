@@ -75,6 +75,7 @@ namespace Audiotica
                                   typeof(Artist), 
                                   typeof(Album), 
                                   typeof(Song), 
+                                  typeof(RadioStation), 
                                   typeof(Playlist), 
                                   typeof(PlaylistSong)
                               };

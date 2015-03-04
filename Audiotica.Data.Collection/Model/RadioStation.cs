@@ -1,6 +1,8 @@
-﻿namespace Audiotica.Data.Collection.Model
+﻿using SQLite;
+
+namespace Audiotica.Data.Collection.Model
 {
-    public class RadioStation
+    public class RadioStation : BaseEntry
     {
         public RadioStation(CloudRadio radio)
         {
@@ -15,7 +17,6 @@
             TracksPlayed = radio.TracksPlayed;
         }
 
-        public int Id { get; set; }
         public string CloudId { get; set; }
         public string Name { get; set; }
         public string ProviderId { get; set; }

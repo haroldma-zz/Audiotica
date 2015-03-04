@@ -76,7 +76,7 @@ namespace Audiotica.ViewModel
                         App.Locator.CollectionService.LibraryLoaded += (sender, args) =>
                             CollectionHelper.MigrateAsync();
                 }));
-                SimpleIoc.Default.Register(() => factory.CreatePlayerSqlService(5), "BackgroundSql");
+                SimpleIoc.Default.Register(() => factory.CreatePlayerSqlService(6), "BackgroundSql");
                 SimpleIoc.Default.Register(() => factory.CreateCollectionService(SqlService, BgSqlService));
                 SimpleIoc.Default.Register<IAudioticaService, AudioticaService>();
             }

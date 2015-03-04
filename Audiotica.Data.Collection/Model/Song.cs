@@ -115,6 +115,8 @@ namespace Audiotica.Data.Collection.Model
         public ObservableCollection<AddableCollectionItem> AddableTo { get; set; }
 
         public bool IsTemp { get; set; }
+
+        public string RadioId { get; set; }
     }
 
     public class AddableCollectionItem

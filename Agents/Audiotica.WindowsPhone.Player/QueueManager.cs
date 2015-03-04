@@ -103,7 +103,7 @@ namespace Audiotica.WindowsPhone.Player
             var bgConfig = new SqlServiceConfig
             {
                 Tables = bgDbTypes,
-                CurrentVersion = 5,
+                CurrentVersion = 6,
                 Path = "player.sqldb"
             };
             var sql = new SqlService(bgConfig);
@@ -118,6 +118,7 @@ namespace Audiotica.WindowsPhone.Player
                 typeof (Artist),
                 typeof (Album),
                 typeof (Song),
+                typeof (RadioStation),
                 typeof (Playlist),
                 typeof (PlaylistSong)
             };
