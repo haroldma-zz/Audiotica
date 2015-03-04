@@ -262,6 +262,13 @@ namespace Audiotica.Data.Collection.RunTime
 
         public async Task DeleteStationAsync(RadioStation station)
         {
+            var songs = Songs.Where(p => p.RadioId == station.Id);
+
+            foreach (var song in songs)
+            {
+                await DeleteSongAsync(song);
+            }
+
             await _sqlService.DeleteItemAsync(station);
             Stations.Remove(station);
         }
@@ -830,7 +837,7 @@ namespace Audiotica.Data.Collection.RunTime
                 () =>
                 {
                     PlaybackQueue.Remove(songToRemove);
-                    CurrentPlaybackQueue.Remove(songToRemove);
+                    ShufflePlaybackQueue.Remove(songToRemove);
                 });
             _lookupMap.TryRemove(songToRemove.Id, out songToRemove);
 
