@@ -1,0 +1,18 @@
+﻿<UserControl
+    x:Class="Audiotica.Controls.Home.CollectionPeek"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Audiotica.Controls.Home"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:audiotica="using:Audiotica"
+    mc:Ignorable="d"
+    Height="150"
+    d:DesignWidth="400">
+    
+    <Button Style="{StaticResource PlainButtonStyle}" VerticalAlignment="Stretch" VerticalContentAlignment="Stretch" Click="Button_Click">
+        <Grid x:Name="LayoutGrid">
+            <TextBlock Text="collection" VerticalAlignment="Center" TextAlignment="Center" FontSize="30" FontWeight="Light" />
+        </Grid>
+    </Button>
+</UserControl>

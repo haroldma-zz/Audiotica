@@ -18,10 +18,23 @@
     <Compile Include="$(MSBuildThisFileDirectory)AppBarHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AudioticaSubscriptionVisibilityConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AutcpHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)BlurImageTool.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)BoolOpacityConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CollectionHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CollectionCommandHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ContinuationManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controls\Home\ArtistRecommendations.xaml.cs">
+      <DependentUpon>ArtistRecommendations.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Controls\Home\CollectionPeek.xaml.cs">
+      <DependentUpon>CollectionPeek.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Controls\Home\MostPlayed.xaml.cs">
+      <DependentUpon>MostPlayed.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Controls\Home\RecentlyAdded.xaml.cs">
+      <DependentUpon>RecentlyAdded.xaml</DependentUpon>
+    </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Controls\PlaylistPicker.xaml.cs">
       <DependentUpon>PlaylistPicker.xaml</DependentUpon>
     </Compile>
@@ -47,9 +60,12 @@
     <Compile Include="$(MSBuildThisFileDirectory)PageTransition.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TransitionHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UiBlockerUtility.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModel\ArtistRecommendationsViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModel\AudioticaCloudViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModel\CollectionStatisticsViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModel\ManualMatchViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModel\MostPlayedViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModel\RecentlyAddedViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModel\SpotifyArtistViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModel\SpotifyAlbumViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModel\AlbumViewModel.cs" />
@@ -79,6 +95,22 @@
     <PRIResource Include="$(MSBuildThisFileDirectory)Strings\en-US\Resources.resw" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="$(MSBuildThisFileDirectory)Controls\Home\ArtistRecommendations.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)Controls\Home\CollectionPeek.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)Controls\Home\MostPlayed.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)Controls\Home\RecentlyAdded.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="$(MSBuildThisFileDirectory)Controls\PlaylistPicker.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

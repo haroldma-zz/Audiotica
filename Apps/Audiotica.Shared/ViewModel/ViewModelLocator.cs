@@ -50,6 +50,8 @@ namespace Audiotica.ViewModel
             SimpleIoc.Default.Register<SpotifyWebApi>();
             SimpleIoc.Default.Register<ISpotifyService, SpotifyService>();
 
+            SimpleIoc.Default.Register<IDeezerService, DeezerService>();
+
             if (ViewModelBase.IsInDesignModeStatic)
             {
                 SimpleIoc.Default.Register<IAudioticaService, DesignAudioticaService>();
@@ -59,7 +61,6 @@ namespace Audiotica.ViewModel
             }
             else
             {
-                SimpleIoc.Default.Register<IDeezerService, DeezerService>();
                 SimpleIoc.Default.Register<IDispatcherHelper>(() => new PclDispatcherHelper(DispatcherHelper.UIDispatcher));
 
                 SimpleIoc.Default.Register<IScrobblerService, ScrobblerService>();
@@ -101,6 +102,9 @@ namespace Audiotica.ViewModel
             SimpleIoc.Default.Register<SettingsViewModel>();
             SimpleIoc.Default.Register<CollectionStatisticsViewModel>();
             SimpleIoc.Default.Register<ManualMatchViewModel>();
+            SimpleIoc.Default.Register<RecentlyAddedViewModel>();
+            SimpleIoc.Default.Register<MostPlayedViewModel>();
+            SimpleIoc.Default.Register<ArtistRecommendationsViewModel>();
         }
 
         public IDeezerService DeezerService
@@ -151,6 +155,20 @@ namespace Audiotica.ViewModel
         public AdMediatorBar Ads
         {
             get { return ServiceLocator.Current.GetInstance<AdMediatorBar>(); }
+        }
+
+        public RecentlyAddedViewModel RecentlyAdded
+        {
+            get { return ServiceLocator.Current.GetInstance<RecentlyAddedViewModel>(); }
+        }
+        public MostPlayedViewModel MostPlayed
+        {
+            get { return ServiceLocator.Current.GetInstance<MostPlayedViewModel>(); }
+        }
+
+        public ArtistRecommendationsViewModel ArtistRecommendations
+        {
+            get { return ServiceLocator.Current.GetInstance<ArtistRecommendationsViewModel>(); }
         }
 
         public MainViewModel Main

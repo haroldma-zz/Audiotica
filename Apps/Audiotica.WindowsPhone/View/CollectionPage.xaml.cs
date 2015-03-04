@@ -113,9 +113,9 @@ namespace Audiotica.View
         {
             base.NavigatedTo(mode, parameter);
 
-            if (parameter == null) return;
-
             LoadWallpaperArt();
+
+            if (parameter == null) return;
 
             var pivotIndex = (int) parameter;
             CollectionPivot.SelectedIndex = pivotIndex;

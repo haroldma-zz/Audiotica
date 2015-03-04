@@ -18,7 +18,7 @@
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
     <ExpressionBlendVersion>12.0.50716.0</ExpressionBlendVersion>
-    <NuGetPackageImportStamp>d1dac3f8</NuGetPackageImportStamp>
+    <NuGetPackageImportStamp>ccf9cfa2</NuGetPackageImportStamp>
     <AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>
     <AppxBundle>Always</AppxBundle>
     <AppxBundlePlatforms>arm</AppxBundlePlatforms>
@@ -238,6 +238,7 @@
       <SubType>Designer</SubType>
     </Content>
     <Content Include="StoreManifest.xml" />
+    <None Include="Help\Lumia Imaging SDK.chm" />
     <None Include="Package.StoreAssociation.xml" />
   </ItemGroup>
   <ItemGroup>
@@ -513,9 +514,11 @@
     <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
     <Error Condition="!Exists('..\..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets'))" />
     <Error Condition="!Exists('..\..\packages\SQLitePCL.raw_basic.0.7.1\build\wpa81\SQLitePCL.raw_basic.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\SQLitePCL.raw_basic.0.7.1\build\wpa81\SQLitePCL.raw_basic.targets'))" />
+    <Error Condition="!Exists('..\..\packages\LumiaImagingSDK.2.0.184\build\wpa81\LumiaImagingSDK.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\LumiaImagingSDK.2.0.184\build\wpa81\LumiaImagingSDK.targets'))" />
   </Target>
   <Import Project="..\..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets" Condition="Exists('..\..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" />
   <Import Project="..\..\packages\SQLitePCL.raw_basic.0.7.1\build\wpa81\SQLitePCL.raw_basic.targets" Condition="Exists('..\..\packages\SQLitePCL.raw_basic.0.7.1\build\wpa81\SQLitePCL.raw_basic.targets')" />
+  <Import Project="..\..\packages\LumiaImagingSDK.2.0.184\build\wpa81\LumiaImagingSDK.targets" Condition="Exists('..\..\packages\LumiaImagingSDK.2.0.184\build\wpa81\LumiaImagingSDK.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
