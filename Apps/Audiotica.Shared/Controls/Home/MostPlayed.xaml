@@ -6,6 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:audiotica="using:Audiotica"
+    xmlns:controls="using:MyToolkit.Controls"
     mc:Ignorable="d"
     d:DesignHeight="300"
     d:DesignWidth="400"
@@ -24,9 +25,14 @@
                         Visibility="{Binding MostPlayed, Converter={StaticResource EmptyListToVisibilityConverter}}"
                         Text="You haven't played any music in the past week." Style="{StaticResource SubtleTextBlockStyle}" />
         <ListView IsItemClickEnabled="True" SelectionMode="None" Margin="10" ItemsSource="{Binding MostPlayed}" Grid.Row="1" ItemClick="ListView_ItemClick">
+            <ListView.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <controls:UniformGrid Rows="2"/>
+                </ItemsPanelTemplate>
+            </ListView.ItemsPanel>
             <ListView.ItemTemplate>
                 <DataTemplate>
-                    <Grid Background="Black" Margin="0,0,0,10">
+                    <Grid Background="Black">
                         <Grid Height="150">
                             <Grid.Background>
                                 <ImageBrush Stretch="UniformToFill" Opacity=".5"

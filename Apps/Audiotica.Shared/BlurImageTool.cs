@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using Windows.Storage;
@@ -59,7 +60,11 @@ namespace Audiotica
             {
                 // Get the file
                 StorageFile file;
-                
+
+                if (url.StartsWith("ms-appx:"))
+                {
+                    url = url.Replace("ms-appx:", "");
+                }
                 if (url.StartsWith("ms-appdata:/local/"))
                 {
                     url = url.Replace("ms-appdata:/local/", "");
@@ -75,6 +80,8 @@ namespace Audiotica
 
             using (stream)
             {
+                if (stream.Length == 0) return;
+
                 using (var rnd = stream.AsRandomAccessStream())
                 {
                     // Then we can create the Random Access Stream Image
@@ -84,7 +91,7 @@ namespace Audiotica
                         using (var filters = new FilterEffect(source))
                         {
                             // Initialize the filter and add the filter to the FilterEffect collection
-                            filters.Filters = new IFilter[] {new BlurFilter(100)};
+                            filters.Filters = new IFilter[] {new BlurFilter(50)};
 
                             // Create a target where the filtered image will be rendered to
                             WriteableBitmap target = null;

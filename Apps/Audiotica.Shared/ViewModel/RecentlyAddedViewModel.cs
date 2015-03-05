@@ -28,14 +28,10 @@ namespace Audiotica.ViewModel
 
         private void Songs_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            _collectionService.Songs.CollectionChanged -= Songs_CollectionChanged;
+            var recently = _collectionService.Songs.OrderByDescending(p => p.Id).Take(4).ToList();
 
-            if (_collectionService.Songs.Count < 4)
-            {
-                _collectionService.Songs.CollectionChanged += Songs_CollectionChanged;
-            }
-
-            RecentlyAdded = _collectionService.Songs.OrderByDescending(p => p.Id).Take(4).ToList();
+            if (RecentlyAdded == null || !recently.SequenceEqual(RecentlyAdded))
+                RecentlyAdded = recently;
         }
     }
 }

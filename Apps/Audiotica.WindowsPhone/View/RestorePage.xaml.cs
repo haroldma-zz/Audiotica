@@ -72,6 +72,7 @@ namespace Audiotica.View
                     App.Locator.CollectionService.LibraryLoaded += async (sender, args) =>
                     {
                         await CollectionHelper.DownloadArtistsArtworkAsync(false);
+                        await CollectionHelper.DownloadAlbumsArtworkAsync(false);
                     };
 
                     App.Locator.AppSettingsHelper.Write("Restore", false);

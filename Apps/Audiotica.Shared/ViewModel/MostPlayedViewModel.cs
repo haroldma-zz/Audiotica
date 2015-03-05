@@ -41,11 +41,14 @@ namespace Audiotica.ViewModel
 
         private void CalculateMostPlayed()
         {
-            MostPlayed =
+            var mostPlayed =
                _collectionService.Songs.Where(p => p.PlayCount != 0 && (DateTime.Now - p.LastPlayed).TotalDays < 8)
                    .OrderByDescending(p => p.PlayCount)
                    .Take(4)
                    .ToList();
+
+            if (MostPlayed == null || !mostPlayed.SequenceEqual(MostPlayed))
+                MostPlayed = mostPlayed;
 
             if (MostPlayed.Count < 4)
             {

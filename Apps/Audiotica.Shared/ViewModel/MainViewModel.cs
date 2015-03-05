@@ -15,7 +15,7 @@ namespace Audiotica.ViewModel
 
         public MainViewModel()
         {
-            HomeList = new List<UIElement> {new CollectionPeek(), new RecentlyAdded(), new MostPlayed(), new ArtistRecommendations()};
+            HomeList = new List<UIElement> { new CollectionPeek(), new MostPlayed(), new RecentlyAdded(), new ArtistRecommendations() };
         }
 
         public List<UIElement> HomeList
