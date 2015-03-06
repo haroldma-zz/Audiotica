@@ -189,8 +189,7 @@ namespace Audiotica.ViewModel
             get { return _appSettingsHelper.Read("WallpaperArt", true, SettingsStrategy.Roaming); }
             set
             {
-                if (!value)
-                    App.Locator.Collection.RandomizeAlbumList.Clear();
+                // TODO disable wallpaper if already set
 
                 EasyTracker.GetTracker().SendEvent("Settings", "WallpaperArt", value ? "Enabled" : "Disabled", 0);
                 Insights.Track("Toggled Wallpaper Art", "Enabled", value.ToString());

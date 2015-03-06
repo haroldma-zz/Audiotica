@@ -37,10 +37,10 @@ namespace Audiotica
             var imageBrush = d as ImageBrush;
             var bounds = Window.Current.Bounds;
 
-            if (string.IsNullOrEmpty(url) || (image == null && imageBrush == null)) return;
-
             if (image != null) image.Source = null;
-            else imageBrush.ImageSource = null;
+            else if (imageBrush != null) imageBrush.ImageSource = null;
+
+            if (string.IsNullOrEmpty(url) || (image == null && imageBrush == null)) return;
             
             HttpResponseMessage resp = null;
             Stream stream;

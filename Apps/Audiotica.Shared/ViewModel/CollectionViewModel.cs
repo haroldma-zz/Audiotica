@@ -46,8 +46,6 @@ namespace Audiotica.ViewModel
             Service.Songs.CollectionChanged += OnCollectionChanged;
             Service.Albums.CollectionChanged += OnCollectionChanged;
             Service.Artists.CollectionChanged += OnCollectionChanged;
-
-            RandomizeAlbumList = new OptimizedObservableCollection<Album>();
         }
 
         public RelayCommand<ItemClickEventArgs> SongClickCommand { get; set; }
@@ -180,8 +178,6 @@ namespace Audiotica.ViewModel
             get { return _sortedArtists; }
             set { Set(ref _sortedArtists, value); }
         }
-
-        public OptimizedObservableCollection<Album> RandomizeAlbumList { get; set; }
 
         public ICollectionService Service
         {
