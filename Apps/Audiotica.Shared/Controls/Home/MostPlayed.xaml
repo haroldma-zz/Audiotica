@@ -18,7 +18,7 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <Grid Background="#1E1E1E">
-            <TextBlock Text="Most Played" FontSize="25" Margin="15,10,10,10" />
+            <TextBlock Text="Most Played" FontSize="25" Margin="15,30,10,10" FontFamily="Global User Interface" />
         </Grid>
         <TextBlock
             Grid.Row="1" Margin="10"

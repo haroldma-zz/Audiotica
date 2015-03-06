@@ -101,7 +101,12 @@ namespace Audiotica.View
 
         private void Button_Click_2(object sender, RoutedEventArgs e)
         {
-            App.Navigator.GoTo<SettingsPage, ZoomInTransition>(null);
+            App.Navigator.GoTo<CollectionPage, ZoomInTransition>(null);
+        }
+
+        private void AppBarButton_Click(object sender, RoutedEventArgs e)
+        {
+            App.Navigator.GoTo<SettingsPage, ZoomOutTransition>(null);
         }
     }
 }

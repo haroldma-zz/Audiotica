@@ -106,19 +106,14 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <ListView IsItemClickEnabled="False" SelectionMode="None" ItemsSource="{Binding HomeList}" ItemContainerStyle="{StaticResource ListViewItemStyle1}" />
-        <Grid Grid.Row="1" Height="50" Background="#1E1E1E">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
-            <Button Style="{StaticResource PlainButtonStyle}" Click="Button_Click_1">
-                <TextBlock Text="search" FontSize="25" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Light" />
-            </Button>
-            <Rectangle Grid.Column="1" Fill="#3FFFFFFF" Width="1" />
-            <Button Grid.Column="2" Style="{StaticResource PlainButtonStyle}" Click="Button_Click_2">
-                <TextBlock Text="settings" FontSize="25" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Light" />
-            </Button>
-        </Grid>
     </Grid>
+    <Page.BottomAppBar>
+        <CommandBar>
+            <AppBarButton Icon="ViewAll" Label="Collection" Click="Button_Click_2" />
+            <AppBarButton Icon="Find" Label="Search" Click="Button_Click_1" />
+            <CommandBar.SecondaryCommands>
+                <AppBarButton Label="settings" Click="AppBarButton_Click" />
+            </CommandBar.SecondaryCommands>
+        </CommandBar>
+    </Page.BottomAppBar>
 </audiotica:PageBase>

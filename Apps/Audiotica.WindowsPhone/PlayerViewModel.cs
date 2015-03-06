@@ -290,6 +290,10 @@ namespace Audiotica
             }
 
             this.Duration = playerInstance.NaturalDuration;
+
+            if (Duration == TimeSpan.MinValue)
+                Duration = TimeSpan.Zero;
+
             var state = MediaPlayerState.Closed;
 
             try

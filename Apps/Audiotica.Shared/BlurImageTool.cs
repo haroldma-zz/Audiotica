@@ -68,14 +68,14 @@ namespace Audiotica
                 if (url.StartsWith("ms-appdata:/local/"))
                 {
                     url = url.Replace("ms-appdata:/local/", "");
-                    file = await WinRtStorageHelper.GetFileAsync(url);
+                    file = await WinRtStorageHelper.GetFileAsync(url).ConfigureAwait(false);
                 }
                 else if (url.StartsWith("/"))
-                    file = await StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx://" + url));
+                    file = await StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx://" + url)).AsTask().ConfigureAwait(false);
                 else
                     file = await StorageFile.GetFileFromPathAsync(url).AsTask().ConfigureAwait(false);
 
-                stream = await file.OpenStreamForReadAsync();
+                stream = await file.OpenStreamForReadAsync().ConfigureAwait(false);
             }
 
             using (stream)

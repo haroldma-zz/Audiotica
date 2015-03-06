@@ -198,8 +198,6 @@ namespace Audiotica.WindowsPhone.Player
 
             if (CurrentTrack == null) return;
 
-            Debug.WriteLine("New Track" + CurrentTrack.Song.Name);
-
             if (TrackChanged != null)
                 TrackChanged.Invoke(this, CurrentTrack.SongId);
 
@@ -268,6 +266,10 @@ namespace Audiotica.WindowsPhone.Player
             ScrobbleOnMediaEnded(_currentTrack);
 
             _currentTrack = track;
+
+            if (TrackChanged != null)
+                TrackChanged.Invoke(this, _currentTrack.SongId);
+
             _mediaPlayer.Pause();
 
             // If the flac media source adapter is not null, disposed of it
