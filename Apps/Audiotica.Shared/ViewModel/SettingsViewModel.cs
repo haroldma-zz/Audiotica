@@ -36,7 +36,6 @@ namespace Audiotica.ViewModel
         {
             _service = service;
             _appSettingsHelper = appSettingsHelper;
-            InAppAdsClickRelay = new RelayCommand(InAppAdsClicked);
             LoginClickRelay = new RelayCommand(LoginButtonClicked);
             DeveloperModeClickRelay = new RelayCommand(DeveloperModeExecute);
 
@@ -47,35 +46,6 @@ namespace Audiotica.ViewModel
             LastFmPassword = creds.GetPassword();
             IsLoggedIn = true;
         }
-
-        private async void InAppAdsClicked()
-        {
-            try
-            {
-                if (Debugger.IsAttached)
-                {
-                    await CurrentAppSimulator.RequestProductPurchaseAsync(ProductConstants.InAppAdvertisements);
-                }
-                else
-                {
-                    await CurrentApp.RequestProductPurchaseAsync(ProductConstants.InAppAdvertisements);
-                }
-
-                if (!IsAdsEnabled) return;
-
-                // ReSharper disable once ExplicitCallerInfoArgument
-                RaisePropertyChanged("IsAdsEnabled");
-                CurtainPrompt.Show("You can now disabled advertisements!");
-
-                var transaction = new Transaction(ProductConstants.InAppAdvertisements, (long) (1.99*1000000));
-                EasyTracker.GetTracker().SendTransaction(transaction);
-            }
-            catch
-            {
-            }
-        }
-
-        public RelayCommand InAppAdsClickRelay { get; set; }
 
         private int _devCount;
         private const int DevModeCount = 7;
@@ -165,20 +135,6 @@ namespace Audiotica.ViewModel
 
         #endregion
 
-        public bool IsAdsEnabled
-        {
-            get
-            {
-                var user = App.Locator.AudioticaService.CurrentUser;
-                var hasSubscription = user != null && user.Subscription != SubscriptionType.None;
-
-
-                return !App.IsProduction
-                    || hasSubscription
-                       || App.LicenseInformation.ProductLicenses[ProductConstants.InAppAdvertisements].IsActive;
-            }
-        }
-
         public string Version
         {
             get { return App.Locator.AppVersionHelper.CurrentVersion.ToString(); }
@@ -224,26 +180,6 @@ namespace Audiotica.ViewModel
                     ScreenTimeoutHelper.AllowTimeout();
 
                 EasyTracker.GetTracker().SendEvent("Settings", "SelectedTimeoutOption", ScreenTimeoutHelper.TimeoutOption.ToString(), 0);
-                RaisePropertyChanged();
-            }
-        }
-
-        public bool Advertisements
-        {
-            get { return _appSettingsHelper.Read("Ads", true, SettingsStrategy.Roaming); }
-            set
-            {
-                Insights.Track("Toggled Advertisements", "Enabled", value.ToString());
-                if (value)
-                {
-                    App.Locator.Ads.Enable();
-                }
-                else
-                {
-                    App.Locator.Ads.Disable();
-                }
-                EasyTracker.GetTracker().SendEvent("Settings", "Ads", value ? "Enabled" : "Disabled", 0);
-                _appSettingsHelper.Write("Ads", value, SettingsStrategy.Roaming);
                 RaisePropertyChanged();
             }
         }

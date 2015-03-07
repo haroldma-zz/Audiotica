@@ -25,6 +25,7 @@ namespace Audiotica.ViewModel
 {
     public class MainViewModel : ViewModelBase
     {
+        public PlayerViewModel PlayerViewModel { get; set; }
         private readonly AudioPlayerHelper _audioPlayer;
 
         private readonly IAudioticaService _audioticaService;
@@ -74,13 +75,16 @@ namespace Audiotica.ViewModel
         /// <param name="audioPlayer">
         /// The audio player.
         /// </param>
+        /// <param name="playerViewModel"></param>
         public MainViewModel(
             ICollectionService collectionService,
             IScrobblerService service,
             ISpotifyService spotify,
             IAudioticaService audioticaService,
-            AudioPlayerHelper audioPlayer)
+            AudioPlayerHelper audioPlayer,
+            PlayerViewModel playerViewModel)
         {
+            PlayerViewModel = playerViewModel;
             _collectionService = collectionService;
             _service = service;
             _spotify = spotify;

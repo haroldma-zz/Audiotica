@@ -152,11 +152,6 @@ namespace Audiotica.ViewModel
             get { return ServiceLocator.Current.GetInstance<AudioticaService>(); }
         }
 
-        public AdMediatorBar Ads
-        {
-            get { return ServiceLocator.Current.GetInstance<AdMediatorBar>(); }
-        }
-
         public RecentlyAddedViewModel RecentlyAdded
         {
             get { return ServiceLocator.Current.GetInstance<RecentlyAddedViewModel>(); }

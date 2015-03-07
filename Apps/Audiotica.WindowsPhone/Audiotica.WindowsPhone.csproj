@@ -112,9 +112,6 @@
   <ItemGroup>
     <Compile Include="AudioPlayerHelper.cs" />
     <Compile Include="NowPlayingSheetUtility.cs" />
-    <Compile Include="PartialView\AdMediatorBar.xaml.cs">
-      <DependentUpon>AdMediatorBar.xaml</DependentUpon>
-    </Compile>
     <Compile Include="PartialView\EmailSignInSheet.xaml.cs">
       <DependentUpon>EmailSignInSheet.xaml</DependentUpon>
     </Compile>
@@ -242,10 +239,6 @@
     <None Include="Package.StoreAssociation.xml" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="PartialView\AdMediatorBar.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="PartialView\EmailSignInSheet.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

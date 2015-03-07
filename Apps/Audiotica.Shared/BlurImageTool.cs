@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
+using Windows.Graphics.Imaging;
 using Windows.Storage;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -96,14 +97,26 @@ namespace Audiotica
                             // Create a target where the filtered image will be rendered to
                             WriteableBitmap target = null;
 
+                            // Now that you have the raw bytes, create a Image Decoder
+                            var decoder = await BitmapDecoder.CreateAsync(rnd);
+
+                            // Get the first frame from the decoder because we are picking an image
+                            var frame = await decoder.GetFrameAsync(0);
+
                             // Need to switch to UI thread for this
                             await DispatcherHelper.RunAsync(
-                                () => target = new WriteableBitmap((int) (bounds.Width),
-                                    (int) (bounds.Height))).AsTask().ConfigureAwait(false);
+                                () =>
+                                {
+                                    var wid = (int)frame.PixelWidth;
+                                    var hgt = (int)frame.PixelHeight;
+
+                                    target = new WriteableBitmap(wid, hgt);
+                                }).AsTask().ConfigureAwait(false);
 
                             // Create a new renderer which outputs WriteableBitmaps
                             using (var renderer = new WriteableBitmapRenderer(filters, target))
                             {
+                                rnd.Seek(0);
                                 // Render the image with the filter(s)
                                 await renderer.RenderAsync().AsTask().ConfigureAwait(false);
 
