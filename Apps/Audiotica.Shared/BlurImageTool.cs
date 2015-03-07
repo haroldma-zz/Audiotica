@@ -98,10 +98,10 @@ namespace Audiotica
                             WriteableBitmap target = null;
 
                             // Now that you have the raw bytes, create a Image Decoder
-                            var decoder = await BitmapDecoder.CreateAsync(rnd);
+                            var decoder = await BitmapDecoder.CreateAsync(rnd).AsTask().ConfigureAwait(false);
 
                             // Get the first frame from the decoder because we are picking an image
-                            var frame = await decoder.GetFrameAsync(0);
+                            var frame = await decoder.GetFrameAsync(0).AsTask().ConfigureAwait(false);
 
                             // Need to switch to UI thread for this
                             await DispatcherHelper.RunAsync(
