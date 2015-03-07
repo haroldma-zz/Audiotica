@@ -2,15 +2,9 @@
 
 using System;
 using System.Linq;
-using Windows.ApplicationModel.DataTransfer;
-using Windows.ApplicationModel.DataTransfer.ShareTarget;
-using Windows.ApplicationModel.Store;
 using Windows.System;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Navigation;
-
 using Audiotica.Core.WinRt.Common;
 using Audiotica.Data.Collection.Model;
 using Audiotica.Data.Model;
@@ -49,7 +43,7 @@ namespace Audiotica.View
         private void HandleAction(SpotlightFeature feature)
         {
             var action = feature.Action.Substring(feature.Action.IndexOf(":", StringComparison.Ordinal) + 1);
-            bool supported = true;
+            var supported = true;
 
             if (feature.Action.StartsWith("web:"))
             {
@@ -89,7 +83,6 @@ namespace Audiotica.View
 
             if (!supported)
             {
-
                 CurtainPrompt.ShowError("Audiotica can't open this type of link.  Try updating in the store.");
             }
         }
@@ -99,14 +92,63 @@ namespace Audiotica.View
             App.Navigator.GoTo<SearchPage, ZoomInTransition>(null);
         }
 
-        private void Button_Click_2(object sender, RoutedEventArgs e)
-        {
-            App.Navigator.GoTo<CollectionPage, ZoomInTransition>(null);
-        }
-
         private void AppBarButton_Click(object sender, RoutedEventArgs e)
         {
             App.Navigator.GoTo<SettingsPage, ZoomOutTransition>(null);
+        }
+
+        private void SongButton_Click(object sender, RoutedEventArgs e)
+        {
+            App.Navigator.GoTo<CollectionPage, ZoomInTransition>(0);
+        }
+
+        private void ArtistButton_Click(object sender, RoutedEventArgs e)
+        {
+            App.Navigator.GoTo<CollectionPage, ZoomInTransition>(1);
+        }
+
+        private void AlbumButton_Click(object sender, RoutedEventArgs e)
+        {
+            App.Navigator.GoTo<CollectionPage, ZoomInTransition>(2);
+        }
+
+        private void PlaylistButton_Click(object sender, RoutedEventArgs e)
+        {
+            App.Navigator.GoTo<CollectionPage, ZoomInTransition>(3);
+        }
+
+        private void GridView_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            var feature = (SpotlightFeature)e.ClickedItem;
+            HandleAction(feature);
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            var feature = (SpotlightFeature)((FrameworkElement)sender).DataContext;
+            HandleAction(feature);
+        }
+
+        private async void MostPlayedGridView_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            var song = e.ClickedItem as Song;
+            var vm = DataContext as MainViewModel;
+            var queueSong = vm.MostPlayed.ToList();
+            await CollectionHelper.PlaySongsAsync(song, queueSong);
+        }
+
+        private async void TopSongsGridView_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            var chartTrack = e.ClickedItem as ChartTrack;
+            if (chartTrack == null) return;
+
+            await CollectionHelper.SaveTrackAsync(chartTrack);
+        }
+
+        private void RecommendationListView_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            var artist = e.ClickedItem as LastArtist;
+            App.Navigator.GoTo<SpotifyArtistPage, ZoomInTransition>("name." + artist.Name);
         }
     }
 }
