@@ -302,57 +302,68 @@
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
-                    <Grid HorizontalAlignment="Center">
-                        <Image VerticalAlignment="Top"
-                                   HorizontalAlignment="Left"
-                                   Stretch="UniformToFill"
-                                   Source="{Binding CurrentQueue.Song.Album.Artwork.Image}" Height="370" Width="370" />
-                        <Grid VerticalAlignment="Bottom" Background="#7F000000">
-                            <StackPanel Margin="20">
-                                <TextBlock FontSize="30" Text="{Binding CurrentQueue.Song.Name}" TextTrimming="CharacterEllipsis" />
-                                <TextBlock FontSize="24" FontWeight="Thin" Foreground="#89FFFFFF"
-                                   TextTrimming="CharacterEllipsis" TextWrapping="Wrap">
+                    <StackPanel>
+                        <TextBlock FontSize="30" Text="{Binding CurrentQueue.Song.Name}" TextWrapping="Wrap" />
+                        <TextBlock FontSize="24" FontWeight="Thin" Foreground="#89FFFFFF"
+                                   TextTrimming="CharacterEllipsis">
                                     <Run Text="by" />
                                     <Run Text="{Binding CurrentQueue.Song.Artist.Name}" />
-                                </TextBlock>
-                                <TextBlock FontSize="24" FontWeight="Thin" Foreground="#89FFFFFF"
-                                   TextTrimming="CharacterEllipsis" TextWrapping="Wrap">
+                        </TextBlock>
+                        <TextBlock FontSize="24" FontWeight="Thin" Foreground="#89FFFFFF"
+                                   TextTrimming="CharacterEllipsis">
                                     <Run Text="on" />
                                     <Run Text="{Binding CurrentQueue.Song.Album.Name}" />
-                                </TextBlock>
-                            </StackPanel>
+                        </TextBlock>
+                    </StackPanel>
+                    <Grid Grid.Row="1" VerticalAlignment="Bottom" Margin="0,0,0,20">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <Grid>
+                            <Image VerticalAlignment="Top"
+                                   HorizontalAlignment="Left"
+                                   Stretch="UniformToFill"
+                                   Source="{Binding CurrentQueue.Song.Album.Artwork.Image}" Height="150" Width="150" />
                         </Grid>
-                    </Grid>
-                    <StackPanel Grid.Row="3" Orientation="Horizontal" Margin="0,0,0,25">
-                        <AppBarButton Command="{Binding PrevRelayCommand}" Icon="Previous" IsCompact="True" VerticalAlignment="Center" />
-                        <AppBarButton Command="{Binding PlayPauseRelayCommand}" IsCompact="True" Margin="20,0" RenderTransformOrigin="0.5,0.5" FontFamily="Global User Interface">
-                            <AppBarButton.RenderTransform>
-                                <CompositeTransform ScaleX="2" ScaleY="2"/>
-                            </AppBarButton.RenderTransform>
-                            <AppBarButton.Icon>
-                                <SymbolIcon Symbol="{Binding PlayPauseIcon}" />
-                            </AppBarButton.Icon>
-                        </AppBarButton>
-                        <AppBarButton Command="{Binding NextRelayCommand}" Icon="Next" IsCompact="True" VerticalAlignment="Center" />
-                    </StackPanel>
-                    <TextBlock Grid.Row="2" HorizontalAlignment="Right" Margin="0,5,0,0">
-                        <Run Text="{Binding Position, Converter={StaticResource TimespanToStringConverter}}"/>
-                        <Run Text=" / "/>
-                        <Run Text="{Binding Duration, Converter={StaticResource TimespanToStringConverter}}"/>
-                    </TextBlock>
-                    <Slider Grid.Row="2" Value="{Binding Position, Converter={StaticResource TimespanToDoubleConverter}, Mode=TwoWay}"
-                    IsEnabled="{Binding IsLoading, Converter={StaticResource BoolToOppositeConverter}}"
-                    Maximum="{Binding Duration, Converter={StaticResource TimespanToDoubleConverter}, Mode=TwoWay}" VerticalAlignment="Top" 
-                    ManipulationMode="TranslateX" ManipulationStarted="Slider_ManipulationStarted" ManipulationCompleted="Slider_ManipulationCompleted" Margin="0,5,0,0" ValueChanged="Slider_ValueChanged"/>
-                    <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="5,0">
-                        <AppBarToggleButton IsChecked="{Binding IsShuffle, Mode=TwoWay}" Icon="Shuffle" IsCompact="True" />
-                        <AppBarToggleButton IsChecked="{Binding IsRepeat, Mode=TwoWay}" Icon="RepeatAll" IsCompact="True" />
-                    </StackPanel>
-                </Grid>
+                        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center"
+                                    Margin="0,0,0,25">
+                            <AppBarToggleButton IsChecked="{Binding IsShuffle, Mode=TwoWay}" Icon="Shuffle"
+                                                IsCompact="True" />
+                            <AppBarButton Command="{Binding PrevRelayCommand}" Icon="Previous" IsCompact="True"
+                                          VerticalAlignment="Center" />
+                            <AppBarButton Command="{Binding PlayPauseRelayCommand}" IsCompact="True" Margin="20,0"
+                                          RenderTransformOrigin="0.5,0.5" FontFamily="Global User Interface">
+                                <AppBarButton.RenderTransform>
+                                    <CompositeTransform ScaleX="2" ScaleY="2" />
+                                </AppBarButton.RenderTransform>
+                                <AppBarButton.Icon>
+                                    <SymbolIcon Symbol="{Binding PlayPauseIcon}" />
+                                </AppBarButton.Icon>
+                            </AppBarButton>
+                            <AppBarButton Command="{Binding NextRelayCommand}" Icon="Next" IsCompact="True"
+                                          VerticalAlignment="Center" />
+                            <AppBarToggleButton IsChecked="{Binding IsRepeat, Mode=TwoWay}" Icon="RepeatAll"
+                                                IsCompact="True" />
+                        </StackPanel>
+                        <TextBlock Grid.Row="2" HorizontalAlignment="Right" Margin="0,5,0,0">
+                            <Run Text="{Binding Position, Converter={StaticResource TimespanToStringConverter}}" />
+                            <Run Text=" / " />
+                            <Run Text="{Binding Duration, Converter={StaticResource TimespanToStringConverter}}" />
+                        </TextBlock>
+                        <Slider Grid.Row="2"
+                                Value="{Binding Position, Converter={StaticResource TimespanToDoubleConverter}, Mode=TwoWay}"
+                                IsEnabled="{Binding IsLoading, Converter={StaticResource BoolToOppositeConverter}}"
+                                Maximum="{Binding Duration, Converter={StaticResource TimespanToDoubleConverter}, Mode=TwoWay}"
+                                VerticalAlignment="Top"
+                                ManipulationMode="TranslateX" ManipulationStarted="Slider_ManipulationStarted"
+                                ManipulationCompleted="Slider_ManipulationCompleted" Margin="0,5,0,0"
+                                ValueChanged="Slider_ValueChanged" />
+                    </Grid></Grid>
             </PivotItem>
             <PivotItem Header="QUEUE">
                 <ListView ShowsScrollingPlaceholders="True" ContainerContentChanging="ItemListView_ContainerContentChanging" Name="CurrentQueueView" ItemsSource="{Binding CollectionService.CurrentPlaybackQueue}" ItemContainerStyle="{StaticResource SelectionListViewItemStyle}" Padding="0,0,0,20" SelectionChanged="CurrentQueueView_SelectionChanged">

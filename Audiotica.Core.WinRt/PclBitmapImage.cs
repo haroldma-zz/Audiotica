@@ -19,6 +19,8 @@ namespace Audiotica.Core.WinRt
             _uri = uri;
         }
 
+        public Uri Uri{get { return _uri; }}
+
         public object Image
         {
             get

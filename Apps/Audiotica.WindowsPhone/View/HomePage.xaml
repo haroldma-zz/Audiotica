@@ -52,7 +52,7 @@
 
     <Grid>
         <Grid.Background>
-            <ImageBrush Opacity=".25" Stretch="UniformToFill" audiotica:BlurImageTool.Source="{Binding PlayerViewModel.CurrentQueue.Song.Artist.Artwork.Image.UriSource.AbsoluteUri}" />
+            <ImageBrush Opacity=".25" Stretch="UniformToFill" audiotica:BlurImageTool.Source="{Binding PlayerViewModel.CurrentQueue.Song.Artist.Artwork.Uri}" />
         </Grid.Background>
         <Hub x:Name="MainHub" Header="AUDIOTICA">
             <Hub.HeaderTemplate>
@@ -89,6 +89,63 @@
                     </Grid>
                 </DataTemplate>
             </HubSection>
+            <HubSection x:Uid="HubMostPlayed" Header="MOST PLAYED BY YOU"
+                        HeaderTemplate="{StaticResource HubHeaderTemplate}">
+                <DataTemplate>
+                    <Grid>
+                        <TextBlock
+                            x:Uid="HubMostPlayedEmpty"
+                            Visibility="{Binding MostPlayed, Converter={StaticResource EmptyListToVisibilityConverter}}"
+                            Text="You haven't played any music in the past week."
+                            Style="{StaticResource SubtleTextBlockStyle}" />
+                        <GridView ItemsSource="{Binding MostPlayed}" SelectionMode="None" IsItemClickEnabled="True"
+                                  Padding="0,0,0,10" ItemClick="MostPlayedGridView_ItemClick">
+                            <GridView.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Margin="0,5,5,0" Width="150">
+                                        <Grid Background="{StaticResource PhoneAccentBrush}" Margin="0,0,0,5">
+                                            <Image Source="{Binding Album.Artwork.Image}" Height="150" Width="150"
+                                                   Stretch="UniformToFill" />
+                                        </Grid>
+                                        <TextBlock Text="{Binding Name}" FontSize="15" TextTrimming="CharacterEllipsis" />
+                                        <TextBlock Text="{Binding ArtistName}" FontSize="14"
+                                                   TextTrimming="CharacterEllipsis" Foreground="#89FFFFFF"
+                                                   FontFamily="Global User Interface" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </GridView.ItemTemplate>
+                        </GridView>
+                    </Grid>
+                </DataTemplate>
+            </HubSection>
+            <HubSection Header="RECENTLY ADDED"
+                        HeaderTemplate="{StaticResource HubHeaderTemplate}">
+                <DataTemplate>
+                    <Grid>
+                        <TextBlock
+                            Visibility="{Binding RecentlyAdded, Converter={StaticResource EmptyListToVisibilityConverter}}"
+                            Text="You haven't saved any music yet."
+                            Style="{StaticResource SubtleTextBlockStyle}" />
+                        <GridView ItemsSource="{Binding RecentlyAdded}" SelectionMode="None" IsItemClickEnabled="True"
+                                  Padding="0,0,0,10" ItemClick="RecentlyAddedGridView_ItemClick">
+                            <GridView.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Margin="0,5,5,0" Width="150">
+                                        <Grid Background="{StaticResource PhoneAccentBrush}" Margin="0,0,0,5">
+                                            <Image Source="{Binding Album.Artwork.Image}" Height="150" Width="150"
+                                                   Stretch="UniformToFill" />
+                                        </Grid>
+                                        <TextBlock Text="{Binding Name}" FontSize="15" TextTrimming="CharacterEllipsis" />
+                                        <TextBlock Text="{Binding ArtistName}" FontSize="14"
+                                                   TextTrimming="CharacterEllipsis" Foreground="#89FFFFFF"
+                                                   FontFamily="Global User Interface" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </GridView.ItemTemplate>
+                        </GridView>
+                    </Grid>
+                </DataTemplate>
+            </HubSection>
             <HubSection x:Name="SpotlightSection" Header="SPOTLIGHT">
                 <DataTemplate>
                     <GridView ItemsSource="{Binding MediumFeatures}" IsItemClickEnabled="True"
@@ -98,7 +155,7 @@
                                 <FlipView
                                     Visibility="{Binding LargeFeatures.Count, Converter={StaticResource ReverseEmptyListToVisibilityConverter}}"
                                     Height="150" ItemsSource="{Binding LargeFeatures}"
-                                    Style="{StaticResource FlipViewStyle1}" Width="336" HorizontalAlignment="Left">
+                                    Style="{StaticResource FlipViewStyle1}" Width="310" HorizontalAlignment="Left">
                                     <FlipView.ItemTemplate>
                                         <DataTemplate>
                                             <Button Style="{StaticResource PlainButtonStyle}" Click="Button_Click">
@@ -130,7 +187,7 @@
                         </GridView.HeaderTemplate>
                         <GridView.ItemTemplate>
                             <DataTemplate>
-                                <Grid Width="165" Height="165" Margin="0,5,5,0"
+                                <Grid Width="150" Height="150" Margin="0,5,5,0"
                                       Background="{StaticResource PhoneAccentBrush}">
                                     <Grid>
                                         <Grid.Background>
@@ -150,35 +207,6 @@
                             </DataTemplate>
                         </GridView.ItemTemplate>
                     </GridView>
-                </DataTemplate>
-            </HubSection>
-            <HubSection x:Uid="HubMostPlayed" Header="MOST PLAYED BY YOU"
-                        HeaderTemplate="{StaticResource HubHeaderTemplate}">
-                <DataTemplate>
-                    <Grid>
-                        <TextBlock
-                            x:Uid="HubMostPlayedEmpty"
-                            Visibility="{Binding MostPlayed, Converter={StaticResource EmptyListToVisibilityConverter}}"
-                            Text="You haven't played any music in the past week."
-                            Style="{StaticResource SubtleTextBlockStyle}" />
-                        <GridView ItemsSource="{Binding MostPlayed}" SelectionMode="None" IsItemClickEnabled="True"
-                                  Padding="0,0,0,10" ItemClick="MostPlayedGridView_ItemClick">
-                            <GridView.ItemTemplate>
-                                <DataTemplate>
-                                    <StackPanel Margin="0,5,5,0" Width="150">
-                                        <Grid Background="{StaticResource PhoneAccentBrush}" Margin="0,0,0,5">
-                                            <Image Source="{Binding Album.Artwork.Image}" Height="150" Width="150"
-                                                   Stretch="UniformToFill" />
-                                        </Grid>
-                                        <TextBlock Text="{Binding Name}" FontSize="15" TextTrimming="CharacterEllipsis" />
-                                        <TextBlock Text="{Binding ArtistName}" FontSize="14"
-                                                   TextTrimming="CharacterEllipsis" Foreground="#89FFFFFF"
-                                                   FontFamily="Global User Interface" />
-                                    </StackPanel>
-                                </DataTemplate>
-                            </GridView.ItemTemplate>
-                        </GridView>
-                    </Grid>
                 </DataTemplate>
             </HubSection>
             <HubSection x:Uid="HubRecommendations" Header="RECOMMENDATIONS"

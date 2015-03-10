@@ -66,9 +66,10 @@ namespace Audiotica
                 {
                     url = url.Replace("ms-appx:", "");
                 }
-                if (url.StartsWith("ms-appdata:/local/"))
+                if (url.StartsWith("ms-appdata:"))
                 {
                     url = url.Replace("ms-appdata:/local/", "");
+                    url = url.Replace("ms-appdata:///local/", "");
                     file = await WinRtStorageHelper.GetFileAsync(url).ConfigureAwait(false);
                 }
                 else if (url.StartsWith("/"))

@@ -21,14 +21,16 @@ namespace Audiotica.View
     public sealed partial class HomePage
     {
         private readonly HubSection _spotlightSection;
+        private readonly int _spotlightIndex;
 
         public HomePage()
         {
             InitializeComponent();
             Bar = BottomAppBar;
             BottomAppBar = null;
-            //_spotlightSection = SpotlightSection;
-            //MainHub.Sections.Remove(_spotlightSection);
+            _spotlightSection = SpotlightSection;
+            _spotlightIndex = MainHub.Sections.IndexOf(SpotlightSection);
+            MainHub.Sections.Remove(_spotlightSection);
             Messenger.Default.Register<bool>(this, "spotlight", SpotlightLoaded);
         }
 
@@ -36,7 +38,7 @@ namespace Audiotica.View
         {
             if (loaded)
             {
-                //MainHub.Sections.Insert(1, _spotlightSection);
+                MainHub.Sections.Insert(_spotlightIndex, _spotlightSection);
             }
         }
 
@@ -149,6 +151,14 @@ namespace Audiotica.View
         {
             var artist = e.ClickedItem as LastArtist;
             App.Navigator.GoTo<SpotifyArtistPage, ZoomInTransition>("name." + artist.Name);
+        }
+
+        private async void RecentlyAddedGridView_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            var song = e.ClickedItem as Song;
+            var vm = DataContext as MainViewModel;
+            var queueSong = vm.RecentlyAdded.ToList();
+            await CollectionHelper.PlaySongsAsync(song, queueSong);
         }
     }
 }

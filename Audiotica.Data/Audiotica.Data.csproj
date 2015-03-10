@@ -60,6 +60,7 @@
     <Compile Include="Service\Interfaces\IDeezerService.cs" />
     <Compile Include="Service\RunTime\AudioticaService.cs" />
     <Compile Include="Service\RunTime\DeezerService.cs" />
+    <Compile Include="Service\RunTime\LyricsService.cs" />
     <Compile Include="Spotify\AlbumType.cs" />
     <Compile Include="Spotify\Models\BasicModel.cs" />
     <Compile Include="Spotify\Models\ChartTrack.cs" />

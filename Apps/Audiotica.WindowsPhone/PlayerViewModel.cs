@@ -12,7 +12,7 @@ using GalaSoft.MvvmLight.Command;
 using Windows.Media.Playback;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-
+using Audiotica.Data.Service.RunTime;
 using Xamarin;
 
 namespace Audiotica
@@ -280,7 +280,7 @@ namespace Audiotica
             this.IsPlayerActive = false;
         }
 
-        private void HelperOnTrackChanged(object sender, EventArgs eventArgs)
+        private async void HelperOnTrackChanged(object sender, EventArgs eventArgs)
         {
             var playerInstance = BackgroundMediaPlayer.Current;
 
