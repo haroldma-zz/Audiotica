@@ -4,11 +4,14 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using Windows.Data.Xml.Dom;
 using Windows.Foundation;
 using Windows.Media.Playback;
 using Windows.Storage;
+using Windows.UI.Notifications;
 using Audiotica.Core;
 using Audiotica.Core.Utils.Interfaces;
+using Audiotica.Core.WinRt;
 using Audiotica.Core.WinRt.Utilities;
 using Audiotica.Data.Collection.Model;
 using Audiotica.Data.Collection.RunTime;
@@ -228,8 +231,64 @@ namespace Audiotica.WindowsPhone.Player
                 }
             }
 
+            UpdateTile();
+
             if (_scrobbler.IsScrobblingEnabled())
                 await _scrobbler.UpdateNowPlaying(CurrentTrack);
+        }
+
+        public void UpdateTile()
+        {
+            var title = CurrentTrack.Song.Name;
+            var artist = CurrentTrack.Song.Artist.Name;
+            var album = CurrentTrack.Song.Album.Name;
+
+            var imageUrl = CurrentTrack.Song.Album.HasArtwork ? AppConstant.LocalStorageAppPath +
+                string.Format(AppConstant.ArtworkPath, CurrentTrack.Song.Album.Id) : AppConstant.MissingArtworkAppPath;
+            var wideImageUrl = CurrentTrack.Song.Artist.HasArtwork ? AppConstant.LocalStorageAppPath +
+                string.Format(AppConstant.ArtistsArtworkPath, CurrentTrack.Song.Artist.Id) : AppConstant.MissingArtworkAppPath;
+
+            var expire = Math.Max(_mediaPlayer.NaturalDuration.TotalHours + .5, 1);
+
+            var updater = TileUpdateManager.CreateTileUpdaterForApplication("App");
+            updater.Update(GetSquareTile(title, artist, imageUrl, expire));
+            updater.Update(GetWideTile(title, artist, album, wideImageUrl, expire));
+        }
+
+        private TileNotification GetSquareTile(string title, string artist, string imageUrl, double expire)
+        {
+            var tileXml = TileUpdateManager.GetTemplateContent(TileTemplateType.TileSquare150x150PeekImageAndText02);
+
+            var tileTextAttributes = tileXml.GetElementsByTagName("text");
+            tileTextAttributes[0].InnerText = "Now Playing";
+            tileTextAttributes[1].InnerText = title + "\nby " + artist;
+
+            var tileImageAttributes = tileXml.GetElementsByTagName("image");
+            ((XmlElement)tileImageAttributes[0]).SetAttribute("src", imageUrl);
+
+            return new TileNotification(tileXml)
+            {
+                ExpirationTime = DateTimeOffset.UtcNow.AddHours(expire)
+            };
+        }
+
+        private TileNotification GetWideTile(string title, string artist, string album, string imageUrl, double expire)
+        {
+            var tileWideXml = TileUpdateManager.GetTemplateContent(TileTemplateType.TileWide310x150PeekImage02);
+
+            var tileWideTextAttributes = tileWideXml.GetElementsByTagName("text");
+            tileWideTextAttributes[0].InnerText = "Now Playing";
+            tileWideTextAttributes[1].InnerText = title;
+            tileWideTextAttributes[2].InnerText = "by " + artist;
+            tileWideTextAttributes[3].InnerText = "on " + album;
+
+            var tileWideImageAttributes = tileWideXml.GetElementsByTagName("image");
+            ((XmlElement)tileWideImageAttributes[0]).SetAttribute("src", imageUrl);
+
+            return new TileNotification(tileWideXml)
+            {
+                ExpirationTime = DateTimeOffset.UtcNow.AddHours(expire)
+            };
         }
 
         /// <summary>
@@ -346,22 +405,21 @@ namespace Audiotica.WindowsPhone.Player
 
             try
             {
-                if (_scrobbler.CanScrobble(item.Song, _mediaPlayer.Position))
+                if (!_scrobbler.CanScrobble(item.Song, _mediaPlayer.Position)) return;
+
+                if (_scrobbler.IsScrobblingEnabled())
                 {
-                    if (_scrobbler.IsScrobblingEnabled())
-                    {
-                        await _scrobbler.Scrobble(item, _mediaPlayer.Position);
-                    }
-                    item.Song.PlayCount++;
-                    item.Song.LastPlayed = item.DatePlayed;
+                    await _scrobbler.Scrobble(item, _mediaPlayer.Position);
+                }
+                item.Song.PlayCount++;
+                item.Song.LastPlayed = item.DatePlayed;
 
-                    if (item.Song.Duration.Ticks != _mediaPlayer.NaturalDuration.Ticks)
-                        item.Song.Duration = _mediaPlayer.NaturalDuration;
+                if (item.Song.Duration.Ticks != _mediaPlayer.NaturalDuration.Ticks)
+                    item.Song.Duration = _mediaPlayer.NaturalDuration;
 
-                    using (var sql = CreateCollectionSqlService())
-                    {
-                        sql.UpdateItem(item.Song);
-                    }
+                using (var sql = CreateCollectionSqlService())
+                {
+                    sql.UpdateItem(item.Song);
                 }
             }
             catch

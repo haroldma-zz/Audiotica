@@ -52,7 +52,7 @@
 
     <Grid>
         <Grid.Background>
-            <ImageBrush Opacity=".25" Stretch="UniformToFill" audiotica:BlurImageTool.Source="{Binding PlayerViewModel.CurrentQueue.Song.Artist.Artwork.Uri}" />
+            <ImageBrush Opacity=".25" Stretch="UniformToFill" ImageSource="{Binding PlayerViewModel.CurrentQueue.Song.Artist.Artwork.Uri}" />
         </Grid.Background>
         <Hub x:Name="MainHub" Header="AUDIOTICA">
             <Hub.HeaderTemplate>
