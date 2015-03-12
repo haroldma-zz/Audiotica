@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/2010/manifest" xmlns:m2="http://schemas.microsoft.com/appx/2013/manifest" xmlns:m3="http://schemas.microsoft.com/appx/2014/manifest" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest">
-  <Identity Name="3237Zumicts.AudioticaBeta" Publisher="CN=E38C2EDA-A823-4D3D-BBB1-8F0B81FF4C7B" Version="1503.7.9.46" />
+  <Identity Name="3237Zumicts.AudioticaBeta" Publisher="CN=E38C2EDA-A823-4D3D-BBB1-8F0B81FF4C7B" Version="1503.12.12.35" />
   <mp:PhoneIdentity PhoneProductId="7d27f1b8-a3b6-4cc5-ba4c-599fbe9def4f" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
     <DisplayName>Audiotica Beta</DisplayName>
@@ -17,7 +17,6 @@
   <Applications>
     <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="Audiotica.WindowsPhone.App">
       <m3:VisualElements DisplayName="Audiotica Beta" Square150x150Logo="Assets\Logo.png" Square44x44Logo="Assets\SmallLogo.png" Description="Audiotica.WindowsPhone" ForegroundText="light" BackgroundColor="transparent" ToastCapable="true">
-        <m3:LockScreen Notification="badgeAndTileText" BadgeLogo="Assets\BadgeLogo.png" />
         <m3:DefaultTile Wide310x150Logo="Assets\WideLogo.png" Square71x71Logo="Assets\Square71x71Logo.png">
           <m3:ShowNameOnTiles>
             <m3:ShowOn Tile="square150x150Logo" />
