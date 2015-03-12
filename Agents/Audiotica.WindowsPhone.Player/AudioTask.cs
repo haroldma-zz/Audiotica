@@ -95,6 +95,7 @@ namespace Audiotica.WindowsPhone.Player
 
             //Add handlers for playlist trackchanged
             QueueManager.TrackChanged += playList_TrackChanged;
+            QueueManager.FlushHistory();
 
             //InitializeAsync message channel 
             BackgroundMediaPlayer.MessageReceivedFromForeground += BackgroundMediaPlayer_MessageReceivedFromForeground;

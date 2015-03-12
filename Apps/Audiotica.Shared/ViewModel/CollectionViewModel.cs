@@ -84,19 +84,19 @@ namespace Audiotica.ViewModel
                 if (item is Song)
                 {
                     var song = item as Song;
-                    if (!song.IsTemp)
+                    if (!song.IsTemp || removed)
                         UpdateSortedCollection(song, removed, song.Name, () => SortedSongs);
                 }
                 else if (item is Artist)
                 {
                     var artist = item as Artist;
-                    if (artist.Songs.Count > 0)
+                    if (artist.Songs.Count > 0 || removed)
                         UpdateSortedCollection(artist, removed, artist.Name, () => SortedArtists);
                 }
                 else if (item is Album)
                 {
                     var album = item as Album;
-                    if (album.Songs.Count > 0)
+                    if (album.Songs.Count > 0 || removed)
                         UpdateSortedCollection(album, removed, album.Name, () => SortedAlbums);
                 }
             });

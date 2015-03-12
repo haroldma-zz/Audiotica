@@ -1,286 +1,199 @@
 ﻿using System;
 using System.Linq;
-
+using Windows.Media.Playback;
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
 using Audiotica.Core;
 using Audiotica.Core.Utils.Interfaces;
 using Audiotica.Data.Collection;
 using Audiotica.Data.Collection.Model;
-
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
-
-using Windows.Media.Playback;
-using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
-using Audiotica.Data.Service.RunTime;
 using Xamarin;
 
 namespace Audiotica
 {
     public class PlayerViewModel : ViewModelBase
     {
-        private readonly IAppSettingsHelper appSettingsHelper;
-
-        private readonly AudioPlayerHelper helper;
-
-        private readonly RelayCommand nextRelayCommand;
-
-        private readonly RelayCommand playPauseRelayCommand;
-
-        private readonly RelayCommand prevRelayCommand;
-
-        private readonly ICollectionService service;
-
-        private readonly DispatcherTimer timer;
-
-        private QueueSong currentQueue;
-
-        private TimeSpan duration;
-
-        private bool isLoading;
-
-        private bool isPlayerActive;
-
-        private double npbHeight = double.NaN;
-
-        private double npHeight;
-
-        private Symbol playPauseIcon;
-
-        private TimeSpan position;
+        private readonly IAppSettingsHelper _appSettingsHelper;
+        private readonly AudioPlayerHelper _helper;
+        private readonly RelayCommand _nextRelayCommand;
+        private readonly RelayCommand _playPauseRelayCommand;
+        private readonly RelayCommand _prevRelayCommand;
+        private readonly ICollectionService _service;
+        private readonly DispatcherTimer _timer;
+        private QueueSong _currentQueue;
+        private TimeSpan _duration;
+        private bool _isLoading;
+        private bool _isPlayerActive;
+        private double _npbHeight = double.NaN;
+        private double _npHeight;
+        private Symbol _playPauseIcon;
+        private TimeSpan _position;
 
         public PlayerViewModel(
-            AudioPlayerHelper helper, 
-            ICollectionService service, 
+            AudioPlayerHelper helper,
+            ICollectionService service,
             IAppSettingsHelper appSettingsHelper)
         {
-            this.helper = helper;
-            this.service = service;
-            this.appSettingsHelper = appSettingsHelper;
+            _helper = helper;
+            _service = service;
+            _appSettingsHelper = appSettingsHelper;
 
-            if (!this.IsInDesignMode)
+            if (!IsInDesignMode)
             {
-                helper.TrackChanged += this.HelperOnTrackChanged;
-                helper.PlaybackStateChanged += this.HelperOnPlaybackStateChanged;
-                helper.Shutdown += this.HelperOnShutdown;
+                helper.TrackChanged += HelperOnTrackChanged;
+                helper.PlaybackStateChanged += HelperOnPlaybackStateChanged;
+                helper.Shutdown += HelperOnShutdown;
 
-                this.nextRelayCommand = new RelayCommand(this.NextSong);
-                this.prevRelayCommand = new RelayCommand(this.PrevSong);
-                this.playPauseRelayCommand = new RelayCommand(this.PlayPauseToggle);
+                _nextRelayCommand = new RelayCommand(NextSong);
+                _prevRelayCommand = new RelayCommand(PrevSong);
+                _playPauseRelayCommand = new RelayCommand(PlayPauseToggle);
 
-                this.timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
-                this.timer.Tick += this.TimerOnTick;
+                _timer = new DispatcherTimer {Interval = TimeSpan.FromSeconds(1)};
+                _timer.Tick += TimerOnTick;
             }
             else
             {
-                this.CurrentQueue = service.PlaybackQueue.FirstOrDefault();
-                this.PlayPauseIcon = Symbol.Play;
+                CurrentQueue = service.PlaybackQueue.FirstOrDefault();
+                PlayPauseIcon = Symbol.Play;
             }
         }
 
         public bool IsRepeat
         {
-            get
-            {
-                return this.appSettingsHelper.Read<bool>("Repeat");
-            }
+            get { return _appSettingsHelper.Read<bool>("Repeat"); }
 
             set
             {
-                this.appSettingsHelper.Write("Repeat", value);
-                this.RaisePropertyChanged();
+                _appSettingsHelper.Write("Repeat", value);
+                RaisePropertyChanged();
             }
         }
 
         public bool IsShuffle
         {
-            get
-            {
-                return this.appSettingsHelper.Read<bool>("Shuffle");
-            }
+            get { return _appSettingsHelper.Read<bool>("Shuffle"); }
 
             set
             {
-                this.appSettingsHelper.Write("Shuffle", value);
-                this.service.ShuffleModeChanged();
-                this.RaisePropertyChanged();
-                this.AudioPlayerHelper.OnShuffleChanged();
+                _appSettingsHelper.Write("Shuffle", value);
+                _service.ShuffleModeChanged();
+                RaisePropertyChanged();
+                AudioPlayerHelper.OnShuffleChanged();
                 Insights.Track("Shuffle", "Enabled", value ? "True" : "False");
             }
         }
 
         public bool IsPlayerActive
         {
-            get
-            {
-                return this.isPlayerActive;
-            }
+            get { return _isPlayerActive; }
 
-            set
-            {
-                this.Set(ref this.isPlayerActive, value);
-            }
+            set { Set(ref _isPlayerActive, value); }
         }
 
         public TimeSpan Duration
         {
-            get
-            {
-                return this.duration;
-            }
+            get { return _duration; }
 
-            set
-            {
-                this.Set(ref this.duration, value);
-            }
+            set { Set(ref _duration, value); }
         }
 
         public TimeSpan Position
         {
-            get
-            {
-                return this.position;
-            }
+            get { return _position; }
 
-            set
-            {
-                this.Set(ref this.position, value);
-            }
+            set { Set(ref _position, value); }
         }
 
         public QueueSong CurrentQueue
         {
-            get
-            {
-                return this.currentQueue;
-            }
+            get { return _currentQueue; }
 
-            set
-            {
-                this.Set(ref this.currentQueue, value);
-            }
+            set { Set(ref _currentQueue, value); }
         }
 
         public Symbol PlayPauseIcon
         {
-            get
-            {
-                return this.playPauseIcon;
-            }
+            get { return _playPauseIcon; }
 
-            set
-            {
-                this.Set(ref this.playPauseIcon, value);
-            }
+            set { Set(ref _playPauseIcon, value); }
         }
 
         public bool IsLoading
         {
-            get
-            {
-                return this.isLoading;
-            }
+            get { return _isLoading; }
 
-            set
-            {
-                this.Set(ref this.isLoading, value);
-            }
+            set { Set(ref _isLoading, value); }
         }
 
         public RelayCommand NextRelayCommand
         {
-            get
-            {
-                return this.nextRelayCommand;
-            }
+            get { return _nextRelayCommand; }
         }
 
         public RelayCommand PrevRelayCommand
         {
-            get
-            {
-                return this.prevRelayCommand;
-            }
+            get { return _prevRelayCommand; }
         }
 
         public RelayCommand PlayPauseRelayCommand
         {
-            get
-            {
-                return this.playPauseRelayCommand;
-            }
+            get { return _playPauseRelayCommand; }
         }
 
         public double NowPlayingHeight
         {
-            get
-            {
-                return this.npHeight;
-            }
+            get { return _npHeight; }
 
-            set
-            {
-                this.Set(ref this.npHeight, value);
-            }
+            set { Set(ref _npHeight, value); }
         }
 
         public double NowPlayingBarHeight
         {
-            get
-            {
-                return this.npbHeight;
-            }
+            get { return _npbHeight; }
 
-            set
-            {
-                this.Set(ref this.npbHeight, value);
-            }
+            set { Set(ref _npbHeight, value); }
         }
 
         public ICollectionService CollectionService
         {
-            get
-            {
-                return this.service;
-            }
+            get { return _service; }
         }
 
         public AudioPlayerHelper AudioPlayerHelper
         {
-            get
-            {
-                return this.helper;
-            }
+            get { return _helper; }
         }
 
         private void HelperOnPlaybackStateChanged(object sender, PlaybackStateEventArgs playbackStateEventArgs)
         {
-            this.IsLoading = false;
+            IsLoading = false;
             switch (playbackStateEventArgs.State)
             {
                 default:
-                    this.PlayPauseIcon = Symbol.Play;
-                    this.timer.Stop();
+                    PlayPauseIcon = Symbol.Play;
+                    _timer.Stop();
                     break;
                 case MediaPlayerState.Playing:
-                    this.timer.Start();
-                    this.PlayPauseIcon = Symbol.Pause;
+                    _timer.Start();
+                    PlayPauseIcon = Symbol.Pause;
                     break;
                 case MediaPlayerState.Buffering:
                 case MediaPlayerState.Opening:
-                    this.IsLoading = true;
+                    IsLoading = true;
                     break;
             }
         }
 
         private void HelperOnShutdown(object sender, EventArgs eventArgs)
         {
-            this.CurrentQueue = null;
+            CurrentQueue = null;
             NowPlayingSheetUtility.CloseNowPlaying();
-            this.IsPlayerActive = false;
+            IsPlayerActive = false;
         }
 
-        private async void HelperOnTrackChanged(object sender, EventArgs eventArgs)
+        private void HelperOnTrackChanged(object sender, EventArgs eventArgs)
         {
             var playerInstance = BackgroundMediaPlayer.Current;
 
@@ -289,7 +202,7 @@ namespace Audiotica
                 return;
             }
 
-            this.Duration = playerInstance.NaturalDuration;
+            Duration = playerInstance.NaturalDuration;
 
             if (Duration == TimeSpan.MinValue)
                 Duration = TimeSpan.Zero;
@@ -307,56 +220,56 @@ namespace Audiotica
 
             if (state != MediaPlayerState.Closed && state != MediaPlayerState.Stopped)
             {
-                if (this.CurrentQueue != null && CurrentQueue.Song != null)
+                if (CurrentQueue != null && CurrentQueue.Song != null)
                 {
-                    var lastPlayed = DateTime.Now - this.CurrentQueue.Song.LastPlayed;
+                    var lastPlayed = DateTime.Now - CurrentQueue.Song.LastPlayed;
 
                     if (lastPlayed.TotalSeconds > 30)
                     {
-                        this.CurrentQueue.Song.PlayCount++;
-                        this.CurrentQueue.Song.LastPlayed = DateTime.Now;
+                        CurrentQueue.Song.PlayCount++;
+                        CurrentQueue.Song.LastPlayed = DateTime.Now;
                     }
                 }
 
-                var currentId = this.appSettingsHelper.Read<int>(PlayerConstants.CurrentTrack);
-                this.CurrentQueue = this.service.PlaybackQueue.FirstOrDefault(p => p.Id == currentId);
+                var currentId = _appSettingsHelper.Read<int>(PlayerConstants.CurrentTrack);
+                CurrentQueue = _service.PlaybackQueue.FirstOrDefault(p => p.Id == currentId);
 
-                if (this.CurrentQueue != null && this.CurrentQueue.Song != null
-                    && this.CurrentQueue.Song.Duration.Ticks != this.Duration.Ticks)
+                if (CurrentQueue != null && CurrentQueue.Song != null
+                    && CurrentQueue.Song.Duration.Ticks != Duration.Ticks)
                 {
-                    this.CurrentQueue.Song.Duration = this.Duration;
+                    CurrentQueue.Song.Duration = Duration;
                 }
 
-                this.IsPlayerActive = true;
+                IsPlayerActive = true;
             }
             else
             {
                 NowPlayingSheetUtility.CloseNowPlaying();
-                this.IsPlayerActive = false;
-                this.CurrentQueue = null;
+                IsPlayerActive = false;
+                CurrentQueue = null;
             }
         }
 
         private void NextSong()
         {
-            this.helper.NextSong();
+            _helper.NextSong();
         }
 
         private void PlayPauseToggle()
         {
-            this.helper.PlayPauseToggle();
+            _helper.PlayPauseToggle();
         }
 
         private void PrevSong()
         {
-            this.helper.PrevSong();
+            _helper.PrevSong();
         }
 
         private void TimerOnTick(object sender, object o)
         {
             try
             {
-                this.Position = BackgroundMediaPlayer.Current.Position;
+                Position = BackgroundMediaPlayer.Current.Position;
             }
             catch
             {

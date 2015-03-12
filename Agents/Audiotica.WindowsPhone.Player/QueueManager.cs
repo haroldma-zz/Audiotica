@@ -263,7 +263,7 @@ namespace Audiotica.WindowsPhone.Player
             if (track == null)
                 return;
 
-            ScrobbleOnMediaEnded(_currentTrack);
+            ScrobbleOnMediaEnded();
 
             _currentTrack = track;
 
@@ -339,12 +339,11 @@ namespace Audiotica.WindowsPhone.Player
             _scrobbler = new ScrobblerHelper(_appSettingsHelper, new ScrobblerService(new PclCredentialHelper()));
         }
 
-        private async void ScrobbleOnMediaEnded(QueueSong queue)
+        private async void ScrobbleOnMediaEnded()
         {
-            var item = GetHistoryItem(queue);
+            var item = GetHistoryItem();
             if (item == null) return;
 
-            item.Song = queue.Song;
             try
             {
                 if (_scrobbler.CanScrobble(item.Song, _mediaPlayer.Position))
@@ -353,43 +352,43 @@ namespace Audiotica.WindowsPhone.Player
                     {
                         await _scrobbler.Scrobble(item, _mediaPlayer.Position);
                     }
-                    queue.Song.PlayCount++;
-                    queue.Song.LastPlayed = item.DatePlayed;
+                    item.Song.PlayCount++;
+                    item.Song.LastPlayed = item.DatePlayed;
 
-                    if (queue.Song.Duration.Ticks != _mediaPlayer.NaturalDuration.Ticks)
-                        queue.Song.Duration = _mediaPlayer.NaturalDuration;
+                    if (item.Song.Duration.Ticks != _mediaPlayer.NaturalDuration.Ticks)
+                        item.Song.Duration = _mediaPlayer.NaturalDuration;
 
                     using (var sql = CreateCollectionSqlService())
                     {
-                        sql.UpdateItem(queue.Song);
+                        sql.UpdateItem(item.Song);
                     }
                 }
             }
             catch
             {
             }
+        }
 
+        public async void FlushHistory()
+        {
             using (var historySql = CreateHistorySqlService())
             {
-                await historySql.DeleteItemAsync(item);
+                await historySql.DeleteTableAsync<HistoryEntry>();
             }
         }
 
-        private HistoryEntry GetHistoryItem(QueueSong queue)
+        private HistoryEntry GetHistoryItem()
         {
             using (var historySql = CreateHistorySqlService())
             {
                 var history = historySql.SelectAll<HistoryEntry>();
+                var ret = history.FirstOrDefault();
+                historySql.DeleteTableAsync<HistoryEntry>().Wait();
 
-                //if null then the player has just been launched
-                if (queue == null)
-                {
-                    //reset the incrementable Id of the table
-                    historySql.DeleteTableAsync<HistoryEntry>().Wait();
-                    return null;
-                }
+                if (ret == null) return null;
 
-                return history.FirstOrDefault(p => p.SongId == queue.SongId);
+                ret.Song = GetQueueSong(p => p.SongId == ret.SongId).Song;
+                return ret.Song == null ? null : ret;
             }
         }
 
