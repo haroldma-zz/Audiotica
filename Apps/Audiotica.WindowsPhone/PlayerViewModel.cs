@@ -195,6 +195,8 @@ namespace Audiotica
 
         private void HelperOnTrackChanged(object sender, EventArgs eventArgs)
         {
+            if (_appSettingsHelper.Read<bool>("RadioMode")) return;
+
             var playerInstance = BackgroundMediaPlayer.Current;
 
             if (playerInstance == null)

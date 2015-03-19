@@ -4,6 +4,11 @@ namespace Audiotica.Data.Collection.Model
 {
     public class RadioStation : BaseEntry
     {
+        public RadioStation()
+        {
+            
+        }
+
         public RadioStation(CloudRadio radio)
         {
             Name = radio.Name;

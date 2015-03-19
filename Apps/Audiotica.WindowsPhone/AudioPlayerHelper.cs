@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 using Windows.Foundation.Collections;
 using Windows.Media.Playback;
 using Audiotica.Core;
+using Audiotica.Core.Utils.Interfaces;
 using Audiotica.Core.WinRt.Common;
+using Audiotica.Core.WinRt.Utilities;
 using Audiotica.Data.Collection.Model;
 using GalaSoft.MvvmLight.Threading;
 using Xamarin;
@@ -17,8 +19,14 @@ namespace Audiotica
 {
     public class AudioPlayerHelper
     {
+        private readonly IAppSettingsHelper _appSettings;
         private bool _isShutdown = true;
         private int _retryCount;
+
+        public AudioPlayerHelper(IAppSettingsHelper appSettings)
+        {
+            _appSettings = appSettings;
+        }
 
         public MediaPlayer SafeMediaPlayer
         {
@@ -80,6 +88,14 @@ namespace Audiotica
             RemoveMediaPlayerEventHandlers(player);
             BackgroundMediaPlayer.Shutdown();
             App.Locator.AppSettingsHelper.Write(PlayerConstants.CurrentTrack, null);
+        }
+
+        public void StartStation(int id)
+        {
+            _appSettings.Write("RadioId", id);
+            _appSettings.Write("RadioMode", true);
+            var value = new ValueSet { { PlayerConstants.StartStation, string.Empty } };
+            BackgroundMediaPlayer.SendMessageToBackground(value);
         }
 
         public void NextSong()
@@ -150,7 +166,9 @@ namespace Audiotica
                 await AddMediaPlayerEventHandlers();
             }
 
-            App.Locator.AppSettingsHelper.Write(PlayerConstants.CurrentTrack, song.Id);
+            _appSettings.Write("RadioId", null);
+            _appSettings.Write("RadioMode", false);
+            _appSettings.Write(PlayerConstants.CurrentTrack, song.Id);
 
             var message = new ValueSet {{PlayerConstants.StartPlayback, null}};
             BackgroundMediaPlayer.SendMessageToBackground(message);

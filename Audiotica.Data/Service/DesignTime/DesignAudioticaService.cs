@@ -55,7 +55,7 @@ namespace Audiotica.Data.Service.DesignTime
             throw new NotImplementedException();
         }
 
-        public Task<BaseAudioticaResponse<RadioData>> CreateStation(string artistName)
+        public Task<BaseAudioticaResponse<RadioData>> CreateStationAsync(string artistName)
         {
             throw new NotImplementedException();
         }

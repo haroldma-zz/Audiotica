@@ -18,7 +18,7 @@ namespace Audiotica.Data.Service.Interfaces
         Task<BaseAudioticaResponse> LoginAsync(string username, string password);
         Task<BaseAudioticaResponse> RegisterAsync(string username, string password, string email);
         void Logout();
-        Task<BaseAudioticaResponse<RadioData>> CreateStation(string artistName);
+        Task<BaseAudioticaResponse<RadioData>> CreateStationAsync(string artistName);
         Task<BaseAudioticaResponse<RadioData>> StationLookahead(string id);
         Task<BaseAudioticaResponse<RadioData>> StationEvent(string id, RadioEvent action, string trackId);
         Task<BaseAudioticaResponse<AudioticaUser>> GetProfileAsync();

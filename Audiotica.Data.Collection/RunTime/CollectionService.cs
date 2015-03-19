@@ -34,8 +34,8 @@ namespace Audiotica.Data.Collection.RunTime
         public CollectionService(
             ISqlService sqlService,
             ISqlService bgSqlService,
-            IDispatcherHelper dispatcher,
             IAppSettingsHelper appSettingsHelper,
+            IDispatcherHelper dispatcher,
             IBitmapFactory bitmapFactory,
             IBitmapImage missingArtwork,
             string localFilePrefix,
@@ -97,6 +97,9 @@ namespace Audiotica.Data.Collection.RunTime
             var songs = _sqlService.SelectAll<Song>().OrderByDescending(p => p.Id).ToList();
             var artists = _sqlService.SelectAll<Artist>().OrderByDescending(p => p.Id).ToList();
             var albums = _sqlService.SelectAll<Album>().OrderByDescending(p => p.Id).ToList();
+            Stations =
+                new OptimizedObservableCollection<RadioStation>(
+                    _sqlService.SelectAll<RadioStation>().OrderByDescending(p => p.Id).ToList());
 
             // Let go of the lock
             _sqlService.Commit();
@@ -327,7 +330,8 @@ namespace Audiotica.Data.Collection.RunTime
                         () =>
                         {
                             Albums.Remove(song.Album);
-                            song.Artist.Albums.Remove(song.Album);
+                            if (song.Artist != null)
+                                song.Artist.Albums.Remove(song.Album);
                         });
                 }
             }
@@ -941,7 +945,6 @@ namespace Audiotica.Data.Collection.RunTime
         public async Task DeletePlaylistAsync(Playlist playlist)
         {
             await _sqlService.DeleteItemAsync(playlist);
-            await _sqlService.DeleteWhereAsync(playlist);
             Playlists.Remove(playlist);
         }
 

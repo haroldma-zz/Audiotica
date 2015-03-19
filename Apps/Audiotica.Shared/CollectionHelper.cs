@@ -51,65 +51,63 @@ namespace Audiotica
 
         public static async Task CloudSync(bool refreshProfile = true)
         {
+            if (!App.Locator.AudioticaService.IsAuthenticated) return;
+
             var displayingStatus = App.Locator.CollectionService.Songs.Count == 0;
             try
             {
-                // refreshing user profile info
-                if (App.Locator.AudioticaService.IsAuthenticated)
+                if (refreshProfile)
                 {
-                    if (refreshProfile)
+                    await App.Locator.AudioticaService.GetProfileAsync().ConfigureAwait(false);
+                    IdentifyXamarin();
+                }
+
+                if (App.Locator.AudioticaService.CurrentUser != null
+                    && App.Locator.AudioticaService.CurrentUser.Subscription != SubscriptionType.None)
+                {
+                    var mobileService = new MobileServiceClient(
+                        "https://audiotica-cloud.azure-mobile.net/",
+                        "AypzKLKRIDPGkXXzCGYGqjJNliXTwp74")
                     {
-                        await App.Locator.AudioticaService.GetProfileAsync().ConfigureAwait(false);
-                        IdentifyXamarin();
+                        CurrentUser =
+                            new MobileServiceUser(App.Locator.AudioticaService.CurrentUser.Id)
+                            {
+                                MobileServiceAuthenticationToken =
+                                    App.Locator.AudioticaService.AuthenticationToken
+                            }
+                    };
+                    var sync = new CloudSyncService(
+                        mobileService,
+                        App.Locator.CollectionService,
+                        App.Locator.AppSettingsHelper,
+                        App.Locator.SqlService,
+                        App.Locator.PclDispatcherHelper);
+
+                    EventHandler handlerStarted = (sender, args) => UiBlockerUtility.Block("Syncing new songs...");
+                    sync.OnLargeSyncStarted += handlerStarted;
+                    EventHandler handlerFinish = (sender, args) => UiBlockerUtility.Unblock();
+                    sync.OnLargeSyncFinished += handlerFinish;
+
+                    if (displayingStatus)
+                    {
+                        await
+                            App.Locator.PclDispatcherHelper.RunAsync(
+                                () => StatusBarHelper.ShowStatus("Starting sync...")).ConfigureAwait(false);
                     }
 
-                    if (App.Locator.AudioticaService.CurrentUser != null
-                        && App.Locator.AudioticaService.CurrentUser.Subscription != SubscriptionType.None)
-                    {
-                        var mobileService = new MobileServiceClient(
-                            "https://audiotica-cloud.azure-mobile.net/", 
-                            "AypzKLKRIDPGkXXzCGYGqjJNliXTwp74")
-                        {
-                            CurrentUser =
-                                new MobileServiceUser(App.Locator.AudioticaService.CurrentUser.Id)
-                                {
-                                    MobileServiceAuthenticationToken =
-                                        App.Locator.AudioticaService.AuthenticationToken
-                                }
-                        };
-                        var sync = new CloudSyncService(
-                            mobileService, 
-                            App.Locator.CollectionService, 
-                            App.Locator.AppSettingsHelper, 
-                            App.Locator.SqlService, 
-                            App.Locator.PclDispatcherHelper);
+                    await sync.PrepareAsync().ConfigureAwait(false);
+                    await sync.PullAsync().ConfigureAwait(false);
 
-                        EventHandler handlerStarted = (sender, args) => UiBlockerUtility.Block("Syncing new songs...");
-                        sync.OnLargeSyncStarted += handlerStarted;
-                        EventHandler handlerFinish = (sender, args) => UiBlockerUtility.Unblock();
-                        sync.OnLargeSyncFinished += handlerFinish;
+                    // update artwork and match new pulled songs
+                    MatchSongs();
+                    DownloadAlbumsArtworkAsync();
+                    DownloadArtistsArtworkAsync();
 
-                        if (displayingStatus)
-                        {
-                            await
-                                App.Locator.PclDispatcherHelper.RunAsync(
-                                    () => StatusBarHelper.ShowStatus("Starting sync...")).ConfigureAwait(false);
-                        }
+                    // then continue with push
+                    await sync.PushAsync().ConfigureAwait(false);
 
-                        await sync.PrepareAsync().ConfigureAwait(false);
-                        await sync.PullAsync().ConfigureAwait(false);
-
-                        // update artwork and match new pulled songs
-                        MatchSongs();
-                        DownloadAlbumsArtworkAsync();
-                        DownloadArtistsArtworkAsync();
-
-                        // then continue with push
-                        await sync.PushAsync().ConfigureAwait(false);
-
-                        sync.OnLargeSyncStarted -= handlerStarted;
-                        sync.OnLargeSyncFinished -= handlerFinish;
-                    }
+                    sync.OnLargeSyncStarted -= handlerStarted;
+                    sync.OnLargeSyncFinished -= handlerFinish;
                 }
             }
             catch (Exception e)
@@ -822,7 +820,7 @@ namespace Audiotica
                         {
                             var lastArtist = await App.Locator.ScrobblerService.GetDetailArtist(artist.Name);
 
-                            if (lastArtist.MainImage == null || lastArtist.MainImage.Largest == null)
+                            if (lastArtist == null || lastArtist.MainImage == null || lastArtist.MainImage.Largest == null)
                             {
                                 artist.HasArtwork = false;
 

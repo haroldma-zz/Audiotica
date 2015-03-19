@@ -57,10 +57,12 @@ namespace Audiotica
 
         internal static async Task<Song> PrepareTrackForDownloadAsync(LastTrack track)
         {
-            track =
+            var lastTrack =
                 await
                 App.Locator.ScrobblerService.GetDetailTrack(track.Name, track.ArtistName).ConfigureAwait(false);
             LastArtist artist;
+
+            if (lastTrack != null) track = lastTrack;
 
             var preparedSong = track.ToSong();
             preparedSong.ArtistName = track.ArtistName;
@@ -70,20 +72,23 @@ namespace Audiotica
                 var lastAlbum =
                     await
                     App.Locator.ScrobblerService.GetDetailAlbum(
-                        string.IsNullOrEmpty(track.AlbumName) ? track.AlbumName : track.AlbumName, 
+                        track.AlbumName, 
                         track.ArtistName);
 
                 artist = await App.Locator.ScrobblerService.GetDetailArtist(track.ArtistName).ConfigureAwait(false);
 
-                preparedSong.Album = lastAlbum.ToAlbum();
-                preparedSong.Album.PrimaryArtist = artist.ToArtist();
+                if (lastAlbum != null)
+                    preparedSong.Album = lastAlbum.ToAlbum();
+                if (artist != null)
+                    preparedSong.Album.PrimaryArtist = artist.ToArtist();
             }
             else
             {
                 artist = await App.Locator.ScrobblerService.GetDetailArtist(track.ArtistName).ConfigureAwait(false);
             }
 
-            preparedSong.Artist = artist.ToArtist();
+            if (artist != null)
+                preparedSong.Artist = artist.ToArtist();
 
             return preparedSong;
         }

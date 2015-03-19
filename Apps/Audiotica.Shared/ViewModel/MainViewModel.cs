@@ -284,20 +284,8 @@ namespace Audiotica.ViewModel
                 return;
             }
 
-            try
-            {
-                var rec = await _service.GetRecommendedArtistsAsync(limit: 10);
-                RecommendedArtists = rec.Content.ToList();
-            }
-            catch
-            {
-            }
-
-            if (RecommendedArtists == null)
-            {
-                // this will show the "no recommendation" text block
-                RecommendedArtists = new List<LastArtist>();
-            }
+            var rec = await _service.GetRecommendedArtistsAsync(limit: 10);
+            RecommendedArtists = rec != null ? rec.Content.ToList() : new List<LastArtist>();
 
             IsRecommendationLoading = false;
         }

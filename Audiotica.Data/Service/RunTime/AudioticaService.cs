@@ -1,26 +1,22 @@
-﻿#region
-
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
-
 using Audiotica.Core.Utils;
 using Audiotica.Core.Utils.Interfaces;
 using Audiotica.Data.Model;
 using Audiotica.Data.Model.AudioticaCloud;
 using Audiotica.Data.Service.Interfaces;
-
-using GalaSoft.MvvmLight;
-
-#endregion
+using GalaSoft.MvvmLight.Ioc;
 
 namespace Audiotica.Data.Service.RunTime
 {
-    public class AudioticaService : ObservableObject, IAudioticaService
+    public class AudioticaService : INotifyPropertyChanged, IAudioticaService
     {
 #if DEBUG_WEB
         private const string BaseApiPath = "http://localhost:48065/api/";
@@ -61,17 +57,24 @@ namespace Audiotica.Data.Service.RunTime
         private AudioticaUser _currentUser;
 
         public AudioticaService(
-            ICredentialHelper credentialHelper, 
-            IAppSettingsHelper appSettingsHelper, 
-            IDispatcherHelper dispatcherHelper, 
+            ICredentialHelper credentialHelper,
+            IAppSettingsHelper appSettingsHelper) : this(credentialHelper, appSettingsHelper, null, null)
+        {
+        }
+
+        [PreferredConstructor]
+        public AudioticaService(
+            ICredentialHelper credentialHelper,
+            IAppSettingsHelper appSettingsHelper,
+            IDispatcherHelper dispatcherHelper,
             INotificationManager notificationManager)
         {
-            this._credentialHelper = credentialHelper;
-            this._appSettingsHelper = appSettingsHelper;
+            _credentialHelper = credentialHelper;
+            _appSettingsHelper = appSettingsHelper;
             _dispatcherHelper = dispatcherHelper;
             _notificationManager = notificationManager;
 
-            var cred = this._credentialHelper.GetCredentials("AudioticaCloud");
+            var cred = _credentialHelper.GetCredentials("AudioticaCloud");
             if (cred == null)
             {
                 return;
@@ -79,9 +82,9 @@ namespace Audiotica.Data.Service.RunTime
 
             AuthenticationToken = cred.GetPassword();
 
-            CurrentUser = this._appSettingsHelper.ReadJsonAs<AudioticaUser>("AudioticaCloudUser");
+            CurrentUser = _appSettingsHelper.ReadJsonAs<AudioticaUser>("AudioticaCloudUser");
 
-            var refreshCred = this._credentialHelper.GetCredentials("AudioticaCloudRefreshToken");
+            var refreshCred = _credentialHelper.GetCredentials("AudioticaCloudRefreshToken");
 
             if (refreshCred == null)
             {
@@ -93,24 +96,19 @@ namespace Audiotica.Data.Service.RunTime
 
         public AudioticaUser CurrentUser
         {
-            get
-            {
-                return _currentUser;
-            }
+            get { return _currentUser; }
 
             private set
             {
-                Set(ref _currentUser, value);
+                _currentUser = value;
+                OnPropertyChanged();
                 _appSettingsHelper.WriteAsJson("AudioticaCloudUser", value);
             }
         }
 
         public bool IsAuthenticated
         {
-            get
-            {
-                return AuthenticationToken != null;
-            }
+            get { return AuthenticationToken != null; }
         }
 
         public HttpClient CreateHttpClient()
@@ -173,20 +171,20 @@ namespace Audiotica.Data.Service.RunTime
                 }
                 catch
                 {
-                    return new BaseAudioticaResponse<T>() { Success = false };
+                    return new BaseAudioticaResponse<T> {Success = false};
                 }
             }
         }
 
         private async Task<bool> RefreshTokenAsync()
         {
-            var data = new Dictionary<string, string> { { "RefreshToken", _refreshToken } };
+            var data = new Dictionary<string, string> {{"RefreshToken", _refreshToken}};
 
             Logout();
 
             var resp = await LoginAsync(data);
 
-            if (!resp.Success && resp.Message != null && resp.Message.Contains("expired"))
+            if (!resp.Success && resp.Message != null && resp.Message.Contains("expired") && _dispatcherHelper != null)
             {
                 await
                     _dispatcherHelper.RunAsync(
@@ -243,7 +241,7 @@ namespace Audiotica.Data.Service.RunTime
 
         public async Task<BaseAudioticaResponse> LoginAsync(string username, string password)
         {
-            var data = new Dictionary<string, string> { { "username", username }, { "password", password } };
+            var data = new Dictionary<string, string> {{"username", username}, {"password", password}};
 
             return await LoginAsync(data);
         }
@@ -271,7 +269,11 @@ namespace Audiotica.Data.Service.RunTime
         private async Task SaveLoginStateAsync(BaseAudioticaResponse<LoginData> resp)
         {
             AuthenticationToken = resp.Data.AuthenticationToken;
-            await _dispatcherHelper.RunAsync(() => CurrentUser = resp.Data.User);
+
+            if (_dispatcherHelper != null)
+                await _dispatcherHelper.RunAsync(() => CurrentUser = resp.Data.User);
+            else
+                CurrentUser = resp.Data.User;
 
             if (!string.IsNullOrEmpty(resp.Data.RefreshToken))
             {
@@ -280,16 +282,18 @@ namespace Audiotica.Data.Service.RunTime
             }
 
             _credentialHelper.SaveCredentials("AudioticaCloud", resp.Data.User.Id, resp.Data.AuthenticationToken);
-            await _dispatcherHelper.RunAsync(() => RaisePropertyChanged(() => IsAuthenticated));
+
+            if (_dispatcherHelper != null)
+                await _dispatcherHelper.RunAsync(() => OnPropertyChanged("IsAuthenticated"));
         }
 
         public async Task<BaseAudioticaResponse> RegisterAsync(string username, string password, string email)
         {
             var data = new Dictionary<string, string>
             {
-                { "username", username }, 
-                { "email", email }, 
-                { "password", password }
+                {"username", username},
+                {"email", email},
+                {"password", password}
             };
 
             var resp = await PostAsync<LoginData>(UsersPath, data);
@@ -304,7 +308,7 @@ namespace Audiotica.Data.Service.RunTime
             return resp;
         }
 
-        public async Task<BaseAudioticaResponse<RadioData>> CreateStation(string artistName)
+        public async Task<BaseAudioticaResponse<RadioData>> CreateStationAsync(string artistName)
         {
             var url = string.Format(RadioCreatePath, artistName);
             return await GetAsync<RadioData>(url);
@@ -326,11 +330,18 @@ namespace Audiotica.Data.Service.RunTime
         {
             AuthenticationToken = null;
             _refreshToken = null;
-            _dispatcherHelper.RunAsync(() => CurrentUser = null);
+
             _appSettingsHelper.Write("AudioticaCloudRefreshToken", null);
             _appSettingsHelper.Write("AudioticaCloudUser", null);
             _credentialHelper.DeleteCredentials("AudioticaCloud");
-            _dispatcherHelper.RunAsync(() => RaisePropertyChanged(() => IsAuthenticated));
+
+            if (_dispatcherHelper != null)
+            {
+                _dispatcherHelper.RunAsync(() => CurrentUser = null);
+                _dispatcherHelper.RunAsync(() => OnPropertyChanged("IsAuthenticated"));
+            }
+            else
+                CurrentUser = null;
         }
 
         public async Task<BaseAudioticaResponse<AudioticaUser>> GetProfileAsync()
@@ -349,18 +360,18 @@ namespace Audiotica.Data.Service.RunTime
         }
 
         public async Task<BaseAudioticaResponse> SubscribeAsync(
-            SubscriptionType plan, 
-            SubcriptionTimeFrame timeFrame, 
-            AudioticaStripeCard card, 
+            SubscriptionType plan,
+            SubcriptionTimeFrame timeFrame,
+            AudioticaStripeCard card,
             string coupon = null)
         {
             var creditCardData = new Dictionary<string, string>
             {
-                { "name", card.Name }, 
-                { "number", card.Number }, 
-                { "expMonth", card.ExpMonth.ToString() }, 
-                { "expYear", card.ExpYear.ToString() }, 
-                { "cvc", card.Cvc }
+                {"name", card.Name},
+                {"number", card.Number},
+                {"expMonth", card.ExpMonth.ToString()},
+                {"expYear", card.ExpYear.ToString()},
+                {"cvc", card.Cvc}
             };
 
             // plan id and coupon are passed in url query
@@ -379,15 +390,23 @@ namespace Audiotica.Data.Service.RunTime
         }
 
         public async Task<BaseAudioticaResponse<List<WebSong>>> GetMatchesAsync(
-            string title, 
-            string artist, 
+            string title,
+            string artist,
             int limit = 1)
         {
             var resp =
                 await
-                GetAsync<List<WebSong>>(
-                    string.Format(MatchPath, Uri.EscapeDataString(title), Uri.EscapeDataString(artist), limit));
+                    GetAsync<List<WebSong>>(
+                        string.Format(MatchPath, Uri.EscapeDataString(title), Uri.EscapeDataString(artist), limit));
             return resp;
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            var handler = PropertyChanged;
+            if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

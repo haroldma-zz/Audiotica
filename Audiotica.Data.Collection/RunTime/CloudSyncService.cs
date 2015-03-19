@@ -149,7 +149,8 @@ namespace Audiotica.Data.Collection.RunTime
         private async Task PullSyncDeletedSongsAsync(IEnumerable<CloudSong> onlineSongs)
         {
             var collectionSongs =
-                _collectionService.Songs.Where(p => p.CloudId != null && p.SongState != SongState.Local).ToList();
+                _collectionService.Songs.Where(p => p.CloudId != null && p.SongState != SongState.Local 
+                    && !p.IsTemp).ToList();
 
             foreach (var song in from song in collectionSongs
                                  let cloudSong = onlineSongs.FirstOrDefault(p => p.Id == song.CloudId)
@@ -172,7 +173,8 @@ namespace Audiotica.Data.Collection.RunTime
         /// </returns>
         private async Task PullSyncNewSongsAsync(List<CloudSong> onlineSongs)
         {
-            var collectionSongs = _collectionService.Songs.Where(p => p.SongState != SongState.Local).ToList();
+            var collectionSongs = _collectionService.Songs.Where(p => p.SongState != SongState.Local
+                && !p.IsTemp).ToList();
 
             // nothing different
             if (onlineSongs.Count - collectionSongs.Count == 0)
@@ -277,7 +279,8 @@ namespace Audiotica.Data.Collection.RunTime
             foreach (var onlineSong in from onlineSong in onlineSongs
                                        let collectionSong =
                                            _collectionService.Songs.FirstOrDefault(
-                                               p => p.ProviderId == onlineSong.ProviderId)
+                                               p => p.ProviderId == onlineSong.ProviderId
+                                               && !p.IsTemp)
                                        where collectionSong == null
                                        select onlineSong)
             {
@@ -310,7 +313,7 @@ namespace Audiotica.Data.Collection.RunTime
             List<CloudAlbum> onlineAlbums)
         {
             var collectionSongs =
-                _collectionService.Songs.Where(p => p.SongState != SongState.Local && p.CloudId == null).ToList();
+                _collectionService.Songs.Where(p => p.SongState != SongState.Local && p.CloudId == null && !p.IsTemp).ToList();
 
             foreach (var collectionSong in collectionSongs)
             {

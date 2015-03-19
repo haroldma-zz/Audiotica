@@ -54,8 +54,8 @@ namespace Audiotica
             return new CollectionService(
                 collectionSqlService, 
                 playerSqlService, 
+                this.appSettingsHelper,
                 this.dispatcher, 
-                this.appSettingsHelper, 
                 this.bitmapFactory, 
                 AppConstant.MissingArtworkImage, 
 #if __ANDROID__

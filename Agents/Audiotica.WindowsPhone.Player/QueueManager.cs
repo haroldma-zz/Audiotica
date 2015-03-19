@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Linq;
 using Windows.Data.Xml.Dom;
 using Windows.Foundation;
+using Windows.Media;
 using Windows.Media.Playback;
 using Windows.Storage;
 using Windows.UI.Notifications;
@@ -27,6 +28,16 @@ namespace Audiotica.WindowsPhone.Player
         private bool IsShuffle
         {
             get { return _appSettingsHelper.Read<bool>("Shuffle"); }
+        }
+
+        private bool IsRadioMode
+        {
+            get { return _appSettingsHelper.Read<bool>("RadioMode"); }
+        }
+
+        private int RadioId
+        {
+            get { return _appSettingsHelper.Read<int>("RadioId"); }
         }
 
         private int GetCurrentId()
@@ -76,9 +87,15 @@ namespace Audiotica.WindowsPhone.Player
             return IsShuffle ? GetQueueSong(p => p.ShufflePrevId == id) : GetQueueSong(p => p.PrevId == id);
         }
 
+        protected virtual void OnEvent(EventHandler handler)
+        {
+            if (handler != null) handler(this, EventArgs.Empty);
+        }
+
         #region Private members
 
         private readonly IAppSettingsHelper _appSettingsHelper;
+        private readonly SystemMediaTransportControls _transportControls;
 
         private SqlService CreateHistorySqlService()
         {
@@ -140,9 +157,10 @@ namespace Audiotica.WindowsPhone.Player
         private readonly MediaPlayer _mediaPlayer;
         private QueueSong _currentTrack;
 
-        public QueueManager(IAppSettingsHelper appSettingsHelper)
+        public QueueManager(IAppSettingsHelper appSettingsHelper, SystemMediaTransportControls transportControls)
         {
             _appSettingsHelper = appSettingsHelper;
+            _transportControls = transportControls;
             UpdateScrobblerInstance();
 
             _mediaPlayer = BackgroundMediaPlayer.Current;
@@ -167,7 +185,7 @@ namespace Audiotica.WindowsPhone.Player
         /// <summary>
         ///     Invoked when the media player is ready to move to next track
         /// </summary>
-        public event TypedEventHandler<QueueManager, object> TrackChanged;
+        public event TypedEventHandler<QueueManager, object>  TrackChanged;
 
         #endregion
 
@@ -176,6 +194,7 @@ namespace Audiotica.WindowsPhone.Player
         private ScrobblerHelper _scrobbler;
         private int _retryCount;
         private FlacMediaSourceAdapter _currentMediaSourceAdapter;
+        private RadioStation _station;
 
         /// <summary>
         ///     Handler for state changed event of Media Player
@@ -202,7 +221,7 @@ namespace Audiotica.WindowsPhone.Player
             if (CurrentTrack == null) return;
 
             if (TrackChanged != null)
-                TrackChanged.Invoke(this, CurrentTrack.SongId);
+                OnTrackChanged(CurrentTrack.SongId);
 
             OnTrackChanged();
         }
@@ -243,10 +262,14 @@ namespace Audiotica.WindowsPhone.Player
             var artist = CurrentTrack.Song.Artist.Name;
             var album = CurrentTrack.Song.Album.Name;
 
-            var imageUrl = CurrentTrack.Song.Album.HasArtwork ? AppConstant.LocalStorageAppPath +
-                string.Format(AppConstant.ArtworkPath, CurrentTrack.Song.Album.Id) : AppConstant.MissingArtworkAppPath;
-            var wideImageUrl = CurrentTrack.Song.Artist.HasArtwork ? AppConstant.LocalStorageAppPath +
-                string.Format(AppConstant.ArtistsArtworkPath, CurrentTrack.Song.Artist.Id) : AppConstant.MissingArtworkAppPath;
+            var imageUrl = CurrentTrack.Song.Album.HasArtwork
+                ? AppConstant.LocalStorageAppPath +
+                  string.Format(AppConstant.ArtworkPath, CurrentTrack.Song.Album.Id)
+                : AppConstant.MissingArtworkAppPath;
+            var wideImageUrl = CurrentTrack.Song.Artist.HasArtwork
+                ? AppConstant.LocalStorageAppPath +
+                  string.Format(AppConstant.ArtistsArtworkPath, CurrentTrack.Song.Artist.Id)
+                : AppConstant.MissingArtworkAppPath;
 
             var expire = Math.Max(_mediaPlayer.NaturalDuration.TotalHours + .5, 1);
 
@@ -264,7 +287,7 @@ namespace Audiotica.WindowsPhone.Player
             tileTextAttributes[1].InnerText = title + "\nby " + artist;
 
             var tileImageAttributes = tileXml.GetElementsByTagName("image");
-            ((XmlElement)tileImageAttributes[0]).SetAttribute("src", imageUrl);
+            ((XmlElement) tileImageAttributes[0]).SetAttribute("src", imageUrl);
 
             return new TileNotification(tileXml)
             {
@@ -283,7 +306,7 @@ namespace Audiotica.WindowsPhone.Player
             tileWideTextAttributes[3].InnerText = "on " + album;
 
             var tileWideImageAttributes = tileWideXml.GetElementsByTagName("image");
-            ((XmlElement)tileWideImageAttributes[0]).SetAttribute("src", imageUrl);
+            ((XmlElement) tileWideImageAttributes[0]).SetAttribute("src", imageUrl);
 
             return new TileNotification(tileWideXml)
             {
@@ -297,10 +320,10 @@ namespace Audiotica.WindowsPhone.Player
         private void MediaPlayer_MediaEnded(MediaPlayer sender, object args)
         {
             if (_appSettingsHelper.Read<bool>("Repeat"))
-                StartTrack(GetCurrentQueueSong());
+                InternalStartTrack(GetCurrentQueueSong());
 
             else
-                SkipToNext();
+                SkipToNext(true);
         }
 
         private void mediaPlayer_MediaFailed(MediaPlayer sender, MediaPlayerFailedEventArgs args)
@@ -317,19 +340,109 @@ namespace Audiotica.WindowsPhone.Player
 
         #region Playlist command handlers
 
-        public async void StartTrack(QueueSong track)
+        public async void StartRadioStation()
         {
-            if (track == null)
-                return;
+            using (var service = CreateCollectionSqlService())
+            {
+                _station = await service.SelectFirstAsync<RadioStation>(p => p.Id == RadioId);
+
+                if (_station == null) return;
+
+                // Create the station manager
+                var radioStationManager = new RadioStationManager(_station.GracenoteId, _station.Id,
+                    CreateCollectionSqlService,
+                    CreatePlayerSqlService);
+
+                // Load tracks and add them to the database
+                await radioStationManager.LoadTracksAsync();
+
+                await radioStationManager.UpdateQueueAsync();
+
+                OnEvent(QueueUpdated);
+
+                _appSettingsHelper.Write(PlayerConstants.CurrentTrack, radioStationManager.QueueSongs[0].Id);
+                StartRadioTrack(radioStationManager.QueueSongs[0]);
+            }
+        }
+
+        public event EventHandler QueueUpdated;
+        public event EventHandler MatchingTrack;
+
+        public async void StartRadioTrack(QueueSong track)
+        {
+            if (track == null) return;
+
+            switch (track.Song.SongState)
+            {
+                case SongState.BackgroundMatching:
+                    _transportControls.IsPlayEnabled = false;
+                    _transportControls.IsNextEnabled = false;
+                    _transportControls.IsPreviousEnabled = false;
+                    OnEvent(MatchingTrack);
+
+                    // Create the station manager
+                    var radioStationManager = new RadioStationManager(_station.GracenoteId, _station.Id,
+                        CreateCollectionSqlService,
+                        CreatePlayerSqlService);
+
+                    var matched = await radioStationManager.MatchSongAsync(track.Song);
+                    _transportControls.IsNextEnabled = true;
+                    
+                    if (!matched)
+                    {
+                        SkipToNext();
+                        return;
+                    }
+                    break;
+                case SongState.NoMatch:
+                    SkipToNext();
+                    break;
+            }
+
+            InternalStartTrack(track);
+        }
+
+        public async void StartTrack(QueueSong track, bool ended  = false)
+        {
+            if (track == null) return;
 
             ScrobbleOnMediaEnded();
+
+            if (IsRadioMode && _station != null && _currentTrack != null && _currentTrack.Song.ProviderId.Contains("gn."))
+            {
+                // Create the station manager
+                var radioStationManager = new RadioStationManager(_station.GracenoteId, _station.Id,
+                    CreateCollectionSqlService,
+                    CreatePlayerSqlService);
+
+                var trackId = _currentTrack.Song.ProviderId.Replace("gn.", "");
+
+                if (!ended)
+                    await radioStationManager.SkippedAsync(trackId);
+                else
+                    await radioStationManager.PlayedAsync(trackId);
+
+                await radioStationManager.UpdateQueueAsync();
+                track = radioStationManager.QueueSongs[0];
+                _appSettingsHelper.Write(PlayerConstants.CurrentTrack, track.Id);
+                OnEvent(QueueUpdated);
+            }
 
             _currentTrack = track;
 
             if (TrackChanged != null)
-                TrackChanged.Invoke(this, _currentTrack.SongId);
+                OnTrackChanged(_currentTrack.SongId);
 
             _mediaPlayer.Pause();
+
+            if (IsRadioMode)
+                StartRadioTrack(track);
+            else
+                InternalStartTrack(track);
+        }
+        private async void InternalStartTrack(QueueSong track)
+        {
+            _transportControls.IsPreviousEnabled = !IsRadioMode;
 
             // If the flac media source adapter is not null, disposed of it
             // since we won't be using it
@@ -387,10 +500,10 @@ namespace Audiotica.WindowsPhone.Player
         /// <summary>
         ///     Skip to next track
         /// </summary>
-        public void SkipToNext()
+        public void SkipToNext(bool ended = false)
         {
             var next = GetQueueSongWherePrevId(GetCurrentId()) ?? GetQueueSongWherePrevId(0);
-            StartTrack(next);
+            StartTrack(next, ended);
         }
 
         public void UpdateScrobblerInstance()
@@ -460,5 +573,11 @@ namespace Audiotica.WindowsPhone.Player
         }
 
         #endregion
+
+        protected virtual void OnTrackChanged(object args)
+        {
+            var handler = TrackChanged;
+            if (handler != null) handler(this, args);
+        }
     }
 }

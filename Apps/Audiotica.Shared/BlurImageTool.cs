@@ -36,7 +36,6 @@ namespace Audiotica
             var url = e.NewValue as string;
             var image = d as Image;
             var imageBrush = d as ImageBrush;
-            var bounds = Window.Current.Bounds;
 
             if (image != null) image.Source = null;
             else if (imageBrush != null) imageBrush.ImageSource = null;

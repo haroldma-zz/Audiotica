@@ -77,9 +77,21 @@ namespace Audiotica.ViewModel
             {
                 Album = await _service.GetDetailAlbum(album.Name, album.ArtistName);
 
+                if (Album == null)
+                {
+                    CurtainPrompt.ShowError("AppNetworkIssue".FromLanguageResource());
+                    return;
+                }
+
                 if (Album.Tracks == null && Album.Name.Contains("Deluxe Edition"))
                 {
                     Album = await _service.GetDetailAlbum(album.Name.Replace("(Deluxe Edition)", ""), album.ArtistName);
+
+                    if (Album == null)
+                    {
+                        CurtainPrompt.ShowError("AppNetworkIssue".FromLanguageResource());
+                        return;
+                    }
                 }
 
                 if (Album.Tracks != null)

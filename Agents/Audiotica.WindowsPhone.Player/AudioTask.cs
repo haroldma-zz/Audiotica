@@ -1,6 +1,4 @@
-﻿#region
-
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.Threading;
 using Windows.ApplicationModel.Background;
@@ -9,8 +7,6 @@ using Windows.Media;
 using Windows.Media.Playback;
 using Audiotica.Core;
 using Audiotica.Core.WinRt.Utilities;
-
-#endregion
 
 namespace Audiotica.WindowsPhone.Player
 {
@@ -57,7 +53,7 @@ namespace Audiotica.WindowsPhone.Player
                 if (_queueManager != null) return _queueManager;
 
 
-                _queueManager = new QueueManager(_appSettingsHelper);
+                _queueManager = new QueueManager(_appSettingsHelper, _systemmediatransportcontrol);
                 return _queueManager;
             }
         }
@@ -95,6 +91,8 @@ namespace Audiotica.WindowsPhone.Player
 
             //Add handlers for playlist trackchanged
             QueueManager.TrackChanged += playList_TrackChanged;
+            QueueManager.MatchingTrack += QueueManagerOnMatchingTrack;
+            QueueManager.QueueUpdated += QueueManagerOnQueueUpdated;
             QueueManager.FlushHistory();
 
             //InitializeAsync message channel 
@@ -112,6 +110,18 @@ namespace Audiotica.WindowsPhone.Player
             _appSettingsHelper.Write(PlayerConstants.BackgroundTaskState,
                 PlayerConstants.BackgroundTaskRunning);
             _deferral = taskInstance.GetDeferral();
+        }
+
+        private void QueueManagerOnMatchingTrack(object sender, EventArgs eventArgs)
+        {
+            var message = new ValueSet { { PlayerConstants.MatchingTrack, "" } };
+            BackgroundMediaPlayer.SendMessageToForeground(message);
+        }
+
+        private void QueueManagerOnQueueUpdated(object sender, EventArgs eventArgs)
+        {
+            var message = new ValueSet {{PlayerConstants.QueueUpdated, ""}};
+            BackgroundMediaPlayer.SendMessageToForeground(message);
         }
 
         /// <summary>
@@ -327,6 +337,9 @@ namespace Audiotica.WindowsPhone.Player
                 {
                     case PlayerConstants.LastFmLoginChanged:
                         QueueManager.UpdateScrobblerInstance();
+                        break;
+                    case PlayerConstants.StartStation:
+                        QueueManager.StartRadioStation();
                         break;
                     case PlayerConstants.AppSuspended:
                         Debug.WriteLine("App suspending");
