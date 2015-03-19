@@ -294,7 +294,7 @@
     </Page.Resources>
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <Pivot Title="NOW PLAYING" HeaderTemplate="{StaticResource PivotHeaderTemplate}">
+        <Pivot x:Name="Pivot" Title="NOW PLAYING" HeaderTemplate="{StaticResource PivotHeaderTemplate}" SelectionChanged="Pivot_SelectionChanged">
             <Pivot.Background>
                 <ImageBrush Opacity=".25" Stretch="UniformToFill" ImageSource="{Binding CurrentQueue.Song.Artist.Artwork.Image}" />
             </Pivot.Background>
@@ -374,7 +374,11 @@
                     </ListView.ItemTemplate>
                 </ListView>
             </PivotItem>
-            <!--            <PivotItem Header="SOCIAL" />-->
+            <PivotItem Header="LYRICS">
+               <ScrollViewer>
+                    <TextBlock x:Name="LyricsTextBlock" Text="If I was your boyfriend" FontSize="20" TextWrapping="Wrap" />
+               </ScrollViewer>
+            </PivotItem>
         </Pivot>
     </Grid>
 </Page>
