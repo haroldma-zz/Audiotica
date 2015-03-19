@@ -12,16 +12,6 @@
     d:DesignWidth="400">
 
     <StackPanel Margin="0,0,0,15">
-        <FlyoutBase.AttachedFlyout>
-            <MenuFlyout>
-                <MenuFlyoutItem Text="Manual Match" Click="MenuFlyoutItemClick" />
-            </MenuFlyout>
-        </FlyoutBase.AttachedFlyout>
-        <interactivity:Interaction.Behaviors>
-            <core:EventTriggerBehavior EventName="Holding">
-                <local:ShowFlyoutAction />
-            </core:EventTriggerBehavior>
-        </interactivity:Interaction.Behaviors>
         <TextBlock Text="{Binding Name}" FontSize="22" TextWrapping="Wrap"
                            TextTrimming="CharacterEllipsis" FontWeight="Bold" />
         <TextBlock FontSize="16" FontWeight="Thin" Foreground="#89FFFFFF"

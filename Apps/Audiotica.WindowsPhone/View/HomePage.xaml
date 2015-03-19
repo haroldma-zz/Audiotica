@@ -4,13 +4,11 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:audiotica="using:Audiotica"
-    xmlns:interactivity="using:Microsoft.Xaml.Interactivity" xmlns:core="using:Microsoft.Xaml.Interactions.Core"
-    xmlns:controls="using:MyToolkit.Controls"
     x:Class="Audiotica.View.HomePage"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
     DataContext="{Binding Main, Source={StaticResource Locator}}">
-    <audiotica:PageBase.Resources>
+    <Page.Resources>
         <DataTemplate x:Key="HubHeaderTemplate">
             <TextBlock Text="{Binding}" FontSize="20" FontFamily="Segoe WP" FontWeight="Normal" Margin="-1,0,0,0" />
         </DataTemplate>
@@ -50,182 +48,226 @@
                 </Setter.Value>
             </Setter>
         </Style>
-    </audiotica:PageBase.Resources>
+    </Page.Resources>
 
-    <Hub x:Name="MainHub" Header="AUDIOTICA">
-        <Hub.HeaderTemplate>
-            <DataTemplate>
-                <TextBlock Text="{Binding}" FontWeight="Bold" FontSize="24" Margin="2,35,15,-8" />
-            </DataTemplate>
-        </Hub.HeaderTemplate>
-        <HubSection x:Uid="HubMenu" Header="MENU" HeaderTemplate="{StaticResource HubHeaderTemplate}">
-            <DataTemplate>
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                    </Grid.RowDefinitions>
-                    <Button Style="{StaticResource PlainButtonStyle}" Margin="0,-15,0,0" FontFamily="Segoe UI Light" FontWeight="Light" Click="SongButton_Click">
-                        <TextBlock x:Uid="MenuItemSongs" Text="songs" FontSize="40" />
-                    </Button>
-                    <Button Grid.Row="1" Style="{StaticResource PlainButtonStyle}" FontFamily="Segoe UI Light" FontWeight="Light" Margin="0,10,0,0" Click="ArtistButton_Click">
-                        <TextBlock x:Uid="MenuItemArtistNames" Text="artists" FontSize="40" />
-                    </Button>
-                    <Button Grid.Row="2" Style="{StaticResource PlainButtonStyle}" FontFamily="Segoe UI Light" FontWeight="Light" Margin="0,10,0,0" Click="AlbumButton_Click">
-                        <TextBlock x:Uid="MenuItemAlbumNames" Text="albums" FontSize="40" />
-                    </Button>
-                    <Button Grid.Row="3" Style="{StaticResource PlainButtonStyle}" FontFamily="Segoe UI Light" FontWeight="Light" Margin="0,10,0,0" Click="PlaylistButton_Click">
-                        <TextBlock x:Uid="MenuItemPlaylists" Text="playlists" FontSize="40" />
-                    </Button>
-                    <Button Grid.Row="4" Style="{StaticResource PlainButtonStyle}" FontFamily="Segoe UI Light" FontWeight="Light" Margin="0,10,0,0" Click="SearchButton_Click">
-                        <TextBlock x:Uid="MenuItemSearch" Text="search" FontSize="40" />
-                    </Button>
-                </Grid>
-            </DataTemplate>
-        </HubSection>
-        <HubSection x:Name="SpotlightSection" Header="SPOTLIGHT">
-            <DataTemplate>
-                <GridView ItemsSource="{Binding MediumFeatures}" IsItemClickEnabled="True" ItemClick="GridView_ItemClick">
-                    <GridView.HeaderTemplate>
-                        <DataTemplate>
-                            <FlipView Visibility="{Binding LargeFeatures.Count, Converter={StaticResource ReverseEmptyListToVisibilityConverter}}" Height="150" ItemsSource="{Binding LargeFeatures}" Style="{StaticResource FlipViewStyle1}" Width="336" HorizontalAlignment="Left">
-                                <FlipView.ItemTemplate>
-                                    <DataTemplate>
-                                        <Button Style="{StaticResource PlainButtonStyle}" Click="Button_Click">
-                                            <Grid Height="150" Background="{StaticResource PhoneAccentBrush}">
-                                                <Grid>
-                                                    <Grid.Background>
-                                                        <ImageBrush Stretch="UniformToFill" ImageSource="{Binding ImageUri}"
-                                                        AlignmentY="Center" />
-                                                    </Grid.Background>
-                                                </Grid>
-                                                <StackPanel Background="#BF000000" VerticalAlignment="Bottom">
-                                                    <TextBlock TextTrimming="CharacterEllipsis" Margin="10,5,10,0" FontSize="22"
-                                                   Text="{Binding Title}"
-                                                   VerticalAlignment="Bottom" TextWrapping="Wrap" />
-                                                    <TextBlock FontSize="16" FontWeight="Thin" Text="{Binding Text}"
-                                                   Foreground="#89FFFFFF" TextTrimming="CharacterEllipsis"
-                                                   TextWrapping="Wrap" Margin="10,0,10,5" />
-                                                </StackPanel>
-                                            </Grid>
-                                        </Button>
-                                    </DataTemplate>
-                                </FlipView.ItemTemplate>
-                            </FlipView>
-                        </DataTemplate>
-                    </GridView.HeaderTemplate>
-                    <GridView.ItemTemplate>
-                        <DataTemplate>
-                            <Grid Width="165" Height="165" Margin="0,5,5,0" Background="{StaticResource PhoneAccentBrush}">
-                                <Grid>
-                                    <Grid.Background>
-                                        <ImageBrush Stretch="UniformToFill" ImageSource="{Binding ImageUri}"
-                                                        AlignmentY="Center" />
-                                    </Grid.Background>
-                                </Grid>
-                                <StackPanel Background="#BF000000" VerticalAlignment="Bottom">
-                                    <TextBlock TextTrimming="CharacterEllipsis" Margin="10,5,10,0" FontSize="22"
-                                                   Text="{Binding Title}"
-                                                   VerticalAlignment="Bottom" TextWrapping="Wrap" />
-                                    <TextBlock FontSize="16" FontWeight="Thin" Text="{Binding Text}"
-                                                   Foreground="#89FFFFFF" TextTrimming="CharacterEllipsis"
-                                                   TextWrapping="Wrap" Margin="10,0,10,5" />
-                                </StackPanel>
-                            </Grid>
-                        </DataTemplate>
-                    </GridView.ItemTemplate>
-                </GridView>
-            </DataTemplate>
-        </HubSection>
-        <HubSection x:Uid="HubMostPlayed" Header="MOST PLAYED BY YOU"
-                    HeaderTemplate="{StaticResource HubHeaderTemplate}">
-            <DataTemplate>
-                <Grid>
-                    <TextBlock
-                        x:Uid="HubMostPlayedEmpty"
-                        Visibility="{Binding MostPlayed, Converter={StaticResource EmptyListToVisibilityConverter}}"
-                        Text="You haven't played any music in the past week." Style="{StaticResource SubtleTextBlockStyle}" />
-                    <GridView ItemsSource="{Binding MostPlayed}" SelectionMode="None" IsItemClickEnabled="True"
-                              Padding="0,0,0,10" ItemClick="MostPlayedGridView_ItemClick">
-                        <GridView.ItemTemplate>
-                            <DataTemplate>
-                                <StackPanel Margin="0,5,5,0" Width="150">
-                                    <Grid Background="{StaticResource PhoneAccentBrush}" Margin="0,0,0,5">
-                                        <Image Source="{Binding Album.Artwork.Image}" Height="150" Width="150" Stretch="UniformToFill" />
-                                    </Grid>
-                                    <TextBlock Text="{Binding Name}" FontSize="15" TextTrimming="CharacterEllipsis" />
-                                    <TextBlock Text="{Binding ArtistName}" FontSize="14"
-                                               TextTrimming="CharacterEllipsis" Foreground="#89FFFFFF"
-                                               FontFamily="Global User Interface" />
-                                </StackPanel>
-                            </DataTemplate>
-                        </GridView.ItemTemplate>
-                    </GridView>
-                </Grid>
-            </DataTemplate>
-        </HubSection>
-        <HubSection x:Uid="HubRecommendations" Header="RECOMMENDATIONS"
-                    HeaderTemplate="{StaticResource HubHeaderTemplate}">
-            <DataTemplate>
-                <Grid>
-                    <TextBlock x:Uid="HubRecommendationsNotLogin"
-                        Visibility="{Binding IsLastfmEnabled, Converter={StaticResource ReverseVisibilityConverter}}"
-                        Text="Login, on the settings page, and scrobble with Last.FM to get recommendations."
-                        Style="{StaticResource SubtleTextBlockStyle}" />
-
-                    <TextBlock x:Uid="HubRecommendationsEmpty"
-                        Visibility="{Binding RecommendedArtists, Converter={StaticResource EmptyListToVisibilityConverter}}"
-                        Text="You don't have any recommendations at the moment." 
-                        Style="{StaticResource SubtleTextBlockStyle}" />
-                    <Grid Visibility="{Binding IsLastfmEnabled, Converter={StaticResource VisibilityConverter}}">
-                        <ProgressBar VerticalAlignment="Top" IsIndeterminate="{Binding IsRecommendationLoading}"
-                                     Visibility="{Binding IsRecommendationLoading, Converter={StaticResource VisibilityConverter}}" />
-                        <ListView IsItemClickEnabled="True" ItemsSource="{Binding RecommendedArtists}"
-                                  ItemTemplate="{StaticResource SimilarLastArtistDataTemplate}" ItemClick="RecommendationListView_ItemClick" FontFamily="Global User Interface" />
+    <Grid>
+        <Grid.Background>
+            <ImageBrush Opacity=".25" Stretch="UniformToFill" ImageSource="{Binding PlayerViewModel.CurrentQueue.Song.Artist.Artwork.Uri}" />
+        </Grid.Background>
+        <Hub x:Name="MainHub" Header="AUDIOTICA">
+            <Hub.HeaderTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding}" FontWeight="Bold" FontSize="24" Margin="2,35,15,-8" />
+                </DataTemplate>
+            </Hub.HeaderTemplate>
+            <HubSection x:Uid="HubMenu" Header="MENU" HeaderTemplate="{StaticResource HubHeaderTemplate}">
+                <DataTemplate>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <Button Style="{StaticResource PlainButtonStyle}" Margin="0,-15,0,0"
+                                FontFamily="Segoe UI Light" FontWeight="Light" Click="SongButton_Click">
+                            <TextBlock x:Uid="MenuItemSongs" Text="songs" FontSize="40" />
+                        </Button>
+                        <Button Grid.Row="1" Style="{StaticResource PlainButtonStyle}" FontFamily="Segoe UI Light"
+                                FontWeight="Light" Margin="0,10,0,0" Click="ArtistButton_Click">
+                            <TextBlock x:Uid="MenuItemArtistNames" Text="artists" FontSize="40" />
+                        </Button>
+                        <Button Grid.Row="2" Style="{StaticResource PlainButtonStyle}" FontFamily="Segoe UI Light"
+                                FontWeight="Light" Margin="0,10,0,0" Click="AlbumButton_Click">
+                            <TextBlock x:Uid="MenuItemAlbumNames" Text="albums" FontSize="40" />
+                        </Button>
+                        <Button Grid.Row="3" Style="{StaticResource PlainButtonStyle}" FontFamily="Segoe UI Light"
+                                FontWeight="Light" Margin="0,10,0,0" Click="PlaylistButton_Click">
+                            <TextBlock x:Uid="MenuItemPlaylists" Text="playlists" FontSize="40" />
+                        </Button>
                     </Grid>
-                </Grid>
-            </DataTemplate>
-        </HubSection>
-        <HubSection x:Uid="HubTopSongs" Header="TOP SONGS" HeaderTemplate="{StaticResource HubHeaderTemplate}">
-            <DataTemplate>
-                <Grid>
-                    <ProgressBar VerticalAlignment="Top" IsIndeterminate="{Binding IsMostStreamedLoading}"
-                                 Visibility="{Binding IsMostStreamedLoading, Converter={StaticResource VisibilityConverter}}" />
-                    <TextBlock x:Uid="HubMostStreamedEmpty"
-                        Visibility="{Binding TopTracks, Converter={StaticResource EmptyListToVisibilityConverter}}"
-                        Text="Seems there was a problem loading top songs from Spotify." 
-                        Style="{StaticResource SubtleTextBlockStyle}" />
-
-                    <GridView ItemsSource="{Binding TopTracks}" SelectionMode="None" IsItemClickEnabled="True"
-                              ItemClick="TopSongsGridView_ItemClick" Padding="0,0,0,10">
+                </DataTemplate>
+            </HubSection>
+            <HubSection x:Uid="HubMostPlayed" Header="MOST PLAYED BY YOU"
+                        HeaderTemplate="{StaticResource HubHeaderTemplate}">
+                <DataTemplate>
+                    <Grid>
+                        <TextBlock
+                            x:Uid="HubMostPlayedEmpty"
+                            Visibility="{Binding MostPlayed, Converter={StaticResource EmptyListToVisibilityConverter}}"
+                            Text="You haven't played any music in the past week."
+                            Style="{StaticResource SubtleTextBlockStyle}" />
+                        <GridView ItemsSource="{Binding MostPlayed}" SelectionMode="None" IsItemClickEnabled="True"
+                                  Padding="0,0,0,10" ItemClick="MostPlayedGridView_ItemClick">
+                            <GridView.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Margin="0,5,5,0" Width="150">
+                                        <Grid Background="{StaticResource PhoneAccentBrush}" Margin="0,0,0,5">
+                                            <Image Source="{Binding Album.Artwork.Image}" Height="150" Width="150"
+                                                   Stretch="UniformToFill" />
+                                        </Grid>
+                                        <TextBlock Text="{Binding Name}" FontSize="15" TextTrimming="CharacterEllipsis" />
+                                        <TextBlock Text="{Binding ArtistName}" FontSize="14"
+                                                   TextTrimming="CharacterEllipsis" Foreground="#89FFFFFF"
+                                                   FontFamily="Global User Interface" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </GridView.ItemTemplate>
+                        </GridView>
+                    </Grid>
+                </DataTemplate>
+            </HubSection>
+            <HubSection Header="RECENTLY ADDED"
+                        HeaderTemplate="{StaticResource HubHeaderTemplate}">
+                <DataTemplate>
+                    <Grid>
+                        <TextBlock
+                            Visibility="{Binding RecentlyAdded, Converter={StaticResource EmptyListToVisibilityConverter}}"
+                            Text="You haven't saved any music yet."
+                            Style="{StaticResource SubtleTextBlockStyle}" />
+                        <GridView ItemsSource="{Binding RecentlyAdded}" SelectionMode="None" IsItemClickEnabled="True"
+                                  Padding="0,0,0,10" ItemClick="RecentlyAddedGridView_ItemClick">
+                            <GridView.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Margin="0,5,5,0" Width="150">
+                                        <Grid Background="{StaticResource PhoneAccentBrush}" Margin="0,0,0,5">
+                                            <Image Source="{Binding Album.Artwork.Image}" Height="150" Width="150"
+                                                   Stretch="UniformToFill" />
+                                        </Grid>
+                                        <TextBlock Text="{Binding Name}" FontSize="15" TextTrimming="CharacterEllipsis" />
+                                        <TextBlock Text="{Binding ArtistName}" FontSize="14"
+                                                   TextTrimming="CharacterEllipsis" Foreground="#89FFFFFF"
+                                                   FontFamily="Global User Interface" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </GridView.ItemTemplate>
+                        </GridView>
+                    </Grid>
+                </DataTemplate>
+            </HubSection>
+            <HubSection x:Name="SpotlightSection" Header="SPOTLIGHT">
+                <DataTemplate>
+                    <GridView ItemsSource="{Binding MediumFeatures}" IsItemClickEnabled="True"
+                              ItemClick="GridView_ItemClick">
+                        <GridView.HeaderTemplate>
+                            <DataTemplate>
+                                <FlipView
+                                    Visibility="{Binding LargeFeatures.Count, Converter={StaticResource ReverseEmptyListToVisibilityConverter}}"
+                                    Height="150" ItemsSource="{Binding LargeFeatures}"
+                                    Style="{StaticResource FlipViewStyle1}" Width="310" HorizontalAlignment="Left">
+                                    <FlipView.ItemTemplate>
+                                        <DataTemplate>
+                                            <Button Style="{StaticResource PlainButtonStyle}" Click="Button_Click">
+                                                <Grid Height="150" Background="{StaticResource PhoneAccentBrush}">
+                                                    <Grid>
+                                                        <Grid.Background>
+                                                            <ImageBrush Stretch="UniformToFill"
+                                                                        ImageSource="{Binding ImageUri}"
+                                                                        AlignmentY="Center" />
+                                                        </Grid.Background>
+                                                    </Grid>
+                                                    <StackPanel Background="#BF000000" VerticalAlignment="Bottom">
+                                                        <TextBlock TextTrimming="CharacterEllipsis" Margin="10,5,10,0"
+                                                                   FontSize="22"
+                                                                   Text="{Binding Title}"
+                                                                   VerticalAlignment="Bottom" TextWrapping="Wrap" />
+                                                        <TextBlock FontSize="16" FontWeight="Thin"
+                                                                   Text="{Binding Text}"
+                                                                   Foreground="#89FFFFFF"
+                                                                   TextTrimming="CharacterEllipsis"
+                                                                   TextWrapping="Wrap" Margin="10,0,10,5" />
+                                                    </StackPanel>
+                                                </Grid>
+                                            </Button>
+                                        </DataTemplate>
+                                    </FlipView.ItemTemplate>
+                                </FlipView>
+                            </DataTemplate>
+                        </GridView.HeaderTemplate>
                         <GridView.ItemTemplate>
                             <DataTemplate>
-                                <StackPanel Margin="0,5,5,0" Width="150">
-                                    <Grid Background="{StaticResource PhoneAccentBrush}" Margin="0,0,0,5">
-                                        <Image Source="{Binding ArtworkUrl}" Height="150" Width="150" Stretch="UniformToFill" />
+                                <Grid Width="150" Height="150" Margin="0,5,5,0"
+                                      Background="{StaticResource PhoneAccentBrush}">
+                                    <Grid>
+                                        <Grid.Background>
+                                            <ImageBrush Stretch="UniformToFill" ImageSource="{Binding ImageUri}"
+                                                        AlignmentY="Center" />
+                                        </Grid.Background>
                                     </Grid>
-                                    <TextBlock Text="{Binding Name}" FontSize="15" TextTrimming="CharacterEllipsis" />
-                                    <TextBlock Text="{Binding ArtistName}" FontSize="14"
-                                               TextTrimming="CharacterEllipsis" Foreground="#89FFFFFF"
-                                               FontFamily="Global User Interface" />
-                                </StackPanel>
+                                    <StackPanel Background="#BF000000" VerticalAlignment="Bottom">
+                                        <TextBlock TextTrimming="CharacterEllipsis" Margin="10,5,10,0" FontSize="22"
+                                                   Text="{Binding Title}"
+                                                   VerticalAlignment="Bottom" TextWrapping="Wrap" />
+                                        <TextBlock FontSize="16" FontWeight="Thin" Text="{Binding Text}"
+                                                   Foreground="#89FFFFFF" TextTrimming="CharacterEllipsis"
+                                                   TextWrapping="Wrap" Margin="10,0,10,5" />
+                                    </StackPanel>
+                                </Grid>
                             </DataTemplate>
                         </GridView.ItemTemplate>
                     </GridView>
-                </Grid>
-            </DataTemplate>
-        </HubSection>
-    </Hub>
+                </DataTemplate>
+            </HubSection>
+            <HubSection x:Uid="HubRecommendations" Header="RECOMMENDATIONS"
+                        HeaderTemplate="{StaticResource HubHeaderTemplate}">
+                <DataTemplate>
+                    <Grid>
+                        <TextBlock x:Uid="HubRecommendationsNotLogin"
+                                   Visibility="{Binding IsLastfmEnabled, Converter={StaticResource ReverseVisibilityConverter}}"
+                                   Text="Login, on the settings page, and scrobble with Last.FM to get recommendations."
+                                   Style="{StaticResource SubtleTextBlockStyle}" />
+
+                        <TextBlock x:Uid="HubRecommendationsEmpty"
+                                   Visibility="{Binding RecommendedArtists, Converter={StaticResource EmptyListToVisibilityConverter}}"
+                                   Text="You don't have any recommendations at the moment."
+                                   Style="{StaticResource SubtleTextBlockStyle}" />
+                        <Grid Visibility="{Binding IsLastfmEnabled, Converter={StaticResource VisibilityConverter}}">
+                            <ProgressBar VerticalAlignment="Top" IsIndeterminate="{Binding IsRecommendationLoading}"
+                                         Visibility="{Binding IsRecommendationLoading, Converter={StaticResource VisibilityConverter}}" />
+                            <ListView IsItemClickEnabled="True" ItemsSource="{Binding RecommendedArtists}"
+                                      ItemTemplate="{StaticResource SimilarLastArtistDataTemplate}"
+                                      ItemClick="RecommendationListView_ItemClick" FontFamily="Global User Interface" />
+                        </Grid>
+                    </Grid>
+                </DataTemplate>
+            </HubSection>
+            <HubSection x:Uid="HubTopSongs" Header="TOP SONGS" HeaderTemplate="{StaticResource HubHeaderTemplate}">
+                <DataTemplate>
+                    <Grid>
+                        <ProgressBar VerticalAlignment="Top" IsIndeterminate="{Binding IsMostStreamedLoading}"
+                                     Visibility="{Binding IsMostStreamedLoading, Converter={StaticResource VisibilityConverter}}" />
+                        <TextBlock x:Uid="HubMostStreamedEmpty"
+                                   Visibility="{Binding TopTracks, Converter={StaticResource EmptyListToVisibilityConverter}}"
+                                   Text="Seems there was a problem loading top songs from Spotify."
+                                   Style="{StaticResource SubtleTextBlockStyle}" />
+
+                        <GridView ItemsSource="{Binding TopTracks}" SelectionMode="None" IsItemClickEnabled="True"
+                                  ItemClick="TopSongsGridView_ItemClick" Padding="0,0,0,10">
+                            <GridView.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Margin="0,5,5,0" Width="150">
+                                        <Grid Background="{StaticResource PhoneAccentBrush}" Margin="0,0,0,5">
+                                            <Image Source="{Binding ArtworkUrl}" Height="150" Width="150"
+                                                   Stretch="UniformToFill" />
+                                        </Grid>
+                                        <TextBlock Text="{Binding Name}" FontSize="15" TextTrimming="CharacterEllipsis" />
+                                        <TextBlock Text="{Binding ArtistName}" FontSize="14"
+                                                   TextTrimming="CharacterEllipsis" Foreground="#89FFFFFF"
+                                                   FontFamily="Global User Interface" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </GridView.ItemTemplate>
+                        </GridView>
+                    </Grid>
+                </DataTemplate>
+            </HubSection>
+        </Hub></Grid>
     <Page.BottomAppBar>
-        <CommandBar ClosedDisplayMode="Minimal">
+        <CommandBar>
+            <AppBarButton Icon="Find" Label="Search" Click="Button_Click_1" />
             <CommandBar.SecondaryCommands>
-                <AppBarButton Label="share" Click="AppBarButton_Click_2" />
-                <AppBarButton Label="support" Click="AppBarButton_Click_1" />
-                <AppBarButton x:Uid="AppBarHubReview" Label="rate+review" Click="AppBarButton_Click" />
-                <AppBarButton x:Uid="AppBarHubSettings" Label="settings+more" Click="SettingsButtonBase_OnClick" />
+                <AppBarButton Label="settings" Click="AppBarButton_Click" />
             </CommandBar.SecondaryCommands>
         </CommandBar>
     </Page.BottomAppBar>

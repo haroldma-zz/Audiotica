@@ -1,6 +1,5 @@
 ﻿#region
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -18,42 +17,42 @@ namespace Audiotica.Data
 {
     public enum Mp3Provider
     {
-        Mp3Truck, 
-
-        SoundCloud, 
-
-        Netease, 
-
-        Mp3Clan, 
-
-        Meile, 
-
-        YouTube, 
-
-        Mp3Skull
+        Mp3Truck,
+        SoundCloud,
+        Netease,
+        Mp3Clan,
+        Meile,
+        YouTube,
+        Mp3Skull,
+        ProstoPleer
     }
 
     public class Mp3MatchEngine
     {
         private readonly IAudioticaService _audioticaService;
-        private readonly INotificationManager _notificationManager;
-
         private readonly IDispatcherHelper _dispatcherHelper;
+        private readonly INotificationManager _notificationManager;
 
         private readonly Mp3Provider[] _providers =
         {
-             Mp3Provider.Mp3Skull, Mp3Provider.Netease, Mp3Provider.Mp3Truck, Mp3Provider.Mp3Clan, 
-             Mp3Provider.Meile, Mp3Provider.SoundCloud
+            Mp3Provider.ProstoPleer,
+            Mp3Provider.Mp3Skull,
+            Mp3Provider.Netease,
+            Mp3Provider.Mp3Truck,
+            //Mp3Provider.Mp3Clan, 
+            Mp3Provider.Meile,
+            Mp3Provider.SoundCloud
         };
 
         private readonly Mp3SearchService _service;
 
-        public Mp3MatchEngine(IAppSettingsHelper settingsHelper, IAudioticaService audioticaService, INotificationManager notificationManager, IDispatcherHelper dispatcherHelper)
+        public Mp3MatchEngine(IAppSettingsHelper settingsHelper, IAudioticaService audioticaService,
+            INotificationManager notificationManager, IDispatcherHelper dispatcherHelper)
         {
-            this._audioticaService = audioticaService;
-            this._notificationManager = notificationManager;
+            _audioticaService = audioticaService;
+            _notificationManager = notificationManager;
             _dispatcherHelper = dispatcherHelper;
-            this._service = new Mp3SearchService(settingsHelper);
+            _service = new Mp3SearchService(settingsHelper);
         }
 
         public async Task<string> FindMp3For(string title, string artist)
@@ -100,14 +99,16 @@ namespace Audiotica.Data
             var currentProvider = 0;
             string url = null;
 
-            while (currentProvider < this._providers.Length)
+            while (currentProvider < _providers.Length)
             {
-                var mp3Provider = this._providers[currentProvider];
+                var mp3Provider = _providers[currentProvider];
                 try
                 {
-                    url = await this.GetMatch(mp3Provider, title, artist).ConfigureAwait(false);
+                    url = await GetMatch(mp3Provider, title, artist).ConfigureAwait(false);
                 }
-                catch { }
+                catch
+                {
+                }
 
                 if (url != null)
                 {
@@ -126,23 +127,26 @@ namespace Audiotica.Data
 
             switch (provider)
             {
+                case Mp3Provider.ProstoPleer:
+                    webSongs = await _service.SearchPleer(title, artist, album).ConfigureAwait(false);
+                    break;
                 case Mp3Provider.Netease:
-                    webSongs = await this._service.SearchNetease(title, artist, album).ConfigureAwait(false);
+                    webSongs = await _service.SearchNetease(title, artist, album).ConfigureAwait(false);
                     break;
                 case Mp3Provider.Mp3Clan:
-                    webSongs = await this._service.SearchMp3Clan(title, artist, album).ConfigureAwait(false);
+                    webSongs = await _service.SearchMp3Clan(title, artist, album).ConfigureAwait(false);
                     break;
                 case Mp3Provider.Meile:
-                    webSongs = await this._service.SearchMeile(title, artist, album).ConfigureAwait(false);
+                    webSongs = await _service.SearchMeile(title, artist, album).ConfigureAwait(false);
                     break;
                 case Mp3Provider.Mp3Truck:
-                    webSongs = await this._service.SearchMp3Truck(title, artist, album).ConfigureAwait(false);
+                    webSongs = await _service.SearchMp3Truck(title, artist, album).ConfigureAwait(false);
                     break;
                 case Mp3Provider.SoundCloud:
-                    webSongs = await this._service.SearchSoundCloud(title, artist, album).ConfigureAwait(false);
+                    webSongs = await _service.SearchSoundCloud(title, artist, album).ConfigureAwait(false);
                     break;
                 case Mp3Provider.Mp3Skull:
-                    webSongs = await this._service.SearchMp3Skull(title, artist, album).ConfigureAwait(false);
+                    webSongs = await _service.SearchMp3Skull(title, artist, album).ConfigureAwait(false);
                     break;
             }
 

@@ -16,6 +16,12 @@
             <ImageBrush Opacity=".25" Stretch="UniformToFill" ImageSource="{Binding Artist.MainImage.Largest}" />
         </Grid.Background>
         <Pivot Title="{Binding Artist.Name, Converter={StaticResource UpperCaseConverter}}" HeaderTemplate="{StaticResource PivotHeaderTemplate}">
+            <PivotItem x:Uid="PivotAlbums" Header="ALBUMS">
+                <ListView ItemsSource="{Binding TopAlbums}"
+                          ItemTemplate="{StaticResource LastAlbumDataTemplate}"
+                          SelectionMode="None"
+                          IsItemClickEnabled="True" ItemClick="ListView_ItemClick"/>
+            </PivotItem>
             <PivotItem x:Uid="PivotSongs" Header="SONGS">
                 <ListView IsItemClickEnabled="True" ItemsSource="{Binding TopTracks}"
                           ItemTemplate="{StaticResource LastTrackDataTemplate}">
@@ -25,12 +31,6 @@
                         </core:EventTriggerBehavior>
                     </interactivity:Interaction.Behaviors>
                 </ListView>
-            </PivotItem>
-            <PivotItem x:Uid="PivotAlbums" Header="ALBUMS">
-                <ListView ItemsSource="{Binding TopAlbums}"
-                          ItemTemplate="{StaticResource LastAlbumDataTemplate}"
-                          SelectionMode="None"
-                          IsItemClickEnabled="True" ItemClick="ListView_ItemClick"/>
             </PivotItem>
         </Pivot>
         <Grid Visibility="{Binding IsLoading, Converter={StaticResource VisibilityConverter}}" Background="{StaticResource ApplicationPageBackgroundThemeBrush}">

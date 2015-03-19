@@ -1,12 +1,8 @@
-#region
-
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
-using System.Threading.Tasks;
-
 using Audiotica.Core.Common;
 using Audiotica.Data.Collection;
 using Audiotica.Data.Collection.Model;
@@ -14,205 +10,142 @@ using Audiotica.Data.Model;
 using Audiotica.Data.Model.AudioticaCloud;
 using Audiotica.Data.Service.Interfaces;
 using Audiotica.Data.Spotify.Models;
-
 using GalaSoft.MvvmLight;
-
 using IF.Lastfm.Core.Api.Helpers;
 using IF.Lastfm.Core.Objects;
-
-#endregion
 
 namespace Audiotica.ViewModel
 {
     public class MainViewModel : ViewModelBase
     {
         private readonly AudioPlayerHelper _audioPlayer;
-
         private readonly IAudioticaService _audioticaService;
-
         private readonly ICollectionService _collectionService;
-
         private readonly IScrobblerService _service;
-
         private readonly ISpotifyService _spotify;
-
         private bool _isLastfmEnabled;
-
         private bool _isMostStreamedEnabled;
-
         private bool _isMostStreamedLoading;
-
         private bool _isRecommendationLoading;
-
         private ObservableCollection<SpotlightFeature> _largeFeatures;
-
         private ObservableCollection<SpotlightFeature> _mediumFeatures;
-
         private List<Song> _mostPlayed = new List<Song>();
-
         private List<LastArtist> _recommendedArtists;
-
         private List<ChartTrack> _topTracks;
+        private List<Song> _recentlyAdded;
 
         /// <summary>
-        /// Initializes a new instance of the MainViewModel class.
+        ///     Initializes a new instance of the MainViewModel class.
         /// </summary>
         /// <param name="collectionService">
-        /// The collection service.
+        ///     The collection service.
         /// </param>
         /// <param name="service">
-        /// The service.
+        ///     The service.
         /// </param>
         /// <param name="spotify">
-        /// The spotify.
-        /// </param>
-        /// <param name="xboxService">
-        /// The xbox service.
+        ///     The spotify.
         /// </param>
         /// <param name="audioticaService">
-        /// The audiotica service.
+        ///     The audiotica service.
         /// </param>
         /// <param name="audioPlayer">
-        /// The audio player.
+        ///     The audio player.
         /// </param>
+        /// <param name="playerViewModel"></param>
         public MainViewModel(
-            ICollectionService collectionService, 
-            IScrobblerService service, 
-            ISpotifyService spotify, 
-            IAudioticaService audioticaService, 
-            AudioPlayerHelper audioPlayer)
+            ICollectionService collectionService,
+            IScrobblerService service,
+            ISpotifyService spotify,
+            IAudioticaService audioticaService,
+            AudioPlayerHelper audioPlayer,
+            PlayerViewModel playerViewModel)
         {
+            PlayerViewModel = playerViewModel;
             _collectionService = collectionService;
             _service = service;
             _spotify = spotify;
             _audioticaService = audioticaService;
             _audioPlayer = audioPlayer;
             _collectionService.LibraryLoaded += CollectionServiceOnLibraryLoaded;
-            _collectionService.Songs.CollectionChanged += SongsOnCollectionChanged;
-            audioPlayer.TrackChanged += CollectionServiceOnLibraryLoaded;
+            _audioPlayer.TrackChanged += CollectionServiceOnLibraryLoaded;
 
             // Load data automatically
             LoadChartDataAsync();
         }
 
+        public PlayerViewModel PlayerViewModel { get; set; }
+
         public bool IsMostStreamedLoading
         {
-            get
-            {
-                return _isMostStreamedLoading;
-            }
+            get { return _isMostStreamedLoading; }
 
-            set
-            {
-                Set(ref _isMostStreamedLoading, value);
-            }
+            set { Set(ref _isMostStreamedLoading, value); }
         }
 
         public bool IsRecommendationLoading
         {
-            get
-            {
-                return _isRecommendationLoading;
-            }
+            get { return _isRecommendationLoading; }
 
-            set
-            {
-                Set(ref _isRecommendationLoading, value);
-            }
+            set { Set(ref _isRecommendationLoading, value); }
         }
 
         public List<Song> MostPlayed
         {
-            get
-            {
-                return _mostPlayed;
-            }
+            get { return _mostPlayed; }
 
-            set
-            {
-                Set(ref _mostPlayed, value);
-            }
+            set { Set(ref _mostPlayed, value); }
+        }
+
+        public List<Song> RecentlyAdded
+        {
+            get { return _recentlyAdded; }
+            set { Set(ref _recentlyAdded, value); }
         }
 
         public List<LastArtist> RecommendedArtists
         {
-            get
-            {
-                return _recommendedArtists;
-            }
+            get { return _recommendedArtists; }
 
-            set
-            {
-                Set(ref _recommendedArtists, value);
-            }
+            set { Set(ref _recommendedArtists, value); }
         }
 
         public ObservableCollection<SpotlightFeature> LargeFeatures
         {
-            get
-            {
-                return _largeFeatures;
-            }
+            get { return _largeFeatures; }
 
-            set
-            {
-                Set(ref _largeFeatures, value);
-            }
+            set { Set(ref _largeFeatures, value); }
         }
 
         public ObservableCollection<SpotlightFeature> MediumFeatures
         {
-            get
-            {
-                return _mediumFeatures;
-            }
+            get { return _mediumFeatures; }
 
-            set
-            {
-                Set(ref _mediumFeatures, value);
-            }
+            set { Set(ref _mediumFeatures, value); }
         }
 
         public List<ChartTrack> TopTracks
         {
-            get
-            {
-                return _topTracks;
-            }
+            get { return _topTracks; }
 
-            set
-            {
-                Set(ref _topTracks, value);
-            }
+            set { Set(ref _topTracks, value); }
         }
 
         public bool IsLastfmEnabled
         {
-            get
-            {
-                return _isLastfmEnabled;
-            }
+            get { return _isLastfmEnabled; }
 
-            set
-            {
-                Set(ref _isLastfmEnabled, value);
-            }
+            set { Set(ref _isLastfmEnabled, value); }
         }
 
         public bool IsMostStreamedEnabled
         {
-            get
-            {
-                return _isMostStreamedEnabled;
-            }
+            get { return _isMostStreamedEnabled; }
 
-            set
-            {
-                Set(ref _isMostStreamedEnabled, value);
-            }
+            set { Set(ref _isMostStreamedEnabled, value); }
         }
 
-        public async Task LoadChartDataAsync()
+        public async void LoadChartDataAsync()
         {
             LoadSpotlight();
 
@@ -221,7 +154,7 @@ namespace Audiotica.ViewModel
             try
             {
                 IsMostStreamedLoading = true;
-                var page = rnd.Next(0, 9) * 10;
+                var page = rnd.Next(0, 9)*10;
                 TopTracks = (await _spotify.GetMostStreamedTracksAsync()).Skip(page).Take(10).ToList();
             }
             catch
@@ -240,17 +173,26 @@ namespace Audiotica.ViewModel
 
         private void CollectionServiceOnLibraryLoaded(object sender, EventArgs eventArgs)
         {
-            MostPlayed =
-                _collectionService.Songs.ToList()
-                    .Where(p => p.PlayCount != 0 && (DateTime.Now - p.LastPlayed).TotalDays <= 14)
+            _collectionService.LibraryLoaded -= CollectionServiceOnLibraryLoaded;
+            _collectionService.Songs.CollectionChanged -= SongsOnCollectionChanged;
+            _collectionService.Songs.CollectionChanged += SongsOnCollectionChanged;
+            SongsOnCollectionChanged(null, null);
+        }
+
+        private void CalculateMostPlayed()
+        {
+            var mostPlayed =
+                _collectionService.Songs.Where(p => p.PlayCount != 0 && (DateTime.Now - p.LastPlayed).TotalDays <= 14)
                     .OrderByDescending(p => p.PlayCount)
                     .Take(10)
                     .ToList();
 
-            if (MostPlayed.Count == 10)
-            {
-                _audioPlayer.TrackChanged -= CollectionServiceOnLibraryLoaded;
-            }
+            if (MostPlayed == null || !mostPlayed.SequenceEqual(MostPlayed))
+                MostPlayed = mostPlayed;
+
+            if (MostPlayed.Count < 10) return;
+
+            _audioPlayer.TrackChanged -= CollectionServiceOnLibraryLoaded;
         }
 
         private async void LoadSpotlight()
@@ -342,20 +284,8 @@ namespace Audiotica.ViewModel
                 return;
             }
 
-            try
-            {
-                var rec = await _service.GetRecommendedArtistsAsync(limit: 10);
-                RecommendedArtists = rec.Content.ToList();
-            }
-            catch
-            {
-            }
-
-            if (RecommendedArtists == null)
-            {
-                // this will show the "no recommendation" text block
-                RecommendedArtists = new List<LastArtist>();
-            }
+            var rec = await _service.GetRecommendedArtistsAsync(limit: 10);
+            RecommendedArtists = rec != null ? rec.Content.ToList() : new List<LastArtist>();
 
             IsRecommendationLoading = false;
         }
@@ -376,19 +306,19 @@ namespace Audiotica.ViewModel
                     break;
                 case ShowTo.Cancelled:
                     result = _audioticaService.IsAuthenticated
-                           && _audioticaService.CurrentUser.SubscriptionStatus == SubscriptionStatus.Canceled;
+                             && _audioticaService.CurrentUser.SubscriptionStatus == SubscriptionStatus.Canceled;
                     break;
                 case ShowTo.Trial:
                     result = _audioticaService.IsAuthenticated
-                           && _audioticaService.CurrentUser.SubscriptionStatus == SubscriptionStatus.Trialing;
+                             && _audioticaService.CurrentUser.SubscriptionStatus == SubscriptionStatus.Trialing;
                     break;
                 case ShowTo.ActiveSubscription:
                     result = _audioticaService.IsAuthenticated
-                           && _audioticaService.CurrentUser.SubscriptionStatus == SubscriptionStatus.Active;
+                             && _audioticaService.CurrentUser.SubscriptionStatus == SubscriptionStatus.Active;
                     break;
                 case ShowTo.PastDue:
                     result = _audioticaService.IsAuthenticated
-                           && _audioticaService.CurrentUser.SubscriptionStatus == SubscriptionStatus.PastDue;
+                             && _audioticaService.CurrentUser.SubscriptionStatus == SubscriptionStatus.PastDue;
                     break;
                 case ShowTo.ScrobblingEnabled:
                     result = App.Locator.ScrobblerService.IsAuthenticated;
@@ -407,10 +337,13 @@ namespace Audiotica.ViewModel
 
         private void SongsOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            if (e.Action == NotifyCollectionChangedAction.Remove)
-            {
-                CollectionServiceOnLibraryLoaded(null, null);
-            }
+            if (MostPlayed == null || MostPlayed.Count < 10)
+                CalculateMostPlayed();
+
+            var recently = _collectionService.Songs.OrderByDescending(p => p.Id).Take(10).ToList();
+
+            if (RecentlyAdded == null || !recently.SequenceEqual(RecentlyAdded))
+                RecentlyAdded = recently;
         }
     }
 }

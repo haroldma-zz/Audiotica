@@ -11,6 +11,7 @@ using Windows.UI.Xaml.Navigation;
 using Audiotica.Core;
 using Audiotica.Core.Utilities;
 using Audiotica.Data.Collection.Model;
+using Audiotica.Data.Service.RunTime;
 
 #endregion
 
@@ -22,6 +23,7 @@ namespace Audiotica.PartialView
         {
             InitializeComponent();
             CurrentQueueView.Loaded += CurrentQueueViewOnLoaded;
+            _lyrcis = new LyricsService();
         }
 
         private void CurrentQueueViewOnLoaded(object sender, RoutedEventArgs routedEventArgs)
@@ -43,6 +45,7 @@ namespace Audiotica.PartialView
         {
             CurrentQueueView.SelectedItem = App.Locator.Player.CurrentQueue;
             CurrentQueueView.ScrollIntoView(CurrentQueueView.SelectedItem);
+            Pivot_SelectionChanged(null, null);
         }
 
         public void OnClosed()
@@ -69,6 +72,7 @@ namespace Audiotica.PartialView
 
         private bool _seeking;
         private TypedEventHandler<ListViewBase, ContainerContentChangingEventArgs> _delegate;
+        private readonly LyricsService _lyrcis;
 
         private void Slider_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
         {
@@ -138,6 +142,21 @@ namespace Audiotica.PartialView
         private TypedEventHandler<ListViewBase, ContainerContentChangingEventArgs> ContainerContentChangingDelegate
         {
             get { return _delegate ?? (_delegate = ItemListView_ContainerContentChanging); }
+        }
+
+        private async void Pivot_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (Pivot.SelectedIndex != 2) return;
+
+            var song = App.Locator.Player.CurrentQueue.Song;
+            if (LyricsTextBlock.Tag as int? == song.Id) return;
+
+            LyricsTextBlock.Tag = song.Id;
+            LyricsTextBlock.Text = "Loading...";
+
+            var results = await _lyrcis.GetLyrics(song.Name, song.Artist.Name);
+
+            LyricsTextBlock.Text = string.IsNullOrEmpty(results) ? "No lyrics found for this song." : results;
         }
     }
 }

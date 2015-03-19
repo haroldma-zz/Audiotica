@@ -20,9 +20,9 @@ namespace Audiotica.View
 {
     public sealed partial class CollectionArtistPage
     {
+        private readonly PivotItem _bioPivotItem;
         private readonly List<ICommandBarElement> _selectionModeCommands;
         private readonly List<ICommandBarElement> _selectionSecondaryModeCommands;
-        private readonly PivotItem _bioPivotItem;
         private readonly PivotItem _similarPivotItem;
         private TypedEventHandler<ListViewBase, ContainerContentChangingEventArgs> _delegate;
 
@@ -37,7 +37,7 @@ namespace Audiotica.View
             var playButton = new AppBarButton
             {
                 Icon = new SymbolIcon(Symbol.Play),
-                Label = "play",
+                Label = "play"
             };
             playButton.Click += async (o, p) =>
             {
@@ -87,7 +87,8 @@ namespace Audiotica.View
             };
             deleteButton.Click += async (o, p) =>
             {
-                var tasks = SongList.SelectedItems.Select(m => CollectionHelper.DeleteEntryAsync(m as Song, false)).ToList();
+                var tasks =
+                    SongList.SelectedItems.Select(m => CollectionHelper.DeleteEntryAsync(m as Song, false)).ToList();
                 if (tasks.Count == 0) return;
 
                 SongList.SelectionMode = ListViewSelectionMode.None;
@@ -114,7 +115,7 @@ namespace Audiotica.View
             get { return _delegate ?? (_delegate = ItemListView_ContainerContentChanging); }
         }
 
-        public override void NavigatedTo(Windows.UI.Xaml.Navigation.NavigationMode mode, object e)
+        public override void NavigatedTo(NavigationMode mode, object e)
         {
             base.NavigatedTo(mode, e);
             var id = e as int?;
@@ -144,12 +145,18 @@ namespace Audiotica.View
             }
         }
 
-
         public override void NavigatedFrom(NavigationMode mode)
         {
             base.NavigatedFrom(mode);
             Messenger.Default.Unregister<bool>(this, "artist-coll-bio", BioUpdate);
             Messenger.Default.Unregister<bool>(this, "artist-coll-sim", SimUpdate);
+
+            if (mode != NavigationMode.Back) return;
+
+            var vm = DataContext as CollectionArtistViewModel;
+
+            vm.Artist = null;
+            vm.LastArtist = null;
         }
 
         private void SimUpdate(bool isVisible)

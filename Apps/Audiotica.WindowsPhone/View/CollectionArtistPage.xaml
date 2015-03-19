@@ -19,21 +19,6 @@
             <ImageBrush Opacity=".25" Stretch="UniformToFill" ImageSource="{Binding Artist.Artwork.Image}" />
         </Grid.Background>
         <Pivot x:Name="ArtistPivot" Title="{Binding Artist.Name, Converter={StaticResource UpperCaseConverter}}" HeaderTemplate="{StaticResource PivotHeaderTemplate}" SelectionChanged="ArtistPivot_SelectionChanged">
-            <PivotItem x:Uid="PivotSongs" Header="SONGS">
-                <qKit:MultiSelectListView x:Name="SongList" SelectionModeChanged="MultiSelectListView_SelectionModeChanged"
-                                          ContainerContentChanging="ItemListView_ContainerContentChanging" IsItemClickEnabled="True" ItemsSource="{Binding Artist.Songs}" Margin="-20,0,0,0">
-                    <ListView.ItemTemplate>
-                        <DataTemplate>
-                            <audiotica:SongViewer />
-                        </DataTemplate>
-                    </ListView.ItemTemplate>
-                    <interactivity:Interaction.Behaviors>
-                        <core:EventTriggerBehavior EventName="ItemClick">
-                            <core:InvokeCommandAction Command="{Binding SongClickCommand}" />
-                        </core:EventTriggerBehavior>
-                    </interactivity:Interaction.Behaviors>
-                </qKit:MultiSelectListView>
-            </PivotItem>
             <PivotItem x:Uid="PivotAlbums" Header="ALBUMS">
                 <ListView ItemsSource="{Binding Artist.Albums}"
                           SelectionMode="None"
@@ -83,6 +68,21 @@
                         </DataTemplate>
                     </ListView.ItemTemplate>
                 </ListView>
+            </PivotItem>
+            <PivotItem x:Uid="PivotSongs" Header="SONGS">
+                <qKit:MultiSelectListView x:Name="SongList" SelectionModeChanged="MultiSelectListView_SelectionModeChanged"
+                                          ContainerContentChanging="ItemListView_ContainerContentChanging" IsItemClickEnabled="True" ItemsSource="{Binding Artist.Songs}" Margin="-20,0,0,0">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <audiotica:SongViewer />
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                    <interactivity:Interaction.Behaviors>
+                        <core:EventTriggerBehavior EventName="ItemClick">
+                            <core:InvokeCommandAction Command="{Binding SongClickCommand}" />
+                        </core:EventTriggerBehavior>
+                    </interactivity:Interaction.Behaviors>
+                </qKit:MultiSelectListView>
             </PivotItem>
             <PivotItem x:Uid="PivotSimilar" x:Name="SimilarPivot" Header="SIMILAR">
                 <ListView ItemsSource="{Binding LastArtist.Similar}" IsItemClickEnabled="True"

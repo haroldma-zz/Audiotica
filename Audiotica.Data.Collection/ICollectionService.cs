@@ -18,6 +18,7 @@ namespace Audiotica.Data.Collection
         OptimizedObservableCollection<Song> Songs { get; set; }
         OptimizedObservableCollection<Album> Albums { get; set; }
         OptimizedObservableCollection<Artist> Artists { get; set; }
+        OptimizedObservableCollection<RadioStation> Stations { get; set; }
         OptimizedObservableCollection<Playlist> Playlists { get; set; }
         OptimizedObservableCollection<QueueSong> PlaybackQueue { get; }
         OptimizedObservableCollection<QueueSong> ShufflePlaybackQueue { get; }
@@ -27,9 +28,9 @@ namespace Audiotica.Data.Collection
         /// <summary>
         ///     Loads all songs, albums, artist and playlists/queue.
         /// </summary>
-        void LoadLibrary(bool loadEssentials = false);
+        void LoadLibrary();
 
-        Task LoadLibraryAsync(bool loadEssentials = false);
+        Task LoadLibraryAsync();
 
         /// <summary>
         ///     Adds the song to the database and collection.
@@ -44,6 +45,13 @@ namespace Audiotica.Data.Collection
         Task<List<HistoryEntry>> FetchHistoryAsync();
         bool SongAlreadyExists(string providerId, string name, string album, string artist);
         bool SongAlreadyExists(string localSongPath);
+
+        #region Radio Stations
+
+        Task AddStationAsync(RadioStation station);
+        Task DeleteStationAsync(RadioStation station);
+
+        #endregion
 
         #region Playback Queue
 

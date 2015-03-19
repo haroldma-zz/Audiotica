@@ -50,6 +50,8 @@ namespace Audiotica.ViewModel
             SimpleIoc.Default.Register<SpotifyWebApi>();
             SimpleIoc.Default.Register<ISpotifyService, SpotifyService>();
 
+            SimpleIoc.Default.Register<IDeezerService, DeezerService>();
+
             if (ViewModelBase.IsInDesignModeStatic)
             {
                 SimpleIoc.Default.Register<IAudioticaService, DesignAudioticaService>();
@@ -59,14 +61,13 @@ namespace Audiotica.ViewModel
             }
             else
             {
-                SimpleIoc.Default.Register<IDeezerService, DeezerService>();
                 SimpleIoc.Default.Register<IDispatcherHelper>(() => new PclDispatcherHelper(DispatcherHelper.UIDispatcher));
 
                 SimpleIoc.Default.Register<IScrobblerService, ScrobblerService>();
 
                 var factory = new AudioticaFactory(PclDispatcherHelper, AppSettingsHelper, BitmapFactory);
 
-                SimpleIoc.Default.Register(() => factory.CreateCollectionSqlService(10, async (connection, d) =>
+                SimpleIoc.Default.Register(() => factory.CreateCollectionSqlService(11, async (connection, d) =>
                 {
                     if (!(d > 0) || !(d < 8)) return;
 
@@ -76,13 +77,12 @@ namespace Audiotica.ViewModel
                         App.Locator.CollectionService.LibraryLoaded += (sender, args) =>
                             CollectionHelper.MigrateAsync();
                 }));
-                SimpleIoc.Default.Register(() => factory.CreatePlayerSqlService(5), "BackgroundSql");
+                SimpleIoc.Default.Register(() => factory.CreatePlayerSqlService(6), "BackgroundSql");
                 SimpleIoc.Default.Register(() => factory.CreateCollectionService(SqlService, BgSqlService));
-
-                SimpleIoc.Default.Register<ISongDownloadService>(() => new SongDownloadService(CollectionService, SqlService, DispatcherHelper.UIDispatcher));
                 SimpleIoc.Default.Register<IAudioticaService, AudioticaService>();
             }
 
+            SimpleIoc.Default.Register<ISongDownloadService>(() => new SongDownloadService(CollectionService, SqlService, DispatcherHelper.UIDispatcher));
             SimpleIoc.Default.Register<Mp3MatchEngine>();
             SimpleIoc.Default.Register<AppVersionHelper>();
             SimpleIoc.Default.Register<CollectionCommandHelper>();
@@ -147,11 +147,6 @@ namespace Audiotica.ViewModel
         public AudioticaService AudioticaCloud
         {
             get { return ServiceLocator.Current.GetInstance<AudioticaService>(); }
-        }
-
-        public AdMediatorBar Ads
-        {
-            get { return ServiceLocator.Current.GetInstance<AdMediatorBar>(); }
         }
 
         public MainViewModel Main

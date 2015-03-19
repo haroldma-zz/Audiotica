@@ -236,17 +236,14 @@
         </DataTemplate>
 
         <DataTemplate x:Key="SimilarLastArtistDataTemplate">
-            <Grid Height="150" Margin="0,0,0,10" Background="{StaticResource PhoneAccentBrush}">
-                <Grid>
+            <Grid Background="Black" Margin="0,0,0,10">
+                <Grid Height="150">
                     <Grid.Background>
-                        <ImageBrush Stretch="UniformToFill" ImageSource="{Binding MainImage.Largest}"
-                                    AlignmentY="Top" />
+                        <ImageBrush Stretch="UniformToFill" Opacity=".5"
+                                local:BlurImageTool.Source="{Binding MainImage.Largest}" />
                     </Grid.Background>
-                </Grid>
-                <Grid Background="#BF000000" VerticalAlignment="Bottom">
-                    <TextBlock TextTrimming="CharacterEllipsis" Margin="10,5" FontSize="22"
-                               Text="{Binding Name}" HorizontalAlignment="Left"
-                               VerticalAlignment="Bottom" />
+                    <TextBlock Text="{Binding Name}" VerticalAlignment="Center" TextAlignment="Center" FontSize="24"
+                           FontWeight="Light" Margin="10,0" TextWrapping="Wrap"/>
                 </Grid>
             </Grid>
         </DataTemplate>
@@ -287,7 +284,7 @@
         </DataTemplate>
 
         <DataTemplate x:Key="SpotifyTrackDataTemplate">
-           <local:SpotifyTrackViewer />
+            <local:SpotifyTrackViewer />
         </DataTemplate>
         <DataTemplate x:Key="SpotifyTrackNoAlbumDataTemplate">
             <StackPanel Margin="0,0,0,15">
@@ -1088,6 +1085,5 @@
                 </Setter.Value>
             </Setter>
         </Style>
-
     </Application.Resources>
 </Application>

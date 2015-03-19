@@ -71,6 +71,7 @@ namespace Audiotica
             _song = song;
             SongNameTextBlock.Opacity = 0;
             ArtistAlbumNameTextBlock.Opacity = 0;
+            AlbumTrackNumber.Visibility = Visibility.Collapsed;
         }
 
         /// <summary>
@@ -80,6 +81,12 @@ namespace Audiotica
         /// <param name="withAlbumName">if set to <c>true</c> [with album name].</param>
         public void ShowRest(bool withAlbumName = true)
         {
+            if (!withAlbumName)
+            {
+                AlbumTrackNumber.Visibility = Visibility.Visible;
+                AlbumTrackNumber.Text = _song.TrackNumber.ToString();
+            }
+
             var albumName = withAlbumName ? _song.Album.Name : string.Empty;
 
             if (!string.IsNullOrEmpty(albumName))

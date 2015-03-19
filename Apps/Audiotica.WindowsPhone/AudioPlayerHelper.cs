@@ -3,17 +3,14 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-
-using Audiotica.Core;
-using Audiotica.Data.Collection.Model;
-
-using GalaSoft.MvvmLight.Threading;
-
 using Windows.Foundation.Collections;
 using Windows.Media.Playback;
-
+using Audiotica.Core;
+using Audiotica.Core.Utils.Interfaces;
 using Audiotica.Core.WinRt.Common;
-
+using Audiotica.Core.WinRt.Utilities;
+using Audiotica.Data.Collection.Model;
+using GalaSoft.MvvmLight.Threading;
 using Xamarin;
 
 #endregion
@@ -22,41 +19,32 @@ namespace Audiotica
 {
     public class AudioPlayerHelper
     {
+        private readonly IAppSettingsHelper _appSettings;
         private bool _isShutdown = true;
+        private int _retryCount;
 
-        public event EventHandler Shutdown;
-
-        public event EventHandler TrackChanged;
-
-        public event EventHandler<PlaybackStateEventArgs> PlaybackStateChanged;
-
-        public void FullShutdown()
+        public AudioPlayerHelper(IAppSettingsHelper appSettings)
         {
-            var player = SafeMediaPlayer;
-
-            if (player == null)
-            {
-                return;
-            }
-
-            RemoveMediaPlayerEventHandlers(player);
-            BackgroundMediaPlayer.Shutdown();
-            App.Locator.AppSettingsHelper.Write(PlayerConstants.CurrentTrack, null);
+            _appSettings = appSettings;
         }
 
-        private MediaPlayer _player;
         public MediaPlayer SafeMediaPlayer
         {
             get
             {
                 try
                 {
-                    return _player ?? (_player = BackgroundMediaPlayer.Current);
+                    return BackgroundMediaPlayer.Current;
                 }
                 catch
                 {
-                    _player = null;
-                    return null;
+                    if (_retryCount >= 5)
+                    {
+                        _retryCount = 0;
+                        return null;
+                    }
+                    _retryCount++;
+                    return SafeMediaPlayer;
                 }
             }
         }
@@ -73,14 +61,46 @@ namespace Audiotica
                 }
                 catch
                 {
-                    return MediaPlayerState.Closed;
+                    if (_retryCount >= 5)
+                    {
+                        _retryCount = 0;
+                        return MediaPlayerState.Closed;
+                    }
+                    _retryCount++;
+                    return SafePlayerState;
                 }
             }
         }
 
+        public event EventHandler Shutdown;
+        public event EventHandler TrackChanged;
+        public event EventHandler<PlaybackStateEventArgs> PlaybackStateChanged;
+
+        public void FullShutdown()
+        {
+            var player = SafeMediaPlayer;
+
+            if (player == null)
+            {
+                return;
+            }
+
+            RemoveMediaPlayerEventHandlers(player);
+            BackgroundMediaPlayer.Shutdown();
+            App.Locator.AppSettingsHelper.Write(PlayerConstants.CurrentTrack, null);
+        }
+
+        public void StartStation(int id)
+        {
+            _appSettings.Write("RadioId", id);
+            _appSettings.Write("RadioMode", true);
+            var value = new ValueSet { { PlayerConstants.StartStation, string.Empty } };
+            BackgroundMediaPlayer.SendMessageToBackground(value);
+        }
+
         public void NextSong()
         {
-            var value = new ValueSet { { PlayerConstants.SkipNext, string.Empty } };
+            var value = new ValueSet {{PlayerConstants.SkipNext, string.Empty}};
             BackgroundMediaPlayer.SendMessageToBackground(value);
         }
 
@@ -133,12 +153,12 @@ namespace Audiotica
             }
 
             Insights.Track(
-                "Play Song", 
+                "Play Song",
                 new Dictionary<string, string>
                 {
-                    { "Name", song.Song.Name }, 
-                    { "ArtistName", song.Song.ArtistName }, 
-                    { "ProviderId", song.Song.ProviderId }
+                    {"Name", song.Song.Name},
+                    {"ArtistName", song.Song.ArtistName},
+                    {"ProviderId", song.Song.ProviderId}
                 });
 
             if (_isShutdown)
@@ -146,9 +166,11 @@ namespace Audiotica
                 await AddMediaPlayerEventHandlers();
             }
 
-            App.Locator.AppSettingsHelper.Write(PlayerConstants.CurrentTrack, song.Id);
+            _appSettings.Write("RadioId", null);
+            _appSettings.Write("RadioMode", false);
+            _appSettings.Write(PlayerConstants.CurrentTrack, song.Id);
 
-            var message = new ValueSet { { PlayerConstants.StartPlayback, null } };
+            var message = new ValueSet {{PlayerConstants.StartPlayback, null}};
             BackgroundMediaPlayer.SendMessageToBackground(message);
 
             RaiseEvent(TrackChanged);
@@ -156,7 +178,7 @@ namespace Audiotica
 
         public void PrevSong()
         {
-            var value = new ValueSet { { PlayerConstants.SkipPrevious, string.Empty } };
+            var value = new ValueSet {{PlayerConstants.SkipPrevious, string.Empty}};
             BackgroundMediaPlayer.SendMessageToBackground(value);
         }
 
@@ -204,19 +226,30 @@ namespace Audiotica
                 // avoid duplicate events
                 RemoveMediaPlayerEventHandlers(player);
                 player.CurrentStateChanged += MediaPlayer_CurrentStateChanged;
-                BackgroundMediaPlayer.MessageReceivedFromBackground += BackgroundMediaPlayer_MessageReceivedFromBackground;
+                BackgroundMediaPlayer.MessageReceivedFromBackground +=
+                    BackgroundMediaPlayer_MessageReceivedFromBackground;
                 _isShutdown = false;
                 await Task.Delay(250);
+                return;
             }
             catch
             {
                 // ignored
-                _isShutdown = true;
             }
+
+            if (_retryCount >= 5)
+            {
+                _isShutdown = true;
+                _retryCount = 0;
+                return;
+            }
+
+            _retryCount++;
+            await AddMediaPlayerEventHandlers();
         }
 
         private void BackgroundMediaPlayer_MessageReceivedFromBackground(
-            object sender, 
+            object sender,
             MediaPlayerDataReceivedEventArgs e)
         {
             foreach (var key in e.Data.Keys)

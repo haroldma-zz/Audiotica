@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 using SQLite;
@@ -204,9 +205,12 @@ namespace Audiotica.Data.Collection.RunTime
                     });
         }
 
-        public Task DeleteWhereAsync(BaseEntry entry)
+        public Task DeleteWhereAsync<T>(Expression<Func<T, bool>> express) where T : new()
         {
-            return Task.Run(() => { this.DbConnection.Delete(entry); });
+            return Task.Run(() =>
+            {
+                DbConnection.Table<T>().Delete(express);
+            });
         }
 
         public void BeginTransaction()

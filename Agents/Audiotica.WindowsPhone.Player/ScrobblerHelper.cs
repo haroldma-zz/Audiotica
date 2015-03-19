@@ -21,7 +21,7 @@ namespace Audiotica.WindowsPhone.Player
 
         public bool IsScrobblingEnabled()
         {
-            return _service.IsAuthenticated
+            return _service.HasCredentials
                    && _appSettingsHelper.Read<bool>("Scrobble", SettingsStrategy.Roaming);
         }
 
@@ -43,7 +43,7 @@ namespace Audiotica.WindowsPhone.Player
         {
             try
             {
-                await _service.ScrobbleNowPlayingAsync(queue.Song.Name, queue.Song.ArtistName,
+                await _service.ScrobbleNowPlayingAsync(queue.Song.Name, queue.Song.Artist.Name,
                     DateTime.UtcNow, queue.Song.Duration);
             }
             catch
@@ -55,7 +55,7 @@ namespace Audiotica.WindowsPhone.Player
         {
             var result =
                 await
-                    _service.ScrobbleAsync(item.Song.Name, item.Song.ArtistName,
+                    _service.ScrobbleAsync(item.Song.Name, item.Song.Artist.Name,
                         item.DatePlayed.ToUniversalTime(), item.Song.Duration);
 
             return result == LastFmApiError.None || result == LastFmApiError.Failure;

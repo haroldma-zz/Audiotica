@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using SQLite;
 
@@ -25,7 +26,7 @@ namespace Audiotica.Data.Collection
         List<T> SelectAll<T>() where T : new();
         Task<List<T>> SelectAllAsync<T>() where T : new();
         Task DeleteTableAsync<T>();
-        Task DeleteWhereAsync(BaseEntry entry);
+        Task DeleteWhereAsync<T>(Expression<Func<T, bool>> express) where T : new();
 
         void BeginTransaction();
         void Commit();

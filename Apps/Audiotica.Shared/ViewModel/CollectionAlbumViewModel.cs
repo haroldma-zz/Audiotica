@@ -24,10 +24,10 @@ namespace Audiotica.ViewModel
             _service = service;
             _commands = commands;
             _songClickCommand = new RelayCommand<ItemClickEventArgs>(SongClickExecute);
-            MessengerInstance.Register<GenericMessage<int>>(this, "album-coll-detail-id", ReceivedId);
-
+            
             if (IsInDesignMode)
                 SetAlbum(0);
+            else MessengerInstance.Register<GenericMessage<int>>(this, "album-coll-detail-id", ReceivedId);
         }
 
         private void ReceivedId(GenericMessage<int> obj)
@@ -39,7 +39,7 @@ namespace Audiotica.ViewModel
         {
             var song = e.ClickedItem as Song;
             var queueSong = _album.Songs.ToList();
-            await CollectionHelper.PlaySongsAsync(song, queueSong);
+            await CollectionHelper.PlaySongsAsync(song, queueSong, true);
         }
 
         public Album Album

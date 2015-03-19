@@ -6,6 +6,7 @@ using IF.Lastfm.Core.Objects;
 
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
+using Audiotica.ViewModel;
 
 #endregion
 
@@ -30,6 +31,18 @@ namespace Audiotica.View
 
             var msg = new GenericMessage<string>(name);
             Messenger.Default.Send(msg, "artist-detail-name");
+        }
+
+        public override void NavigatedFrom(NavigationMode mode)
+        {
+            base.NavigatedFrom(mode);
+
+            if (mode != NavigationMode.Back) return;
+
+            var vm = DataContext as ArtistViewModel;
+            vm.Artist = null;
+            vm.TopAlbums = null;
+            vm.TopTracks = null;
         }
 
         private void ListView_ItemClick(object sender, ItemClickEventArgs e)

@@ -465,7 +465,10 @@ namespace Audiotica.ViewModel
                 try
                 {
                     var track = await _service.GetDetailTrack(title, artist);
-                    await CollectionHelper.SaveTrackAsync(track);
+                    if (track == null)
+                        CurtainPrompt.ShowError("AppNetworkIssue".FromLanguageResource());
+                    else
+                        await CollectionHelper.SaveTrackAsync(track);
                 }
                 catch
                 {

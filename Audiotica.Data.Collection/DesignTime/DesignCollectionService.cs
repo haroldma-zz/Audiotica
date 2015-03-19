@@ -27,14 +27,19 @@ namespace Audiotica.Data.Collection.DesignTime
         public event EventHandler LibraryLoaded;
         public int ScaledImageSize { get; set; }
         public OptimizedObservableCollection<Song> Songs { get; set; }
+
         public OptimizedObservableCollection<Album> Albums { get; set; }
+
         public OptimizedObservableCollection<Artist> Artists { get; set; }
+
+        public OptimizedObservableCollection<RadioStation> Stations { get; set; }
+
         public OptimizedObservableCollection<Playlist> Playlists { get; set; }
         public OptimizedObservableCollection<QueueSong> PlaybackQueue { get; private set; }
         public OptimizedObservableCollection<QueueSong> ShufflePlaybackQueue { get; private set; }
         public OptimizedObservableCollection<QueueSong> CurrentPlaybackQueue { get; private set; }
 
-        public void LoadLibrary(bool loadEssentials = true)
+        public void LoadLibrary()
         {
             Songs = new OptimizedObservableCollection<Song>
             {
@@ -124,12 +129,7 @@ namespace Audiotica.Data.Collection.DesignTime
             PlaybackQueue = new OptimizedObservableCollection<QueueSong>(pSongs);
         }
 
-        public Task LoadLibraryAsync(bool loadEssentials = true)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task AddSongAsync(Song song)
+        public Task LoadLibraryAsync()
         {
             throw new NotImplementedException();
         }
@@ -155,6 +155,16 @@ namespace Audiotica.Data.Collection.DesignTime
         }
 
         public bool SongAlreadyExists(string localSongPath)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task AddStationAsync(RadioStation station)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task DeleteStationAsync(RadioStation station)
         {
             throw new NotImplementedException();
         }

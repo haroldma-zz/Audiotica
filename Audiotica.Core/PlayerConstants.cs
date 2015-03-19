@@ -2,6 +2,10 @@
 {
     public class PlayerConstants
     {
+        public const string QueueUpdated = "queueupdated";
+        public const string StartStation = "station";
+        public const string MatchingTrack = "matching";
+
         public const string CurrentTrack = "currentTrack";
         public const string BackgroundTaskStarted = "Started";
         public const string BackgroundTaskRunning = "Running";

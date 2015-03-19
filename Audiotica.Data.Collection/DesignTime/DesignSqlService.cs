@@ -84,7 +84,7 @@ namespace Audiotica.Data.Collection.DesignTime
             throw new NotImplementedException();
         }
 
-        public Task DeleteWhereAsync(BaseEntry entry)
+        public Task DeleteWhereAsync<T>(Expression<Func<T, bool>> express) where T : new()
         {
             throw new NotImplementedException();
         }

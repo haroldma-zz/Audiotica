@@ -1,14 +1,10 @@
 ﻿#region
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Windows.UI.Xaml.Controls;
-using Audiotica.Core.Common;
-using Audiotica.Core.Utilities;
 using Audiotica.Core.WinRt;
 using Audiotica.Core.WinRt.Common;
-using Audiotica.Data;
 using Audiotica.Data.Service.Interfaces;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
@@ -83,14 +79,9 @@ namespace Audiotica.ViewModel
         {
             IsLoading = true;
 
-            try
-            {
-                Artist = await _service.GetDetailArtist(name);
-            }
-            catch
-            {
+            Artist = await _service.GetDetailArtist(name);
+            if (Artist == null)
                 CurtainPrompt.ShowError("AppNetworkIssue".FromLanguageResource());
-            }
             try
             {
                 TopTracks = (await _service.GetArtistTopTracks(name)).Content.ToList();
@@ -114,7 +105,7 @@ namespace Audiotica.ViewModel
 
         private async void SongClickExecute(ItemClickEventArgs item)
         {
-            var track = (LastTrack)item.ClickedItem;
+            var track = (LastTrack) item.ClickedItem;
             await CollectionHelper.SaveTrackAsync(track);
         }
     }

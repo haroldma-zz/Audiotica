@@ -16,8 +16,9 @@ namespace Audiotica.Data.Service.DesignTime
     public class DesignScrobblerService : IScrobblerService
     {
         public event EventHandler<BoolEventArgs> AuthStateChanged;
-        public bool HasCredentials { get; private set; }
-        public bool IsAuthenticated { get; private set; }
+        public bool HasCredentials { get { return true; } }
+        public bool IsAuthenticated { get { return true; }
+    }
 
         public void Logout()
         {
@@ -37,7 +38,11 @@ namespace Audiotica.Data.Service.DesignTime
 
         public Task<PageResponse<LastArtist>> GetRecommendedArtistsAsync(int page = 1, int limit = 30)
         {
-            throw new NotImplementedException();
+            return Task.FromResult(PageResponse<LastArtist>.CreateSuccessResponse(new List<LastArtist>
+            {
+                CreateArtist("Iggy Azalea",
+                    "http://musicimage.xboxlive.com/content/music.1F154700-0200-11DB-89CA-0019B92A3933/image?locale=en-US")
+            }));
         }
 
         public Task<LastAlbum> GetDetailAlbum(string name, string artist)

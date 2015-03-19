@@ -12,10 +12,8 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <Canvas x:Name="LayoutRoot"/>
-        <partialView:AdMediatorBar Grid.Row="1" />
-        <partialView:NowPlayingBar Grid.Row="2" />
+        <partialView:NowPlayingBar Grid.Row="1" />
     </Grid>
 </Page>

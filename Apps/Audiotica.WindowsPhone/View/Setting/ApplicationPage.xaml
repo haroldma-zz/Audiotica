@@ -22,13 +22,6 @@
         </StackPanel>
         <ScrollViewer Grid.Row="1" Margin="19,9.5,19,0">
             <StackPanel>
-                <ToggleSwitch x:Uid="SettingsToggleAds" Header="Ads" IsEnabled="{Binding IsAdsEnabled}"
-                              Visibility="{Binding IsAdsEnabled, Converter={StaticResource VisibilityConverter}}"
-                              IsOn="{Binding Advertisements, Mode=TwoWay}" />
-                <Button Visibility="{Binding IsAdsEnabled, Converter={StaticResource ReverseVisibilityConverter}}"
-                        Command="{Binding InAppAdsClickRelay}" Content="Remove advertisement (in-app)"
-                        HorizontalAlignment="Stretch" />
-
                 <ToggleSwitch x:Uid="SettingsToggleWallpaper" Header="Album Art Wallpaper"
                               IsOn="{Binding WallpaperArt, Mode=TwoWay}" />
 

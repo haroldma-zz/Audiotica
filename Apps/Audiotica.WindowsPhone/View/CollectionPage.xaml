@@ -12,7 +12,7 @@
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
     DataContext="{Binding Collection, Source={StaticResource Locator}}">
-    <Grid>
+    <Grid x:Name="LayoutGrid">
         <Grid.Resources>
             <JumpListItemBackgroundConverter x:Key="BackgroundConverter" />
             <JumpListItemForegroundConverter x:Key="ForegroundConverter" />
@@ -60,21 +60,6 @@
             <CollectionViewSource x:Key="AlbumGroups"
                                   IsSourceGrouped="True" Source="{Binding SortedAlbums}" />
         </Grid.Resources>
-
-        <ListView ManipulationMode="None" CacheMode="BitmapCache" Name="WallpaperGridView" ItemsSource="{Binding RandomizeAlbumList}" SelectionMode="None" ScrollViewer.VerticalScrollBarVisibility="Hidden">
-            <ListView.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <controls:UniformGrid Columns="5" />
-                </ItemsPanelTemplate>
-            </ListView.ItemsPanel>
-            <ListView.ItemTemplate>
-                <DataTemplate>
-                    <Image
-                        Opacity=".2"
-                        Source="{Binding SmallArtwork.Image}" />
-                </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
 
         <Pivot Name="CollectionPivot" x:Uid="CollectionPivot" Title="COLLECTION"
                HeaderTemplate="{StaticResource PivotHeaderTemplate}"
