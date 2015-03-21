@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System.Globalization;
+using System.Text;
+using System.Threading.Tasks;
 
 using Newtonsoft.Json;
 
@@ -6,6 +8,12 @@ namespace Audiotica.Core.Utils
 {
     public static class StringExtensions
     {
+        public static string RemoveAccents(this string accentedStr)
+        {
+            byte[] tempBytes = Encoding.GetEncoding("ISO-8859-8").GetBytes(accentedStr);
+            return Encoding.UTF8.GetString(tempBytes, 0, tempBytes.Length);
+        }
+
         public static string CleanForFileName(this string str, string invalidMessage)
         {
             if (string.IsNullOrEmpty(str))

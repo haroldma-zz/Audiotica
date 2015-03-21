@@ -11,6 +11,8 @@ namespace Audiotica.Core.Utils
 {
     public static class CollectionExtensions
     {
+        private static readonly Random Random = new Random();
+
         public static void Sort<T>(this ObservableCollection<T> observable, Comparison<T> comparison)
         {
             var sorted = observable.ToList();
@@ -40,21 +42,23 @@ namespace Audiotica.Core.Utils
 
         public static IList<T> Shuffle<T>(this IList<T> list)
         {
-            var rng = new Random();
-            var n = list.Count;
-            var shuffleList = new T[n];
-            list.CopyTo(shuffleList, 0);
+            var arr = list.ToArray();
+            Shuffle(arr);
+            return arr;
+        }
 
-            while (n > 1)
+        private static void Shuffle<T>(T[] array)
+        {
+            var n = array.Length;
+            for (var i = 0; i < n; i++)
             {
-                n--;
-                var k = rng.Next(n + 1);
-                var value = shuffleList[k];
-                shuffleList[k] = shuffleList[n];
-                shuffleList[n] = value;
+                // NextDouble returns a random number between 0 and 1.
+                // ... It is equivalent to Math.random() in Java.
+                var r = i + (int) (Random.NextDouble()*(n - i));
+                var t = array[r];
+                array[r] = array[i];
+                array[i] = t;
             }
-
-            return shuffleList;
         }
     }
 }

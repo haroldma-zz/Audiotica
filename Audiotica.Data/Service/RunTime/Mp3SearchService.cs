@@ -572,7 +572,7 @@ namespace Audiotica.Data.Service.RunTime
 
         private async Task<List<WebSong>> IdentifyMatches(List<WebSong> songs, string title, string artist, bool checkAll)
         {
-            var cleanTile = title;
+            var cleanTile = title.Replace("feat.", "ft.");
 
             var index = cleanTile.IndexOf('(');
             if (index > -1 && index < cleanTile.Length - 1)

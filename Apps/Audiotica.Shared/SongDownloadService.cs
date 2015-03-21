@@ -7,22 +7,17 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-
+using Windows.Networking.BackgroundTransfer;
+using Windows.Storage;
+using Windows.UI.Core;
 using Audiotica.Core.Utils;
 using Audiotica.Core.WinRt;
 using Audiotica.Core.WinRt.Common;
 using Audiotica.Core.WinRt.Utilities;
 using Audiotica.Data.Collection;
 using Audiotica.Data.Collection.Model;
-
 using PCLStorage;
-
 using TagLib;
-
-using Windows.Networking.BackgroundTransfer;
-using Windows.Storage;
-using Windows.UI.Core;
-
 using CreationCollisionOption = Windows.Storage.CreationCollisionOption;
 
 #endregion
@@ -78,66 +73,66 @@ namespace Audiotica
             foreach (var download in downloads)
             {
                 // With the uri get the song
-                var songEntry = this.service.Songs.FirstOrDefault(p => p.DownloadId == download.Guid.ToString());
+                var songEntry = service.Songs.FirstOrDefault(p => p.DownloadId == download.Guid.ToString());
 
                 if (songEntry != null)
                 {
-                    this.HandleDownload(songEntry, download, false);
+                    HandleDownload(songEntry, download, false);
                 }
             }
         }
 
         /// <summary>
-        /// Use as callback of every downloads progress
+        ///     Use as callback of every downloads progress
         /// </summary>
         /// <param name="download">
-        /// The download that has just progressed
+        ///     The download that has just progressed
         /// </param>
         private void DownloadProgress(DownloadOperation download)
         {
             // Thread safety comes first!
-            this.dispatcher.RunAsync(
-                CoreDispatcherPriority.Normal, 
+            dispatcher.RunAsync(
+                CoreDispatcherPriority.Normal,
                 () =>
+                {
+                    // Get the associated song BackgroundDownload
+                    var songDownload =
+                        ActiveDownloads.FirstOrDefault(
+                            p => ((DownloadOperation) p.Download.DownloadOperation).Guid == download.Guid);
+
+                    if (songDownload == null)
                     {
-                        // Get the associated song BackgroundDownload
-                        var songDownload =
-                            this.ActiveDownloads.FirstOrDefault(
-                                p => ((DownloadOperation)p.Download.DownloadOperation).Guid == download.Guid);
+                        return;
+                    }
 
-                        if (songDownload == null)
-                        {
-                            return;
-                        }
+                    songDownload.Download.Status = download.Progress.Status.ToString();
 
-                        songDownload.Download.Status = download.Progress.Status.ToString();
-
-                        if (download.Progress.TotalBytesToReceive > 0)
-                        {
-                            songDownload.Download.BytesToReceive = download.Progress.TotalBytesToReceive;
-                            songDownload.Download.BytesReceived = download.Progress.BytesReceived;
-                        }
-                        else
-                        {
-                            songDownload.Download.Status = "Waiting";
-                        }
-                    });
+                    if (download.Progress.TotalBytesToReceive > 0)
+                    {
+                        songDownload.Download.BytesToReceive = download.Progress.TotalBytesToReceive;
+                        songDownload.Download.BytesReceived = download.Progress.BytesReceived;
+                    }
+                    else
+                    {
+                        songDownload.Download.Status = "Waiting";
+                    }
+                });
         }
 
         /// <summary>
-        /// Call internally to report a finished BackgroundDownload
+        ///     Call internally to report a finished BackgroundDownload
         /// </summary>
         /// <param name="song">
-        /// The song that just finished downloading.
+        ///     The song that just finished downloading.
         /// </param>
         /// <returns>
-        /// Task.
+        ///     Task.
         /// </returns>
         private async Task DownloadFinishedForAsync(Song song)
         {
-            var downloadOperation = (DownloadOperation)song.Download.DownloadOperation;
+            var downloadOperation = (DownloadOperation) song.Download.DownloadOperation;
 
-            await this.UpdateId3TagsAsync(song, downloadOperation.ResultFile);
+            await UpdateId3TagsAsync(song, downloadOperation.ResultFile);
 
             var filename = song.Name.CleanForFileName("Invalid Song Name");
             if (song.ArtistName != song.Album.PrimaryArtist.Name)
@@ -158,11 +153,11 @@ namespace Audiotica
             song.AudioUrl = newDestination.Path;
             song.SongState = SongState.Downloaded;
             song.DownloadId = null;
-            await this.sqlService.UpdateItemAsync(song);
+            await sqlService.UpdateItemAsync(song);
         }
 
         /// <summary>
-        /// Updates the id3 tags. WARNING, there needs to be more testing with lower end devices.
+        ///     Updates the id3 tags. WARNING, there needs to be more testing with lower end devices.
         /// </summary>
         /// <param name="song">The song.</param>
         /// <param name="file">The file.</param>
@@ -192,14 +187,14 @@ namespace Audiotica
                 }
 
                 newTags.Album = song.Album.Name;
-                newTags.AlbumArtists = new[] { song.Album.PrimaryArtist.Name };
+                newTags.AlbumArtists = new[] {song.Album.PrimaryArtist.Name};
 
                 if (!string.IsNullOrEmpty(song.Album.Genre))
                 {
                     newTags.Genres = song.Album.Genre.Split(',').Select(p => p.Trim()).ToArray();
                 }
 
-                newTags.Track = (uint)song.TrackNumber;
+                newTags.Track = (uint) song.TrackNumber;
 
                 newTags.Comment = "Downloaded with Audiotica - http://audiotica.fm";
 
@@ -216,12 +211,12 @@ namespace Audiotica
                             {
                                 await artworkStream.CopyToAsync(memStream);
                                 newTags.Pictures = new IPicture[]
-                                                       {
-                                                           new Picture(
-                                                               new ByteVector(
-                                                               memStream.ToArray(), 
-                                                               (int)memStream.Length))
-                                                       };
+                                {
+                                    new Picture(
+                                        new ByteVector(
+                                            memStream.ToArray(),
+                                            (int) memStream.Length))
+                                };
                             }
                         }
                     }
@@ -236,16 +231,16 @@ namespace Audiotica
         }
 
         /// <summary>
-        /// Hanbdles a single BackgroundDownload for a song.
+        ///     Hanbdles a single BackgroundDownload for a song.
         /// </summary>
         /// <param name="song">
-        /// The song to be downloaded
+        ///     The song to be downloaded
         /// </param>
         /// <param name="download">
-        /// The download operation
+        ///     The download operation
         /// </param>
         /// <param name="start">
-        /// Either the download is started or just handled
+        ///     Either the download is started or just handled
         /// </param>
         private async void HandleDownload(Song song, DownloadOperation download, bool start)
         {
@@ -255,11 +250,11 @@ namespace Audiotica
             }
 
             song.Download = new BackgroundDownload(download);
-            this.ActiveDownloads.Add(song);
+            ActiveDownloads.Add(song);
 
             try
             {
-                var progressCallback = new Progress<DownloadOperation>(this.DownloadProgress);
+                var progressCallback = new Progress<DownloadOperation>(DownloadProgress);
                 if (start)
                 {
                     // Start the BackgroundDownload and attach a progress handler.
@@ -277,24 +272,24 @@ namespace Audiotica
                 // Make sure it is success
                 if (response.StatusCode < 400)
                 {
-                    await this.DownloadFinishedForAsync(song);
+                    await DownloadFinishedForAsync(song);
                 }
                 else
                 {
                     song.SongState = SongState.None;
-                    this.sqlService.UpdateItem(song);
+                    sqlService.UpdateItem(song);
                     download.ResultFile.DeleteAsync();
                 }
             }
             catch
             {
                 song.SongState = SongState.None;
-                this.sqlService.UpdateItem(song);
+                sqlService.UpdateItem(song);
                 download.ResultFile.DeleteAsync();
             }
             finally
             {
-                this.ActiveDownloads.Remove(song);
+                ActiveDownloads.Remove(song);
             }
         }
 
@@ -306,16 +301,16 @@ namespace Audiotica
 
         public async void LoadDownloads()
         {
-            await this.DiscoverActiveDownloadsAsync();
+            await DiscoverActiveDownloadsAsync();
 
             Debug.WriteLine("Loaded downloads.");
         }
 
         public void PauseAll()
         {
-            foreach (var activeDownload in this.ActiveDownloads)
+            foreach (var activeDownload in ActiveDownloads)
             {
-                ((DownloadOperation)activeDownload.Download.DownloadOperation).Pause();
+                ((DownloadOperation) activeDownload.Download.DownloadOperation).Pause();
             }
         }
 
@@ -334,27 +329,28 @@ namespace Audiotica
 
                 var destinationFile =
                     await
-                    WinRtStorageHelper.CreateFileAsync(path, ApplicationData.Current.LocalFolder, CreationCollisionOption.ReplaceExisting).ConfigureAwait(false);
+                        WinRtStorageHelper.CreateFileAsync(path, ApplicationData.Current.LocalFolder,
+                            CreationCollisionOption.ReplaceExisting).ConfigureAwait(false);
 
                 var downloader = new BackgroundDownloader();
                 var download = downloader.CreateDownload(new Uri(song.AudioUrl), destinationFile);
-                download.Priority = BackgroundTransferPriority.Default;
+                download.Priority = BackgroundTransferPriority.High;
                 song.DownloadId = download.Guid.ToString();
 
-                await this.sqlService.UpdateItemAsync(song).ConfigureAwait(false);
-                this.dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => this.HandleDownload(song, download, true));
+                await sqlService.UpdateItemAsync(song).ConfigureAwait(false);
+                dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => HandleDownload(song, download, true));
             }
             catch (Exception e)
             {
                 if (e.Message.Contains("there is not enough space on the disk"))
                 {
-                    this.dispatcher.RunAsync(
-                        CoreDispatcherPriority.Normal, 
+                    dispatcher.RunAsync(
+                        CoreDispatcherPriority.Normal,
                         () => CurtainPrompt.ShowError("Not enough disk space to download."));
                 }
 
-                this.dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => song.SongState = SongState.None);
-                this.sqlService.UpdateItemAsync(song).ConfigureAwait(false);
+                dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => song.SongState = SongState.None);
+                sqlService.UpdateItemAsync(song).ConfigureAwait(false);
             }
         }
 

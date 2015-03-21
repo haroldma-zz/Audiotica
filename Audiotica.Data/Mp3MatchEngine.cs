@@ -72,7 +72,8 @@ namespace Audiotica.Data
                 .Replace("- no intro", string.Empty)
                 .Replace("- ep version", string.Empty)
                 .Replace("- deluxe edition", string.Empty)
-                .Trim();
+                .Trim()
+                .RemoveAccents();
 
             if (_audioticaService.IsAuthenticated && _audioticaService.CurrentUser.Subscription != SubscriptionType.None)
             {
