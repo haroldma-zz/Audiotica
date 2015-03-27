@@ -249,32 +249,34 @@ namespace Audiotica
                             stream.Position = 0;
                             await target.SetSourceAsync(stream.AsRandomAccessStream());
 
-                            var pixelStream = target.PixelBuffer.AsStream();
-                            var data = new byte[pixelStream.Length];
-                            await pixelStream.ReadAsync(data, 0, data.Length);
-                            pixelStream.Position = 0;
+                            using (var pixelStream = target.PixelBuffer.AsStream())
+                            {
+                                var data = new byte[pixelStream.Length];
+                                await pixelStream.ReadAsync(data, 0, data.Length);
+                                pixelStream.Position = 0;
 
-                            await Task.Factory.StartNew(
-                                () =>
-                                {
-                                    // Lets get the pixel data, by converty the binary array to int[]
-                                    var pixels = new int[data.Length * 4];
+                                await Task.Factory.StartNew(
+                                    () =>
+                                    {
+                                        // Lets get the pixel data, by converty the binary array to int[]
+                                        var pixels = new int[data.Length*4];
 
-                                    // and copy it
-                                    Buffer.BlockCopy(data, 0, pixels, 0, data.Length);
+                                        // and copy it
+                                        Buffer.BlockCopy(data, 0, pixels, 0, data.Length);
 
-                                    // apply the box blur
-                                    BoxBlur(pixels, frame.PixelWidth, frame.PixelHeight, blurPercent);
+                                        // apply the box blur
+                                        BoxBlur(pixels, frame.PixelWidth, frame.PixelHeight, blurPercent);
 
-                                    // now copy the int[] back to the byte[]
-                                    Buffer.BlockCopy(pixels, 0, data, 0, data.Length);
-                                });
+                                        // now copy the int[] back to the byte[]
+                                        Buffer.BlockCopy(pixels, 0, data, 0, data.Length);
+                                    });
 
-                            // so we can write it to the pixel buffer stream
-                            await pixelStream.WriteAsync(data, 0, data.Length);
+                                // so we can write it to the pixel buffer stream
+                                await pixelStream.WriteAsync(data, 0, data.Length);
 
-                            if (image != null) image.Source = target;
-                            else if (imageBrush != null) imageBrush.ImageSource = target;
+                                if (image != null) image.Source = target;
+                                else if (imageBrush != null) imageBrush.ImageSource = target;
+                            }
                         }).AsTask().ConfigureAwait(false);
                 
             }
