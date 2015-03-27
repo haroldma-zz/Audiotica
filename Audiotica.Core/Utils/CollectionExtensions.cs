@@ -40,8 +40,16 @@ namespace Audiotica.Core.Utils
                 collection.Add(item);
         }
 
+        /// <summary>
+        /// Shuffles the specified list using an implementation of the Fisher-Yates shuffle.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="list">The list.</param>
+        /// <returns></returns>
         public static IList<T> Shuffle<T>(this IList<T> list)
         {
+            if (list.Count < 2) return list;
+
             var arr = list.ToArray();
             Shuffle(arr);
             return arr;
@@ -52,8 +60,6 @@ namespace Audiotica.Core.Utils
             var n = array.Length;
             for (var i = 0; i < n; i++)
             {
-                // NextDouble returns a random number between 0 and 1.
-                // ... It is equivalent to Math.random() in Java.
                 var r = i + (int) (Random.NextDouble()*(n - i));
                 var t = array[r];
                 array[r] = array[i];

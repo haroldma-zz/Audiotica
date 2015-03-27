@@ -195,9 +195,7 @@ namespace Audiotica
 
         private void HelperOnTrackChanged(object sender, EventArgs eventArgs)
         {
-            if (_appSettingsHelper.Read<bool>("RadioMode")) return;
-
-            var playerInstance = BackgroundMediaPlayer.Current;
+            var playerInstance = _helper.SafeMediaPlayer;
 
             if (playerInstance == null)
             {
@@ -205,6 +203,7 @@ namespace Audiotica
             }
 
             Duration = playerInstance.NaturalDuration;
+            Position = TimeSpan.Zero;
 
             if (Duration == TimeSpan.MinValue)
                 Duration = TimeSpan.Zero;
@@ -213,7 +212,7 @@ namespace Audiotica
 
             try
             {
-                state = playerInstance.CurrentState;
+                state = _helper.SafePlayerState;
             }
             catch
             {
@@ -271,6 +270,7 @@ namespace Audiotica
         {
             try
             {
+                if (IsLoading) return;
                 Position = BackgroundMediaPlayer.Current.Position;
             }
             catch

@@ -276,9 +276,12 @@ namespace Audiotica.Data.Collection.RunTime
             Stations.Remove(station);
         }
 
-        public void ShuffleModeChanged()
+        public async void ShuffleModeChanged()
         {
-            // ReSharper disable once ExplicitCallerInfoArgument
+            // Only reshuffle when the user turns it off
+            // So the next time he turns it back on, a new shuffle queue is ready
+            if (!IsShuffle)
+                await ShuffleCurrentQueueAsync();
             OnPropertyChanged("CurrentPlaybackQueue");
         }
 
@@ -624,22 +627,20 @@ namespace Audiotica.Data.Collection.RunTime
 
         public async Task ShuffleCurrentQueueAsync()
         {
-            var unshuffle = PlaybackQueue.ToList().Shuffle();
+            var newShuffle = PlaybackQueue.ToList().Shuffle();
 
-            if (unshuffle.Count >= 5)
+            if (newShuffle.Count > 0)
             {
-                await _dispatcher.RunAsync(() => ShufflePlaybackQueue.SwitchTo(unshuffle));
+                await _dispatcher.RunAsync(() => ShufflePlaybackQueue.SwitchTo(newShuffle));
 
-                for (var i = 0; i < unshuffle.Count; i++)
+                for (var i = 0; i < newShuffle.Count; i++)
                 {
-                    var queueSong = unshuffle[i];
+                    var queueSong = newShuffle[i];
 
-                    queueSong.ShufflePrevId = i == 0 ? 0 : unshuffle[i - 1].Id;
+                    queueSong.ShufflePrevId = i == 0 ? 0 : newShuffle[i - 1].Id;
 
-                    if (i + 1 < unshuffle.Count)
-                    {
-                        queueSong.ShuffleNextId = unshuffle[i + 1].Id;
-                    }
+                    if (i + 1 < newShuffle.Count)
+                        queueSong.ShuffleNextId = newShuffle[i + 1].Id;
 
                     await _bgSqlService.UpdateItemAsync(queueSong);
                 }

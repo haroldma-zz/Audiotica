@@ -300,35 +300,37 @@
             </Pivot.Background>
             <PivotItem Header="PLAYER">
                 <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="*" />
-                    </Grid.RowDefinitions>
-                    <StackPanel>
-                        <TextBlock FontSize="30" Text="{Binding CurrentQueue.Song.Name}" TextWrapping="Wrap" />
-                        <TextBlock FontSize="24" FontWeight="Thin" Foreground="#89FFFFFF"
-                                   TextTrimming="CharacterEllipsis">
-                                    <Run Text="by" />
-                                    <Run Text="{Binding CurrentQueue.Song.Artist.Name}" />
-                        </TextBlock>
-                        <TextBlock FontSize="24" FontWeight="Thin" Foreground="#89FFFFFF"
-                                   TextTrimming="CharacterEllipsis">
-                                    <Run Text="on" />
-                                    <Run Text="{Binding CurrentQueue.Song.Album.Name}" />
-                        </TextBlock>
-                    </StackPanel>
-                    <Grid Grid.Row="1" VerticalAlignment="Bottom" Margin="0,0,0,20">
+                    <Grid VerticalAlignment="Bottom" Margin="0,0,0,20">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
-                        <Grid>
-                            <Image VerticalAlignment="Top"
-                                   HorizontalAlignment="Left"
-                                   Stretch="UniformToFill"
-                                   Source="{Binding CurrentQueue.Song.Album.Artwork.Image}" Height="150" Width="150" />
+                        <Grid x:Name="Grid" MaxHeight="{Binding ActualWidth, ElementName=Grid}">
+                            <Image Stretch="UniformToFill"
+                                   Source="{Binding CurrentQueue.Song.Album.Artwork.Image}" />
+                            <Grid Background="Black" VerticalAlignment="Bottom">
+                                <Grid>
+                                    <Grid.Background>
+                                        <ImageBrush Opacity=".50" Stretch="UniformToFill" AlignmentY="Bottom"
+                                                    audiotica:BlurImageTool.BlurPercent="35" audiotica:BlurImageTool.Source="{Binding CurrentQueue.Song.Album.Artwork.Uri}" />
+                                    </Grid.Background>
+                                    <StackPanel Margin="10">
+                                        <TextBlock FontSize="30" Text="{Binding CurrentQueue.Song.Name}"
+                                                   TextWrapping="Wrap" />
+                                        <TextBlock FontSize="24" FontWeight="Thin" Foreground="#89FFFFFF"
+                                                   TextTrimming="CharacterEllipsis">
+                                            <Run Text="by" />
+                                            <Run Text="{Binding CurrentQueue.Song.Artist.Name}" />
+                                        </TextBlock>
+                                        <TextBlock FontSize="24" FontWeight="Thin" Foreground="#89FFFFFF"
+                                                   TextTrimming="CharacterEllipsis">
+                                            <Run Text="on" />
+                                            <Run Text="{Binding CurrentQueue.Song.Album.Name}" />
+                                        </TextBlock>
+                                    </StackPanel>
+                                </Grid></Grid>
                         </Grid>
                         <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center"
                                     Margin="0,0,0,25">

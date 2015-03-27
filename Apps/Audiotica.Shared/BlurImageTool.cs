@@ -91,8 +91,13 @@ namespace Audiotica
                         // Create effect collection with the source stream
                         using (var filters = new FilterEffect(source))
                         {
+                            double blurPercent = 100;
+
+                            await DispatcherHelper.RunAsync(
+                                () => blurPercent = (GetBlurPercent(d)*.01) * 256);
+
                             // Initialize the filter and add the filter to the FilterEffect collection
-                            filters.Filters = new IFilter[] {new BlurFilter(50)};
+                            filters.Filters = new IFilter[] {new BlurFilter((int)blurPercent)};
 
                             // Create a target where the filtered image will be rendered to
                             WriteableBitmap target = null;
@@ -141,5 +146,21 @@ namespace Audiotica
             typeof (string),
             typeof (BlurImageTool),
             new PropertyMetadata(string.Empty, SourceCallback));
+
+        public static double GetBlurPercent(DependencyObject element)
+        {
+            return (double)element.GetValue(BlurPercentProperty);
+        }
+
+        public static void SetBlurPercent(DependencyObject element, double value)
+        {
+            element.SetValue(BlurPercentProperty, value);
+        }
+
+        public static readonly DependencyProperty BlurPercentProperty = DependencyProperty.RegisterAttached(
+            "BlurPercent",
+            typeof (double),
+            typeof (BlurImageTool),
+            new PropertyMetadata(10.0, null));
     }
 }

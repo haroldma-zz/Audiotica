@@ -558,8 +558,11 @@ namespace Audiotica.WindowsPhone.Player
 
                 if (ret == null) return null;
 
-                ret.Song = GetQueueSong(p => p.SongId == ret.SongId).Song;
-                return ret.Song == null ? null : ret;
+                using (var sql = CreateCollectionSqlService())
+                {
+                    ret.Song = sql.SelectFirst<Song>(p => p.Id == ret.SongId);
+                    return ret.Song == null ? null : ret;
+                }
             }
         }
 

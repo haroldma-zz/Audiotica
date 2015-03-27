@@ -36,12 +36,12 @@ namespace Audiotica.Data
         private readonly Mp3Provider[] _providers =
         {
             Mp3Provider.ProstoPleer,
-            Mp3Provider.Mp3Skull,
             Mp3Provider.Netease,
             Mp3Provider.Mp3Truck,
             //Mp3Provider.Mp3Clan, 
             Mp3Provider.Meile,
-            Mp3Provider.SoundCloud
+            Mp3Provider.SoundCloud,
+            Mp3Provider.Mp3Skull
         };
 
         private readonly Mp3SearchService _service;
@@ -73,7 +73,8 @@ namespace Audiotica.Data
                 .Replace("- ep version", string.Empty)
                 .Replace("- deluxe edition", string.Empty)
                 .Trim()
-                .RemoveAccents();
+                .ToCleanQuery();
+            artist = artist.ToCleanQuery();
 
             if (_audioticaService.IsAuthenticated && _audioticaService.CurrentUser.Subscription != SubscriptionType.None)
             {
@@ -151,8 +152,14 @@ namespace Audiotica.Data
                     break;
             }
 
-            var bestWebSong = webSongs != null && webSongs.Any() ? webSongs.FirstOrDefault(p => p.IsBestMatch) : null;
-            return bestWebSong == null ? null : bestWebSong.AudioUrl;
+            if (webSongs != null)
+            {
+                var song = webSongs.FirstOrDefault(p => p.IsBestMatch);
+                if (song != null) return song.AudioUrl;
+                song = webSongs.FirstOrDefault(p => p.IsMatch && !p.IsLinkDeath);
+                if (song != null) return song.AudioUrl;
+            }
+            return null;
         }
     }
 }
