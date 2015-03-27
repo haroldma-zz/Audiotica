@@ -182,6 +182,7 @@ namespace Audiotica
                 case MediaPlayerState.Buffering:
                 case MediaPlayerState.Opening:
                     IsLoading = true;
+                    _timer.Stop();
                     break;
             }
         }
@@ -202,22 +203,7 @@ namespace Audiotica
                 return;
             }
 
-            Duration = playerInstance.NaturalDuration;
-            Position = TimeSpan.Zero;
-
-            if (Duration == TimeSpan.MinValue)
-                Duration = TimeSpan.Zero;
-
-            var state = MediaPlayerState.Closed;
-
-            try
-            {
-                state = _helper.SafePlayerState;
-            }
-            catch
-            {
-                // ignored, rare occacion where the player just throws a generic Exception
-            }
+            var state = _helper.SafePlayerState;
 
             if (state != MediaPlayerState.Closed && state != MediaPlayerState.Stopped)
             {
@@ -233,14 +219,21 @@ namespace Audiotica
                 }
 
                 var currentId = _appSettingsHelper.Read<int>(PlayerConstants.CurrentTrack);
-                CurrentQueue = _service.PlaybackQueue.FirstOrDefault(p => p.Id == currentId);
+                var newQueue = _service.PlaybackQueue.FirstOrDefault(p => p.Id == currentId);
 
-                if (CurrentQueue != null && CurrentQueue.Song != null
-                    && CurrentQueue.Song.Duration.Ticks != Duration.Ticks)
+                if (CurrentQueue != newQueue)
                 {
-                    CurrentQueue.Song.Duration = Duration;
-                }
+                    IsLoading = true;
+                    Position = TimeSpan.Zero;
 
+                    CurrentQueue = newQueue;
+
+                    if (CurrentQueue != null && CurrentQueue.Song != null
+                        && CurrentQueue.Song.Duration.Ticks != Duration.Ticks)
+                    {
+                        CurrentQueue.Song.Duration = Duration;
+                    }
+                }
                 IsPlayerActive = true;
             }
             else
@@ -249,6 +242,10 @@ namespace Audiotica
                 IsPlayerActive = false;
                 CurrentQueue = null;
             }
+
+            Duration = playerInstance.NaturalDuration;
+            if (Duration == TimeSpan.MinValue)
+                Duration = TimeSpan.Zero;
         }
 
         private void NextSong()
@@ -270,8 +267,8 @@ namespace Audiotica
         {
             try
             {
-                if (IsLoading) return;
-                Position = BackgroundMediaPlayer.Current.Position;
+                var state = _helper.SafePlayerState;
+                Position = state == MediaPlayerState.Opening ? TimeSpan.Zero : BackgroundMediaPlayer.Current.Position;
             }
             catch
             {

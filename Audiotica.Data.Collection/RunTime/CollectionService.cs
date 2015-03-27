@@ -278,11 +278,11 @@ namespace Audiotica.Data.Collection.RunTime
 
         public async void ShuffleModeChanged()
         {
+            OnPropertyChanged("CurrentPlaybackQueue");
             // Only reshuffle when the user turns it off
             // So the next time he turns it back on, a new shuffle queue is ready
             if (!IsShuffle)
-                await ShuffleCurrentQueueAsync();
-            OnPropertyChanged("CurrentPlaybackQueue");
+                await ShuffleCurrentQueueAsync().ConfigureAwait(false);
         }
 
         public bool SongAlreadyExists(string providerId, string name, string album, string artist)
@@ -627,11 +627,11 @@ namespace Audiotica.Data.Collection.RunTime
 
         public async Task ShuffleCurrentQueueAsync()
         {
-            var newShuffle = PlaybackQueue.ToList().Shuffle();
+            var newShuffle = await Task.Factory.StartNew(() => PlaybackQueue.ToList().Shuffle()).ConfigureAwait(false);
 
             if (newShuffle.Count > 0)
             {
-                await _dispatcher.RunAsync(() => ShufflePlaybackQueue.SwitchTo(newShuffle));
+                await _dispatcher.RunAsync(() => ShufflePlaybackQueue.SwitchTo(newShuffle)).ConfigureAwait(false);
 
                 for (var i = 0; i < newShuffle.Count; i++)
                 {
@@ -642,7 +642,7 @@ namespace Audiotica.Data.Collection.RunTime
                     if (i + 1 < newShuffle.Count)
                         queueSong.ShuffleNextId = newShuffle[i + 1].Id;
 
-                    await _bgSqlService.UpdateItemAsync(queueSong);
+                    await _bgSqlService.UpdateItemAsync(queueSong).ConfigureAwait(false);
                 }
             }
         }

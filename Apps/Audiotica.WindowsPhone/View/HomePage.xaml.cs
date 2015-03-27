@@ -160,5 +160,11 @@ namespace Audiotica.View
             var queueSong = vm.RecentlyAdded.ToList();
             await CollectionHelper.PlaySongsAsync(song, queueSong);
         }
+
+        private async void AppBarButton_Click_1(object sender, RoutedEventArgs e)
+        {
+            var queueSong = App.Locator.CollectionService.Songs.ToList();
+            await CollectionHelper.PlaySongsAsync(queueSong, true);
+        }
     }
 }

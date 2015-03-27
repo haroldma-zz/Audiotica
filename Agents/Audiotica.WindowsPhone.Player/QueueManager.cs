@@ -434,6 +434,9 @@ namespace Audiotica.WindowsPhone.Player
                 OnTrackChanged(_currentTrack.SongId);
 
             _mediaPlayer.Pause();
+            if (_mediaPlayer.Position > TimeSpan.Zero)
+                _mediaPlayer.Position = TimeSpan.Zero;
+            _transportControls.PlaybackStatus = MediaPlaybackStatus.Changing;
 
             if (IsRadioMode)
                 StartRadioTrack(track);
@@ -561,7 +564,13 @@ namespace Audiotica.WindowsPhone.Player
                 using (var sql = CreateCollectionSqlService())
                 {
                     ret.Song = sql.SelectFirst<Song>(p => p.Id == ret.SongId);
-                    return ret.Song == null ? null : ret;
+
+                    if (ret.Song == null) return null;
+
+                    ret.Song.Artist = sql.SelectFirst<Artist>(p => p.Id == ret.Song.ArtistId);
+                    ret.Song.Album = sql.SelectFirst<Album>(p => p.Id == ret.Song.AlbumId);
+
+                    return ret;
                 }
             }
         }
