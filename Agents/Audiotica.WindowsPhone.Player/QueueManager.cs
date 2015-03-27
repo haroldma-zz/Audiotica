@@ -406,7 +406,11 @@ namespace Audiotica.WindowsPhone.Player
         {
             if (track == null) return;
 
-            ScrobbleOnMediaEnded();
+            try
+            {
+                ScrobbleOnMediaEnded();
+            }
+            catch { }
 
             if (IsRadioMode && _station != null && _currentTrack != null && _currentTrack.Song.ProviderId.Contains("gn."))
             {
@@ -456,8 +460,6 @@ namespace Audiotica.WindowsPhone.Player
                 _currentMediaSourceAdapter = null;
             }
 
-            _mediaPlayer.AutoPlay = false;
-
             if (track.Song.IsStreaming)
             {
                 _mediaPlayer.SetUriSource(new Uri(track.Song.AudioUrl));
@@ -490,6 +492,7 @@ namespace Audiotica.WindowsPhone.Player
                 else if (CurrentTrack.NextId != 0 && CurrentTrack.PrevId != 0)
                     SkipToNext();
             }
+            _mediaPlayer.Play();
         }
 
         /// <summary>
@@ -519,27 +522,21 @@ namespace Audiotica.WindowsPhone.Player
             var item = GetHistoryItem();
             if (item == null) return;
 
-            try
+            if (!_scrobbler.CanScrobble(item.Song, _mediaPlayer.Position)) return;
+
+            if (_scrobbler.IsScrobblingEnabled())
             {
-                if (!_scrobbler.CanScrobble(item.Song, _mediaPlayer.Position)) return;
-
-                if (_scrobbler.IsScrobblingEnabled())
-                {
-                    await _scrobbler.Scrobble(item, _mediaPlayer.Position);
-                }
-                item.Song.PlayCount++;
-                item.Song.LastPlayed = item.DatePlayed;
-
-                if (item.Song.Duration.Ticks != _mediaPlayer.NaturalDuration.Ticks)
-                    item.Song.Duration = _mediaPlayer.NaturalDuration;
-
-                using (var sql = CreateCollectionSqlService())
-                {
-                    sql.UpdateItem(item.Song);
-                }
+                await _scrobbler.Scrobble(item, _mediaPlayer.Position);
             }
-            catch
+            item.Song.PlayCount++;
+            item.Song.LastPlayed = item.DatePlayed;
+
+            if (item.Song.Duration.Ticks != _mediaPlayer.NaturalDuration.Ticks)
+                item.Song.Duration = _mediaPlayer.NaturalDuration;
+
+            using (var sql = CreateCollectionSqlService())
             {
+                sql.UpdateItem(item.Song);
             }
         }
 

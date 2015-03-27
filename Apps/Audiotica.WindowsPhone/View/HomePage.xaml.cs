@@ -163,7 +163,7 @@ namespace Audiotica.View
 
         private async void AppBarButton_Click_1(object sender, RoutedEventArgs e)
         {
-            var queueSong = App.Locator.CollectionService.Songs.ToList();
+            var queueSong = App.Locator.CollectionService.Songs.Where(p => p.IsMatched && !p.IsTemp).ToList();
             await CollectionHelper.PlaySongsAsync(queueSong, true);
         }
     }

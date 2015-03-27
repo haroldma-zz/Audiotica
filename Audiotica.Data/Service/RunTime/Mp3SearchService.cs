@@ -567,7 +567,7 @@ namespace Audiotica.Data.Service.RunTime
 
             foreach (var webSong in songs)
             {
-                webSong.Name = webSong.Name.ToCleanQuery();
+                webSong.Name = webSong.Name.ToLower().Replace("feat.", "ft.").ToCleanQuery();
                 webSong.Artist = webSong.Artist.ToCleanQuery();
 
                 if (string.IsNullOrEmpty(webSong.Name)) continue;
