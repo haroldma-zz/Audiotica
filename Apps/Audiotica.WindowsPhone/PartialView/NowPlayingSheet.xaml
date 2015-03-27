@@ -296,7 +296,7 @@
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Pivot x:Name="Pivot" Title="NOW PLAYING" HeaderTemplate="{StaticResource PivotHeaderTemplate}" SelectionChanged="Pivot_SelectionChanged">
             <Pivot.Background>
-                <ImageBrush Opacity=".25" Stretch="UniformToFill" ImageSource="{Binding CurrentQueue.Song.Artist.Artwork.Image}" />
+                <ImageBrush Opacity=".75" Stretch="UniformToFill" audiotica:BlurImageTool.BlurPercent="203" audiotica:BlurImageTool.Source="{Binding CurrentQueue.Song.Album.Artwork.Uri}" />
             </Pivot.Background>
             <PivotItem Header="PLAYER">
                 <Grid>
@@ -313,8 +313,7 @@
                             <Grid Background="Black" VerticalAlignment="Bottom">
                                 <Grid>
                                     <Grid.Background>
-                                        <ImageBrush Opacity=".50" Stretch="UniformToFill" AlignmentY="Bottom"
-                                                    audiotica:BlurImageTool.BlurPercent="35" audiotica:BlurImageTool.Source="{Binding CurrentQueue.Song.Album.Artwork.Uri}" />
+                                        <ImageBrush Opacity=".50" Stretch="UniformToFill" AlignmentY="Bottom" audiotica:BlurImageTool.Source="{Binding CurrentQueue.Song.Album.Artwork.Uri}" />
                                     </Grid.Background>
                                     <StackPanel Margin="10">
                                         <TextBlock FontSize="30" Text="{Binding CurrentQueue.Song.Name}"
