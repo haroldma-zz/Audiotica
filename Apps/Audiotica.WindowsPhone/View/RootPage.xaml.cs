@@ -46,6 +46,7 @@ namespace Audiotica.View
             App.Navigator.AddPage(new CollectionStatisticsPage());
             App.Navigator.AddPage(new CollectionSettingsPage());
             App.Navigator.AddPage(new CloudSubscribePage());
+            App.Navigator.AddPage(new ChartsPage());
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)

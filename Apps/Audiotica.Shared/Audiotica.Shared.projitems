@@ -23,6 +23,13 @@
     <Compile Include="$(MSBuildThisFileDirectory)CollectionHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CollectionCommandHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ContinuationManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controls\ChartSongViewer.xaml.cs">
+      <DependentUpon>ChartSongViewer.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Controls\Chart\DataInterpreter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controls\Chart\LineGraph.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controls\Chart\LineGraphProperties.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controls\Chart\Series.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\PlaylistPicker.xaml.cs">
       <DependentUpon>PlaylistPicker.xaml</DependentUpon>
     </Compile>
@@ -80,6 +87,10 @@
     <PRIResource Include="$(MSBuildThisFileDirectory)Strings\en-US\Resources.resw" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="$(MSBuildThisFileDirectory)Controls\ChartSongViewer.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="$(MSBuildThisFileDirectory)Controls\PlaylistPicker.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

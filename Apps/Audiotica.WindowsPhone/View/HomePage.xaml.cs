@@ -166,5 +166,10 @@ namespace Audiotica.View
             var queueSong = App.Locator.CollectionService.Songs.Where(p => p.IsMatched && !p.IsTemp).ToList();
             await CollectionHelper.PlaySongsAsync(queueSong, true);
         }
+
+        private void Button_Click_2(object sender, RoutedEventArgs e)
+        {
+            App.Navigator.GoTo<ChartsPage, ZoomInTransition>(null);
+        }
     }
 }

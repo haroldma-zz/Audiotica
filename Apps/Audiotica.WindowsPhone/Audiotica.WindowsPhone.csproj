@@ -130,6 +130,9 @@
       <DependentUpon>SpotifyTrackViewer.xaml</DependentUpon>
     </Compile>
     <Compile Include="StatusBarHelper.cs" />
+    <Compile Include="View\ChartsPage.xaml.cs">
+      <DependentUpon>ChartsPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\CollectionStatisticsPage.xaml.cs">
       <DependentUpon>CollectionStatisticsPage.xaml</DependentUpon>
     </Compile>
@@ -255,6 +258,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="SpotifyTrackViewer.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\ChartsPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -442,6 +449,12 @@
     <Reference Include="TagLib.Portable, Version=2.1.0.0, Culture=neutral, PublicKeyToken=db62eba44689b5b0, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\TagLib.Portable.Zumicts.1.0.3-pre\lib\portable-net45+win+wpa81+wp8+MonoAndroid10+xamarinios10+MonoTouch10\TagLib.Portable.dll</HintPath>
+    </Reference>
+    <Reference Include="WinRTXamlToolkit">
+      <HintPath>..\..\packages\WinRTXamlToolkit.WindowsPhone.1.8.1.0\lib\wpa\WinRTXamlToolkit.dll</HintPath>
+    </Reference>
+    <Reference Include="WinRTXamlToolkit.Controls.DataVisualization">
+      <HintPath>..\..\packages\WinRTXamlToolkit.Controls.DataVisualization.WindowsPhone.1.8.1.0\lib\wpa\WinRTXamlToolkit.Controls.DataVisualization.dll</HintPath>
     </Reference>
     <Reference Include="WriteableBitmapEx.WinRT">
       <HintPath>..\..\packages\WriteableBitmapEx.1.0.14.0\lib\wpa81\WriteableBitmapEx.WinRT.dll</HintPath>
