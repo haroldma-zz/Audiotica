@@ -28,6 +28,7 @@ namespace Audiotica.Data.Service.RunTime
         private const string PleerSearchUrl =
             "http://pleer.com/search?page=1&q={0}&sort_mode=0&sort_by=0&quality=best&onlydata=true";
 
+        private const string SongilySearchUrl = "http://songily.com/mp3/download/{1}/{0}.html";
         private const string PleerFileUrl = "http://pleer.com/site_api/files/get_url";
         private const string Mp3TruckSearchUrl = "https://mp3truck.net/ajaxRequest.php";
         private const string MeileSearchUrl = "http://www.meile.com/search?type=&q={0}";
@@ -135,6 +136,79 @@ namespace Audiotica.Data.Service.RunTime
                         await
                             IdentifyMatches(parseResp.response.Select(p => new WebSong(p)).ToList(), title, artist,
                                 checkAllLinks);
+                }
+            }
+        }
+
+        public async Task<List<WebSong>> SearchSongily(string title, string artist, string album = null, int page = 1,
+            bool checkAllLinks = false)
+        {
+            var url = string.Format(SongilySearchUrl, WebUtility.UrlEncode(CreateQuery(title, artist, album, false).ToCleanQuery()), page);
+            using (var client = new HttpClient())
+            {
+                using (var resp = await client.GetAsync(url).ConfigureAwait(false))
+                {
+                    if (!resp.IsSuccessStatusCode)
+                    {
+                        return null;
+                    }
+
+                    var html = await resp.Content.ReadAsStringAsync().ConfigureAwait(false);
+
+                    var doc = new HtmlDocument();
+                    doc.LoadHtml(html);
+
+                    // Get the div node with the class='actl'
+                    var songNodes =
+                        doc.DocumentNode.Descendants("li")
+                            .Where(
+                                p => p.Attributes.Contains("class") && p.Attributes["class"].Value.Contains("list-group-item"));
+
+                    var songs = new List<WebSong>();
+
+                    foreach (var songNode in songNodes)
+                    {
+                        var song = new WebSong {Provider = Mp3Provider.Mp3Truck};
+
+                        var detailNode = songNode.Descendants("small").FirstOrDefault();
+                        if (detailNode != null)
+                        {
+                            var duration = detailNode.InnerText;
+
+                            var durIndex = duration.IndexOf(":");
+                            if (durIndex > 0)
+                            {
+                                var seconds = int.Parse(duration.Substring(durIndex + 1, 2));
+                                var minutes = int.Parse(duration.Substring(0, durIndex));;
+                                song.Duration = new TimeSpan(0, 0, minutes, seconds);
+                            }
+                        }
+
+                        var songTitle =
+                            songNode.Descendants("span")
+                                .FirstOrDefault();
+
+                        if (songTitle == null) continue;
+
+                        song.Name = WebUtility.HtmlDecode(songTitle.InnerText).Trim();
+
+                        var linkNode =
+                            songNode.Descendants("a")
+                                .FirstOrDefault(
+                                    p =>
+                                        p.Attributes.Contains("title")
+                                        && p.Attributes["title"].Value.Contains("Download"));
+                        if (linkNode == null)
+                        {
+                            continue;
+                        }
+
+                        song.AudioUrl = "http://songily.com/" + linkNode.Attributes["href"].Value;
+
+                        songs.Add(song);
+                    }
+
+                    return songs.Any() ? await IdentifyMatches(songs, title, artist, checkAllLinks) : null;
                 }
             }
         }
@@ -563,33 +637,36 @@ namespace Audiotica.Data.Service.RunTime
         private async Task<List<WebSong>> IdentifyMatches(List<WebSong> songs, string title, string artist,
             bool checkAll)
         {
+            title = title.ToCleanQuery();
+            artist = artist.ToCleanQuery();
             songs = songs.OrderBy(p => p.Duration.Minutes).ToList();
 
             foreach (var webSong in songs)
             {
-                webSong.Name = webSong.Name.ToLower().Replace("feat.", "ft.").ToCleanQuery();
-                webSong.Artist = webSong.Artist.ToCleanQuery();
+                var matchName = webSong.Name.ToLower().Replace("feat.", "ft.").ToCleanQuery();
+                var matchArtist = webSong.Artist.ToCleanQuery();
 
-                if (string.IsNullOrEmpty(webSong.Name)) continue;
+                if (string.IsNullOrEmpty(matchName)) continue;
 
-                var isCorrectType = IsCorrectType(title, webSong.Name, "mix")
-                                    && IsCorrectType(title, webSong.Name, "cover")
-                                    && IsCorrectType(title, webSong.Name, "rmx")
-                                    && IsCorrectType(title, webSong.Name, "live")
-                                    && IsCorrectType(title, webSong.Name, "snipped")
-                                    && IsCorrectType(title, webSong.Name, "preview")
-                                    && IsCorrectType(title, webSong.Name, "acapella")
-                                    && IsCorrectType(title, webSong.Name, "radio")
-                                    && IsCorrectType(title, webSong.Name, "acoustic");
+                var isCorrectType = IsCorrectTypeFlexibleCheck(title, matchName, "edition")
+                                    && IsCorrectType(title, matchName, "mix")
+                                    && IsCorrectType(title, matchName, "cover")
+                                    && IsCorrectType(title, matchName, "rmx")
+                                    && IsCorrectType(title, matchName, "live")
+                                    && IsCorrectType(title, matchName, "snipped")
+                                    && IsCorrectType(title, matchName, "preview")
+                                    && IsCorrectType(title, matchName, "acapella")
+                                    && IsCorrectType(title, matchName, "radio")
+                                    && IsCorrectType(title, matchName, "acoustic");
 
-                var isCorrectTitle = webSong.Name.Contains(title)
-                                     || title.Contains(webSong.Name);
-                var isCorrectArtist = webSong.Artist != null
-                    ? webSong.Artist.Contains(artist)
-                      || artist.Contains(webSong.Artist)
+                var isCorrectTitle = matchName.Contains(title)
+                                     || title.Contains(matchName);
+                var isCorrectArtist = matchArtist != null
+                    ? matchArtist.Contains(artist)
+                      || artist.Contains(matchArtist)
 
                     // soundcloud doesnt have artist prop, check in title
-                    : webSong.Name.Contains(artist);
+                    : matchName.Contains(artist);
 
                 webSong.IsMatch = isCorrectType && isCorrectTitle && isCorrectArtist;
             }
@@ -612,7 +689,7 @@ namespace Audiotica.Data.Service.RunTime
                     webSong.IsLinkDeath = true;
             }
 
-            return songs.OrderByDescending(p => p.ByteSize).ToList();
+            return songs;
         }
 
         private async Task<MeileSong> GetDetailsForMeileSong(string songId, HttpClient client)
@@ -675,6 +752,13 @@ namespace Audiotica.Data.Service.RunTime
             return minuteDic.OrderByDescending(p => p.Value).FirstOrDefault().Key;
         }
 
+        /// <summary>
+        /// Determines whether the song is the correct type.
+        /// </summary>
+        /// <param name="title">The title.</param>
+        /// <param name="songTitle">The song title.</param>
+        /// <param name="type">The type.</param>
+        /// <returns></returns>
         private bool IsCorrectType(string title, string songTitle, string type)
         {
             var isSupposedType = title.Contains(" " + type) || title.Contains(type + " ") || title.Contains(type + ")")
@@ -682,6 +766,24 @@ namespace Audiotica.Data.Service.RunTime
             var isType = songTitle.Contains(" " + type) || songTitle.Contains(type + " ")
                          || songTitle.Contains(type + ")") || songTitle.Contains("(" + type);
             return (isSupposedType && isType) || (!isSupposedType && !isType);
+        }
+
+        /// <summary>
+        /// Determines whether the song is the correct type.
+        /// Unlike the counterpart method, this one is flexible if the match song doesn't have it.
+        /// </summary>
+        /// <param name="title">The title.</param>
+        /// <param name="songTitle">The song title.</param>
+        /// <param name="type">The type.</param>
+        /// <returns></returns>
+        private bool IsCorrectTypeFlexibleCheck(string title, string songTitle, string type)
+        {
+            var isSupposedType = title.Contains(" " + type) || title.Contains(type + " ") || title.Contains(type + ")")
+                                 || title.Contains("(" + type);
+
+            var isType = songTitle.Contains(" " + type) || songTitle.Contains(type + " ")
+                         || songTitle.Contains(type + ")") || songTitle.Contains("(" + type);
+            return isSupposedType || !isType;
         }
 
         private async Task<bool> IsUrlOnlineAsync(WebSong song)

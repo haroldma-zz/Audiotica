@@ -139,6 +139,7 @@ namespace Audiotica.View
 
             // Set the image brush
             var imageBrush = new ImageBrush { Opacity = .5 };
+            BlurImageTool.SetBlurPercent(imageBrush, .8);
             LayoutGrid.Background = imageBrush;
 
             if (created != DateTime.MinValue)

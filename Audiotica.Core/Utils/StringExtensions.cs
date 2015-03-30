@@ -12,7 +12,10 @@ namespace Audiotica.Core.Utils
         {
             if (string.IsNullOrEmpty(text)) return null;
 
-            var str = StringUtil.RemoveDiacritics(WebUtility.HtmlDecode(text.ToLower()));
+            var str = WebUtility.HtmlDecode(text.ToLower());
+            str = str.Replace(" and ", " ");
+
+            str = StringUtil.RemoveDiacritics(str);
             // invalid chars           
             str = Regex.Replace(str, @"[^a-z0-9\s]", "");
             // convert multiple spaces into one space   

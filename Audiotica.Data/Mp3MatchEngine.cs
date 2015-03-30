@@ -24,7 +24,8 @@ namespace Audiotica.Data
         Meile,
         YouTube,
         Mp3Skull,
-        ProstoPleer
+        ProstoPleer,
+        Songily
     }
 
     public class Mp3MatchEngine
@@ -36,12 +37,13 @@ namespace Audiotica.Data
         private readonly Mp3Provider[] _providers =
         {
             Mp3Provider.ProstoPleer,
+            Mp3Provider.Songily,
             Mp3Provider.Netease,
             Mp3Provider.Mp3Truck,
             //Mp3Provider.Mp3Clan, 
             Mp3Provider.Meile,
-            Mp3Provider.SoundCloud,
-            Mp3Provider.Mp3Skull
+            Mp3Provider.Mp3Skull,
+            Mp3Provider.SoundCloud
         };
 
         private readonly Mp3SearchService _service;
@@ -72,9 +74,7 @@ namespace Audiotica.Data
                 .Replace("- no intro", string.Empty)
                 .Replace("- ep version", string.Empty)
                 .Replace("- deluxe edition", string.Empty)
-                .Trim()
-                .ToCleanQuery();
-            artist = artist.ToCleanQuery();
+                .Trim();
 
             if (_audioticaService.IsAuthenticated && _audioticaService.CurrentUser.Subscription != SubscriptionType.None)
             {
@@ -143,6 +143,9 @@ namespace Audiotica.Data
                     break;
                 case Mp3Provider.Mp3Truck:
                     webSongs = await _service.SearchMp3Truck(title, artist, album).ConfigureAwait(false);
+                    break;
+                case Mp3Provider.Songily:
+                    webSongs = await _service.SearchSongily(title, artist, album).ConfigureAwait(false);
                     break;
                 case Mp3Provider.SoundCloud:
                     webSongs = await _service.SearchSoundCloud(title, artist, album).ConfigureAwait(false);
