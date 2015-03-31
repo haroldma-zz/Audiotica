@@ -12,6 +12,7 @@ using Windows.Media.SpeechRecognition;
 using Windows.Phone.UI.Input;
 using Windows.Storage;
 using Windows.System;
+using Windows.UI;
 using Windows.UI.Popups;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
@@ -514,6 +515,7 @@ namespace Audiotica
 
                 using (var handle = Insights.TrackTime("Boot App Services"))
                 {
+                    StatusBar.GetForCurrentView().ForegroundColor = Colors.White;
                     try
                     {
                         try
