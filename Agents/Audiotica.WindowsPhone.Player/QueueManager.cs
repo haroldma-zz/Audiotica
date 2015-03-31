@@ -466,7 +466,7 @@ namespace Audiotica.WindowsPhone.Player
             }
             else
             {
-                var file = StorageFile.GetFileFromPathAsync(track.Song.AudioUrl).AsTask().Result;
+                var file = await StorageFile.GetFileFromPathAsync(track.Song.AudioUrl);
 
                 if (file != null)
                 {

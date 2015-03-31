@@ -113,7 +113,7 @@ namespace Audiotica
             OnPlaybackStateChanged(SafePlayerState);
         }
 
-        public void OnAppSuspended()
+        public void OnAppSuspending()
         {
             App.Locator.AppSettingsHelper.Write(PlayerConstants.AppState, PlayerConstants.ForegroundAppSuspended);
             RemoveMediaPlayerEventHandlers(SafeMediaPlayer);

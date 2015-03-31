@@ -21,7 +21,7 @@ namespace Audiotica
         private readonly RelayCommand _playPauseRelayCommand;
         private readonly RelayCommand _prevRelayCommand;
         private readonly ICollectionService _service;
-        private readonly DispatcherTimer _timer;
+        private DispatcherTimer _timer;
         private QueueSong _currentQueue;
         private TimeSpan _duration;
         private bool _isLoading;
@@ -173,7 +173,8 @@ namespace Audiotica
             {
                 default:
                     PlayPauseIcon = Symbol.Play;
-                    _timer.Stop();
+                    if (_timer.IsEnabled)
+                        _timer.Stop();
                     break;
                 case MediaPlayerState.Playing:
                     _timer.Start();
@@ -182,9 +183,33 @@ namespace Audiotica
                 case MediaPlayerState.Buffering:
                 case MediaPlayerState.Opening:
                     IsLoading = true;
-                    _timer.Stop();
+                    if (_timer.IsEnabled)
+                        _timer.Stop();
                     break;
             }
+        }
+
+        public void OnAppActive()
+        {
+            _helper.TrackChanged += HelperOnTrackChanged;
+            _helper.PlaybackStateChanged += HelperOnPlaybackStateChanged;
+            _helper.Shutdown += HelperOnShutdown;
+
+            _timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
+            _timer.Tick += TimerOnTick;
+        }
+
+        public void OnAppSuspending()
+        {
+            if (_timer.IsEnabled)
+                _timer.Stop();
+
+            _timer.Tick -= TimerOnTick;
+            _timer = null;
+
+            _helper.TrackChanged -= HelperOnTrackChanged;
+            _helper.PlaybackStateChanged -= HelperOnPlaybackStateChanged;
+            _helper.Shutdown -= HelperOnShutdown;
         }
 
         private void HelperOnShutdown(object sender, EventArgs eventArgs)

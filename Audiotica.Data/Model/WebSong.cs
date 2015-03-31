@@ -68,6 +68,7 @@ namespace Audiotica.Data.Model
         public string Artist { get; set; }
         public Uri ArtworkImage { get; set; }
         public string AudioUrl { get; set; }
+        public string DirectAudioUrl { get; set; }
         public int BitRate { get; set; }
         public long ByteSize { get; set; }
         public TimeSpan Duration { get; set; }

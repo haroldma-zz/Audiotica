@@ -82,7 +82,9 @@ namespace Audiotica.Data
 
                 if (matchResp.Success && matchResp.Data != null && matchResp.Data.Count > 0)
                 {
-                    return matchResp.Data.FirstOrDefault().AudioUrl;
+                    var match = matchResp.Data.FirstOrDefault();
+                    if (match != null)
+                        return match.DirectAudioUrl ?? match.AudioUrl;
                 }
 
                 if (matchResp.StatusCode != HttpStatusCode.Unauthorized)

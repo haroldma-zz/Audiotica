@@ -3,38 +3,29 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-
-using Audiotica.Core.Utilities;
-using Audiotica.Core.Utils;
-using Audiotica.Core.WinRt;
-using Audiotica.Core.WinRt.Common;
-using Audiotica.Data.Collection.Model;
-using Audiotica.Data.Collection.RunTime;
-using Audiotica.Data.Model.AudioticaCloud;
-using Audiotica.View;
-using Audiotica.ViewModel;
-
-using GalaSoft.MvvmLight.Threading;
-
-using GoogleAnalytics;
-
-using Microsoft.WindowsAzure.MobileServices;
-
-using SQLite;
-
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.ApplicationModel.Store;
 using Windows.Graphics.Display;
+using Windows.Media.SpeechRecognition;
 using Windows.Phone.UI.Input;
+using Windows.Storage;
 using Windows.System;
 using Windows.UI.Popups;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
-
+using Audiotica.Core.Utilities;
+using Audiotica.Core.WinRt;
+using Audiotica.Core.WinRt.Common;
+using Audiotica.Data.Collection.Model;
+using Audiotica.View;
+using Audiotica.ViewModel;
+using GalaSoft.MvvmLight.Threading;
+using GoogleAnalytics;
+using SQLite;
 using Xamarin;
 
 namespace Audiotica
@@ -52,7 +43,7 @@ namespace Audiotica
         {
             InitializeComponent();
             HardwareButtons.BackPressed += HardwareButtonsOnBackPressed;
-            continuationManager = new ContinuationManager();
+            _continuationManager = new ContinuationManager();
             Suspending += OnSuspending;
             Resuming += OnResuming;
             UnhandledException += OnUnhandledException;
@@ -81,12 +72,12 @@ namespace Audiotica
         #region Fields
 
 #if WINDOWS_PHONE_APP
-        private readonly ContinuationManager continuationManager;
+        private readonly ContinuationManager _continuationManager;
 #endif
 
         private bool _init;
 
-        private static ViewModelLocator locator;
+        private static ViewModelLocator _locator;
 
         #endregion
 
@@ -96,35 +87,29 @@ namespace Audiotica
 
         public static ViewModelLocator Locator
         {
-            get
-            {
-                return locator ?? (locator = Current.Resources["Locator"] as ViewModelLocator);
-            }
+            get { return _locator ?? (_locator = Current.Resources["Locator"] as ViewModelLocator); }
         }
 
         public static Frame RootFrame { get; private set; }
 
         public static LicenseInformation LicenseInformation
         {
-            get
-            {
-                return Debugger.IsAttached ? CurrentAppSimulator.LicenseInformation : CurrentApp.LicenseInformation;
-            }
+            get { return Debugger.IsAttached ? CurrentAppSimulator.LicenseInformation : CurrentApp.LicenseInformation; }
         }
 
         #endregion
 
         #region Overriding
 
-        protected async override void OnActivated(IActivatedEventArgs e)
+        protected override void OnActivated(IActivatedEventArgs e)
         {
             base.OnActivated(e);
 
-            await StartAppAsync();
+            StartApp();
 
             if (e.Kind == ActivationKind.VoiceCommand)
             {
-                var commandArgs = (VoiceCommandActivatedEventArgs)e;
+                var commandArgs = (VoiceCommandActivatedEventArgs) e;
                 var speechRecognitionResult = commandArgs.Result;
 
                 // If so, get the name of the voice command, the actual text spoken, and the value of Command/Navigate@Target.
@@ -192,17 +177,17 @@ namespace Audiotica
                                 var song =
                                     Locator.CollectionService.Songs.FirstOrDefault(
                                         p =>
-                                        p.Name.ToLower().Contains(songName)
-                                        && (p.Artist.Name.ToLower().Contains(artistName)
-                                            || p.ArtistName.ToLower().Contains(artistName)));
+                                            p.Name.ToLower().Contains(songName)
+                                            && (p.Artist.Name.ToLower().Contains(artistName)
+                                                || p.ArtistName.ToLower().Contains(artistName)));
 
                                 if (song == null)
                                 {
                                     var album =
                                         Locator.CollectionService.Albums.FirstOrDefault(
                                             p =>
-                                            p.Name.ToLower().Contains(songName)
-                                            && p.PrimaryArtist.Name.ToLower().Contains(artistName));
+                                                p.Name.ToLower().Contains(songName)
+                                                && p.PrimaryArtist.Name.ToLower().Contains(artistName));
 
                                     if (album == null)
                                     {
@@ -223,7 +208,7 @@ namespace Audiotica
                                     {
                                         await
                                             CollectionHelper.PlaySongsAsync(
-                                                song, 
+                                                song,
                                                 Locator.CollectionService.Songs.OrderBy(p => p.Name).ToList());
                                     }
                                     else
@@ -255,14 +240,14 @@ namespace Audiotica
 
                 if (continuationEventArgs != null)
                 {
-                    continuationManager.Continue(continuationEventArgs);
+                    _continuationManager.Continue(continuationEventArgs);
                 }
             }
         }
 
-        protected async override void OnLaunched(LaunchActivatedEventArgs e)
+        protected override void OnLaunched(LaunchActivatedEventArgs e)
         {
-            await StartAppAsync(e.Arguments);
+            StartApp(e.Arguments);
         }
 
         #endregion
@@ -330,7 +315,7 @@ namespace Audiotica
                     break;
             }
 
-            scaledImageSize = (int)(scaledImageSize * factor);
+            scaledImageSize = (int) (scaledImageSize*factor);
             return scaledImageSize;
         }
 
@@ -350,12 +335,14 @@ namespace Audiotica
         private void OnResuming(object sender, object o)
         {
             Locator.AudioPlayerHelper.OnAppActive();
+            Locator.Player.OnAppActive();
         }
 
         private void OnSuspending(object sender, SuspendingEventArgs e)
         {
             var deferral = e.SuspendingOperation.GetDeferral();
-            Locator.AudioPlayerHelper.OnAppSuspended();
+            Locator.AudioPlayerHelper.OnAppSuspending();
+            Locator.Player.OnAppSuspending();
             deferral.Complete();
         }
 
@@ -394,10 +381,10 @@ namespace Audiotica
 
             if (
                 await
-                MessageBox.ShowAsync(
-                    "There was a problem with the application. Do you want to send a crash report so the developer can fix it?", 
-                    title, 
-                    MessageBoxButton.OkCancel) == MessageBoxResult.Ok)
+                    MessageBox.ShowAsync(
+                        "There was a problem with the application. Do you want to send a crash report so the developer can fix it?",
+                        title,
+                        MessageBoxButton.OkCancel) == MessageBoxResult.Ok)
             {
                 await Launcher.LaunchUriAsync(new Uri(url));
             }
@@ -418,7 +405,7 @@ namespace Audiotica
 
         #endregion
 
-        public async Task StartAppAsync(string argument = "")
+        public void StartApp(string argument = "")
         {
             CreateRootFrame();
 
@@ -432,7 +419,7 @@ namespace Audiotica
                 RootFrame.Navigated += RootFrame_FirstNavigated;
 
                 // MainPage is always in rootFrame so we don't have to worry about restoring the navigation state on resume
-                RootFrame.Navigate(typeof(RootPage), null);
+                RootFrame.Navigate(typeof (RootPage), null);
             }
 
             if (argument.StartsWith("artists/"))
@@ -515,7 +502,7 @@ namespace Audiotica
             Current.DebugSettings.EnableFrameRateCounter = Locator.AppSettingsHelper.Read<bool>("FrameRateCounter");
             Current.DebugSettings.EnableRedrawRegions = Locator.AppSettingsHelper.Read<bool>("RedrawRegions");
 
-            RootFrame = new Frame { Style = Resources["AppFrame"] as Style };
+            RootFrame = new Frame {Style = Resources["AppFrame"] as Style};
             Window.Current.Content = RootFrame;
         }
 
@@ -570,10 +557,10 @@ namespace Audiotica
 
                         var storageFile =
                             await
-                            Windows.Storage.StorageFile.GetFileFromApplicationUriAsync(
-                                new Uri("ms-appx:///AudioticaCommands.xml"));
+                                StorageFile.GetFileFromApplicationUriAsync(
+                                    new Uri("ms-appx:///AudioticaCommands.xml"));
                         await
-                            Windows.Media.SpeechRecognition.VoiceCommandManager.InstallCommandSetsFromStorageFileAsync(
+                            VoiceCommandManager.InstallCommandSetsFromStorageFileAsync(
                                 storageFile);
                     }
                     catch (Exception ex)
@@ -588,6 +575,7 @@ namespace Audiotica
             }
 
             Locator.AudioPlayerHelper.OnAppActive();
+            Locator.Player.OnAppActive();
         }
 
         private async Task ReviewReminderAsync()
@@ -602,7 +590,7 @@ namespace Audiotica
             var rate = "FeedbackDialogRateButton".FromLanguageResource();
 
             var md = new MessageDialog(
-                "FeedbackDialogContent".FromLanguageResource(), 
+                "FeedbackDialogContent".FromLanguageResource(),
                 "FeedbackDialogTitle".FromLanguageResource());
             md.Commands.Add(new UICommand(rate));
             md.Commands.Add(new UICommand("FeedbackDialogNoButton".FromLanguageResource()));
