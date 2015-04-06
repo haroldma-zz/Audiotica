@@ -21,8 +21,10 @@
                         <Grid>
                             <Image Source="{Binding Album.Images[0].Url}" />
                             <StackPanel VerticalAlignment="Bottom" Background="#BF000000">
-                                <TextBlock Text="{Binding Album.Name}" Margin="15,10,15,0" FontSize="30" />
+                                <TextBlock Text="{Binding Album.Name}" Margin="15,10,15,0" FontSize="30" 
+                                            Pivot.SlideInAnimationGroup="GroupOne"/>
                                 <TextBlock Text="{Binding Album.Artist.Name}" Margin="15,0,15,10"
+                                            Pivot.SlideInAnimationGroup="GroupTwo"
                                            Foreground="#89FFFFFF" FontSize="24" />
                             </StackPanel>
                         </Grid>

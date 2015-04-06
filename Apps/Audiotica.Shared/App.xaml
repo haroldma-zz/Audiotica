@@ -263,9 +263,11 @@
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
                     <TextBlock Margin="0,5,0,0" Text="{Binding Name}" FontSize="22"
+                                Pivot.SlideInAnimationGroup="GroupOne"
                                FontFamily="Global User Interface" TextWrapping="Wrap"
                                TextTrimming="CharacterEllipsis" FontWeight="Bold" />
                     <TextBlock Grid.Row="1" Text="{Binding ArtistName}" FontSize="12" FontWeight="Thin"
+                                Pivot.SlideInAnimationGroup="GroupTwo"
                                Foreground="#89FFFFFF" TextTrimming="CharacterEllipsis" TextWrapping="Wrap" />
                 </Grid>
             </Grid>
@@ -273,8 +275,10 @@
         <DataTemplate x:Key="LastTrackDataTemplate">
             <StackPanel Margin="0,0,0,15">
                 <TextBlock Text="{Binding Name}" TextWrapping="Wrap" FontSize="22" FontFamily="Global User Interface"
+                            Pivot.SlideInAnimationGroup="GroupOne"
                            TextTrimming="CharacterEllipsis" FontWeight="Bold" />
                 <TextBlock FontSize="16" FontWeight="Thin" Foreground="#89FFFFFF"
+                            Pivot.SlideInAnimationGroup="GroupTwo"
                            TextTrimming="CharacterEllipsis" TextWrapping="Wrap">
                     <Run Text="{Binding ArtistName}" />
                     <Run Text="{Binding AlbumName, Converter={StaticResource DashNotEmptyToStringConverter}}" />
@@ -289,8 +293,10 @@
         <DataTemplate x:Key="SpotifyTrackNoAlbumDataTemplate">
             <StackPanel Margin="0,0,0,15">
                 <TextBlock Text="{Binding Name}" FontSize="22" TextWrapping="Wrap"
+                            Pivot.SlideInAnimationGroup="GroupOne"
                            TextTrimming="CharacterEllipsis" FontWeight="Bold" />
                 <TextBlock Text="{Binding Artist.Name}" FontSize="16" FontWeight="Thin" Foreground="#89FFFFFF"
+                            Pivot.SlideInAnimationGroup="GroupTwo"
                            TextTrimming="CharacterEllipsis" TextWrapping="Wrap" />
             </StackPanel>
         </DataTemplate>

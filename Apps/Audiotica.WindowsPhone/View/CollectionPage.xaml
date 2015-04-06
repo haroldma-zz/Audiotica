@@ -147,9 +147,11 @@
                                                               Style="{StaticResource AppBarButtonWithShadowStyle}" />
                                             </Grid>
                                             <TextBlock Text="{Binding Name}" FontSize="15"
+                                                        Pivot.SlideInAnimationGroup="GroupOne"
                                                        TextTrimming="CharacterEllipsis"
                                                        FontFamily="Global User Interface" />
                                             <TextBlock FontSize="14"
+                                                        Pivot.SlideInAnimationGroup="GroupTwo"
                                                        TextTrimming="CharacterEllipsis" Foreground="#89FFFFFF"
                                                        FontFamily="Global User Interface">
                                                 <Run Text="{Binding Albums.Count}" />
@@ -212,12 +214,15 @@
                                                               Style="{StaticResource AppBarButtonWithShadowStyle}" />
                                             </Grid>
                                             <TextBlock Text="{Binding Name}" FontSize="15"
+                                                        Pivot.SlideInAnimationGroup="GroupOne"
                                                        TextTrimming="CharacterEllipsis"
                                                        FontFamily="Global User Interface" />
                                             <TextBlock FontSize="14" Text="{Binding PrimaryArtist.Name}"
+                                                        Pivot.SlideInAnimationGroup="GroupTwo"
                                                        TextTrimming="CharacterEllipsis" Foreground="#89FFFFFF"
                                                        FontFamily="Global User Interface" />
                                             <TextBlock FontSize="14"
+                                                        Pivot.SlideInAnimationGroup="GroupThree"
                                                        TextTrimming="CharacterEllipsis" Foreground="#89FFFFFF"
                                                        FontFamily="Global User Interface">
                                                 <Run Text="{Binding Songs.Count}" />

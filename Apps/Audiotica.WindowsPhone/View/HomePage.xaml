@@ -13,22 +13,22 @@
             <TextBlock Text="{Binding}" FontSize="20" FontFamily="Segoe WP" FontWeight="Normal" Margin="-1,0,0,0" />
         </DataTemplate>
         <Style x:Key="FlipViewStyle1" TargetType="FlipView">
-            <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="TabNavigation" Value="Once"/>
-            <Setter Property="IsTabStop" Value="False"/>
-            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Hidden"/>
-            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Hidden"/>
-            <Setter Property="ScrollViewer.IsHorizontalRailEnabled" Value="False"/>
-            <Setter Property="ScrollViewer.IsVerticalRailEnabled" Value="False"/>
-            <Setter Property="ScrollViewer.IsHorizontalScrollChainingEnabled" Value="True"/>
-            <Setter Property="ScrollViewer.IsVerticalScrollChainingEnabled" Value="True"/>
-            <Setter Property="ScrollViewer.IsDeferredScrollingEnabled" Value="False"/>
-            <Setter Property="ScrollViewer.BringIntoViewOnFocusChange" Value="True"/>
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="TabNavigation" Value="Once" />
+            <Setter Property="IsTabStop" Value="False" />
+            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Hidden" />
+            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Hidden" />
+            <Setter Property="ScrollViewer.IsHorizontalRailEnabled" Value="False" />
+            <Setter Property="ScrollViewer.IsVerticalRailEnabled" Value="False" />
+            <Setter Property="ScrollViewer.IsHorizontalScrollChainingEnabled" Value="True" />
+            <Setter Property="ScrollViewer.IsVerticalScrollChainingEnabled" Value="True" />
+            <Setter Property="ScrollViewer.IsDeferredScrollingEnabled" Value="False" />
+            <Setter Property="ScrollViewer.BringIntoViewOnFocusChange" Value="True" />
             <Setter Property="ItemsPanel">
                 <Setter.Value>
                     <ItemsPanelTemplate>
-                        <VirtualizingStackPanel AreScrollSnapPointsRegular="True" Orientation="Horizontal"/>
+                        <VirtualizingStackPanel AreScrollSnapPointsRegular="True" Orientation="Horizontal" />
                     </ItemsPanelTemplate>
                 </Setter.Value>
             </Setter>
@@ -36,10 +36,28 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="FlipView">
                         <Grid>
-                            <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}">
+                            <Border BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    Background="{TemplateBinding Background}">
                                 <Grid>
-                                    <ScrollViewer x:Name="ScrollingHost" AutomationProperties.AccessibilityView="Raw" BringIntoViewOnFocusChange="{TemplateBinding ScrollViewer.BringIntoViewOnFocusChange}" HorizontalScrollMode="{TemplateBinding ScrollViewer.HorizontalScrollMode}" HorizontalSnapPointsType="MandatorySingle" HorizontalScrollBarVisibility="{TemplateBinding ScrollViewer.HorizontalScrollBarVisibility}" IsTabStop="False" IsHorizontalRailEnabled="{TemplateBinding ScrollViewer.IsHorizontalRailEnabled}" IsHorizontalScrollChainingEnabled="{TemplateBinding ScrollViewer.IsHorizontalScrollChainingEnabled}" IsVerticalScrollChainingEnabled="{TemplateBinding ScrollViewer.IsVerticalScrollChainingEnabled}" IsVerticalRailEnabled="{TemplateBinding ScrollViewer.IsVerticalRailEnabled}" IsDeferredScrollingEnabled="{TemplateBinding ScrollViewer.IsDeferredScrollingEnabled}" Padding="{TemplateBinding Padding}" TabNavigation="{TemplateBinding TabNavigation}" VerticalSnapPointsType="MandatorySingle" VerticalScrollBarVisibility="{TemplateBinding ScrollViewer.VerticalScrollBarVisibility}" VerticalScrollMode="{TemplateBinding ScrollViewer.VerticalScrollMode}" ZoomMode="Disabled">
-                                        <ItemsPresenter/>
+                                    <ScrollViewer x:Name="ScrollingHost" AutomationProperties.AccessibilityView="Raw"
+                                                  BringIntoViewOnFocusChange="{TemplateBinding ScrollViewer.BringIntoViewOnFocusChange}"
+                                                  HorizontalScrollMode="{TemplateBinding ScrollViewer.HorizontalScrollMode}"
+                                                  HorizontalSnapPointsType="MandatorySingle"
+                                                  HorizontalScrollBarVisibility="{TemplateBinding ScrollViewer.HorizontalScrollBarVisibility}"
+                                                  IsTabStop="False"
+                                                  IsHorizontalRailEnabled="{TemplateBinding ScrollViewer.IsHorizontalRailEnabled}"
+                                                  IsHorizontalScrollChainingEnabled="{TemplateBinding ScrollViewer.IsHorizontalScrollChainingEnabled}"
+                                                  IsVerticalScrollChainingEnabled="{TemplateBinding ScrollViewer.IsVerticalScrollChainingEnabled}"
+                                                  IsVerticalRailEnabled="{TemplateBinding ScrollViewer.IsVerticalRailEnabled}"
+                                                  IsDeferredScrollingEnabled="{TemplateBinding ScrollViewer.IsDeferredScrollingEnabled}"
+                                                  Padding="{TemplateBinding Padding}"
+                                                  TabNavigation="{TemplateBinding TabNavigation}"
+                                                  VerticalSnapPointsType="MandatorySingle"
+                                                  VerticalScrollBarVisibility="{TemplateBinding ScrollViewer.VerticalScrollBarVisibility}"
+                                                  VerticalScrollMode="{TemplateBinding ScrollViewer.VerticalScrollMode}"
+                                                  ZoomMode="Disabled">
+                                        <ItemsPresenter />
                                     </ScrollViewer>
                                 </Grid>
                             </Border>
@@ -52,7 +70,8 @@
 
     <Grid>
         <Grid.Background>
-            <ImageBrush Opacity=".25" Stretch="UniformToFill" ImageSource="{Binding PlayerViewModel.CurrentQueue.Song.Artist.Artwork.Uri}" />
+            <ImageBrush Opacity=".25" Stretch="UniformToFill"
+                        ImageSource="{Binding PlayerViewModel.CurrentQueue.Song.Artist.Artwork.Uri}" />
         </Grid.Background>
         <Hub x:Name="MainHub" Header="AUDIOTICA">
             <Hub.HeaderTemplate>
@@ -86,10 +105,10 @@
                                 FontWeight="Light" Margin="0,10,0,0" Click="PlaylistButton_Click">
                             <TextBlock x:Uid="MenuItemPlaylists" Text="playlists" FontSize="40" />
                         </Button>
-<!--                        <Button Grid.Row="4" Style="{StaticResource PlainButtonStyle}" FontFamily="Segoe UI Light"-->
-<!--                                FontWeight="Light" Margin="0,10,0,0" Click="Button_Click_2">-->
-<!--                            <TextBlock Text="charts" FontSize="40" />-->
-<!--                        </Button>-->
+                        <!--                        <Button Grid.Row="4" Style="{StaticResource PlainButtonStyle}" FontFamily="Segoe UI Light"-->
+                        <!--                                FontWeight="Light" Margin="0,10,0,0" Click="Button_Click_2">-->
+                        <!--                            <TextBlock Text="charts" FontSize="40" />-->
+                        <!--                        </Button>-->
                     </Grid>
                 </DataTemplate>
             </HubSection>
@@ -266,7 +285,8 @@
                     </Grid>
                 </DataTemplate>
             </HubSection>
-        </Hub></Grid>
+        </Hub>
+    </Grid>
     <Page.BottomAppBar>
         <CommandBar>
             <AppBarButton Icon="Play" Label="Play All" Click="AppBarButton_Click_1" />

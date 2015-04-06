@@ -189,8 +189,11 @@ namespace Audiotica
             }
         }
 
+        private bool _init = true;
         public void OnAppActive()
         {
+            if (_init) return;
+            _init = true;
             _helper.TrackChanged += HelperOnTrackChanged;
             _helper.PlaybackStateChanged += HelperOnPlaybackStateChanged;
             _helper.Shutdown += HelperOnShutdown;
@@ -201,6 +204,8 @@ namespace Audiotica
 
         public void OnAppSuspending()
         {
+            if (!_init) return;
+            _init = false;
             if (_timer.IsEnabled)
                 _timer.Stop();
 

@@ -337,6 +337,8 @@ namespace Audiotica
         {
             Locator.AudioPlayerHelper.OnAppActive();
             Locator.Player.OnAppActive();
+            Locator.SqlService.Initialize();
+            Locator.BgSqlService.Initialize();
         }
 
         private void OnSuspending(object sender, SuspendingEventArgs e)
@@ -344,6 +346,8 @@ namespace Audiotica
             var deferral = e.SuspendingOperation.GetDeferral();
             Locator.AudioPlayerHelper.OnAppSuspending();
             Locator.Player.OnAppSuspending();
+            Locator.SqlService.Dispose();
+            Locator.BgSqlService.Dispose();
             deferral.Complete();
         }
 

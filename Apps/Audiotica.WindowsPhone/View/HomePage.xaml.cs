@@ -1,6 +1,7 @@
 ﻿#region
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Windows.System;
 using Windows.UI.Xaml;
@@ -144,7 +145,13 @@ namespace Audiotica.View
             var chartTrack = e.ClickedItem as ChartTrack;
             if (chartTrack == null) return;
 
-            await CollectionHelper.SaveTrackAsync(chartTrack);
+            // experienting with playing if a song is already saved
+            var track = App.Locator.CollectionService.Songs.FirstOrDefault(p => p.ProviderId.EndsWith(chartTrack.track_id));
+            if (track != null)
+                await CollectionHelper.PlaySongsAsync(track, App.Locator.CollectionService.Songs.ToList());
+
+            else
+                await CollectionHelper.SaveTrackAsync(chartTrack);
         }
 
         private void RecommendationListView_ItemClick(object sender, ItemClickEventArgs e)
