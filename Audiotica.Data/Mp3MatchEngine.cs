@@ -36,14 +36,15 @@ namespace Audiotica.Data
 
         private readonly Mp3Provider[] _providers =
         {
-            Mp3Provider.ProstoPleer,
-            Mp3Provider.Songily,
             Mp3Provider.Netease,
             Mp3Provider.Mp3Truck,
+            Mp3Provider.ProstoPleer,
             //Mp3Provider.Mp3Clan, 
             Mp3Provider.Meile,
             Mp3Provider.Mp3Skull,
-            Mp3Provider.SoundCloud
+            Mp3Provider.Songily,
+            Mp3Provider.SoundCloud,
+            Mp3Provider.YouTube
         };
 
         private readonly Mp3SearchService _service;
@@ -76,6 +77,9 @@ namespace Audiotica.Data
                 .Replace("- deluxe edition", string.Empty)
                 .Trim();
 
+            if (title.Contains("- from the") && title.EndsWith("soundtrack"))
+                title = title.Substring(0, title.IndexOf("- from the") - 1);
+
             if (_audioticaService.IsAuthenticated && _audioticaService.CurrentUser.Subscription != SubscriptionType.None)
             {
                 var matchResp = await _audioticaService.GetMatchesAsync(title, artist);
@@ -84,7 +88,7 @@ namespace Audiotica.Data
                 {
                     var match = matchResp.Data.FirstOrDefault();
                     if (match != null)
-                        return match.DirectAudioUrl ?? match.AudioUrl;
+                        return match.AudioUrl;
                 }
 
                 if (matchResp.StatusCode != HttpStatusCode.Unauthorized)
@@ -112,6 +116,7 @@ namespace Audiotica.Data
                 }
                 catch
                 {
+                    // ignored
                 }
 
                 if (url != null)
@@ -154,6 +159,9 @@ namespace Audiotica.Data
                     break;
                 case Mp3Provider.Mp3Skull:
                     webSongs = await _service.SearchMp3Skull(title, artist, album).ConfigureAwait(false);
+                    break;
+                case Mp3Provider.YouTube:
+                    webSongs = await _service.SearchYoutube(title, artist, album).ConfigureAwait(false);
                     break;
             }
 

@@ -503,9 +503,11 @@ namespace Audiotica
         {
             using (var handler = Insights.TrackTime("Match Song"))
             {
-                var url = await App.Locator.Mp3MatchEngine.FindMp3For(song.Name, song.Artist.Name).ConfigureAwait(false);
+                var variousArtist = song.Artist.Name == "Various Artists";
 
-                if (string.IsNullOrEmpty(url) && song.ArtistName != song.Artist.Name)
+                var url = await App.Locator.Mp3MatchEngine.FindMp3For(song.Name, variousArtist ? song.ArtistName : song.Artist.Name).ConfigureAwait(false);
+
+                if (string.IsNullOrEmpty(url) && !variousArtist && song.ArtistName != song.Artist.Name)
                 {
                     // try using the song artist name when is different than the album artist name
                     url = await App.Locator.Mp3MatchEngine.FindMp3For(song.Name, song.ArtistName).ConfigureAwait(false);

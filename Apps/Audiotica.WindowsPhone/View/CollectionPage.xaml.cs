@@ -153,7 +153,7 @@ namespace Audiotica.View
             {
                 var albums =
                     App.Locator.CollectionService.Albums.ToList()
-                        .Where(p => p.Artwork != AppConstant.MissingArtworkImage)
+                        .Where(p => p.HasArtwork)
                         .ToList();
 
                 var albumCount = albums.Count;
@@ -206,39 +206,46 @@ namespace Audiotica.View
                     // Read the image file into a RandomAccessStream
                     using (var fileStream = await file.OpenReadAsync())
                     {
-                        // Now that you have the raw bytes, create a Image Decoder
-                        var decoder = await BitmapDecoder.CreateAsync(fileStream);
-
-                        // Get the first frame from the decoder because we are picking an image
-                        var frame = await decoder.GetFrameAsync(0);
-
-                        // Convert the frame into pixels
-                        var pixelProvider = await frame.GetPixelDataAsync();
-
-                        // Convert pixels into byte array
-                        var srcPixels = pixelProvider.DetachPixelData();
-                        var wid = (int) frame.PixelWidth;
-                        var hgt = (int) frame.PixelHeight;
-                        // Create an in memory WriteableBitmap of the same size
-                        var bitmap = new WriteableBitmap(wid, hgt); // Temporary bitmap into which the source
-
-                        using (var pixelStream = bitmap.PixelBuffer.AsStream())
+                        try
                         {
-                            pixelStream.Seek(0, SeekOrigin.Begin);
-                            // Push the pixels from the original file into the in-memory bitmap
-                            await pixelStream.WriteAsync(srcPixels, 0, srcPixels.Length);
-                            bitmap.Invalidate();
+                            // Now that you have the raw bytes, create a Image Decoder
+                            var decoder = await BitmapDecoder.CreateAsync(fileStream);
 
-                            // Resize the in-memory bitmap and Blit (paste) it at the correct tile
-                            // position (row, col)
-                            destination.Blit(new Rect(col*albumSize, row*albumSize, albumSize, albumSize),
-                                bitmap.Resize(albumSize, albumSize, WriteableBitmapExtensions.Interpolation.Bilinear),
-                                new Rect(0, 0, albumSize, albumSize));
-                            col++;
-                            if (col < collumns) continue;
+                            // Get the first frame from the decoder because we are picking an image
+                            var frame = await decoder.GetFrameAsync(0);
 
-                            row++;
-                            col = 0;
+                            // Convert the frame into pixels
+                            var pixelProvider = await frame.GetPixelDataAsync();
+
+                            // Convert pixels into byte array
+                            var srcPixels = pixelProvider.DetachPixelData();
+                            var wid = (int) frame.PixelWidth;
+                            var hgt = (int) frame.PixelHeight;
+                            // Create an in memory WriteableBitmap of the same size
+                            var bitmap = new WriteableBitmap(wid, hgt); // Temporary bitmap into which the source
+
+                            using (var pixelStream = bitmap.PixelBuffer.AsStream())
+                            {
+                                pixelStream.Seek(0, SeekOrigin.Begin);
+                                // Push the pixels from the original file into the in-memory bitmap
+                                await pixelStream.WriteAsync(srcPixels, 0, srcPixels.Length);
+                                bitmap.Invalidate();
+
+                                // Resize the in-memory bitmap and Blit (paste) it at the correct tile
+                                // position (row, col)
+                                destination.Blit(new Rect(col*albumSize, row*albumSize, albumSize, albumSize),
+                                    bitmap.Resize(albumSize, albumSize, WriteableBitmapExtensions.Interpolation.Bilinear),
+                                    new Rect(0, 0, albumSize, albumSize));
+                                col++;
+                                if (col < collumns) continue;
+
+                                row++;
+                                col = 0;
+                            }
+                        }
+                        catch
+                        {
+                            // ignored
                         }
                     }
                 }

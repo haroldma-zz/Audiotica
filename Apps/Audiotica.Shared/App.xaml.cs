@@ -266,14 +266,7 @@ namespace Audiotica
             OnVisibleBoundsChanged(null, null);
 
             var crash = Locator.AppSettingsHelper.ReadJsonAs<Exception>("CrashingException");
-            if (crash != null && !Locator.AppVersionHelper.JustUpdated)
-            {
-                await WarnAboutCrashAsync("Application Crashed", crash);
-            }
-            else
-            {
-                await ReviewReminderAsync();
-            }
+            await ReviewReminderAsync();
 
             CollectionHelper.RequiresCollectionToLoad(
                 async () =>
@@ -353,7 +346,6 @@ namespace Audiotica
 
         private void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
-            Insights.Report(e.Exception);
             e.Handled = true;
 
             if (e.Message.Contains("No installed components were detected."))
@@ -363,39 +355,15 @@ namespace Audiotica
                 return;
             }
 
-            // just in case it crashes, save it
-            Locator.AppSettingsHelper.WriteAsJson("CrashingException", e.Exception);
-
             DispatcherHelper.CheckBeginInvokeOnUI(
                 async () =>
                 {
                     UiBlockerUtility.Unblock();
-                    await WarnAboutCrashAsync("Crash prevented", e.Exception);
+                    await
+                  MessageBox.ShowAsync(
+                      "There was a problem with the application. A crash report has been send automatically.",
+                      "Crash prevented");
                 });
-        }
-
-        private async Task WarnAboutCrashAsync(string title, Exception e)
-        {
-            var stacktrace = e.StackTrace;
-
-            const string emailTo = "badbug@audiotica.fm";
-            const string emailSubject = "Audiotica crash report";
-            var emailBody = "I encountered a problem with Audiotica (v" + Locator.AppVersionHelper.CurrentVersion
-                            + ")...\r\n\r\n" + e.Message + "\r\n\r\nDetails:\r\n" + stacktrace;
-            var url = "mailto:?to=" + emailTo + "&subject=" + emailSubject + "&body=" + Uri.EscapeDataString(emailBody);
-
-            if (
-                await
-                    MessageBox.ShowAsync(
-                        "There was a problem with the application. Do you want to send a crash report so the developer can fix it?",
-                        title,
-                        MessageBoxButton.OkCancel) == MessageBoxResult.Ok)
-            {
-                await Launcher.LaunchUriAsync(new Uri(url));
-            }
-
-            // made it so far, no need to save the crash details
-            Locator.AppSettingsHelper.Write("CrashingException", null);
         }
 
         private void DataTransferManagerOnDataRequested(DataTransferManager sender, DataRequestedEventArgs e)

@@ -61,6 +61,7 @@ namespace Audiotica
 
                 if (url.StartsWith("ms-appx:"))
                 {
+                    url = url.Replace("ms-appx://", "");
                     url = url.Replace("ms-appx:", "");
                 }
                 if (url.StartsWith("ms-appdata:"))

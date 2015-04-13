@@ -121,6 +121,25 @@ namespace Audiotica.Data.Collection.RunTime
                 Songs.AddRange(songs);
             }
 
+            if (isForeground)
+                foreach (var artist in artists)
+                {
+                    _dispatcher.RunAsync(
+                        () =>
+                        {
+                            var artworkPath = string.Format(_artistArtworkFilePath, artist.Id);
+                            artist.Artwork = artist.HasArtwork
+                                ? _bitmapFactory.CreateImage(
+                                    new Uri(_localFilePrefix + artworkPath))
+                                : null;
+
+                            if (ScaledImageSize != 0 && artist.Artwork != null)
+                            {
+                                artist.Artwork.SetDecodedPixel(ScaledImageSize);
+                            }
+                        }).Wait();
+                }
+
             foreach (var album in albums)
             {
                 album.Songs.AddRange(songs.Where(p => !p.IsTemp && p.AlbumId == album.Id).OrderBy(p => p.TrackNumber));
@@ -151,9 +170,12 @@ namespace Audiotica.Data.Collection.RunTime
                             }
                             else
                             {
-                                album.Artwork = _missingArtwork;
-                                album.MediumArtwork = _missingArtwork;
-                                album.SmallArtwork = _missingArtwork;
+                                var artwork = album.PrimaryArtist.HasArtwork
+                                    ? album.PrimaryArtist.Artwork
+                                    : _missingArtwork;
+                                album.Artwork = artwork;
+                                album.MediumArtwork = artwork;
+                                album.SmallArtwork = artwork;
                             }
                         }).Wait();
                 }
@@ -176,23 +198,6 @@ namespace Audiotica.Data.Collection.RunTime
 
                 var songsAlbums = artist.Songs.Select(p => p.Album);
                 artist.Albums.AddRange(songsAlbums.Where(p => p.Songs.Count > 0 && !artist.Albums.Contains(p)));
-                if (isForeground)
-                {
-                    _dispatcher.RunAsync(
-                        () =>
-                        {
-                            var artworkPath = string.Format(_artistArtworkFilePath, artist.Id);
-                            artist.Artwork = artist.HasArtwork
-                                ? _bitmapFactory.CreateImage(
-                                    new Uri(_localFilePrefix + artworkPath))
-                                : null;
-
-                            if (ScaledImageSize != 0 && artist.Artwork != null)
-                            {
-                                artist.Artwork.SetDecodedPixel(ScaledImageSize);
-                            }
-                        }).Wait();
-                }
             }
 
             if (isForeground)
@@ -426,9 +431,12 @@ namespace Audiotica.Data.Collection.RunTime
                 _inProgressAlbums.Add(song.Album);
                 await _dispatcher.RunAsync(() =>
                 {
-                    song.Album.Artwork = _missingArtwork;
-                    song.Album.MediumArtwork = _missingArtwork;
-                    song.Album.SmallArtwork = _missingArtwork;
+                    var artwork = song.Artist.HasArtwork
+                                    ? song.Artist.Artwork
+                                    : _missingArtwork;
+                    song.Album.Artwork = artwork;
+                    song.Album.MediumArtwork = artwork;
+                    song.Album.SmallArtwork = artwork;
                 });
 
                 if (tags != null && tags.Pictures != null && tags.Pictures.Length > 0)

@@ -11,6 +11,8 @@ using Audiotica.Core.Utils.Interfaces;
 using Audiotica.Data.Model;
 using Audiotica.Data.Model.SoundCloud;
 using Audiotica.Data.Service.Interfaces;
+using Google.Apis.Services;
+using Google.Apis.YouTube.v3;
 using HtmlAgilityPack;
 using Newtonsoft.Json.Linq;
 
@@ -53,6 +55,93 @@ namespace Audiotica.Data.Service.RunTime
             {
                 _mp3SkullFckh = value;
                 _appSettingsHelper.Write("Mp3SkullFckh", value);
+            }
+        }
+
+        public async Task<List<WebSong>> SearchYoutube(string title, string artist, string album = null, int limit = 5, bool includeAudioTag = true)
+        {
+            var youtubeService = new YouTubeService(new BaseClientService.Initializer()
+            {
+                ApiKey = ApiKeys.YoutubeId,
+                ApplicationName = "Audiotica"
+            });
+            youtubeService.HttpClient.DefaultRequestHeaders.Referrer = new Uri("http://audiotica.fm");
+
+            var searchListRequest = youtubeService.Search.List("snippet");
+            searchListRequest.Q = CreateQuery(title, artist, album, false) + (includeAudioTag ? " (Audio)" : "");
+            searchListRequest.MaxResults = limit;
+            searchListRequest.SafeSearch = SearchResource.ListRequest.SafeSearchEnum.None;
+
+            try
+            {
+                // Call the search.list method to retrieve results matching the specified query term.
+                var searchListResponse = await searchListRequest.ExecuteAsync();
+
+                var songs = new List<WebSong>();
+
+                foreach (var vid in from searchResult in searchListResponse.Items
+                    where searchResult.Id.Kind == "youtube#video"
+                    select new WebSong(searchResult))
+                {
+                    try
+                    {
+                        vid.AudioUrl = await GetYoutubeUrl(vid.Id);
+                    }
+                    catch
+                    {
+                        // ignored
+                    }
+
+                    if (!string.IsNullOrEmpty(vid.AudioUrl))
+                        songs.Add(vid);
+                }
+                var results = await IdentifyMatches(songs, title, artist, false);
+
+                // try redoing the search without "(audio)"
+                if (!results.Any(p => p.IsMatch) && includeAudioTag)
+                    return await SearchYoutube(title, artist, album, limit, false);
+
+                return results;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        private async Task<string> GetYoutubeUrl(string id)
+        {
+            using (var client = new HttpClient())
+            {
+                var data = new Dictionary<string, string>
+				{
+					{"mediaurl", string.Format("youtube.com/watch?v={0}", id) }
+				};
+
+                using (var content = new FormUrlEncodedContent(data))
+                {
+                    using (var resp = await client.PostAsync("http://www.vidtomp3.com/cc/conversioncloud.php", content))
+                    {
+                        if (!resp.IsSuccessStatusCode) return null;
+
+                        var json = await resp.Content.ReadAsStringAsync();
+                        json = json.Substring(1, json.Length - 2);
+                        var o = JToken.Parse(json);
+                        var statusUrl = o.Value<string>("statusurl");
+
+                        if (string.IsNullOrEmpty(statusUrl)) return null;
+
+                        using (var resp2 = await client.GetAsync(statusUrl + "&json"))
+                        {
+                            if (!resp2.IsSuccessStatusCode) return null;
+
+                            json = await resp2.Content.ReadAsStringAsync();
+                            json = json.Substring(1, json.Length - 2);
+                            o = JToken.Parse(json);
+                            return o.Value<string>("downloadurl");
+                        }
+                    }
+                }
             }
         }
 
@@ -650,6 +739,7 @@ namespace Audiotica.Data.Service.RunTime
 
                 var isCorrectType = IsCorrectTypeFlexibleCheck(title, matchName, "edition")
                                     && IsCorrectType(title, matchName, "mix")
+                                    && IsCorrectType(title, matchName, "remix")
                                     && IsCorrectType(title, matchName, "cover")
                                     && IsCorrectType(title, matchName, "rmx")
                                     && IsCorrectType(title, matchName, "live")
@@ -657,6 +747,7 @@ namespace Audiotica.Data.Service.RunTime
                                     && IsCorrectType(title, matchName, "preview")
                                     && IsCorrectType(title, matchName, "acapella")
                                     && IsCorrectType(title, matchName, "radio")
+                                    && IsCorrectType(title, matchName, "arena")
                                     && IsCorrectType(title, matchName, "acoustic");
 
                 var isCorrectTitle = matchName.Contains(title)
@@ -665,8 +756,12 @@ namespace Audiotica.Data.Service.RunTime
                     ? matchArtist.Contains(artist)
                       || artist.Contains(matchArtist)
 
-                    // soundcloud doesnt have artist prop, check in title
-                    : matchName.Contains(artist);
+                    // soundcloud/youtube doesnt have artist prop, check in title and author name (channel/username)
+                    : matchName.Contains(artist) || (webSong.FileAuthor != null && webSong.FileAuthor.ToLower().Contains(artist.ToCleanQuery().Replace(" ", "")));
+
+                // length diff
+                var titleDiff = Math.Abs(title.Length - matchName.Length);
+                isCorrectTitle = isCorrectTitle && titleDiff <= 20;
 
                 webSong.IsMatch = isCorrectType && isCorrectTitle && isCorrectArtist;
             }

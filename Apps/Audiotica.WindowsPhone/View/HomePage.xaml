@@ -292,7 +292,10 @@
             <AppBarButton Icon="Play" Label="Play All" Click="AppBarButton_Click_1" />
             <AppBarButton Icon="Find" Label="Search" Click="Button_Click_1" />
             <CommandBar.SecondaryCommands>
-                <AppBarButton Label="settings" Click="AppBarButton_Click" />
+                <AppBarButton Label="share" Click="ShareClick" />
+                <AppBarButton Label="support" Click="SupportClick" />
+                <AppBarButton x:Uid="AppBarHubReview" Label="rate+review" Click="RateReviewClick" />
+                <AppBarButton x:Uid="AppBarHubSettings" Label="settings+more" Click="SettingsClick" />
             </CommandBar.SecondaryCommands>
         </CommandBar>
     </Page.BottomAppBar>

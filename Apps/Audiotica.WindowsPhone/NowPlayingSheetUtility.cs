@@ -1,6 +1,8 @@
 ﻿#region
 
+using System.Threading.Tasks;
 using Windows.Phone.UI.Input;
+using Windows.UI.Xaml.Controls;
 using Audiotica.PartialView;
 using Xamarin;
 
@@ -12,13 +14,18 @@ namespace Audiotica
     {
         private static NowPlayingSheet _currentSheet;
 
-        public static void OpenNowPlaying()
+        public async static void OpenNowPlaying()
         {
             if (_currentSheet != null) return;
 
             _currentSheet = new NowPlayingSheet();
 
+            var appBar = ((Page) App.RootFrame.Content).BottomAppBar != null;
             UiBlockerUtility.BlockNavigation();
+
+            // wait for appbar to hide, to prevent lag
+            if (appBar)
+                await Task.Delay(250);
 
             ModalSheetUtility.Show(_currentSheet);
 

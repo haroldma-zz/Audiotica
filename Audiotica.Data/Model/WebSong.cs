@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Audiotica.Data.Model.SoundCloud;
+using Google.Apis.YouTube.v3.Data;
 
 namespace Audiotica.Data.Model
 {
@@ -8,6 +9,15 @@ namespace Audiotica.Data.Model
     {
         public WebSong()
         {
+        }
+
+        public WebSong(SearchResult youtubeVideo)
+        {
+            Id = youtubeVideo.Id.VideoId;
+            Name = youtubeVideo.Snippet.Title;
+            FileAuthor = youtubeVideo.Snippet.ChannelTitle;
+            Provider = Mp3Provider.YouTube;
+            ArtworkImage = new Uri(youtubeVideo.Snippet.Thumbnails.High.Url);
         }
 
         public WebSong(Mp3ClanSong mp3ClanSong)
@@ -37,6 +47,8 @@ namespace Audiotica.Data.Model
             Provider = Mp3Provider.SoundCloud;
             Duration = TimeSpan.FromMilliseconds(soundCloudSong.duration);
             ByteSize = soundCloudSong.original_content_size;
+            FileAuthor = soundCloudSong.user.username;
+
             if (!string.IsNullOrEmpty(soundCloudSong.artwork_url))
                 ArtworkImage = new Uri(soundCloudSong.artwork_url);
         }
@@ -73,6 +85,7 @@ namespace Audiotica.Data.Model
         public long ByteSize { get; set; }
         public TimeSpan Duration { get; set; }
         public string Id { get; set; }
+        public string FileAuthor { get; set; }
         public bool IsBestMatch { get; set; }
         public bool IsLinkDeath { get; set; }
         public bool IsMatch { get; set; }

@@ -3,6 +3,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Windows.ApplicationModel.DataTransfer;
+using Windows.ApplicationModel.Store;
 using Windows.System;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -95,7 +97,7 @@ namespace Audiotica.View
             App.Navigator.GoTo<SearchPage, ZoomInTransition>(null);
         }
 
-        private void AppBarButton_Click(object sender, RoutedEventArgs e)
+        private void SettingsClick(object sender, RoutedEventArgs e)
         {
             App.Navigator.GoTo<SettingsPage, ZoomOutTransition>(null);
         }
@@ -177,6 +179,22 @@ namespace Audiotica.View
         private void Button_Click_2(object sender, RoutedEventArgs e)
         {
             App.Navigator.GoTo<ChartsPage, ZoomInTransition>(null);
+        }
+
+        private void SupportClick(object sender, RoutedEventArgs e)
+        {
+            const string Subject = "Audiotica App";
+            Launcher.LaunchUriAsync(new Uri("mailto:?to=help@zumicts.com&subject=" + Uri.EscapeDataString(Subject)));
+        }
+
+        private void ShareClick(object sender, RoutedEventArgs e)
+        {
+            DataTransferManager.ShowShareUI();
+        }
+
+        private void RateReviewClick(object sender, RoutedEventArgs e)
+        {
+            Launcher.LaunchUriAsync(new Uri("ms-windows-store:reviewapp?appid=" + CurrentApp.AppId));
         }
     }
 }
