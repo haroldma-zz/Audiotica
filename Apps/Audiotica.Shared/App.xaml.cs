@@ -319,7 +319,7 @@ namespace Audiotica
             CurtainPrompt.Show(() =>
             {
                 MessageBox.Show(
-                    "-Tapping on a toast will now react acording to context (Pulling will dismiss them). Try clicking on a \"saved\" toast!\n\n-Faster animations when opening now playing and toasts.\n\n-Fix bug with similar and bio pivots not loading.",
+                    "-Tapping on a toast will now react according to context (Pulling will dismiss them). Try clicking on a \"saved\" toast!\n\n-Faster animations when opening now playing and toasts.\n\n-Fix bug with similar and bio pivots not loading.\n\n-Fix square live tile not updating.",
                     "Changelog");
             }, TimeSpan.FromSeconds(5), "Tap here for details on new update!");
         }
