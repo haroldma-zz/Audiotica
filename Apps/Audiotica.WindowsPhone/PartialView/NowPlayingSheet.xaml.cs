@@ -22,8 +22,9 @@ namespace Audiotica.PartialView
         public NowPlayingSheet()
         {
             InitializeComponent();
-            CurrentQueueView.Loaded += CurrentQueueViewOnLoaded;
             _lyrcis = new LyricsService();
+            CurrentQueueView.Loaded += CurrentQueueViewOnLoaded;
+            App.Locator.AudioPlayerHelper.TrackChanged += AudioPlayerHelperOnTrackChanged;
         }
 
         private void CurrentQueueViewOnLoaded(object sender, RoutedEventArgs routedEventArgs)
@@ -38,7 +39,6 @@ namespace Audiotica.PartialView
         {
             _justLoaded = true;
             Popup = popup;
-            App.Locator.AudioPlayerHelper.TrackChanged += AudioPlayerHelperOnTrackChanged;
         }
 
         private void AudioPlayerHelperOnTrackChanged(object sender, EventArgs eventArgs)
@@ -50,9 +50,6 @@ namespace Audiotica.PartialView
 
         public void OnClosed()
         {
-            CurrentQueueView.Loaded -= CurrentQueueViewOnLoaded;
-            App.Locator.AudioPlayerHelper.TrackChanged -= AudioPlayerHelperOnTrackChanged;
-            DataContext = null;
             Popup = null;
         }
 

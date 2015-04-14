@@ -150,6 +150,7 @@ namespace Audiotica.View
             base.NavigatedFrom(mode);
             Messenger.Default.Unregister<bool>(this, "artist-coll-bio", BioUpdate);
             Messenger.Default.Unregister<bool>(this, "artist-coll-sim", SimUpdate);
+            Messenger.Default.Unregister<bool>(this, "artist-coll-pin", ToggleAppBarButton);
 
             if (mode != NavigationMode.Back) return;
 
@@ -162,21 +163,23 @@ namespace Audiotica.View
         private void SimUpdate(bool isVisible)
         {
             if (isVisible)
+            {
                 if (!ArtistPivot.Items.Contains(_similarPivotItem))
                     ArtistPivot.Items.Add(_similarPivotItem);
-                else
-                    ArtistPivot.Items.Remove(SimilarPivot);
+            }
+            else
+                ArtistPivot.Items.Remove(SimilarPivot);
         }
 
         private void BioUpdate(bool isVisible)
         {
             if (isVisible)
+            {
                 if (!ArtistPivot.Items.Contains(_bioPivotItem))
                     ArtistPivot.Items.Add(_bioPivotItem);
-                else
-                {
-                    ArtistPivot.Items.Remove(BioPivot);
-                }
+            }
+            else
+                ArtistPivot.Items.Remove(BioPivot);
         }
 
         private void AlbumListView_ItemClick(object sender, ItemClickEventArgs e)

@@ -25,13 +25,13 @@ namespace Audiotica.Data.Service.DesignTime
             throw new NotImplementedException();
         }
 
-        public Task<LastFmApiError> ScrobbleNowPlayingAsync(string name, string artist, DateTime played, TimeSpan duration, string album = "",
+        public Task<LastResponseStatus> ScrobbleNowPlayingAsync(string name, string artist, DateTime played, TimeSpan? duration, string album = "",
             string albumArtist = "")
         {
             throw new NotImplementedException();
         }
 
-        public Task<LastFmApiError> ScrobbleAsync(string name, string artist, DateTime played, TimeSpan duration, string album = "", string albumArtist = "")
+        public Task<LastResponseStatus> ScrobbleAsync(string name, string artist, DateTime played, TimeSpan? duration, string album = "", string albumArtist = "")
         {
             throw new NotImplementedException();
         }

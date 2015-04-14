@@ -12,27 +12,24 @@ namespace Audiotica
 {
     public static class NowPlayingSheetUtility
     {
-        private static NowPlayingSheet _currentSheet;
-
-        public async static void OpenNowPlaying()
+        static NowPlayingSheetUtility()
         {
-            if (_currentSheet != null) return;
+            CurrentSheet = new NowPlayingSheet();
+        }
 
-            _currentSheet = new NowPlayingSheet();
+        private static readonly NowPlayingSheet CurrentSheet;
 
-            var appBar = ((Page) App.RootFrame.Content).BottomAppBar != null;
+        public static void OpenNowPlaying()
+        {
             UiBlockerUtility.BlockNavigation();
 
-            // wait for appbar to hide, to prevent lag
-            if (appBar)
-                await Task.Delay(250);
-
-            ModalSheetUtility.Show(_currentSheet);
+            ModalSheetUtility.Show(CurrentSheet);
 
             App.SupressBackEvent += HardwareButtonsOnBackPressed;
 
             ScreenTimeoutHelper.OnNowPlayingOpened();
             Insights.Track("Opened Now Playing");
+            IsActive = true;
         }
 
         private static void HardwareButtonsOnBackPressed(object sender, BackPressedEventArgs e)
@@ -42,12 +39,13 @@ namespace Audiotica
             CloseNowPlaying();
         }
 
+        public static bool IsActive;
+
         public static void CloseNowPlaying()
         {
-            if (_currentSheet == null) return;
+            if (!IsActive) return;
 
-            ModalSheetUtility.Hide(_currentSheet);
-            _currentSheet = null;
+            ModalSheetUtility.Hide(CurrentSheet);
 
             ScreenTimeoutHelper.OnNowPlayingClosed();
             Insights.Track("Closed Now Playing");

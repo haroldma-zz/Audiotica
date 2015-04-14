@@ -19,10 +19,10 @@ namespace Audiotica.Data.Service.Interfaces
         bool IsAuthenticated { get; }
         void Logout();
 
-        Task<LastFmApiError> ScrobbleNowPlayingAsync(string name, string artist, DateTime played, TimeSpan duration, string album = "",
+        Task<LastResponseStatus> ScrobbleNowPlayingAsync(string name, string artist, DateTime played, TimeSpan? duration, string album = "",
             string albumArtist = "");
 
-        Task<LastFmApiError> ScrobbleAsync(string name, string artist, DateTime played, TimeSpan duration, string album = "",
+        Task<LastResponseStatus> ScrobbleAsync(string name, string artist, DateTime played, TimeSpan? duration, string album = "",
             string albumArtist = "");
 
         Task<PageResponse<LastArtist>> GetRecommendedArtistsAsync(int page = 1, int limit = 30);

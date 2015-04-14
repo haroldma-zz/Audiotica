@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
+using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
 using Xamarin;
 
@@ -10,11 +11,11 @@ namespace Audiotica
 {
     public static class ModalSheetUtility
     {
-        private static IModalSheetPage currentSheet;
+        private static IModalSheetPage _currentSheet;
 
         public static void Hide()
         {
-            Hide(currentSheet);
+            Hide(_currentSheet);
         }
 
         public static void Hide(IModalSheetPage sheet)
@@ -25,22 +26,23 @@ namespace Audiotica
 
             var slideAnimation = new DoubleAnimation
             {
-                EnableDependentAnimation = true,
                 From = 0,
-                To = (currentSheet as FrameworkElement).Height,
-                Duration = new Duration(TimeSpan.FromMilliseconds(200))
+                To = ((FrameworkElement) sheet).Height,
+                Duration = new Duration(TimeSpan.FromMilliseconds(200)),
+                EasingFunction = new SineEase()
             };
 
             var sb = new Storyboard();
             sb.Children.Add(slideAnimation);
             Storyboard.SetTarget(slideAnimation, sheet.Popup);
-            Storyboard.SetTargetProperty(slideAnimation, "VerticalOffset");
+            Storyboard.SetTargetProperty(slideAnimation, "(UIElement.RenderTransform).(TranslateTransform.Y)");
 
             sb.Completed += (sender, o) =>
             {
                 sheet.Popup.IsOpen = false;
+                sheet.Popup.Child = null;
                 sheet.OnClosed();
-                currentSheet = null;
+                _currentSheet = null;
             };
 
             sb.Begin();
@@ -50,11 +52,11 @@ namespace Audiotica
 
         public static void Show(IModalSheetPage sheet)
         {
-            if (currentSheet != null) return;
+            if (_currentSheet != null) return;
 
-            currentSheet = sheet;
+            _currentSheet = sheet;
             var size = App.RootFrame;
-            var element = sheet as FrameworkElement;
+            var element = (FrameworkElement) sheet;
 
             element.Width = size.ActualWidth;
             element.Height = size.ActualHeight;
@@ -64,23 +66,26 @@ namespace Audiotica
             {
                 IsOpen = true,
                 Child = element,
-                VerticalOffset = element.Height
+                RenderTransform = new TranslateTransform
+                {
+                    Y = element.Height
+                }
             };
 
             #region Slide up animation
 
             var slideAnimation = new DoubleAnimation
             {
-                EnableDependentAnimation = true,
-                From = popup.VerticalOffset,
+                From = element.Height,
                 To = 0,
-                Duration = new Duration(TimeSpan.FromMilliseconds(300))
+                Duration = new Duration(TimeSpan.FromMilliseconds(250)),
+                EasingFunction = new SineEase()
             };
 
             var sb = new Storyboard();
             sb.Children.Add(slideAnimation);
             Storyboard.SetTarget(slideAnimation, popup);
-            Storyboard.SetTargetProperty(slideAnimation, "VerticalOffset");
+            Storyboard.SetTargetProperty(slideAnimation, "(UIElement.RenderTransform).(TranslateTransform.Y)");
 
             sb.Begin();
 
@@ -104,8 +109,8 @@ namespace Audiotica
         private static void PageOnSizeChanged(object sender, SizeChangedEventArgs sizeChangedEventArgs)
         {
             var size = App.RootFrame;
-            (currentSheet as FrameworkElement).Width = size.ActualWidth;
-            (currentSheet as FrameworkElement).Height = size.ActualHeight;
+            (_currentSheet as FrameworkElement).Width = size.ActualWidth;
+            (_currentSheet as FrameworkElement).Height = size.ActualHeight;
         }
     }
 

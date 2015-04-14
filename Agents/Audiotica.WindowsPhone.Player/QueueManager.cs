@@ -250,8 +250,6 @@ namespace Audiotica.WindowsPhone.Player
                 }
             }
 
-            UpdateTile();
-
             if (_scrobbler.IsScrobblingEnabled())
                 await _scrobbler.UpdateNowPlaying(CurrentTrack);
         }
@@ -274,6 +272,8 @@ namespace Audiotica.WindowsPhone.Player
             var expire = Math.Max(_mediaPlayer.NaturalDuration.TotalHours + .5, 1);
 
             var updater = TileUpdateManager.CreateTileUpdaterForApplication("App");
+            updater.EnableNotificationQueue(true);
+            updater.Clear();
             updater.Update(GetSquareTile(title, artist, imageUrl, expire));
             updater.Update(GetWideTile(title, artist, album, wideImageUrl, expire));
         }
@@ -433,6 +433,7 @@ namespace Audiotica.WindowsPhone.Player
             }
 
             _currentTrack = track;
+            UpdateTile();
 
             if (TrackChanged != null)
                 OnTrackChanged(_currentTrack.SongId);

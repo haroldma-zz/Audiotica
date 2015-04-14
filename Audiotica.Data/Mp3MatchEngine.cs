@@ -60,7 +60,7 @@ namespace Audiotica.Data
 
         public async Task<string> FindMp3For(string title, string artist)
         {
-            title = title.ToLower().Replace("feat.", "ft.") // better alternatives for matching
+            var sanitizedTitle = title.ToLower().Replace("feat.", "ft.") // better alternatives for matching
                 .Replace("- bonus track", string.Empty)
                 .Replace("bonus track", string.Empty)
                 .Replace("- live", "(live)")
@@ -77,8 +77,8 @@ namespace Audiotica.Data
                 .Replace("- deluxe edition", string.Empty)
                 .Trim();
 
-            if (title.Contains("- from the") && title.EndsWith("soundtrack"))
-                title = title.Substring(0, title.IndexOf("- from the") - 1);
+            if (sanitizedTitle.Contains("- from the") && sanitizedTitle.EndsWith("soundtrack"))
+                sanitizedTitle = sanitizedTitle.Substring(0, sanitizedTitle.IndexOf("- from the") - 1);
 
             if (_audioticaService.IsAuthenticated && _audioticaService.CurrentUser.Subscription != SubscriptionType.None)
             {
@@ -112,7 +112,7 @@ namespace Audiotica.Data
                 var mp3Provider = _providers[currentProvider];
                 try
                 {
-                    url = await GetMatch(mp3Provider, title, artist).ConfigureAwait(false);
+                    url = await GetMatch(mp3Provider, sanitizedTitle, artist).ConfigureAwait(false);
                 }
                 catch
                 {

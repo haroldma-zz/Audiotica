@@ -113,11 +113,9 @@ namespace Audiotica.View
         public override void NavigatedTo(NavigationMode mode, object e)
         {
             base.NavigatedTo(mode, e);
-            var id = e as int?;
+            var id = e as int? ?? ((Album) e).Id;
 
-            if (id == null) return;
-
-            var msg = new GenericMessage<int>((int) id);
+            var msg = new GenericMessage<int>(id);
             Messenger.Default.Send(msg, "album-coll-detail-id");
 
             ToggleAppBarButton(SecondaryTile.Exists("album." + Vm.Album.Id));

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
@@ -315,6 +316,12 @@ namespace Audiotica
 
         private void OnUpdate()
         {
+            CurtainPrompt.Show(() =>
+            {
+                MessageBox.Show(
+                    "-Tapping on a toast will now react acording to context (Pulling will dismiss them). Try clicking on a \"saved\" toast!\n\n-Faster animations when opening now playing and toasts.\n\n-Fix bug with similar and bio pivots not loading.",
+                    "Changelog");
+            }, TimeSpan.FromSeconds(5), "Tap here for details on new update!");
         }
 
         private void OnVisibleBoundsChanged(ApplicationView sender, object args)
@@ -360,9 +367,9 @@ namespace Audiotica
                 {
                     UiBlockerUtility.Unblock();
                     await
-                  MessageBox.ShowAsync(
-                      "There was a problem with the application. A crash report has been send automatically.",
-                      "Crash prevented");
+                        MessageBox.ShowAsync(
+                            "There was a problem with the application. A crash report has been send automatically.",
+                            "Crash prevented");
                 });
         }
 
@@ -455,6 +462,8 @@ namespace Audiotica
             {
                 Locator.AppSettingsHelper.WriteAsJson("LastRunVersion", Locator.AppVersionHelper.CurrentVersion);
             }
+
+            OnVisibleBoundsChanged(null, null);
         }
 
         private void CreateRootFrame()
@@ -528,14 +537,6 @@ namespace Audiotica
                         handle.Data.Add("SongCount", Locator.CollectionService.Songs.Count.ToString());
 
                         DispatcherHelper.RunAsync(() => Locator.Download.LoadDownloads());
-
-                        var storageFile =
-                            await
-                                StorageFile.GetFileFromApplicationUriAsync(
-                                    new Uri("ms-appx:///AudioticaCommands.xml"));
-                        await
-                            VoiceCommandManager.InstallCommandSetsFromStorageFileAsync(
-                                storageFile);
                     }
                     catch (Exception ex)
                     {
@@ -544,12 +545,29 @@ namespace Audiotica
                             () => CurtainPrompt.ShowError("AppErrorBooting".FromLanguageResource()));
                     }
 
+                    LoadCortana();
+
                     _init = true;
                 }
             }
 
             Locator.AudioPlayerHelper.OnAppActive();
             Locator.Player.OnAppActive();
+        }
+
+        private async void LoadCortana()
+        {
+            try
+            {
+                var storageFile =
+                    await
+                        StorageFile.GetFileFromApplicationUriAsync(
+                            new Uri("ms-appx:///AudioticaCommands.xml"));
+                await
+                    VoiceCommandManager.InstallCommandSetsFromStorageFileAsync(
+                        storageFile);
+            }
+            catch (FileNotFoundException) { }
         }
 
         private async Task ReviewReminderAsync()

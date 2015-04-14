@@ -100,7 +100,7 @@ namespace Audiotica
         {
             var audioPath = file.Path;
 
-            if (App.Locator.CollectionService.SongAlreadyExists(audioPath))
+            if (App.Locator.CollectionService.SongAlreadyExists(audioPath) != null)
             {
                 return SavingError.AlreadyExists;
             }
@@ -182,7 +182,7 @@ namespace Audiotica
 
 
             if (App.Locator.CollectionService.SongAlreadyExists(song.ProviderId,
-                track.Title, track.AlbumName, track.ArtistName))
+                track.Title, track.AlbumName, track.ArtistName) != null)
             {
                 return SavingError.AlreadyExists;
             }

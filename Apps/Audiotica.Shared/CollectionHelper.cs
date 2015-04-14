@@ -4,7 +4,9 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-
+using Windows.Phone.UI.Input;
+using Windows.Storage;
+using Windows.UI.StartScreen;
 using Audiotica.Controls;
 using Audiotica.Core.Utils;
 using Audiotica.Core.Utils.Interfaces;
@@ -17,23 +19,13 @@ using Audiotica.Data.Collection.RunTime;
 using Audiotica.Data.Model.AudioticaCloud;
 using Audiotica.Data.Spotify.Models;
 using Audiotica.View;
-
 using GalaSoft.MvvmLight.Threading;
-
+using GoogleAnalytics;
 using IF.Lastfm.Core.Objects;
-
 using Microsoft.WindowsAzure.MobileServices;
-
 using PCLStorage;
-
 using SQLite;
-
-using Windows.Phone.UI.Input;
-using Windows.Storage;
-using Windows.UI.StartScreen;
-
 using Xamarin;
-
 using CreationCollisionOption = PCLStorage.CreationCollisionOption;
 using NameCollisionOption = Windows.Storage.NameCollisionOption;
 
@@ -42,11 +34,8 @@ namespace Audiotica
     public static class CollectionHelper
     {
         private static readonly List<string> SpotifySavingTracks = new List<string>();
-
         private static readonly List<string> LastfmSavingTracks = new List<string>();
-
         private static readonly List<string> SpotifySavingAlbums = new List<string>();
-
         private static bool _currentlyPreparing;
 
         public static async Task CloudSync(bool refreshProfile = true)
@@ -152,14 +141,14 @@ namespace Audiotica
                 }
                 else if (item is Playlist)
                 {
-                    var playlist = (Playlist)item;
+                    var playlist = (Playlist) item;
                     name = playlist.Name;
 
                     await App.Locator.CollectionService.DeletePlaylistAsync(playlist);
                 }
                 else if (item is Artist)
                 {
-                    var artist = (Artist)item;
+                    var artist = (Artist) item;
                     name = artist.Name;
 
                     App.Locator.CollectionService.Artists.Remove(artist);
@@ -191,7 +180,7 @@ namespace Audiotica
                 }
                 else if (item is Album)
                 {
-                    var album = (Album)item;
+                    var album = (Album) item;
                     name = album.Name;
 
                     App.Locator.CollectionService.Albums.Remove(album);
@@ -239,13 +228,13 @@ namespace Audiotica
             if (user != null)
             {
                 Insights.Identify(
-                    user.Id, 
+                    user.Id,
                     new Dictionary<string, string>
                     {
-                        { Insights.Traits.Email, user.Email }, 
-                        { "Subscription", user.Subscription.ToString() }, 
-                        { "SubscriptionStatus", user.SubscriptionStatus.ToString() }, 
-                        { Insights.Traits.Name, user.Username }
+                        {Insights.Traits.Email, user.Email},
+                        {"Subscription", user.Subscription.ToString()},
+                        {"SubscriptionStatus", user.SubscriptionStatus.ToString()},
+                        {Insights.Traits.Name, user.Username}
                     });
             }
         }
@@ -294,9 +283,9 @@ namespace Audiotica
                             }
 
                             var path = string.Format(
-                                AppConstant.SongPath, 
-                                song.Album.PrimaryArtist.Name.CleanForFileName("Invalid Artist Name"), 
-                                song.Album.Name.CleanForFileName("Invalid Album Name"), 
+                                AppConstant.SongPath,
+                                song.Album.PrimaryArtist.Name.CleanForFileName("Invalid Artist Name"),
+                                song.Album.Name.CleanForFileName("Invalid Album Name"),
                                 filename);
 
                             var file = await WinRtStorageHelper.GetFileAsync(string.Format("songs/{0}.mp3", song.Id));
@@ -311,15 +300,15 @@ namespace Audiotica
                         catch (Exception e)
                         {
                             Insights.Report(
-                                e, 
+                                e,
                                 new Dictionary<string, string>
                                 {
-                                    { "Where", "Migrating Download" }, 
-                                    { "SongName", song.Name }, 
-                                    { "ArtistName", song.ArtistName }, 
-                                    { "AlbumName", song.Album.Name }, 
-                                    { "SongProviderId", song.ProviderId }, 
-                                    { "SongAudioUrl", song.AudioUrl }
+                                    {"Where", "Migrating Download"},
+                                    {"SongName", song.Name},
+                                    {"ArtistName", song.ArtistName},
+                                    {"AlbumName", song.Album.Name},
+                                    {"SongProviderId", song.ProviderId},
+                                    {"SongAudioUrl", song.AudioUrl}
                                 });
                         }
                     }
@@ -344,13 +333,13 @@ namespace Audiotica
                         catch (Exception e)
                         {
                             Insights.Report(
-                                e, 
+                                e,
                                 new Dictionary<string, string>
                                 {
-                                    { "Where", "Migrating Outdated Import" }, 
-                                    { "SongName", song.Name }, 
-                                    { "SongProviderId", song.ProviderId }, 
-                                    { "SongAudioUrl", song.AudioUrl }
+                                    {"Where", "Migrating Outdated Import"},
+                                    {"SongName", song.Name},
+                                    {"SongProviderId", song.ProviderId},
+                                    {"SongAudioUrl", song.AudioUrl}
                                 });
                         }
                     }
@@ -381,20 +370,20 @@ namespace Audiotica
             if (!SecondaryTile.Exists(id))
             {
                 Insights.Track(
-                    "Pin To Start", 
+                    "Pin To Start",
                     new Dictionary<string, string>
                     {
-                        { "DisplayName", artist.Name }, 
-                        { "ProviderId", artist.ProviderId }, 
-                        { "Type", "Artist" }
+                        {"DisplayName", artist.Name},
+                        {"ProviderId", artist.ProviderId},
+                        {"Type", "Artist"}
                     });
                 created =
                     await
-                    CreatePin(
-                        id, 
-                        artist.Name, 
-                        "artists/" + artist.Id, 
-                        string.Format(AppConstant.ArtistsArtworkPath, artist.Id));
+                        CreatePin(
+                            id,
+                            artist.Name,
+                            "artists/" + artist.Id,
+                            string.Format(AppConstant.ArtistsArtworkPath, artist.Id));
             }
             else
             {
@@ -413,20 +402,20 @@ namespace Audiotica
             if (!SecondaryTile.Exists(id))
             {
                 Insights.Track(
-                    "Pin To Start", 
+                    "Pin To Start",
                     new Dictionary<string, string>
                     {
-                        { "DisplayName", album.Name }, 
-                        { "ProviderId", album.ProviderId }, 
-                        { "Type", "Album" }
+                        {"DisplayName", album.Name},
+                        {"ProviderId", album.ProviderId},
+                        {"Type", "Album"}
                     });
                 created =
                     await
-                    CreatePin(
-                        id, 
-                        album.Name, 
-                        "albums/" + album.Id, 
-                        string.Format(AppConstant.ArtworkPath, album.Id));
+                        CreatePin(
+                            id,
+                            album.Name,
+                            "albums/" + album.Id,
+                            string.Format(AppConstant.ArtworkPath, album.Id));
             }
             else
             {
@@ -486,13 +475,14 @@ namespace Audiotica
             var image = new Uri(AppConstant.LocalStorageAppPath + artwork);
 
             var secondaryTile = new SecondaryTile(
-                id, 
-                displayName, 
-                tileActivationArguments, 
-                image, 
-                TileSize.Square150x150) {
-                                           ShortName = displayName 
-                                        };
+                id,
+                displayName,
+                tileActivationArguments,
+                image,
+                TileSize.Square150x150)
+            {
+                ShortName = displayName
+            };
 
             secondaryTile.VisualElements.ShowNameOnSquare150x150Logo = true;
 
@@ -505,7 +495,10 @@ namespace Audiotica
             {
                 var variousArtist = song.Artist.Name == "Various Artists";
 
-                var url = await App.Locator.Mp3MatchEngine.FindMp3For(song.Name, variousArtist ? song.ArtistName : song.Artist.Name).ConfigureAwait(false);
+                var url =
+                    await
+                        App.Locator.Mp3MatchEngine.FindMp3For(song.Name,
+                            variousArtist ? song.ArtistName : song.Artist.Name).ConfigureAwait(false);
 
                 if (string.IsNullOrEmpty(url) && !variousArtist && song.ArtistName != song.Artist.Name)
                 {
@@ -513,7 +506,8 @@ namespace Audiotica
                     url = await App.Locator.Mp3MatchEngine.FindMp3For(song.Name, song.ArtistName).ConfigureAwait(false);
                 }
 
-                handler.Data.Add("FoundMatch", string.IsNullOrEmpty(url) ? "False" : "True");
+                var matched = !string.IsNullOrEmpty(url);
+                handler.Data.Add("FoundMatch", matched ? "True" : "False");
                 await App.Locator.PclDispatcherHelper.RunAsync(
                     () =>
                     {
@@ -528,33 +522,36 @@ namespace Audiotica
                         }
                     });
                 await App.Locator.SqlService.UpdateItemAsync(song);
+                EasyTracker.GetTracker().SendEvent("Match Engine", "Match Song", "Found", matched ? 1 : 0);
             }
         }
 
         #region Saving
 
-        public static async Task<SavingError> SaveTrackAsync(ChartTrack chartTrack)
+        public static async Task<SaveResults> SaveTrackAsync(ChartTrack chartTrack)
         {
-            if (App.Locator.CollectionService.SongAlreadyExists(
-                "spotify." + chartTrack.track_id, 
-                chartTrack.Name, 
-                chartTrack.album_name, 
-                chartTrack.ArtistName))
+            var exists = App.Locator.CollectionService.SongAlreadyExists(
+                "spotify." + chartTrack.track_id,
+                chartTrack.Name,
+                chartTrack.album_name,
+                chartTrack.ArtistName);
+            if (exists != null)
             {
-                ShowResults(SavingError.AlreadyExists, chartTrack.Name);
-                return SavingError.AlreadyExists;
+                var res = new SaveResults {Error = SavingError.AlreadyExists, Entry = exists};
+                ShowResults(res, chartTrack.Name);
+                return res;
             }
 
             using (
                 var handle = Insights.TrackTime(
-                    "Save Song", 
+                    "Save Song",
                     new Dictionary<string, string>
                     {
-                        { "Type", "Spotify" }, 
-                        { "Subtype", "Chart" }, 
-                        { "ProviderId", chartTrack.track_id }, 
-                        { "Name", chartTrack.Name }, 
-                        { "ArtistName", chartTrack.ArtistName }
+                        {"Type", "Spotify"},
+                        {"Subtype", "Chart"},
+                        {"ProviderId", chartTrack.track_id},
+                        {"Name", chartTrack.Name},
+                        {"ArtistName", chartTrack.ArtistName}
                     }))
             {
                 var track = await App.Locator.Spotify.GetTrack(chartTrack.track_id);
@@ -569,37 +566,39 @@ namespace Audiotica
                     return result;
                 }
 
-                ShowResults(SavingError.Network, chartTrack.Name);
+                ShowResults(new SaveResults { Error = SavingError.Network }, chartTrack.Name);
                 handle.Data.Add("SavingError", "Network");
-                return SavingError.Network;
+                return new SaveResults {Error = SavingError.Network};
             }
         }
 
-        public static async Task<SavingError> SaveTrackAsync(FullTrack track, bool manualMatch = false)
+        public static async Task<SaveResults> SaveTrackAsync(FullTrack track, bool manualMatch = false)
         {
-            if (App.Locator.CollectionService.SongAlreadyExists(
-                "spotify." + track.Id, 
-                track.Name, 
-                track.Album.Name, 
-                track.Artist.Name))
+            var exists = App.Locator.CollectionService.SongAlreadyExists(
+                "spotify." + track.Id,
+                track.Name,
+                track.Album.Name,
+                track.Artist.Name);
+            if (exists != null)
             {
-                ShowResults(SavingError.AlreadyExists, track.Name);
-                return SavingError.AlreadyExists;
+                var res = new SaveResults { Error = SavingError.AlreadyExists, Entry = exists };
+                ShowResults(res, track.Name);
+                return res;
             }
 
             using (
                 var handle = Insights.TrackTime(
-                    "Save Song", 
+                    "Save Song",
                     new Dictionary<string, string>
                     {
-                        { "Type", "Spotify" }, 
-                        { "Subtype", "Full" }, 
-                        { "ProviderId", track.Id }, 
-                        { "Name", track.Name }, 
-                        { "ArtistName", track.Artist.Name }
+                        {"Type", "Spotify"},
+                        {"Subtype", "Full"},
+                        {"ProviderId", track.Id},
+                        {"Name", track.Name},
+                        {"ArtistName", track.Artist.Name}
                     }))
             {
-                SavingError result;
+                SaveResults result;
 
                 try
                 {
@@ -611,7 +610,7 @@ namespace Audiotica
                 catch
                 {
                     UiBlockerUtility.Unblock();
-                    result = SavingError.Network;
+                    result = new SaveResults {Error = SavingError.Network};
                 }
 
                 handle.Data.Add("SavingError", result.ToString());
@@ -619,17 +618,17 @@ namespace Audiotica
             }
         }
 
-        public static async Task<SavingError> SaveTrackAsync(SimpleTrack track, FullAlbum album, bool trackTime = true)
+        public static async Task<SaveResults> SaveTrackAsync(SimpleTrack track, FullAlbum album, bool trackTime = true)
         {
             var handle = Insights.TrackTime(
-                "Save Song", 
+                "Save Song",
                 new Dictionary<string, string>
                 {
-                    { "Type", "Spotify" }, 
-                    { "Subtype", "Simple" }, 
-                    { "ProviderId", track.Id }, 
-                    { "Name", track.Name }, 
-                    { "ArtistName", track.Artist != null ? track.Artist.Name : null }
+                    {"Type", "Spotify"},
+                    {"Subtype", "Simple"},
+                    {"ProviderId", track.Id},
+                    {"Name", track.Name},
+                    {"ArtistName", track.Artist != null ? track.Artist.Name : null}
                 });
 
             if (trackTime)
@@ -649,17 +648,17 @@ namespace Audiotica
             return result;
         }
 
-        public static async Task<SavingError> SaveTrackAsync(LastTrack track)
+        public static async Task<SaveResults> SaveTrackAsync(LastTrack track)
         {
             using (
                 var handle = Insights.TrackTime(
-                    "Save Song", 
+                    "Save Song",
                     new Dictionary<string, string>
                     {
-                        { "Type", "LastFM" }, 
-                        { "ProviderId", track.Id }, 
-                        { "Name", track.Name }, 
-                        { "ArtistName", track.ArtistName }
+                        {"Type", "LastFM"},
+                        {"ProviderId", track.Id},
+                        {"Name", track.Name},
+                        {"ArtistName", track.ArtistName}
                     }))
             {
                 var result = await _SaveTrackAsync(track);
@@ -702,7 +701,10 @@ namespace Audiotica
                 var missingTracks = collAlbum.Songs.Count < album.Tracks.Items.Count;
                 if (!missingTracks)
                 {
-                    CurtainPrompt.ShowError("EntryAlreadySaved".FromLanguageResource(), album.Name);
+                    CurtainPrompt.ShowError(() =>
+                    {
+                        App.Navigator.GoTo<CollectionAlbumPage, ZoomInTransition>(collAlbum);
+                    },"EntryAlreadySaved".FromLanguageResource(), album.Name);
                     SpotifySavingAlbums.Remove(album.Id);
                     return;
                 }
@@ -712,14 +714,14 @@ namespace Audiotica
 
             using (
                 var handler = Insights.TrackTime(
-                    "Save Album", 
+                    "Save Album",
                     new Dictionary<string, string>
                     {
-                        { "Type", "Spotify" }, 
-                        { "ProviderId", album.Id }, 
-                        { "Name", album.Name }, 
-                        { "AritstName", album.Artist.Name }, 
-                        { "TotalCount", album.Tracks.Items.Count.ToString() }
+                        {"Type", "Spotify"},
+                        {"ProviderId", album.Id},
+                        {"Name", album.Name},
+                        {"AritstName", album.Artist.Name},
+                        {"TotalCount", album.Tracks.Items.Count.ToString()}
                     }))
             {
                 var index = 0;
@@ -730,14 +732,14 @@ namespace Audiotica
                     do
                     {
                         // first save one song (to avoid duplicate album creation)
-                        result = await _SaveTrackAsync(album.Tracks.Items[index], album, false);
+                        result = (await _SaveTrackAsync(album.Tracks.Items[index], album, false)).Error;
                         index++;
-                    }
-                    while (result != SavingError.None && index < album.Tracks.Items.Count);
+                    } while (result != SavingError.None && index < album.Tracks.Items.Count);
                 }
 
                 bool success;
                 var missing = false;
+                SaveResults[] results = null;
 
                 if (album.Tracks.Items.Count > 1)
                 {
@@ -745,18 +747,19 @@ namespace Audiotica
 
                     // save the rest at the rest time
                     var songs = album.Tracks.Items.Skip(index).Select(track => _SaveTrackAsync(track, album, false));
-                    var results = await Task.WhenAll(songs);
+                    results = await Task.WhenAll(songs);
 
                     // now wait a split second before showing success message
                     await Task.Delay(1000);
 
-                    var alreadySavedCount = results.Count(p => p == SavingError.AlreadyExists);
+                    var alreadySavedCount = results.Count(p => p.Error == SavingError.AlreadyExists);
                     handler.Data.Add("AlreadySaved", alreadySavedCount.ToString());
 
                     var successCount =
                         results.Count(
                             p =>
-                            p == SavingError.None || p == SavingError.AlreadyExists || p == SavingError.AlreadySaving);
+                                p.Error == SavingError.None || p.Error == SavingError.AlreadyExists ||
+                                p.Error == SavingError.AlreadySaving);
                     var missingCount = successCount == 0 ? -1 : album.Tracks.Items.Count - (successCount + index);
                     success = missingCount == 0;
                     missing = missingCount > 0;
@@ -777,7 +780,10 @@ namespace Audiotica
 
                 if (success)
                 {
-                    CurtainPrompt.Show("EntrySaved".FromLanguageResource(), album.Name);
+                    CurtainPrompt.Show(() =>
+                    {
+                        App.Navigator.GoTo<CollectionAlbumPage, ZoomInTransition>(((Song)results[0].Entry).Album);
+                    }, "EntrySaved".FromLanguageResource(), album.Name);
                 }
                 else if (!missing)
                 {
@@ -786,11 +792,9 @@ namespace Audiotica
 
                 SpotifySavingAlbums.Remove(album.Id);
 
-                if (collAlbum == null)
+                if (collAlbum == null && results != null)
                 {
-                    collAlbum = App.Locator.CollectionService.Albums.FirstOrDefault(
-                        p => p.ProviderId.Contains(album.Id));
-                    await SaveAlbumImageAsync(collAlbum, album.Images[0].Url);
+                    await SaveAlbumImageAsync(((Song) results[0].Entry).Album, album.Images[0].Url);
                     await DownloadArtistsArtworkAsync();
                 }
             }
@@ -809,7 +813,8 @@ namespace Audiotica
                 artist => Task.Factory.StartNew(
                     async () =>
                     {
-                        if (artist.ProviderId == "autc.unknown" || string.IsNullOrEmpty(artist.Name) || artist.Name.ToLower().Contains("various"))
+                        if (artist.ProviderId == "autc.unknown" || string.IsNullOrEmpty(artist.Name) ||
+                            artist.Name.ToLower().Contains("various"))
                         {
                             return;
                         }
@@ -822,7 +827,8 @@ namespace Audiotica
                         {
                             var lastArtist = await App.Locator.ScrobblerService.GetDetailArtist(artist.Name);
 
-                            if (lastArtist == null || lastArtist.MainImage == null || lastArtist.MainImage.Largest == null)
+                            if (lastArtist == null || lastArtist.MainImage == null ||
+                                lastArtist.MainImage.Largest == null)
                             {
                                 artist.HasArtwork = false;
 
@@ -838,7 +844,6 @@ namespace Audiotica
                                 SaveImageAsync(artistFilePath, lastArtist.MainImage.Largest.AbsoluteUri)
                                     .ConfigureAwait(false))
                             {
-
                                 if (!hadArtwork)
                                 {
                                     artist.HasArtwork = true;
@@ -903,8 +908,8 @@ namespace Audiotica
                             {
                                 var spotifyAlbum =
                                     await
-                                    App.Locator.Spotify.GetAlbum(album.ProviderId.Replace("spotify.", string.Empty))
-                                       .ConfigureAwait(false);
+                                        App.Locator.Spotify.GetAlbum(album.ProviderId.Replace("spotify.", string.Empty))
+                                            .ConfigureAwait(false);
 
                                 if (spotifyAlbum == null)
                                 {
@@ -921,7 +926,7 @@ namespace Audiotica
                                 // First, try using Last.FM
                                 var lastAlbum =
                                     await
-                                    App.Locator.ScrobblerService.GetDetailAlbum(album.Name, album.PrimaryArtist.Name);
+                                        App.Locator.ScrobblerService.GetDetailAlbum(album.Name, album.PrimaryArtist.Name);
 
                                 if (lastAlbum == null ||
                                     lastAlbum.Images == null ||
@@ -930,15 +935,15 @@ namespace Audiotica
                                     // Then Deezer
                                     var results =
                                         await
-                                        App.Locator.DeezerService.SearchAlbumsAsync(
-                                            album.Name + " " + album.PrimaryArtist.Name).ConfigureAwait(false);
+                                            App.Locator.DeezerService.SearchAlbumsAsync(
+                                                album.Name + " " + album.PrimaryArtist.Name).ConfigureAwait(false);
                                     var deezerAlbum = results.data.FirstOrDefault();
 
                                     if (deezerAlbum == null
                                         ||
                                         (!album.Name.ToLower().Contains(deezerAlbum.title.ToLower())
                                          && (!album.PrimaryArtist.Name.ToLower()
-                                                   .Contains(deezerAlbum.artist.name.ToLower())
+                                             .Contains(deezerAlbum.artist.name.ToLower())
                                              || deezerAlbum.bigCover == null)))
                                     {
                                         album.HasArtwork = false;
@@ -1001,8 +1006,8 @@ namespace Audiotica
             {
                 var file =
                     await
-                    StorageHelper.CreateFileAsync(filePath, option: CreationCollisionOption.ReplaceExisting)
-                        .ConfigureAwait(false);
+                        StorageHelper.CreateFileAsync(filePath, option: CreationCollisionOption.ReplaceExisting)
+                            .ConfigureAwait(false);
 
                 using (var client = new HttpClient())
                 {
@@ -1212,8 +1217,8 @@ namespace Audiotica
                     var playIfNotActive = i
                                           == (App.Locator.Settings.AddToInsert
                                               && App.Locator.Player.CurrentQueue != null
-                                                  ? songs.Count - 1
-                                                  : 0);
+                                              ? songs.Count - 1
+                                              : 0);
 
                     // the last song insert it into the shuffle list (the others shuffle them around)
                     await
@@ -1242,10 +1247,10 @@ namespace Audiotica
         }
 
         public static async Task<QueueSong> AddToQueueAsync(
-            Song song, 
-            bool shuffleInsert = true, 
-            bool playIfNotActive = true, 
-            bool clearIfNotActive = true, 
+            Song song,
+            bool shuffleInsert = true,
+            bool playIfNotActive = true,
+            bool clearIfNotActive = true,
             bool ignoreInsertMode = false)
         {
             if (!song.IsMatched)
@@ -1272,10 +1277,10 @@ namespace Audiotica
 
                 queueSong =
                     await
-                    App.Locator.CollectionService.AddToQueueAsync(
-                        song, 
-                        insert ? App.Locator.Player.CurrentQueue : null, 
-                        shuffleInsert).ConfigureAwait(false);
+                        App.Locator.CollectionService.AddToQueueAsync(
+                            song,
+                            insert ? App.Locator.Player.CurrentQueue : null,
+                            shuffleInsert).ConfigureAwait(false);
 
                 if (!App.Locator.Player.IsPlayerActive && playIfNotActive)
                 {
@@ -1326,37 +1331,43 @@ namespace Audiotica
             ExitIfArtistEmpty(album.PrimaryArtist);
         }
 
-        private static void ShowResults(SavingError result, string trackName)
+        private static void ShowResults(SaveResults result, string entryName)
         {
-            switch (result)
+            switch (result.Error)
             {
                 case SavingError.AlreadySaving:
-                    CurtainPrompt.ShowError("EntryAlreadySaving".FromLanguageResource(), trackName);
+                    CurtainPrompt.ShowError("EntryAlreadySaving".FromLanguageResource(), entryName);
                     break;
                 case SavingError.AlreadyExists:
-                    CurtainPrompt.ShowError("EntryAlreadySaved".FromLanguageResource(), trackName);
+                    CurtainPrompt.ShowError(() =>
+                    {
+                        App.Navigator.GoTo<CollectionPage, ZoomInTransition>(result.Entry);
+                    },"EntryAlreadySaved".FromLanguageResource(), entryName);
                     break;
                 case SavingError.None:
-                    CurtainPrompt.Show("EntrySaved".FromLanguageResource(), trackName);
+                    CurtainPrompt.Show(() =>
+                    {
+                        App.Navigator.GoTo<CollectionPage, ZoomInTransition>(result.Entry);
+                    }, "EntrySaved".FromLanguageResource(), entryName);
                     break;
             }
         }
 
-        private static async Task<SavingError> _SaveTrackAsync(
-            SimpleTrack track, 
-            FullAlbum album, 
+        private static async Task<SaveResults> _SaveTrackAsync(
+            SimpleTrack track,
+            FullAlbum album,
             bool onFinishDownloadArtwork = true)
         {
             if (track == null || album == null)
             {
-                return SavingError.Unknown;
+                return new SaveResults { Error = SavingError.Unknown };
             }
 
             var alreadySaving = SpotifySavingTracks.FirstOrDefault(p => p == track.Id) != null;
 
             if (alreadySaving)
             {
-                return SavingError.AlreadySaving;
+                return new SaveResults { Error = SavingError.AlreadySaving };
             }
 
             SpotifySavingTracks.Add(track.Id);
@@ -1385,36 +1396,37 @@ namespace Audiotica
 
             if (!onFinishDownloadArtwork)
             {
-                return result.Error;
+                return result;
             }
 
-            if (result.Song != null)
+            if (result.Entry != null)
             {
 #pragma warning disable 4014
-                if (!result.Song.Album.HasArtwork && !result.Song.Album.NoArtworkFound)
+                var song = (Song) result.Entry;
+                if (!song.Album.HasArtwork && !song.Album.NoArtworkFound)
                 {
-                    SaveAlbumImageAsync(result.Song.Album, album.Images[0].Url);
+                    SaveAlbumImageAsync(song.Album, album.Images[0].Url);
                 }
 
                 DownloadArtistsArtworkAsync();
 #pragma warning restore 4014
             }
 
-            return result.Error;
+            return result;
         }
 
-        private static async Task<SavingError> _SaveTrackAsync(LastTrack track)
+        private static async Task<SaveResults> _SaveTrackAsync(LastTrack track)
         {
             if (track == null)
             {
-                return SavingError.Unknown;
+                return new SaveResults {Error = SavingError.Unknown};
             }
 
             var alreadySaving = LastfmSavingTracks.FirstOrDefault(p => p == track.Id) != null;
 
             if (alreadySaving)
             {
-                return SavingError.AlreadySaving;
+                return new SaveResults { Error = SavingError.AlreadySaving };
             }
 
             LastfmSavingTracks.Add(track.Id);
@@ -1442,13 +1454,14 @@ namespace Audiotica
             LastfmSavingTracks.Remove(track.Id);
 
 #pragma warning disable 4014
-            if (result.Song != null)
+            if (result.Entry != null)
             {
-                if (!result.Song.Album.HasArtwork && !result.Song.Album.NoArtworkFound)
+                var song = (Song)result.Entry;
+                if (!song.Album.HasArtwork && !song.Album.NoArtworkFound)
                 {
                     if (track.Images != null && track.Images.Largest != null)
                     {
-                        SaveAlbumImageAsync(result.Song.Album, track.Images.Largest.AbsoluteUri);
+                        SaveAlbumImageAsync(song.Album, track.Images.Largest.AbsoluteUri);
                     }
                     else
                     {
@@ -1459,7 +1472,8 @@ namespace Audiotica
 
             DownloadArtistsArtworkAsync();
 #pragma warning restore 4014
-            return result.Error;
+
+            return result;
         }
 
         private static void ShowErrorResults(SavingError result, string trackName)

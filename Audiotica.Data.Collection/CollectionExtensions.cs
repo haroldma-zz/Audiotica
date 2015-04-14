@@ -25,7 +25,7 @@ namespace Audiotica.Data.Collection
                 ProviderId =
                     !string.IsNullOrEmpty(lastAlbum.Mbid) ? ("mbid." + lastAlbum.Mbid) : ("lastid." + lastAlbum.Id),
                 Name = lastAlbum.Name.Trim().Replace("  ", " "),
-                ReleaseDate = lastAlbum.ReleaseDateUtc.DateTime,
+                ReleaseDate = lastAlbum.ReleaseDateUtc.HasValue ? lastAlbum.ReleaseDateUtc.Value.DateTime : DateTime.MinValue,
                 Genre = lastAlbum.TopTags != null ? lastAlbum.TopTags.First().Name : ""
             };
 

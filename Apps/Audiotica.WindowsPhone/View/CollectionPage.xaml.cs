@@ -123,10 +123,16 @@ namespace Audiotica.View
 
             LoadWallpaperArt();
 
-            if (parameter == null) return;
-
-            var pivotIndex = (int) parameter;
-            CollectionPivot.SelectedIndex = pivotIndex;
+            if (parameter is int)
+            {
+                var pivotIndex = (int) parameter;
+                CollectionPivot.SelectedIndex = pivotIndex;
+            }
+            else if (parameter is Song)
+            {
+                CollectionPivot.SelectedIndex = 0;
+                SongList.ScrollIntoView(parameter);
+            }
         }
 
         private async void LoadWallpaperArt()
@@ -138,14 +144,13 @@ namespace Audiotica.View
             var created = App.Locator.AppSettingsHelper.ReadJsonAs<DateTime>("WallpaperCreated");
 
             // Set the image brush
-            var imageBrush = new ImageBrush { Opacity = .5 };
-            BlurImageTool.SetBlurPercent(imageBrush, .8);
+            var imageBrush = new ImageBrush { Opacity = .25 };
             LayoutGrid.Background = imageBrush;
 
             if (created != DateTime.MinValue)
             {
                 // Not the first time, so there must already be one created
-                BlurImageTool.SetSource(imageBrush, "ms-appdata:/local/wallpaper.jpg");
+                imageBrush.ImageSource = new BitmapImage(new Uri("ms-appdata:/local/wallpaper.jpg"));
             }
 
             // Once a week remake the wallpaper
@@ -261,8 +266,8 @@ namespace Audiotica.View
                 // If there are 30 or less albums then recreate in one day, else wait a week
                 App.Locator.AppSettingsHelper.Write("WallpaperDayWait", albums.Count < 30 ? 1 : 7);
 
-                BlurImageTool.SetSource(imageBrush, null);
-                BlurImageTool.SetSource(imageBrush, "ms-appdata:/local/wallpaper.jpg");
+                imageBrush.ImageSource = null;
+                imageBrush.ImageSource = new BitmapImage(new Uri("ms-appdata:/local/wallpaper.jpg"));
             }
 
             _loaded = true;

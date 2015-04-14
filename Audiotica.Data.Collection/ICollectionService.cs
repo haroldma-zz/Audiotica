@@ -43,8 +43,8 @@ namespace Audiotica.Data.Collection
         Task DeleteSongAsync(Song song);
 
         Task<List<HistoryEntry>> FetchHistoryAsync();
-        bool SongAlreadyExists(string providerId, string name, string album, string artist);
-        bool SongAlreadyExists(string localSongPath);
+        Song SongAlreadyExists(string providerId, string name, string album, string artist);
+        Song SongAlreadyExists(string localSongPath);
 
         #region Radio Stations
 

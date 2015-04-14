@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Audiotica.Core.Utils.Interfaces;
 using Audiotica.Data.Collection.Model;
 using Audiotica.Data.Service.Interfaces;
-using Audiotica.Data.Service.RunTime;
 using IF.Lastfm.Core.Api.Enums;
 
 namespace Audiotica.WindowsPhone.Player
@@ -58,7 +57,7 @@ namespace Audiotica.WindowsPhone.Player
                     _service.ScrobbleAsync(item.Song.Name, item.Song.Artist.Name,
                         item.DatePlayed.ToUniversalTime(), item.Song.Duration);
 
-            return result == LastFmApiError.None || result == LastFmApiError.Failure;
+            return result == LastResponseStatus.Successful || result == LastResponseStatus.Failure;
         }
     }
 }

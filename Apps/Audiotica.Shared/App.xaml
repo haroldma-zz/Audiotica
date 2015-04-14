@@ -239,8 +239,7 @@
             <Grid Background="Black" Margin="0,0,0,10">
                 <Grid Height="150">
                     <Grid.Background>
-                        <ImageBrush Stretch="UniformToFill" Opacity=".5"
-                                local:BlurImageTool.Source="{Binding MainImage.Largest}" />
+                        <ImageBrush Stretch="UniformToFill" Opacity=".25" ImageSource="{Binding MainImage.Largest}" />
                     </Grid.Background>
                     <TextBlock Text="{Binding Name}" VerticalAlignment="Center" TextAlignment="Center" FontSize="24"
                            FontWeight="Light" Margin="10,0" TextWrapping="Wrap"/>

@@ -26,13 +26,14 @@ namespace Audiotica
                     providerId = preparedSong.ProviderId;
                 }
 
-                if (App.Locator.CollectionService.SongAlreadyExists(
-                    providerId, 
-                    track.Name, 
-                    track.AlbumName, 
-                    track.ArtistName))
+                var exists = App.Locator.CollectionService.SongAlreadyExists(
+                    providerId,
+                    track.Name,
+                    track.AlbumName,
+                    track.ArtistName);
+                if (exists != null)
                 {
-                    return new SaveResults() { Error = SavingError.AlreadyExists };
+                    return new SaveResults() { Error = SavingError.AlreadyExists, Entry = exists };
                 }
 
                 if (preparedSong == null)
@@ -43,7 +44,7 @@ namespace Audiotica
                 await App.Locator.CollectionService.AddSongAsync(preparedSong).ConfigureAwait(false);
 
                 CollectionHelper.MatchSong(preparedSong);
-                return new SaveResults{Error = SavingError.None, Song = preparedSong};
+                return new SaveResults{Error = SavingError.None, Entry = preparedSong};
             }
             catch (NetworkException)
             {

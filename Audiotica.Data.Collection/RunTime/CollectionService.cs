@@ -253,13 +253,13 @@ namespace Audiotica.Data.Collection.RunTime
             return Task.Factory.StartNew(LoadLibrary);
         }
 
-        public bool SongAlreadyExists(string localSongPath)
+        public Song SongAlreadyExists(string localSongPath)
         {
             return
                 Songs.FirstOrDefault(
                     p =>
                         (p.SongState == SongState.Local || p.SongState == SongState.Downloaded)
-                        && localSongPath == p.AudioUrl) != null;
+                        && localSongPath == p.AudioUrl);
         }
 
         public async Task AddStationAsync(RadioStation station)
@@ -290,15 +290,14 @@ namespace Audiotica.Data.Collection.RunTime
                 await ShuffleCurrentQueueAsync().ConfigureAwait(false);
         }
 
-        public bool SongAlreadyExists(string providerId, string name, string album, string artist)
+        public Song SongAlreadyExists(string providerId, string name, string album, string artist)
         {
             return
                 Songs.FirstOrDefault(
                     p =>
                         p.ProviderId == providerId
                         ||
-                        (p.Name == name && p.Album.Name == album && (p.ArtistName == artist || p.Artist.Name == artist)))
-                != null;
+                        (p.Name == name && p.Album.Name == album && (p.ArtistName == artist || p.Artist.Name == artist)));
         }
 
         public async Task DeleteSongAsync(Song song)

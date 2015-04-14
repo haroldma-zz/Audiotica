@@ -1,12 +1,9 @@
-﻿#region
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Audiotica.Core.Common;
-using Audiotica.Core.Exceptions;
 using Audiotica.Core.Utils;
 using Audiotica.Core.Utils.Interfaces;
 using Audiotica.Data.Service.Interfaces;
@@ -15,16 +12,14 @@ using IF.Lastfm.Core.Api.Enums;
 using IF.Lastfm.Core.Api.Helpers;
 using IF.Lastfm.Core.Objects;
 
-#endregion
-
 namespace Audiotica.Data.Service.RunTime
 {
     public class ScrobblerService : IScrobblerService
     {
-        private readonly ICredentialHelper _credentialHelper;
         private readonly AlbumApi _albumApi;
         private readonly ArtistApi _artistApi;
         private readonly ChartApi _chartApi;
+        private readonly ICredentialHelper _credentialHelper;
         private readonly TrackApi _trackApi;
         private readonly UserApi _userApi;
         private LastAuth _auth;
@@ -60,36 +55,37 @@ namespace Audiotica.Data.Service.RunTime
             OnAuthStateChanged();
         }
 
-        public async Task<LastFmApiError> ScrobbleNowPlayingAsync(string name, string artist, DateTime played,
-            TimeSpan duration, string album = "",
+        public async Task<LastResponseStatus> ScrobbleNowPlayingAsync(string name, string artist, DateTime played,
+            TimeSpan? duration, string album = "",
             string albumArtist = "")
         {
             if (!_auth.Authenticated)
                 if (!await GetSessionTokenAsync())
-                    return LastFmApiError.BadAuth;
+                    return LastResponseStatus.BadAuth;
 
             var resp = await _trackApi.UpdateNowPlayingAsync(new Scrobble(artist, album, name, played)
             {
                 Duration = duration,
                 AlbumArtist = albumArtist
             });
-            return resp.Error;
+            return resp.Status;
         }
 
-        public async Task<LastFmApiError> ScrobbleAsync(string name, string artist, DateTime played, TimeSpan duration,
+        public async Task<LastResponseStatus> ScrobbleAsync(string name, string artist, DateTime played,
+            TimeSpan? duration,
             string album = "",
             string albumArtist = "")
         {
             if (!_auth.Authenticated)
                 if (!await GetSessionTokenAsync())
-                    return LastFmApiError.BadAuth;
-
+                    return LastResponseStatus.BadAuth;
+            
             var resp = await _trackApi.ScrobbleAsync(new Scrobble(artist, album, name, played)
             {
                 Duration = duration,
                 AlbumArtist = albumArtist
             });
-            return resp.Error;
+            return resp.Status;
         }
 
         public async Task<PageResponse<LastArtist>> GetRecommendedArtistsAsync(int page = 1, int limit = 30)
@@ -243,33 +239,33 @@ namespace Audiotica.Data.Service.RunTime
 
             var result = await GetSessionTokenWithResultsAsync(creds.GetUsername(), creds.GetPassword());
 
-            if (result == LastFmApiError.BadAuth)
+            if (result == LastResponseStatus.BadAuth)
             {
                 Logout();
             }
 
             OnAuthStateChanged();
 
-            return result == LastFmApiError.None;
+            return result == LastResponseStatus.Successful;
         }
 
         private async Task<bool> GetSessionTokenAsync(string username, string password)
         {
             var response = await GetSessionTokenWithResultsAsync(username, password);
             OnAuthStateChanged();
-            return response == LastFmApiError.None;
+            return response == LastResponseStatus.Successful;
         }
 
-        private async Task<LastFmApiError> GetSessionTokenWithResultsAsync(string username, string password)
+        private async Task<LastResponseStatus> GetSessionTokenWithResultsAsync(string username, string password)
         {
             try
             {
                 var response = await _auth.GetSessionTokenAsync(username, password);
-                return response.Error;
+                return response.Status;
             }
             catch
             {
-                return LastFmApiError.RequestFailed;
+                return LastResponseStatus.RequestFailed;
             }
         }
     }

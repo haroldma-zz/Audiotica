@@ -24,13 +24,16 @@ namespace Audiotica
                 }
 
                 var preparedSong = track.ToSong();
-                if (App.Locator.CollectionService.SongAlreadyExists(
-                    preparedSong.ProviderId, 
-                    track.Name, 
-                    album.Name, 
-                    album.Artist != null ? album.Artist.Name : track.Artist.Name))
+
+                var exists = App.Locator.CollectionService.SongAlreadyExists(
+                    preparedSong.ProviderId,
+                    track.Name,
+                    album.Name,
+                    album.Artist != null ? album.Artist.Name : track.Artist.Name);
+
+                if (exists != null)
                 {
-                    return new SaveResults() { Error = SavingError.AlreadyExists };
+                    return new SaveResults { Error = SavingError.AlreadyExists, Entry = exists };
                 }
 
                 var fullTrack = track as FullTrack ?? await App.Locator.Spotify.GetTrack(track.Id);
@@ -45,7 +48,7 @@ namespace Audiotica
                 preparedSong.Album.PrimaryArtist = preparedSong.Artist;
                 await App.Locator.CollectionService.AddSongAsync(preparedSong).ConfigureAwait(false);
                 CollectionHelper.MatchSong(preparedSong);
-                return new SaveResults() { Error = SavingError.None, Song = preparedSong};
+                return new SaveResults() { Error = SavingError.None, Entry = preparedSong};
             }
             catch (NetworkException)
             {

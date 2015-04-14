@@ -1,4 +1,5 @@
-﻿namespace Audiotica.Core.Utils
+﻿using System;
+namespace Audiotica.Core.Utils
 {
     public interface INotificationManager
     {

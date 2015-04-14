@@ -9,6 +9,7 @@ using Windows.System;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Audiotica.Core.WinRt.Common;
+using Audiotica.Core.WinRt.Utilities;
 using Audiotica.Data.Collection.Model;
 using Audiotica.Data.Model;
 using Audiotica.Data.Spotify.Models;
@@ -147,13 +148,7 @@ namespace Audiotica.View
             var chartTrack = e.ClickedItem as ChartTrack;
             if (chartTrack == null) return;
 
-            // experienting with playing if a song is already saved
-            var track = App.Locator.CollectionService.Songs.FirstOrDefault(p => p.ProviderId.EndsWith(chartTrack.track_id));
-            if (track != null)
-                await CollectionHelper.PlaySongsAsync(track, App.Locator.CollectionService.Songs.ToList());
-
-            else
-                await CollectionHelper.SaveTrackAsync(chartTrack);
+            await CollectionHelper.SaveTrackAsync(chartTrack);
         }
 
         private void RecommendationListView_ItemClick(object sender, ItemClickEventArgs e)
@@ -183,8 +178,8 @@ namespace Audiotica.View
 
         private void SupportClick(object sender, RoutedEventArgs e)
         {
-            const string Subject = "Audiotica App";
-            Launcher.LaunchUriAsync(new Uri("mailto:?to=help@zumicts.com&subject=" + Uri.EscapeDataString(Subject)));
+            var subject = string.Format("WP8.1 - v{0}", App.Locator.AppVersionHelper.CurrentVersion);
+            Launcher.LaunchUriAsync(new Uri("mailto:?to=help@audiotica.fm&subject=" + Uri.EscapeDataString(subject)));
         }
 
         private void ShareClick(object sender, RoutedEventArgs e)
