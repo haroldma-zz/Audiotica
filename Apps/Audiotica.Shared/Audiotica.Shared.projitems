@@ -16,6 +16,7 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)AppBarHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AudioticaPluginHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AudioticaSubscriptionVisibilityConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AutcpHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)BlurImageTool.cs" />
@@ -76,12 +77,14 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="$(MSBuildThisFileDirectory)analytics.xml" />
+    <Content Include="$(MSBuildThisFileDirectory)Assets\Html\sandbox.html" />
     <Content Include="$(MSBuildThisFileDirectory)Assets\ListeningToMusic.jpg" />
     <Content Include="$(MSBuildThisFileDirectory)Assets\ElectricDaisyCarnival.jpg" />
     <Content Include="$(MSBuildThisFileDirectory)Assets\MissingArtwork.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)analytics.xsd" />
+    <Content Include="$(MSBuildThisFileDirectory)Assets\Html\jquery.js" />
   </ItemGroup>
   <ItemGroup>
     <PRIResource Include="$(MSBuildThisFileDirectory)Strings\en-US\Resources.resw" />

@@ -1,6 +1,7 @@
 ﻿#region
 
 using System;
+using System.Collections.Generic;
 using Windows.Foundation;
 using Windows.Media.Playback;
 using Windows.UI.Xaml;

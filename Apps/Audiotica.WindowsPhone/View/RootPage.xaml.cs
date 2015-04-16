@@ -1,9 +1,18 @@
 ﻿#region
 
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Windows.Foundation;
+using Windows.Storage;
+using Windows.Storage.Streams;
+using Windows.UI.Xaml;
 using Audiotica.Core.Utils;
 using Audiotica.View.Setting;
 
 using Windows.UI.Xaml.Navigation;
+using Windows.Web;
+using Newtonsoft.Json.Linq;
 
 #endregion
 
@@ -69,6 +78,11 @@ namespace Audiotica.View
         {
             return App.Locator.AppSettingsHelper.Read<bool>("FactoryReset")
                    || App.Locator.AppSettingsHelper.Read<bool>("Restore");
+        }
+
+        private void PluginWebView_OnLoaded(object sender, RoutedEventArgs e)
+        {
+            App.Locator.AudioticaPluginHelper.Load(PluginWebView);
         }
     }
 }

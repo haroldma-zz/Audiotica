@@ -42,6 +42,7 @@ namespace Audiotica.ViewModel
         {
             ServiceLocator.SetLocatorProvider(() => SimpleIoc.Default);
 
+            SimpleIoc.Default.Register<AudioticaPluginHelper>();
             SimpleIoc.Default.Register<INotificationManager, NotificationManager>();
             SimpleIoc.Default.Register<ICredentialHelper, PclCredentialHelper>();
             SimpleIoc.Default.Register<IAppSettingsHelper, AppSettingsHelper>();
@@ -104,6 +105,11 @@ namespace Audiotica.ViewModel
             SimpleIoc.Default.Register<ManualMatchViewModel>();
         }
 
+        public AudioticaPluginHelper AudioticaPluginHelper
+        {
+            get { return ServiceLocator.Current.GetInstance<AudioticaPluginHelper>(); }
+        }
+        
         public IDeezerService DeezerService
         {
             get { return ServiceLocator.Current.GetInstance<IDeezerService>(); }

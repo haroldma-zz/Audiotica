@@ -13,7 +13,8 @@
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <Canvas x:Name="LayoutRoot"/>
+        <WebView Name="PluginWebView" Visibility="Collapsed" Loaded="PluginWebView_OnLoaded"/>
+        <Canvas Grid.Row="0" x:Name="LayoutRoot"/>
         <partialView:NowPlayingBar Grid.Row="1" />
     </Grid>
 </Page>
