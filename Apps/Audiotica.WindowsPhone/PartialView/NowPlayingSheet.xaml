@@ -313,17 +313,20 @@
                             <Grid Background="Black" VerticalAlignment="Bottom">
                                 <Grid>
                                     <Grid.Background>
-                                        <ImageBrush Opacity=".50" Stretch="UniformToFill" AlignmentY="Bottom" audiotica:BlurImageTool.Source="{Binding CurrentQueue.Song.Album.Artwork.Uri}" />
+                                        <ImageBrush Opacity=".50" Stretch="UniformToFill" AlignmentY="Top" audiotica:BlurImageTool.Source="{Binding CurrentQueue.Song.Album.Artwork.Uri}" />
                                     </Grid.Background>
                                     <StackPanel Margin="10">
                                         <TextBlock FontSize="30" Text="{Binding CurrentQueue.Song.Name}"
+                                                   Pivot.SlideInAnimationGroup="GroupOne"
                                                    TextWrapping="Wrap" />
                                         <TextBlock FontSize="24" FontWeight="Thin" Foreground="#89FFFFFF"
+                                                   Pivot.SlideInAnimationGroup="GroupTwo"
                                                    TextTrimming="CharacterEllipsis">
                                             <Run Text="by" />
                                             <Run Text="{Binding CurrentQueue.Song.Artist.Name}" />
                                         </TextBlock>
                                         <TextBlock FontSize="24" FontWeight="Thin" Foreground="#89FFFFFF"
+                                                   Pivot.SlideInAnimationGroup="GroupThree"
                                                    TextTrimming="CharacterEllipsis">
                                             <Run Text="on" />
                                             <Run Text="{Binding CurrentQueue.Song.Album.Name}" />

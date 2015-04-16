@@ -15,7 +15,7 @@
 
     <Grid>
         <Grid.Background>
-            <ImageBrush Opacity=".25" ImageSource="{Binding Album.PrimaryArtist.Artwork.Image}" Stretch="UniformToFill" />
+            <ImageBrush Opacity=".25" AlignmentY="Top" ImageSource="{Binding Album.PrimaryArtist.Artwork.Image}" Stretch="UniformToFill" />
         </Grid.Background>
 
         <qKit:MultiSelectListView x:Name="SongList" SelectionModeChanged="MultiSelectListView_SelectionModeChanged"

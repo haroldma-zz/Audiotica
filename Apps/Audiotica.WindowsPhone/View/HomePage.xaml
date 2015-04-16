@@ -71,7 +71,7 @@
     <Grid>
         <Grid.Background>
             <ImageBrush Opacity=".25" Stretch="UniformToFill"
-                        ImageSource="{Binding PlayerViewModel.CurrentQueue.Song.Artist.Artwork.Uri}" />
+                        ImageSource="{Binding PlayerViewModel.CurrentQueue.Song.Artist.Artwork.Image}" AlignmentY="Top" />
         </Grid.Background>
         <Hub x:Name="MainHub" Header="AUDIOTICA">
             <Hub.HeaderTemplate>

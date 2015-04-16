@@ -144,7 +144,7 @@ namespace Audiotica.View
             var created = App.Locator.AppSettingsHelper.ReadJsonAs<DateTime>("WallpaperCreated");
 
             // Set the image brush
-            var imageBrush = new ImageBrush { Opacity = .25 };
+            var imageBrush = new ImageBrush { Opacity = .25, Stretch = Stretch.UniformToFill, AlignmentY = AlignmentY.Top};
             LayoutGrid.Background = imageBrush;
 
             if (created != DateTime.MinValue)

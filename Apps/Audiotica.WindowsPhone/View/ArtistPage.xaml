@@ -13,7 +13,7 @@
 
     <Grid>
         <Grid.Background>
-            <ImageBrush Opacity=".25" Stretch="UniformToFill" ImageSource="{Binding Artist.MainImage.Largest}" />
+            <ImageBrush Opacity=".25" Stretch="UniformToFill" AlignmentY="Top" ImageSource="{Binding Artist.MainImage.Largest}" />
         </Grid.Background>
         <Pivot Title="{Binding Artist.Name, Converter={StaticResource UpperCaseConverter}}" HeaderTemplate="{StaticResource PivotHeaderTemplate}">
             <PivotItem x:Uid="PivotAlbums" Header="ALBUMS">
