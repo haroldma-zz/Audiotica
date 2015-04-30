@@ -266,6 +266,7 @@ namespace Audiotica
             ApplicationView.GetForCurrentView().VisibleBoundsChanged += OnVisibleBoundsChanged;
             OnVisibleBoundsChanged(null, null);
 
+            var crash = Locator.AppSettingsHelper.ReadJsonAs<Exception>("CrashingException");
             await ReviewReminderAsync();
 
             CollectionHelper.RequiresCollectionToLoad(

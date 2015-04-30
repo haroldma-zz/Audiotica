@@ -313,7 +313,7 @@
                             <Grid Background="Black" VerticalAlignment="Bottom">
                                 <Grid>
                                     <Grid.Background>
-                                        <ImageBrush Opacity=".50" Stretch="UniformToFill" AlignmentY="Bottom" audiotica:BlurImageTool.Source="{Binding CurrentQueue.Song.Album.Artwork.Uri}" />
+                                        <ImageBrush Opacity=".50" Stretch="UniformToFill" AlignmentY="Top" audiotica:BlurImageTool.Source="{Binding CurrentQueue.Song.Album.Artwork.Uri}" />
                                     </Grid.Background>
                                     <StackPanel Margin="10">
                                         <TextBlock FontSize="30" Text="{Binding CurrentQueue.Song.Name}"
@@ -379,7 +379,7 @@
                 </ListView>
             </PivotItem>
             <PivotItem Header="LYRICS">
-               <ScrollViewer Padding="0,0,0,20">
+               <ScrollViewer>
                     <TextBlock x:Name="LyricsTextBlock" Text="If I was your boyfriend" FontSize="20" TextWrapping="Wrap" />
                </ScrollViewer>
             </PivotItem>
