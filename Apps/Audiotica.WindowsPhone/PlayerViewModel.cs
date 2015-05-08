@@ -173,17 +173,18 @@ namespace Audiotica
             {
                 default:
                     PlayPauseIcon = Symbol.Play;
-                    if (_timer.IsEnabled)
+                    if (_timer != null && _timer.IsEnabled)
                         _timer.Stop();
                     break;
                 case MediaPlayerState.Playing:
-                    _timer.Start();
+                    if (_timer != null && !_timer.IsEnabled)
+                        _timer.Start();
                     PlayPauseIcon = Symbol.Pause;
                     break;
                 case MediaPlayerState.Buffering:
                 case MediaPlayerState.Opening:
                     IsLoading = true;
-                    if (_timer.IsEnabled)
+                    if (_timer != null && _timer.IsEnabled)
                         _timer.Stop();
                     break;
             }

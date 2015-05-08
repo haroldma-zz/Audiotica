@@ -39,15 +39,16 @@
                 <CompositeTransform />
             </Image.RenderTransform>
         </Image>
-        
+
         <StackPanel Margin="20" HorizontalAlignment="Right" VerticalAlignment="Bottom" Orientation="Horizontal">
             <TextBlock Text="&lt;&lt; swipe" VerticalAlignment="Center" FontSize="32"/>
             <TextBlock Text=" ☝" FontSize="50" />
         </StackPanel>
-        
+
         <FlipView x:Name="FlipView" SelectionChanged="FlipView_SelectionChanged">
             <Grid Margin="20,50,87,0">
                 <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
@@ -56,6 +57,86 @@
                            Grid.Row="1"
                            Text="With Audiotica you'll never have to break a sweat to get music!  It is the one stop place to find everything you'll ever need."
                            FontSize="22" TextWrapping="Wrap" />
+                <Button Grid.Row="2" Margin="0,5" Style="{StaticResource PlainButtonStyle}" Click="YoutubeButton_Click_1" >
+                    <Grid>
+                        <Image Source="/Assets/audiotica crawler-small.png" />
+                        <AppBarButton Icon="Play" HorizontalAlignment="Center" VerticalAlignment="Center" RenderTransformOrigin="0.5,0.5" IsCompact="True" >
+                            <AppBarButton.Resources>
+                                <FontFamily x:Key="ContentControlThemeFontFamily">Segoe WP</FontFamily>
+                                <SolidColorBrush x:Key="AppBarItemBackgroundThemeBrush" Color="Transparent"/>
+                                <Style x:Key="AppBarButtonStyle1" TargetType="AppBarButton">
+                                    <Setter Property="Foreground" Value="{ThemeResource AppBarItemForegroundThemeBrush}"/>
+                                    <Setter Property="VerticalAlignment" Value="Top"/>
+                                    <Setter Property="HorizontalAlignment" Value="Left"/>
+                                    <Setter Property="FontFamily" Value="{ThemeResource ContentControlThemeFontFamily}"/>
+                                    <Setter Property="FontWeight" Value="Normal"/>
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="AppBarButton">
+                                                <StackPanel x:Name="LayoutRoot" Background="Transparent" Width="80">
+                                                    <VisualStateManager.VisualStateGroups>
+                                                        <VisualStateGroup x:Name="ApplicationViewStates">
+                                                            <VisualState x:Name="FullSize"/>
+                                                            <VisualState x:Name="Compact">
+                                                                <Storyboard>
+                                                                    <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Visibility" Storyboard.TargetName="TextLabel">
+                                                                        <DiscreteObjectKeyFrame KeyTime="0" Value="Collapsed"/>
+                                                                    </ObjectAnimationUsingKeyFrames>
+                                                                    <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Width" Storyboard.TargetName="LayoutRoot">
+                                                                        <DiscreteObjectKeyFrame KeyTime="0" Value="48"/>
+                                                                    </ObjectAnimationUsingKeyFrames>
+                                                                </Storyboard>
+                                                            </VisualState>
+                                                        </VisualStateGroup>
+                                                        <VisualStateGroup x:Name="CommonStates">
+                                                            <VisualState x:Name="Normal"/>
+                                                            <VisualState x:Name="Pressed">
+                                                                <Storyboard>
+                                                                    <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Stroke" Storyboard.TargetName="Ellipse">
+                                                                        <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource AppBarItemForegroundThemeBrush}"/>
+                                                                    </ObjectAnimationUsingKeyFrames>
+                                                                    <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Foreground" Storyboard.TargetName="Content">
+                                                                        <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource AppBarItemPressedForegroundThemeBrush}"/>
+                                                                    </ObjectAnimationUsingKeyFrames>
+                                                                </Storyboard>
+                                                            </VisualState>
+                                                            <VisualState x:Name="Disabled">
+                                                                <Storyboard>
+                                                                    <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Stroke" Storyboard.TargetName="Ellipse">
+                                                                        <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource AppBarItemDisabledForegroundThemeBrush}"/>
+                                                                    </ObjectAnimationUsingKeyFrames>
+                                                                    <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Foreground" Storyboard.TargetName="Content">
+                                                                        <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource AppBarItemDisabledForegroundThemeBrush}"/>
+                                                                    </ObjectAnimationUsingKeyFrames>
+                                                                    <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Foreground" Storyboard.TargetName="TextLabel">
+                                                                        <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource AppBarItemDisabledForegroundThemeBrush}"/>
+                                                                    </ObjectAnimationUsingKeyFrames>
+                                                                </Storyboard>
+                                                            </VisualState>
+                                                        </VisualStateGroup>
+                                                    </VisualStateManager.VisualStateGroups>
+                                                    <Grid HorizontalAlignment="Center" Height="38.5" Margin="0,12,0,4" Width="38.5">
+                                                        <Ellipse x:Name="Ellipse" Fill="#7F000000" Height="38.5" Stroke="{ThemeResource AppBarItemForegroundThemeBrush}" StrokeThickness="2.5" UseLayoutRounding="False" Width="38.5"/>
+                                                        <Grid x:Name="ContentRoot" Background="Transparent">
+                                                            <ContentPresenter x:Name="Content" AutomationProperties.AccessibilityView="Raw" Content="{TemplateBinding Icon}" Foreground="{TemplateBinding Foreground}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+                                                        </Grid>
+                                                    </Grid>
+                                                    <TextBlock x:Name="TextLabel" Foreground="{ThemeResource AppBarItemForegroundThemeBrush}" FontSize="9.5" FontFamily="{TemplateBinding FontFamily}" Margin="0,0,0,10.5" TextAlignment="Center" TextWrapping="Wrap" Text="{TemplateBinding Label}" Width="70.5"/>
+                                                </StackPanel>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </AppBarButton.Resources>
+                            <AppBarButton.RenderTransform>
+                                <CompositeTransform ScaleX="2" ScaleY="2"/>
+                            </AppBarButton.RenderTransform>
+                            <AppBarButton.Style>
+                                <StaticResource ResourceKey="AppBarButtonStyle1"/>
+                            </AppBarButton.Style>
+                        </AppBarButton>
+                    </Grid>
+                </Button>
             </Grid>
             <Grid Margin="20,50,100,0">
                 <Grid.RowDefinitions>
@@ -79,7 +160,7 @@
                            FontSize="22" TextWrapping="Wrap" />
             </Grid>
         </FlipView>
-        
+
         <Button x:Name="ContinueButton" Opacity="0" Visibility="Collapsed" Content="Continue" Background="#642C90"  VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Margin="20,0,20,20" Click="Button_Click" Height="80" />
     </Grid>
 </audiotica:PageBase>

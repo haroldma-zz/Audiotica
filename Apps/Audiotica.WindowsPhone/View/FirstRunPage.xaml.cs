@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.System;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -39,6 +40,11 @@ namespace Audiotica.View
 
             ContinueButton.Visibility = Visibility.Visible;
             ContinueButtonAnimation.Begin();
+        }
+
+        private void YoutubeButton_Click_1(object sender, RoutedEventArgs e)
+        {
+            Launcher.LaunchUriAsync(new Uri("https://www.youtube.com/watch?v=u02r89SUSM4"));
         }
     }
 }

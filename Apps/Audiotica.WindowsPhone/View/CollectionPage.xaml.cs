@@ -121,7 +121,11 @@ namespace Audiotica.View
         {
             base.NavigatedTo(mode, parameter);
 
-            LoadWallpaperArt();
+            try
+            {
+                LoadWallpaperArt();
+            }
+            catch { }
 
             if (parameter is int)
             {
@@ -146,12 +150,6 @@ namespace Audiotica.View
             // Set the image brush
             var imageBrush = new ImageBrush { Opacity = .25, Stretch = Stretch.UniformToFill, AlignmentY = AlignmentY.Top};
             LayoutGrid.Background = imageBrush;
-
-            if (created != DateTime.MinValue)
-            {
-                // Not the first time, so there must already be one created
-                imageBrush.ImageSource = new BitmapImage(new Uri("ms-appdata:/local/wallpaper.jpg"));
-            }
 
             // Once a week remake the wallpaper
             if ((DateTime.Now - created).TotalDays > wait)
@@ -267,6 +265,11 @@ namespace Audiotica.View
                 App.Locator.AppSettingsHelper.Write("WallpaperDayWait", albums.Count < 30 ? 1 : 7);
 
                 imageBrush.ImageSource = null;
+                imageBrush.ImageSource = new BitmapImage(new Uri("ms-appdata:/local/wallpaper.jpg"));
+            }
+            else if (created != DateTime.MinValue)
+            {
+                // Not the first time, so there must already be one created
                 imageBrush.ImageSource = new BitmapImage(new Uri("ms-appdata:/local/wallpaper.jpg"));
             }
 
