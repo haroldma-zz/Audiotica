@@ -159,7 +159,6 @@
     <None Include="app.config" />
     <None Include="ApplicationInsights.config" />
     <Content Include="Assets\Fonts\segxmvr.otf" />
-    <None Include="Audiotica_TemporaryKey.pfx" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
@@ -237,7 +236,6 @@
       <Name>Behaviors SDK %28XAML%29</Name>
     </SDKReference>
   </ItemGroup>
-  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

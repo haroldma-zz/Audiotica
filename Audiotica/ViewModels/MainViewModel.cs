@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Windows.UI.Xaml.Navigation;
 using Audiotica.Web.Interfaces.MatchEngine;
@@ -19,9 +20,16 @@ namespace Audiotica.ViewModels
         {
             foreach (var provider in _providers)
             {
-                var url = await provider.GetLinkAsync("boyfriend", "Justin Bieber");
-                if (url != null)
+                try
                 {
+                    var url = await provider.GetLinkAsync("FourFiveSeconds", "Rihanna");
+                    if (url != null)
+                    {
+                    }
+                }
+                catch (ArgumentNullException)
+                {
+                    
                 }
             }
         }

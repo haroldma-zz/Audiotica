@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Audiotica.Web.Interfaces.MatchEngine;
@@ -17,6 +18,7 @@ namespace Audiotica.Web.MatchEngine.Providers
 
         protected override async Task<List<WebSong>> InternalGetSongsAsync(string title, string artist, int limit = 10)
         {
+            throw new NotImplementedException();
         }
     }
 }
