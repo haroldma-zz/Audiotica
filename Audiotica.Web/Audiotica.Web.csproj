@@ -1,0 +1,199 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <MinimumVisualStudioVersion>10.0</MinimumVisualStudioVersion>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{0B8C5A00-8C9C-4663-A741-1B494C0E9E46}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Audiotica.Web</RootNamespace>
+    <AssemblyName>Audiotica.Web</AssemblyName>
+    <DefaultLanguage>en-US</DefaultLanguage>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <TargetFrameworkProfile>Profile259</TargetFrameworkProfile>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- A reference to the entire .NET Framework is automatically included -->
+    <None Include="app.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Deserializer\DeserializerExtensions.cs" />
+    <Compile Include="Deserializer\DotNetXmlDeserializer.cs" />
+    <Compile Include="Deserializer\HtmlDeserializer.cs" />
+    <Compile Include="Deserializer\IDeserializer.cs" />
+    <Compile Include="Deserializer\JsonDeserializer.cs" />
+    <Compile Include="Extensions\RestlessExtensions.cs" />
+    <Compile Include="Extensions\RestRequestExtensions.cs" />
+    <Compile Include="Extensions\UriExtensions.cs" />
+    <Compile Include="Extensions\WebSongExtensions.cs" />
+    <Compile Include="Http\Requets\MeileDetailsRequest.cs" />
+    <Compile Include="Http\Requets\MeileSearchRequest.cs" />
+    <Compile Include="Http\Requets\Mp3ClanSearchRequest.cs" />
+    <Compile Include="Http\Requets\Mp3SkullRequest.cs" />
+    <Compile Include="Http\Requets\Mp3TruckSearchRequest.cs" />
+    <Compile Include="Http\Requets\NeteaseDetailsRequest.cs" />
+    <Compile Include="Http\Requets\NeteaseSearchRequest.cs" />
+    <Compile Include="Http\Requets\PleerDetailsRequest.cs" />
+    <Compile Include="Http\Requets\PleerSearchRequest.cs" />
+    <Compile Include="Http\Requets\SongilySearchRequest.cs" />
+    <Compile Include="Http\Requets\RestObjectRequest.cs" />
+    <Compile Include="Http\Requets\SoundCloudSearchRequest.cs" />
+    <Compile Include="Interfaces\MatchEngine\IProvider.cs" />
+    <Compile Include="Interfaces\MatchEngine\Validators\ISongTypeValidator.cs" />
+    <Compile Include="MatchEngine\Providers\MeileProvider.cs" />
+    <Compile Include="MatchEngine\Providers\Mp3ClanProvider.cs" />
+    <Compile Include="MatchEngine\Providers\Mp3SkullProvider.cs" />
+    <Compile Include="MatchEngine\Providers\Mp3TruckProvider.cs" />
+    <Compile Include="MatchEngine\Providers\NeteaseProvider.cs" />
+    <Compile Include="MatchEngine\Providers\PleerProvider.cs" />
+    <Compile Include="MatchEngine\Providers\ProviderBase.cs" />
+    <Compile Include="MatchEngine\Providers\SongilyProvider.cs" />
+    <Compile Include="MatchEngine\Providers\SoundCloudProvider.cs" />
+    <Compile Include="MatchEngine\Validators\SongInstrumentalTypeValidator.cs" />
+    <Compile Include="Models\Netease\NeteaseAlbum.cs" />
+    <Compile Include="Models\Netease\NeteaseResult.cs" />
+    <Compile Include="Models\Netease\NeteaseRoot.cs" />
+    <Compile Include="Models\Netease\NeteaseSong.cs" />
+    <Compile Include="Models\Void.cs" />
+    <Compile Include="Http\RestRequest.cs" />
+    <Compile Include="Http\RestResponse.cs" />
+    <Compile Include="Models\Deezer\DeezerAlbum.cs" />
+    <Compile Include="Models\Deezer\DeezerArtist.cs" />
+    <Compile Include="Models\Deezer\DeezerBaseResponse.cs" />
+    <Compile Include="Models\Deezer\DeezerError.cs" />
+    <Compile Include="Models\Deezer\DeezerPageResponse.cs" />
+    <Compile Include="Models\Deezer\DeezerSong.cs" />
+    <Compile Include="Models\Meile\MeileDetail.cs" />
+    <Compile Include="Models\Meile\MeileDetailRoot.cs" />
+    <Compile Include="Models\Meile\MeileValues.cs" />
+    <Compile Include="Models\Mp3Clan\Mp3ClanRoot.cs" />
+    <Compile Include="Models\Mp3Clan\Mp3ClanSong.cs" />
+    <Compile Include="Models\Netease\NeteaseDetailRoot.cs" />
+    <Compile Include="Models\Netease\NeteaseDetailSong.cs" />
+    <Compile Include="Models\Netease\NeteaseArtist.cs" />
+    <Compile Include="Models\SoundCloud\SoundCloudRoot.cs" />
+    <Compile Include="Models\SoundCloud\SoundCloudSong.cs" />
+    <Compile Include="Models\SoundCloud\SoundCloudUser.cs" />
+    <Compile Include="Models\Vk\VkCaptcha.cs" />
+    <Compile Include="Models\Vk\VkError.cs" />
+    <Compile Include="Models\Vk\VkRoot.cs" />
+    <Compile Include="Models\Vk\VkSong.cs" />
+    <Compile Include="Models\WebSong.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Serializer\DotNetXmlSerializer.cs" />
+    <Compile Include="Serializer\ISerializer.cs" />
+    <Compile Include="Serializer\JsonSerializer.cs" />
+    <Compile Include="Interfaces\MatchEngine\Services\IMatchEngineService.cs" />
+    <Compile Include="Services\MatchEngineService.cs" />
+    <Compile Include="MatchEngine\Validators\FlexibleTypeValidator.cs" />
+    <Compile Include="MatchEngine\Validators\SongAcapellaTypeValidator.cs" />
+    <Compile Include="MatchEngine\Validators\SongAcousticTypeValidator.cs" />
+    <Compile Include="MatchEngine\Validators\SongCoverTypeValidator.cs" />
+    <Compile Include="MatchEngine\Validators\SongLiveTypeValidator.cs" />
+    <Compile Include="MatchEngine\Validators\SongPreviewTypeValidator.cs" />
+    <Compile Include="MatchEngine\Validators\SongRadioTypeValidator.cs" />
+    <Compile Include="MatchEngine\Validators\SongRemixTypeValidator.cs" />
+    <Compile Include="MatchEngine\Validators\SongTypeValidatorBase.cs" />
+    <Compile Include="MatchEngine\Validators\BasicSongTypeValidatorBase.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Google.Apis, Version=1.9.1.12395, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Google.Apis.1.9.1\lib\portable-net40+sl50+win+wpa81+wp80\Google.Apis.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Google.Apis.Auth, Version=1.9.1.12395, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Google.Apis.Auth.1.9.1\lib\portable-net40+sl50+win+wpa81+wp80\Google.Apis.Auth.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Google.Apis.Core, Version=1.9.1.12394, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Google.Apis.Core.1.9.1\lib\portable-net40+sl50+win+wpa81+wp80\Google.Apis.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Google.Apis.YouTube.v3, Version=1.9.0.136, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Google.Apis.YouTube.v3.1.9.0.1360\lib\portable-net40+sl50+win+wpa81+wp80\Google.Apis.YouTube.v3.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="HtmlAgilityPack, Version=1.4.9.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\HtmlAgilityPack.1.4.9\lib\portable-net45+netcore45+wpa81+wp8+MonoAndroid+MonoTouch\HtmlAgilityPack.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="IF.Lastfm.Core, Version=0.2.0.211, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Inflatable.Lastfm.0.2.0.211\lib\portable-win8+net45+wp8+wpa81\IF.Lastfm.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Threading.Tasks, Version=1.0.12.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Bcl.Async.1.0.168\lib\portable-net45+win8+wp8+wpa81\Microsoft.Threading.Tasks.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Threading.Tasks.Extensions, Version=1.0.12.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Bcl.Async.1.0.168\lib\portable-net45+win8+wp8+wpa81\Microsoft.Threading.Tasks.Extensions.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\portable-net40+sl5+wp80+win8+wpa81\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Net.Http, Version=1.5.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Net.Http.2.2.29\lib\portable-net40+sl4+win8+wp71+wpa81\System.Net.Http.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Net.Http.Extensions, Version=1.5.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Net.Http.2.2.29\lib\portable-net40+sl4+win8+wp71+wpa81\System.Net.Http.Extensions.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Net.Http.Primitives, Version=1.5.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Net.Http.2.2.29\lib\portable-net40+sl4+win8+wp71+wpa81\System.Net.Http.Primitives.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Zlib.Portable, Version=1.10.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Zlib.Portable.1.10.0\lib\portable-net4+sl5+wp8+win8+wpa81+MonoTouch+MonoAndroid\Zlib.Portable.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Audiotica.Core\Audiotica.Core.csproj">
+      <Project>{3b0d02a1-a45f-4925-93f0-cb4451317c80}</Project>
+      <Name>Audiotica.Core</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
+  <Import Project="..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets'))" />
+  </Target>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

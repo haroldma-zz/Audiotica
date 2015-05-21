@@ -87,7 +87,7 @@ namespace Audiotica.Core.Common
         {
             if (items == null)
             {
-                throw new ArgumentNullException("items");
+                throw new ArgumentNullException(nameof(items));
             }
 
             try
@@ -122,7 +122,7 @@ namespace Audiotica.Core.Common
         {
             if (items == null)
             {
-                throw new ArgumentNullException("items");
+                throw new ArgumentNullException(nameof(items));
             }
 
             SuppressEvents = true;
@@ -141,7 +141,7 @@ namespace Audiotica.Core.Common
         {
             if (items == null)
             {
-                throw new ArgumentNullException("items");
+                throw new ArgumentNullException(nameof(items));
             }
 
             var itemIndex = 0;

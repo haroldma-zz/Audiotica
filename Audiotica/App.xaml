@@ -1,0 +1,10 @@
+﻿<common:BootStrapper
+    x:Class="Audiotica.App"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:common="using:Audiotica.Common"
+    xmlns:viewModels="using:Audiotica.ViewModels">
+    <common:BootStrapper.Resources>
+        <viewModels:ViewModelLocator x:Key="ViewModelLocator" />
+    </common:BootStrapper.Resources>
+</common:BootStrapper>
