@@ -12,6 +12,13 @@ namespace Audiotica.Core.Extensions
                 action(item);
         }
 
+        public static void ForEach<T>(this IEnumerable<T> enumerable, Action<T, int> action)
+        {
+            var array = enumerable.ToArray();
+            for (var i = 0; i < array.Length; i++)
+                action(array[i], i);
+        }
+
         public static int GetMostUsedOccurrenceWhileIgnoringZero<T>(this IEnumerable<T> list, Func<T, int> func)
         {
             var ocurrences = list.GetMostUsedList(func);

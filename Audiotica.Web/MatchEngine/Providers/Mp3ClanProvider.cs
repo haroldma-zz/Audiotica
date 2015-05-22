@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Audiotica.Core.Extensions;
+using Audiotica.Core.Interfaces.Utilities;
 using Audiotica.Web.Extensions;
 using Audiotica.Web.Http.Requets;
 using Audiotica.Web.Interfaces.MatchEngine;
@@ -13,10 +14,12 @@ namespace Audiotica.Web.MatchEngine.Providers
 {
     public class Mp3ClanProvider : ProviderBase
     {
-        public Mp3ClanProvider(IEnumerable<ISongTypeValidator> validators) : base(validators)
+        public Mp3ClanProvider(IEnumerable<ISongTypeValidator> validators, ISettingsUtility settingsUtility)
+            : base(validators, settingsUtility)
         {
         }
 
+        public override string DisplayName => "Mp3Clan";
         public override ProviderSpeed Speed => ProviderSpeed.Slow;
         public override ProviderResultsQuality ResultsQuality => ProviderResultsQuality.Great;
 
@@ -25,21 +28,22 @@ namespace Audiotica.Web.MatchEngine.Providers
             using (var response = await new Mp3ClanSearchRequest(title.Append(artist)).ToResponseAsync().DontMarshall())
             {
                 if (!response.HasData) return null;
-                
+
                 var songs = new List<WebSong>();
 
-                var songNodes = response.Data.DocumentNode.Descendants("div").Where(p => p.Id == "mp3list-tr").Take(limit);
+                var songNodes =
+                    response.Data.DocumentNode.Descendants("div").Where(p => p.Id == "mp3list-tr").Take(limit);
 
                 foreach (var songNode in songNodes)
                 {
                     var song = new WebSong();
 
                     var songTitle = songNode.Descendants("div")
-                            .FirstOrDefault(p => p.Attributes["class"]?.Value == "unselectable")?.InnerText;
+                        .FirstOrDefault(p => p.Attributes["class"]?.Value == "unselectable")?.InnerText;
 
                     var link = songNode.Descendants("a")
-                            .FirstOrDefault(p => p.Attributes.Contains("download"))?.Attributes["href"]?.Value;
-                    
+                        .FirstOrDefault(p => p.Attributes.Contains("download"))?.Attributes["href"]?.Value;
+
                     if (string.IsNullOrEmpty(link)) continue;
                     song.AudioUrl = link;
 
@@ -47,7 +51,8 @@ namespace Audiotica.Web.MatchEngine.Providers
                     song.SetNameAndArtistFromTitle(songTitle, true);
 
                     var duration = songNode.Descendants("div")
-                            .FirstOrDefault(p => p.Attributes["class"]?.Value.Contains("mp3list-bitrate") ?? false)?.InnerHtml;
+                        .FirstOrDefault(p => p.Attributes["class"]?.Value.Contains("mp3list-bitrate") ?? false)?
+                        .InnerHtml;
                     if (!string.IsNullOrEmpty(duration))
                     {
                         duration = "0:" + duration.Substring(duration.IndexOf("<br>") + 4).Replace(" min", "").Trim();

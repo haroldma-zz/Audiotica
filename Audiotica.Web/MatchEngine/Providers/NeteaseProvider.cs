@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Audiotica.Core.Extensions;
+using Audiotica.Core.Interfaces.Utilities;
 using Audiotica.Web.Http.Requets;
 using Audiotica.Web.Interfaces.MatchEngine;
 using Audiotica.Web.Interfaces.MatchEngine.Validators;
@@ -11,10 +12,12 @@ namespace Audiotica.Web.MatchEngine.Providers
 {
     public class NeteaseProvider : ProviderBase
     {
-        public NeteaseProvider(IEnumerable<ISongTypeValidator> validators) : base(validators)
+        public NeteaseProvider(IEnumerable<ISongTypeValidator> validators, ISettingsUtility settingsUtility)
+            : base(validators, settingsUtility)
         {
         }
-        
+
+        public override string DisplayName => "Netease (163.com)";
         public override ProviderSpeed Speed => ProviderSpeed.Fast;
         public override ProviderResultsQuality ResultsQuality => ProviderResultsQuality.Excellent;
 

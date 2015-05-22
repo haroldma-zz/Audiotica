@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Audiotica.Core.Extensions;
+using Audiotica.Core.Interfaces.Utilities;
 using Audiotica.Web.Http.Requets;
 using Audiotica.Web.Interfaces.MatchEngine;
 using Audiotica.Web.Interfaces.MatchEngine.Validators;
@@ -13,10 +14,12 @@ namespace Audiotica.Web.MatchEngine.Providers
 {
     public class SongilyProvider : ProviderBase
     {
-        public SongilyProvider(IEnumerable<ISongTypeValidator> validators) : base(validators)
+        public SongilyProvider(IEnumerable<ISongTypeValidator> validators, ISettingsUtility settingsUtility)
+            : base(validators, settingsUtility)
         {
         }
 
+        public override string DisplayName => "Songily";
         public override ProviderSpeed Speed => ProviderSpeed.Fast;
         public override ProviderResultsQuality ResultsQuality => ProviderResultsQuality.SomewhatGreat;
 

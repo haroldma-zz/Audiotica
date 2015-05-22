@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Audiotica.Core.Extensions;
+using Audiotica.Core.Interfaces.Utilities;
 using Audiotica.Web.Http.Requets;
 using Audiotica.Web.Interfaces.MatchEngine;
 using Audiotica.Web.Interfaces.MatchEngine.Validators;
@@ -12,10 +13,12 @@ namespace Audiotica.Web.MatchEngine.Providers
 {
     public class MeileProvider : ProviderBase
     {
-        public MeileProvider(IEnumerable<ISongTypeValidator> validators) : base(validators)
+        public MeileProvider(IEnumerable<ISongTypeValidator> validators, ISettingsUtility settingsUtility)
+            : base(validators, settingsUtility)
         {
         }
-        
+
+        public override string DisplayName => "Meile";
         public override ProviderSpeed Speed => ProviderSpeed.Slow;
         public override ProviderResultsQuality ResultsQuality => ProviderResultsQuality.Great;
 

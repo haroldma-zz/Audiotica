@@ -12,7 +12,7 @@ namespace Audiotica.ViewModels
 
         public MainViewModel(IEnumerable<IProvider> providers)
         {
-            _providers = providers.OrderByDescending(p => p.Speed + (int)p.ResultsQuality).ToList();
+            _providers = providers.OrderByDescending(p => p.Priority).ToList();
             // TODO
         }
 

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Audiotica.Web.Models;
 
@@ -23,9 +24,14 @@ namespace Audiotica.Web.Interfaces.MatchEngine
 
     public interface IProvider
     {
+        bool IsEnabled { get; set; }
+        int Priority { get; }
+        string DisplayName { get; }
         ProviderSpeed Speed { get; }
         ProviderResultsQuality ResultsQuality { get; }
-        Task<string> GetLinkAsync(string title, string artist);
+        Task<Uri> GetLinkAsync(string title, string artist);
         Task<List<WebSong>> GetSongsAsync(string title, string artist, int limit = 10);
+        void Enable();
+        void Disable();
     }
 }

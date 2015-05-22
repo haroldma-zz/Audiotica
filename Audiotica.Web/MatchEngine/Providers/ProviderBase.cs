@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Audiotica.Core.Extensions;
+using Audiotica.Core.Interfaces.Utilities;
 using Audiotica.Web.Extensions;
 using Audiotica.Web.Interfaces.MatchEngine;
 using Audiotica.Web.Interfaces.MatchEngine.Validators;
@@ -15,20 +16,35 @@ namespace Audiotica.Web.MatchEngine.Providers
     /// </summary>
     public abstract class ProviderBase : IProvider
     {
+        private const int MatchTitleLenghtThreshold = 20;
+        private readonly ISettingsUtility _settingsUtility;
         private readonly IEnumerable<ISongTypeValidator> _validators;
 
-        protected ProviderBase(IEnumerable<ISongTypeValidator> validators)
+        protected ProviderBase(IEnumerable<ISongTypeValidator> validators, ISettingsUtility settingsUtility)
         {
             _validators = validators;
+            _settingsUtility = settingsUtility;
         }
 
+        public abstract string DisplayName { get; }
         public abstract ProviderSpeed Speed { get; }
         public abstract ProviderResultsQuality ResultsQuality { get; }
 
-        public async Task<string> GetLinkAsync(string title, string artist)
+        bool IProvider.IsEnabled
+        {
+            get { return _settingsUtility.Read($"provider_enabled_{DisplayName}", true); }
+
+            set { _settingsUtility.Write($"provider_enabled_{DisplayName}", value); }
+        }
+
+        int IProvider.Priority => (int)ResultsQuality + (int) Speed;
+
+        public async Task<Uri> GetLinkAsync(string title, string artist)
         {
             var songs = await GetSongsAsync(title, artist).DontMarshall();
-            return songs?.FirstOrDefault(p => p.IsBestMatch)?.AudioUrl;
+            var uriString = songs?.FirstOrDefault(p => p.IsBestMatch)?.AudioUrl;
+
+            return Uri.IsWellFormedUriString(uriString, UriKind.Absolute) ? new Uri(uriString, UriKind.Absolute) : null;
         }
 
         public async Task<List<WebSong>> GetSongsAsync(string title, string artist,
@@ -40,10 +56,18 @@ namespace Audiotica.Web.MatchEngine.Providers
                         .DontMarshall();
         }
 
+        public void Enable()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Disable()
+        {
+            throw new NotImplementedException();
+        }
+
         protected abstract Task<List<WebSong>> InternalGetSongsAsync(string title, string artist,
             int limit = 10);
-
-        private const int MatchTitleLenghtThreshold = 20;
 
         private async Task<List<WebSong>> VerifyMatchesAsync(string title, string artist,
             IEnumerable<WebSong> matches, bool verifyMatchesOnly = true)
@@ -66,8 +90,10 @@ namespace Audiotica.Web.MatchEngine.Providers
                 if (!_validators.All(songTypeValidator => songTypeValidator.IsValid(title, matchName))) continue;
 
                 var titleDiff = Math.Abs(title.Length - matchName.Length);
-                var isCorrectTitle = (matchName.Contains(title) || title.Contains(matchName)) 
-                    && titleDiff <= MatchTitleLenghtThreshold + (string.IsNullOrEmpty(matchArtist) ? artist.Length : 0);
+                var isCorrectTitle = (matchName.Contains(title) || title.Contains(matchName))
+                                     &&
+                                     titleDiff <=
+                                     MatchTitleLenghtThreshold + (string.IsNullOrEmpty(matchArtist) ? artist.Length : 0);
                 if (!isCorrectTitle) continue;
 
                 // soundcloud/youtube doesnt have artist prop, check in title and author name (channel/username) for those cases
@@ -93,7 +119,8 @@ namespace Audiotica.Web.MatchEngine.Providers
                     webSong.IsLinkDeath = true;
             }
 
-            var mostUsedMinute = filterSongs.Where(p => !p.IsLinkDeath).GetMostUsedOccurrenceWhileIgnoringZero(p => p.Duration.Minutes);
+            var mostUsedMinute =
+                filterSongs.Where(p => !p.IsLinkDeath).GetMostUsedOccurrenceWhileIgnoringZero(p => p.Duration.Minutes);
             webSongs.Where(p => p.IsBestMatch).ForEach(p => p.IsBestMatch = p.Duration.Minutes == mostUsedMinute);
 
             return webSongs;
@@ -105,7 +132,8 @@ namespace Audiotica.Web.MatchEngine.Providers
             {
                 if (response == null || !response.IsSuccessStatusCode) return false;
 
-                var type = response.Content.Headers.ContentType?.MediaType ?? response.Content.Headers.GetValues("Content-Type")?.FirstOrDefault() ?? "";
+                var type = response.Content.Headers.ContentType?.MediaType ??
+                           response.Content.Headers.GetValues("Content-Type")?.FirstOrDefault() ?? "";
                 if (!type.Contains("audio") && !type.Contains("octet-stream"))
                     return false;
 

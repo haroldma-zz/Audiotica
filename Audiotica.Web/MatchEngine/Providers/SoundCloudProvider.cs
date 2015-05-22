@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Audiotica.Core.Common;
 using Audiotica.Core.Extensions;
+using Audiotica.Core.Interfaces.Utilities;
 using Audiotica.Web.Http.Requets;
 using Audiotica.Web.Interfaces.MatchEngine;
 using Audiotica.Web.Interfaces.MatchEngine.Validators;
@@ -12,10 +13,12 @@ namespace Audiotica.Web.MatchEngine.Providers
 {
     public class SoundCloudProvider : ProviderBase
     {
-        public SoundCloudProvider(IEnumerable<ISongTypeValidator> validators) : base(validators)
+        public SoundCloudProvider(IEnumerable<ISongTypeValidator> validators, ISettingsUtility settingsUtility)
+            : base(validators, settingsUtility)
         {
         }
-        
+
+        public override string DisplayName => "SoundCloud";
         public override ProviderSpeed Speed => ProviderSpeed.Fast;
         public override ProviderResultsQuality ResultsQuality => ProviderResultsQuality.BetterThanNothing;
 

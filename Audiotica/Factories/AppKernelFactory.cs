@@ -20,7 +20,8 @@ namespace Audiotica.Factories
         public static IBootStrapper[] GetBootStrappers() =>
             new IBootStrapper[]
             {
-                new CollectionBootStrapper()
+                new CollectionBootStrapper(),
+                new MatchEngineBootStrapper()
             };
 
         public static AppKernel Create() => new AppKernel(GetBootStrappers(), GetModules());
