@@ -1,5 +1,5 @@
 ﻿using System.Linq;
-using Audiotica.Web.Interfaces.MatchEngine.Validators;
+using Audiotica.Web.MatchEngine.Interfaces.Validators;
 
 namespace Audiotica.Web.MatchEngine.Validators
 {
@@ -14,7 +14,7 @@ namespace Audiotica.Web.MatchEngine.Validators
         ///     Validates the specified name against each type provided.
         /// </summary>
         /// <param name="name">The name.</param>
-        /// <param name="matchName">Name of the match.</param>
+        /// <param name="matchName">Title of the match.</param>
         /// <param name="types">The types, each one should be interchangeable.</param>
         /// <returns></returns>
         protected bool IsTypeValid(string name, string matchName, params string[] types)

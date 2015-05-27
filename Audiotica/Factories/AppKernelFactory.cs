@@ -13,6 +13,7 @@ namespace Audiotica.Factories
                 new UtilityModule(),
                 new MatchEngineValidatorModule(),
                 new MatchEngineProviderModule(),
+                new MetadataProviderModule(),
                 new ServiceModule(),
                 new ViewModelModule()
             };

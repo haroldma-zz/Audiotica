@@ -1,4 +1,4 @@
-﻿using Audiotica.Web.Interfaces.MatchEngine.Validators;
+﻿using Audiotica.Web.MatchEngine.Interfaces.Validators;
 
 namespace Audiotica.Web.MatchEngine.Validators
 {

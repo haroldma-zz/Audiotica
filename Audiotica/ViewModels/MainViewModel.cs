@@ -1,37 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using Windows.UI.Xaml.Navigation;
-using Audiotica.Web.Interfaces.MatchEngine;
+using Audiotica.Web.MatchEngine.Interfaces.Providers;
+using Audiotica.Web.Metadata.Interfaces;
 
 namespace Audiotica.ViewModels
 {
     internal class MainViewModel : NavigatableViewModel
     {
-        private readonly IEnumerable<IProvider> _providers;
+        private readonly IMatchEngineService _matchEngineService;
+        private readonly IMetadataProvider _metadataProvider;
 
-        public MainViewModel(IEnumerable<IProvider> providers)
+        public MainViewModel(IMatchEngineService matchEngineService, IMetadataProvider metadataProvider)
         {
-            _providers = providers.OrderByDescending(p => p.Priority).ToList();
-            // TODO
+            _matchEngineService = matchEngineService;
+            _metadataProvider = metadataProvider;
         }
 
         public override async void OnNavigatedTo(object parameter, NavigationMode mode, Dictionary<string, object> state)
         {
-            foreach (var provider in _providers)
-            {
-                try
-                {
-                    var url = await provider.GetLinkAsync("FourFiveSeconds", "Rihanna");
-                    if (url != null)
-                    {
-                    }
-                }
-                catch (ArgumentNullException)
-                {
-                    
-                }
-            }
+            var results = await _metadataProvider.SearchAsync("chris brown");
+            var song = results.Songs[0];
+
+            var url = await _matchEngineService.GetLinkAsync(song.Title, song.Artist.Name);
+            // debug purposes
         }
     }
 }

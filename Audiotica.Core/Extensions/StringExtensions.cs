@@ -26,7 +26,7 @@ namespace Audiotica.Core.Extensions
             if (string.IsNullOrEmpty(text)) return null;
 
             var str = WebUtility.HtmlDecode(text.ToLower());
-            str = str.Replace(" and ", " ").Replace("feat.", "ft.");
+            str = str.Replace(" and ", " ").Replace("feat.", "ft");
 
             str = str.ToUnaccentedText();
             // invalid chars           

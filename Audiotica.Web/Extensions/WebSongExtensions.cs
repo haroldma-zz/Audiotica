@@ -15,10 +15,10 @@ namespace Audiotica.Web.Extensions
         /// <example>
         ///     With [artistOnLeft] set to <c>true</c>
         ///     "Maroon 5 - Maps"
-        ///     song.Name = Maps
+        ///     song.Title = Maps
         ///     song.Artist = Maroon 5
         /// </example>
-        public static void SetNameAndArtistFromTitle(this WebSong song, string title, bool artistOnLeft,
+        public static void SetNameAndArtistFromTitle(this MatchSong song, string title, bool artistOnLeft,
             char seperator = '-')
         {
             var titleSplit = title.Split(seperator).Select(p => p.Trim()).ToArray();
@@ -30,12 +30,12 @@ namespace Audiotica.Web.Extensions
             if (artistOnLeft)
             {
                 song.Artist = left;
-                song.Name = right;
+                song.Title = right;
             }
             else
             {
                 song.Artist = right;
-                song.Name = left;
+                song.Title = left;
             }
         }
     }

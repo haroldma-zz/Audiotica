@@ -1,4 +1,4 @@
-﻿using Audiotica.Web.Interfaces.MatchEngine;
+﻿using Audiotica.Web.MatchEngine.Interfaces;
 using Audiotica.Web.MatchEngine.Providers;
 using Autofac;
 
@@ -12,13 +12,13 @@ namespace Audiotica.AppEngine.Modules
 
         public override void LoadRunTime(ContainerBuilder builder)
         {
-            builder.RegisterType<MeileProvider>().As<IProvider>();
-            builder.RegisterType<NeteaseProvider>().As<IProvider>();
-            builder.RegisterType<SoundCloudProvider>().As<IProvider>();
-            builder.RegisterType<PleerProvider>().As<IProvider>();
-            builder.RegisterType<SongilyProvider>().As<IProvider>();
-            builder.RegisterType<Mp3ClanProvider>().As<IProvider>();
-            builder.RegisterType<Mp3TruckProvider>().As<IProvider>();
+            builder.RegisterType<MeileMatchProvider>().As<IMatchProvider>();
+            builder.RegisterType<NeteaseMatchProvider>().As<IMatchProvider>();
+            builder.RegisterType<SoundCloudMatchProvider>().As<IMatchProvider>();
+            builder.RegisterType<PleerMatchProvider>().As<IMatchProvider>();
+            builder.RegisterType<SongilyMatchProvider>().As<IMatchProvider>();
+            builder.RegisterType<Mp3ClanMatchProvider>().As<IMatchProvider>();
+            builder.RegisterType<Mp3TruckMatchProvider>().As<IMatchProvider>();
         }
     }
 }

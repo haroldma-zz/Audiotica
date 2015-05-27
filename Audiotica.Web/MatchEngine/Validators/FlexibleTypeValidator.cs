@@ -29,7 +29,7 @@ namespace Audiotica.Web.MatchEngine.Validators
         ///     Validates the specified name against the type provided.
         /// </summary>
         /// <param name="name">The name.</param>
-        /// <param name="matchName">Name of the match.</param>
+        /// <param name="matchName">Title of the match.</param>
         /// <param name="type">The type.</param>
         /// <returns></returns>
         protected bool IsTypeValid(string name, string matchName, string type)

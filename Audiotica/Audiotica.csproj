@@ -101,6 +101,7 @@
     <Compile Include="AppEngine\BootStrppers\IBootstrapper.cs" />
     <Compile Include="AppEngine\BootStrppers\MatchEngineBootStrapper.cs" />
     <Compile Include="AppEngine\Modules\MatchEngineProviderModule.cs" />
+    <Compile Include="AppEngine\Modules\MetadataProviderModule.cs" />
     <Compile Include="AppEngine\Modules\ServiceModule.cs" />
     <Compile Include="AppEngine\Modules\UtilityModule.cs" />
     <Compile Include="AppEngine\Modules\MatchEngineValidatorModule.cs" />
