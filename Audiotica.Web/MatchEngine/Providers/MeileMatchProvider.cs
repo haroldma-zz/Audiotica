@@ -2,12 +2,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Audiotica.Core.Extensions;
-using Audiotica.Core.Interfaces.Utilities;
+using Audiotica.Core.Utilities.Interfaces;
 using Audiotica.Web.Enums;
-using Audiotica.Web.Http.Requets;
 using Audiotica.Web.Http.Requets.MatchEngine.Meile;
 using Audiotica.Web.Http.Requets.MatchEngine.Meile.Models;
-using Audiotica.Web.MatchEngine.Interfaces;
 using Audiotica.Web.MatchEngine.Interfaces.Validators;
 using Audiotica.Web.Models;
 

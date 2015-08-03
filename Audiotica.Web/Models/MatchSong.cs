@@ -3,7 +3,6 @@ using System.Linq;
 using Audiotica.Core.Common;
 using Audiotica.Core.Extensions;
 using Audiotica.Web.Http.Requets.MatchEngine.Meile.Models;
-using Audiotica.Web.Http.Requets.MatchEngine.Mp3Clan.Models;
 using Audiotica.Web.Http.Requets.MatchEngine.Netease.Models;
 using Audiotica.Web.Http.Requets.MatchEngine.SoundCloud.Models;
 using Google.Apis.YouTube.v3.Data;
@@ -22,23 +21,6 @@ namespace Audiotica.Web.Models
             Title = youtubeVideo.Snippet.Title;
             FileAuthor = youtubeVideo.Snippet.ChannelTitle;
             ArtworkImage = new Uri(youtubeVideo.Snippet.Thumbnails.High.Url);
-        }
-
-        public MatchSong(Mp3ClanSong mp3ClanSong)
-        {
-            Id = mp3ClanSong.Id;
-            Title = mp3ClanSong.Title;
-            Artist = mp3ClanSong.Artist;
-            AudioUrl = mp3ClanSong.Url;
-            if (string.IsNullOrEmpty(mp3ClanSong.Duration)) return;
-
-            // format is x:xx, to parse correctly making it 00:x:xx
-            var prefix = "0:";
-
-            if (mp3ClanSong.Duration.Length <= 3)
-                prefix += "0";
-
-            Duration = TimeSpan.Parse(prefix + mp3ClanSong.Duration);
         }
 
         public MatchSong(SoundCloudSong soundCloudSong)

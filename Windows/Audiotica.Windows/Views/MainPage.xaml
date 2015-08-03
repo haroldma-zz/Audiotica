@@ -1,0 +1,15 @@
+﻿<navigationService:NavigatablePage
+    x:Class="Audiotica.Windows.Views.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Audiotica.Windows"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:viewModels="using:Audiotica.Windows.ViewModels"
+    xmlns:navigationService="using:Audiotica.Windows.Services.NavigationService"
+    mc:Ignorable="d"
+    DataContext="{Binding MainPage, Source={StaticResource ViewModelLocator}}">
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <TextBlock Text="Test" />
+    </Grid>
+</navigationService:NavigatablePage>

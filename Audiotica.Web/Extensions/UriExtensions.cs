@@ -1,11 +1,23 @@
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Audiotica.Core.Extensions;
+using HtmlAgilityPack;
 
 namespace Audiotica.Web.Extensions
 {
     public static class UriExtensions
     {
+        public static async Task<HtmlDocument> ParseHtmlAsync(this HttpResponseMessage response)
+        {
+            var doc = new HtmlDocument();
+
+            var html = await response.Content.ReadAsStringAsync().DontMarshall();
+            doc.LoadHtml(html);
+
+            return doc;
+        }
+
         public static Task<HttpResponseMessage> GetAsync(this Uri uri)
         {
             return uri.ExecuteAsync(HttpMethod.Get);

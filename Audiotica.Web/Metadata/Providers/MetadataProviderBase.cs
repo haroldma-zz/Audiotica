@@ -1,9 +1,8 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Audiotica.Core.Extensions;
-using Audiotica.Core.Interfaces.Utilities;
+using Audiotica.Core.Utilities.Interfaces;
 using Audiotica.Web.Enums;
 using Audiotica.Web.Metadata.Interfaces;
 using Audiotica.Web.Models;
@@ -38,8 +37,12 @@ namespace Audiotica.Web.Metadata.Providers
         public abstract Task<WebAlbum> GetAlbumAsync(string albumToken);
         public abstract Task<WebSong> GetSongAsync(string songToken);
         public abstract Task<WebArtist> GetArtistAsync(string artistToken);
-        public abstract Task<List<WebSong>> GetArtistTopSongsAsync(string artistToken);
-        public abstract Task<List<WebAlbum>> GetArtistTopAlbumsAsync(string artistToken);
+
+        public abstract Task<WebResults> GetArtistTopSongsAsync(string artistToken, int limit = 50,
+            string pageToken = null);
+
+        public abstract Task<WebResults> GetArtistAlbumsAsync(string artistToken, int limit = 50,
+            string pageToken = null);
 
         public virtual async Task<Uri> GetArtworkAsync(string album, string artist)
         {

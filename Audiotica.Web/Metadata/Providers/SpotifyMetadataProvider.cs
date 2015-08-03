@@ -1,11 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Audiotica.Core.Extensions;
-using Audiotica.Core.Interfaces.Utilities;
+using Audiotica.Core.Utilities.Interfaces;
 using Audiotica.Data.Spotify.Models;
 using Audiotica.Web.Enums;
+using Audiotica.Web.Exceptions;
 using Audiotica.Web.Http.Requets.Metadata.Spotify;
 using Audiotica.Web.Models;
 
@@ -28,11 +29,13 @@ namespace Audiotica.Web.Metadata.Providers
             int offset;
             int.TryParse(pagingToken, out offset);
 
-            using (var response = await new SpotifySearchRequest(query, searchType.ToString().ToLower().Replace("song", "track"))
-                .Limit(limit)
-                .Offset(offset)
-                .ToResponseAsync()
-                .DontMarshall())
+            using (
+                var response =
+                    await new SpotifySearchRequest(query, searchType.ToString().ToLower().Replace("song", "track"))
+                        .Limit(limit)
+                        .Offset(offset)
+                        .ToResponseAsync()
+                        .DontMarshall())
             {
                 if (!response.HasData) return null;
 
@@ -58,29 +61,83 @@ namespace Audiotica.Web.Metadata.Providers
             }
         }
 
-        public override Task<WebAlbum> GetAlbumAsync(string albumToken)
+        public override async Task<WebAlbum> GetAlbumAsync(string albumToken)
         {
-            throw new NotImplementedException();
+            // TODO: see if the endpoint returns the full track list
+            using (var response = await new SpotifyAlbumRequest(albumToken).ToResponseAsync())
+            {
+                if (response.HasData)
+                    return CreateAlbum(response.Data);
+                if (response.HttpResponse.StatusCode == HttpStatusCode.NotFound)
+                    return null;
+                throw new ProviderException();
+            }
         }
 
-        public override Task<WebSong> GetSongAsync(string songToken)
+        public override async Task<WebSong> GetSongAsync(string songToken)
         {
-            throw new NotImplementedException();
+            using (var response = await new SpotifyTrackRequest(songToken).ToResponseAsync())
+            {
+                if (response.HasData)
+                    return CreateSong(response.Data);
+                if (response.HttpResponse.StatusCode == HttpStatusCode.NotFound)
+                    return null;
+                throw new ProviderException();
+            }
         }
 
-        public override Task<WebArtist> GetArtistAsync(string artistToken)
+        public override async Task<WebArtist> GetArtistAsync(string artistToken)
         {
-            throw new NotImplementedException();
+            using (var response = await new SpotifyArtistRequest(artistToken).ToResponseAsync())
+            {
+                if (response.HasData)
+                    return CreateArtist(response.Data);
+                if (response.HttpResponse.StatusCode == HttpStatusCode.NotFound)
+                    return null;
+                throw new ProviderException();
+            }
         }
 
-        public override Task<List<WebSong>> GetArtistTopSongsAsync(string artistToken)
+        public override async Task<WebResults> GetArtistTopSongsAsync(string artistToken, int limit = 50,
+            string pageToken = null)
         {
-            throw new NotImplementedException();
+            using (var response = await new SpotifyArtistTopTracksRequest(artistToken)
+                .Offset(pageToken == null ? 0 : int.Parse(pageToken))
+                .Limit(limit)
+                .ToResponseAsync())
+            {
+                if (!response.HasData)
+                {
+                    if (response.HttpResponse.StatusCode == HttpStatusCode.NotFound)
+                        return null;
+                    throw new ProviderException();
+                }
+
+                var results = CreateResults(response.Data);
+                results.Songs = response.Data.Items.Select(CreateSong).ToList();
+                return results;
+            }
         }
 
-        public override Task<List<WebAlbum>> GetArtistTopAlbumsAsync(string artistToken)
+        public override async Task<WebResults> GetArtistAlbumsAsync(string artistToken, int limit = 50,
+            string pageToken = null)
         {
-            throw new NotImplementedException();
+            using (var response = await new SpotifyArtistAlbumsRequest(artistToken)
+                .Offset(pageToken == null ? 0 : int.Parse(pageToken))
+                .Limit(limit)
+                .ToResponseAsync())
+            {
+                if (!response.HasData)
+                {
+                    if (response.HttpResponse.StatusCode == HttpStatusCode.NotFound)
+                        return null;
+                    throw new ProviderException();
+                }
+
+                var results = CreateResults(response.Data);
+                results.Albums = response.Data.Items.Select(CreateAlbum).ToList();
+                return results;
+            }
         }
 
         public override Task<string> GetLyricAsync(string song, string artist)
@@ -112,24 +169,48 @@ namespace Audiotica.Web.Metadata.Providers
 
         private WebArtist CreateArtist(FullArtist artist)
         {
-            var webAlbum = CreateArtist(artist as SimpleArtist);
+            var webArtist = CreateArtist(artist as SimpleArtist);
 
-            webAlbum.IsPartial = false;
+            webArtist.IsPartial = false;
             var image = artist.Images?.FirstOrDefault();
             if (image != null)
-                webAlbum.Artwork = new Uri(image.Url);
+                webArtist.Artwork = new Uri(image.Url);
 
-            return webAlbum;
+            return webArtist;
         }
 
         private WebSong CreateSong(SimpleTrack track)
         {
-            return new WebSong
+            var song = new WebSong
             {
                 Title = track.Name,
                 Token = track.Id,
-                Artist = CreateArtist(track is FullTrack ? ((FullTrack) track).Artist : track.Artist)
+                IsPartial = true,
+                TrackNumber = track.TrackNumber
             };
+
+            var full = track as FullTrack;
+            if (full != null)
+            {
+                song.IsPartial = false;
+
+                if (full.Artist != null)
+                    song.Artist = CreateArtist(full.Artist);
+                else
+                    song.IsPartial = true;
+
+                if (full.Album != null)
+                    song.Album = CreateAlbum(full.Album);
+                else
+                    song.IsPartial = true;
+            }
+            else
+            {
+                if (track.Artist != null)
+                    song.Artist = CreateArtist(track.Artist);
+            }
+
+            return song;
         }
 
         private WebSong CreateSong(FullTrack track)
@@ -161,6 +242,7 @@ namespace Audiotica.Web.Metadata.Providers
 
             webAlbum.IsPartial = false;
             webAlbum.Tracks = album.Tracks?.Items?.Select(CreateSong).ToList();
+            webAlbum.Artist = CreateArtist(album.Artist);
 
             DateTime released;
             if (DateTime.TryParse(album.ReleaseDate, out released))

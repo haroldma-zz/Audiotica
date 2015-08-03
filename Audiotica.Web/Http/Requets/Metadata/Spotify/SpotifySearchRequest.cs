@@ -7,8 +7,7 @@ namespace Audiotica.Web.Http.Requets.Metadata.Spotify
     {
         public SpotifySearchRequest(string query, string type)
         {
-            this.Url("https://api.spotify.com/v1/search")
-                .QParam("type", type).QParam("market", "US").QParam("q", query).Get();
+            this.ConfigureSpotify("search").QParam("type", type).QParam("q", query);
         }
 
         public SpotifySearchRequest Limit(int limit)

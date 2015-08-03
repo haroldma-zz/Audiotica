@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Condition="'$(NuGetPackageRoot)' == ''">
+    <NuGetPackageRoot>C:\Users\Harold\.nuget\packages\</NuGetPackageRoot>
+  </PropertyGroup>
+  <ImportGroup>
+    <Import Project="$(NuGetPackageRoot)\SQLitePCL.raw_basic\0.7.1\build\netcore451\SQLitePCL.raw_basic.targets" Condition="Exists('$(NuGetPackageRoot)\SQLitePCL.raw_basic\0.7.1\build\netcore451\SQLitePCL.raw_basic.targets')" />
+  </ImportGroup>
+</Project>

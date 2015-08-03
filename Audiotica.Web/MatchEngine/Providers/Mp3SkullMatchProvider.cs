@@ -1,9 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Audiotica.Core.Interfaces.Utilities;
+using Audiotica.Core.Utilities.Interfaces;
 using Audiotica.Web.Enums;
-using Audiotica.Web.MatchEngine.Interfaces;
 using Audiotica.Web.MatchEngine.Interfaces.Validators;
 using Audiotica.Web.Models;
 

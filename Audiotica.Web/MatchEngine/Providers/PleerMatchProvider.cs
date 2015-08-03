@@ -3,11 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Audiotica.Core.Extensions;
-using Audiotica.Core.Interfaces.Utilities;
+using Audiotica.Core.Utilities.Interfaces;
 using Audiotica.Web.Enums;
-using Audiotica.Web.Http.Requets;
 using Audiotica.Web.Http.Requets.MatchEngine.Pleer;
-using Audiotica.Web.MatchEngine.Interfaces;
 using Audiotica.Web.MatchEngine.Interfaces.Validators;
 using Audiotica.Web.Models;
 using HtmlAgilityPack;
@@ -33,11 +31,12 @@ namespace Audiotica.Web.MatchEngine.Providers
                 if (!response.HasData || !o.Value<bool>("success")) return null;
 
                 var html = o.Value<string>("html");
-                
+
                 var doc = new HtmlDocument();
                 doc.LoadHtml(html);
 
-                var songNodes = doc.DocumentNode.Descendants("li").Where(p => p.Attributes.Contains("file_id")).Take(limit);
+                var songNodes =
+                    doc.DocumentNode.Descendants("li").Where(p => p.Attributes.Contains("file_id")).Take(limit);
 
                 var songs = new List<MatchSong>();
 

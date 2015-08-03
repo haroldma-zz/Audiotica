@@ -1,8 +1,7 @@
 ﻿namespace Audiotica.Web.Models
 {
-    public class WebSong
+    public class WebSong : WebItem
     {
-        public string Token { get; set; }
         public string Title { get; set; }
         public WebArtist Artist { get; set; }
         public WebAlbum Album { get; set; }

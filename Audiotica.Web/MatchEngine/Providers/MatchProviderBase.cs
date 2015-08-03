@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Audiotica.Core.Extensions;
-using Audiotica.Core.Interfaces.Utilities;
+using Audiotica.Core.Utilities.Interfaces;
 using Audiotica.Web.Enums;
 using Audiotica.Web.Extensions;
 using Audiotica.Web.MatchEngine.Interfaces;
@@ -120,9 +120,9 @@ namespace Audiotica.Web.MatchEngine.Providers
         {
             var titleDiff = Math.Abs(sanitizedTitle.Length - matchTitle.Length);
             var correct = (matchTitle.Contains(sanitizedTitle) || sanitizedTitle.Contains(matchTitle))
-                   &&
-                   titleDiff <=
-                   MatchTitleLenghtThreshold + (string.IsNullOrEmpty(matchArtist) ? sanitizedArtist.Length : 0);
+                          &&
+                          titleDiff <=
+                          MatchTitleLenghtThreshold + (string.IsNullOrEmpty(matchArtist) ? sanitizedArtist.Length : 0);
 
             if (correct) return true;
 
