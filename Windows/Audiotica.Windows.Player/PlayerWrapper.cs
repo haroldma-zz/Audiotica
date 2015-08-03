@@ -58,6 +58,9 @@ namespace Audiotica.Windows.Player
             _foregroundMessenger = null;
         }
 
+        /// <summary>
+        ///     Resumes or starts playing from state.
+        /// </summary>
         public void Play()
         {
             try
@@ -72,58 +75,12 @@ namespace Audiotica.Windows.Player
                     var currentTrackPosition = _settingsUtility.Read<TimeSpan?>(ApplicationSettingsConstants.Position,
                         null);
                     if (currentTrackId != -1)
-                    {
-                        // Find the index of the item by name
-                        var index = _mediaPlaybackList.Items.ToList().FindIndex(item =>
-                            item.Source.Id() == currentTrackId);
-
-                        if (currentTrackPosition == null)
-                        {
-                            // Play from start if we dont have position
-                            Debug.WriteLine("StartPlayback: Switching to track " + index);
-                            _mediaPlaybackList.MoveTo((uint) index);
-
-                            // Begin playing
-                            BackgroundMediaPlayer.Current.Play();
-                        }
-                        else
-                        {
-                            // Play from exact position otherwise
-                            TypedEventHandler<MediaPlaybackList, CurrentMediaPlaybackItemChangedEventArgs> handler =
-                                null;
-                            handler = (list, args) =>
-                            {
-                                if (args.NewItem == _mediaPlaybackList.Items[index])
-                                {
-                                    // Unsubscribe because this only had to run once for this item
-                                    _mediaPlaybackList.CurrentItemChanged -= handler;
-
-                                    // Set position
-                                    Debug.WriteLine("StartPlayback: Setting Position " + currentTrackPosition);
-                                    BackgroundMediaPlayer.Current.Position = currentTrackPosition.Value;
-
-                                    // Begin playing
-                                    BackgroundMediaPlayer.Current.Play();
-                                }
-                            };
-                            _mediaPlaybackList.CurrentItemChanged += handler;
-
-                            // Switch to the track which will trigger an item changed event
-                            Debug.WriteLine("StartPlayback: Switching to track " + index);
-                            _mediaPlaybackList.MoveTo((uint) index);
-                        }
-                    }
+                        InternalStartPlayer(currentTrackId, currentTrackPosition);
                     else
-                    {
-                        // Begin playing
                         BackgroundMediaPlayer.Current.Play();
-                    }
                 }
                 else
-                {
-                    // Begin playing
                     BackgroundMediaPlayer.Current.Play();
-                }
             }
             catch (Exception ex)
             {
@@ -131,6 +88,9 @@ namespace Audiotica.Windows.Player
             }
         }
 
+        /// <summary>
+        ///     Pauses the player.
+        /// </summary>
         public void Pause()
         {
             try
@@ -143,6 +103,9 @@ namespace Audiotica.Windows.Player
             }
         }
 
+        /// <summary>
+        ///     Skips to next track.
+        /// </summary>
         public void SkipToNext()
         {
             _smtcWrapper.PlaybackStatus = MediaPlaybackStatus.Changing;
@@ -152,6 +115,9 @@ namespace Audiotica.Windows.Player
             BackgroundMediaPlayer.Current.Play();
         }
 
+        /// <summary>
+        ///     Skips to previous track.
+        /// </summary>
         public void SkipToPrev()
         {
             _smtcWrapper.PlaybackStatus = MediaPlaybackStatus.Changing;
@@ -173,13 +139,13 @@ namespace Audiotica.Windows.Player
             // Add playback items to the list
             foreach (var song in songs)
             {
-                var source = MediaSource.CreateFromUri(new Uri(song.AudioUrl));
+                var source = MediaSource.CreateFromUri(song.AudioUri);
                 source.Id(song.Id);
                 source.Title(song.Title);
                 source.Artists(song.Artists);
                 source.AlbumTitle(song.Album);
                 source.AlbumArtist(song.AlbumArtist);
-                // TODO: artwork
+                source.Artwork(song.ArtworkUri);
                 _mediaPlaybackList.Items.Add(new MediaPlaybackItem(source));
             }
 
@@ -191,6 +157,53 @@ namespace Audiotica.Windows.Player
 
             // Add handler for future playlist item changes
             _mediaPlaybackList.CurrentItemChanged += MediaPlaybackListOnCurrentItemChanged;
+        }
+
+        #region Internal
+
+        private void InternalStartPlayer(int currentTrackId, TimeSpan? currentTrackPosition)
+        {
+            // Find the index of the item by name
+            var index = _mediaPlaybackList.Items.ToList().FindIndex(item =>
+                item.Source.Id() == currentTrackId);
+
+            if (index == -1) return;
+
+            if (currentTrackPosition == null)
+            {
+                // Play from start if we dont have position
+                Debug.WriteLine("StartPlayback: Switching to track " + index);
+                _mediaPlaybackList.MoveTo((uint) index);
+
+                // Begin playing
+                BackgroundMediaPlayer.Current.Play();
+            }
+            else
+            {
+                // Play from exact position otherwise
+                TypedEventHandler<MediaPlaybackList, CurrentMediaPlaybackItemChangedEventArgs> handler =
+                    null;
+                handler = (list, args) =>
+                {
+                    if (args.NewItem == _mediaPlaybackList.Items[index])
+                    {
+                        // Unsubscribe because this only had to run once for this item
+                        _mediaPlaybackList.CurrentItemChanged -= handler;
+
+                        // Set position
+                        Debug.WriteLine("StartPlayback: Setting Position " + currentTrackPosition);
+                        BackgroundMediaPlayer.Current.Position = currentTrackPosition.Value;
+
+                        // Begin playing
+                        BackgroundMediaPlayer.Current.Play();
+                    }
+                };
+                _mediaPlaybackList.CurrentItemChanged += handler;
+
+                // Switch to the track which will trigger an item changed event
+                Debug.WriteLine("StartPlayback: Switching to track " + index);
+                _mediaPlaybackList.MoveTo((uint) index);
+            }
         }
 
         private void MediaPlaybackListOnCurrentItemChanged(MediaPlaybackList sender,
@@ -350,6 +363,8 @@ namespace Audiotica.Windows.Player
         {
             SkipToNext();
         }
+
+        #endregion
 
         #endregion
     }

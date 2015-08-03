@@ -64,7 +64,7 @@ namespace Audiotica.Core.Windows.Services
                 {
                     // TODO send playlist
                     //MessageHelper.SendMessageToBackground(new UpdatePlaylistMessage(playlistView.Songs.ToList()));
-                    MessageHelper.SendMessageToBackground(new StartPlaybackMessage());
+                    //MessageHelper.SendMessageToBackground(new StartPlaybackMessage());
                     return true;
                 }
                 return false;

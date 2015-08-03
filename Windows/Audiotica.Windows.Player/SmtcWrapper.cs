@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using Windows.Media;
 using Windows.Media.Playback;
+using Windows.Storage.Streams;
 
 namespace Audiotica.Windows.Player
 {
@@ -55,11 +56,10 @@ namespace Audiotica.Windows.Player
             _smtc.DisplayUpdater.MusicProperties.AlbumTitle = item.Source.AlbumTitle();
             _smtc.DisplayUpdater.MusicProperties.AlbumArtist = item.Source.AlbumArtist();
 
-            /*  var albumArtUri = item.Source.CustomProperties[AlbumArtKey] as Uri;
-              if (albumArtUri != null)
-                  smtc.DisplayUpdater.Thumbnail = RandomAccessStreamReference.CreateFromUri(albumArtUri);
-              else
-                  smtc.DisplayUpdater.Thumbnail = null;*/
+            var albumArt = item.Source.Artwork();
+            _smtc.DisplayUpdater.Thumbnail = albumArt != null
+                ? RandomAccessStreamReference.CreateFromUri(albumArt)
+                : null;
 
             _smtc.DisplayUpdater.Update();
         }

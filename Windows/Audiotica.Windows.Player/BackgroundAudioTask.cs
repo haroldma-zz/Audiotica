@@ -43,10 +43,7 @@ namespace Audiotica.Windows.Player
             // event may raise immediately before continung thread excecution so must be at the end
             taskInstance.Canceled += OnCanceled;
         }
-
-        /// <summary>
-        ///     Indicate that the background task is completed.
-        /// </summary>
+        
         private void TaskCompleted(BackgroundTaskRegistration sender, BackgroundTaskCompletedEventArgs args)
         {
             Debug.WriteLine("MyBackgroundAudioTask " + sender.TaskId + " Completed...");

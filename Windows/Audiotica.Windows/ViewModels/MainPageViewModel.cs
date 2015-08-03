@@ -29,19 +29,20 @@ namespace Audiotica.Windows.ViewModels
             var metadataProvider = _metadataProviders.FirstOrDefault(p => p is SpotifyMetadataProvider);
 
             var tracks = new List<Track>();
-            var results = await metadataProvider.SearchAsync("5sos");
+            var results = await metadataProvider.SearchAsync("justin bieber");
             int i = 0;
             foreach (var track in results.Songs.Select(webSong => new Track
             {
                 Title = webSong.Title,
                 Artists = string.Join(";", webSong.Artists.Select(p => p.Name)),
                 Album = webSong.Album.Name,
-                AlbumArtist = webSong.Album.Artist?.Name ?? webSong.Artists.Select(p => p.Name).FirstOrDefault()
+                AlbumArtist = webSong.Album.Artist?.Name ?? webSong.Artists.Select(p => p.Name).FirstOrDefault(),
+                ArtworkUri = webSong.Album.Artwork
             }))
             {
-                track.AudioUrl = (await _matchEngineService.GetLinkAsync(track.Title, track.AlbumArtist))?.AbsoluteUri;
+                track.AudioUri = (await _matchEngineService.GetLinkAsync(track.Title, track.AlbumArtist));
                 Debug.WriteLine(i++);
-                if (track.AudioUrl != null)
+                if (track.AudioUri != null)
                     tracks.Add(track);
             }
             

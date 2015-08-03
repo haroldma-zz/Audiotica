@@ -103,22 +103,13 @@ namespace Audiotica.Database.Models
         public string Comment { get; set; }
 
         /// <summary>
-        ///     Gets or sets the path.
-        ///     Blank if is streaming.
-        /// </summary>
-        /// <value>
-        ///     The path.
-        /// </value>
-        public string AudioPath { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the URL.
+        ///     Gets or sets the URI.
         ///     Blank if is local.
         /// </summary>
         /// <value>
-        ///     The URL.
+        ///     The URI.
         /// </value>
-        public string AudioUrl { get; set; }
+        public Uri AudioUri { get; set; }
 
         /// <summary>
         ///     Gets or sets the album artist.
@@ -231,5 +222,13 @@ namespace Audiotica.Database.Models
         ///     The type.
         /// </value>
         public TrackType Type { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the artwork path.
+        /// </summary>
+        /// <value>
+        ///     The artwork path.
+        /// </value>
+        public Uri ArtworkUri { get; set; }
     }
 }

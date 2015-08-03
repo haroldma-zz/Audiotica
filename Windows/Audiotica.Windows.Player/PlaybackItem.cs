@@ -1,3 +1,4 @@
+using System;
 using Windows.Media.Core;
 
 namespace Audiotica.Windows.Player
@@ -71,12 +72,12 @@ namespace Audiotica.Windows.Player
             Set(item, AlbumArtistKey, albumArtist);
         }
 
-        public static string Artwork(this MediaSource item)
+        public static Uri Artwork(this MediaSource item)
         {
-            return Get(item, AlbumArtKey) as string;
+            return Get(item, AlbumArtKey) as Uri;
         }
 
-        public static void Artwork(this MediaSource item, string artwork)
+        public static void Artwork(this MediaSource item, Uri artwork)
         {
             Set(item, AlbumArtKey, artwork);
         }
