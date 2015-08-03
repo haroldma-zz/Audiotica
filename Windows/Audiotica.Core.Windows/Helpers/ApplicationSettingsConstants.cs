@@ -3,7 +3,7 @@
     public static class ApplicationSettingsConstants
     {
         // Data keys
-        public const string QueueId = "queueid";
+        public const string TrackId = "queueid";
         public const string Position = "position";
         public const string BackgroundTaskState = "backgroundtaskstate"; // Started, Running, Cancelled
         public const string AppState = "appstate"; // Suspended, Resumed

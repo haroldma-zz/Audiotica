@@ -6,7 +6,7 @@ namespace Audiotica.Database.Models
     /// <summary>
     /// Playlist objects, not used in the database.
     /// </summary>
-    public class Playlist
+    public class Playlist : DatabaseEntryBase
     {
         public string Name { get; set; }
         public DateTime CreatedDate { get; set; }

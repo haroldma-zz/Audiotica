@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Audiotica.Core.Common;
@@ -207,11 +208,14 @@ namespace Audiotica.Web.Metadata.Providers
                 Title = track.Name,
                 Token = new[] {track.Name, track.ArtistName}.Tokenize(),
                 // TODO: TrackNumber = 
-                Artist = new WebArtist
+                Artists = new List<WebArtist>
                 {
-                    Name = track.ArtistName,
-                    Token = track.ArtistName,
-                    IsPartial = true
+                    new WebArtist
+                    {
+                        Name = track.ArtistName,
+                        Token = track.ArtistName,
+                        IsPartial = true
+                    }
                 }
             };
 

@@ -45,7 +45,6 @@
     <Compile Include="Models\Artist.cs" />
     <Compile Include="Models\DatabaseEntryBase.cs" />
     <Compile Include="Models\Playlist.cs" />
-    <Compile Include="Models\QueueItem.cs" />
     <Compile Include="Models\Track.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\Interfaces\ILibraryService.cs" />

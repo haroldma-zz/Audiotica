@@ -201,6 +201,24 @@
           "lib/dotnet/Microsoft.Win32.Primitives.dll": {}
         }
       },
+      "Newtonsoft.Json/7.0.1": {
+        "compile": {
+          "lib/portable-net45+wp80+win8+wpa81+dnxcore50/Newtonsoft.Json.dll": {}
+        },
+        "runtime": {
+          "lib/portable-net45+wp80+win8+wpa81+dnxcore50/Newtonsoft.Json.dll": {}
+        }
+      },
+      "PCLStorage/1.0.2": {
+        "compile": {
+          "lib/portable-win8+wpa81/PCLStorage.dll": {},
+          "lib/portable-win8+wpa81/PCLStorage.Abstractions.dll": {}
+        },
+        "runtime": {
+          "lib/portable-win8+wpa81/PCLStorage.dll": {},
+          "lib/portable-win8+wpa81/PCLStorage.Abstractions.dll": {}
+        }
+      },
       "System.AppContext/4.0.0": {
         "dependencies": {
           "System.Runtime": "[4.0.20, )",
@@ -1777,6 +1795,24 @@
         },
         "runtime": {
           "lib/dotnet/Microsoft.Win32.Primitives.dll": {}
+        }
+      },
+      "Newtonsoft.Json/7.0.1": {
+        "compile": {
+          "lib/portable-net45+wp80+win8+wpa81+dnxcore50/Newtonsoft.Json.dll": {}
+        },
+        "runtime": {
+          "lib/portable-net45+wp80+win8+wpa81+dnxcore50/Newtonsoft.Json.dll": {}
+        }
+      },
+      "PCLStorage/1.0.2": {
+        "compile": {
+          "lib/portable-win8+wpa81/PCLStorage.dll": {},
+          "lib/portable-win8+wpa81/PCLStorage.Abstractions.dll": {}
+        },
+        "runtime": {
+          "lib/portable-win8+wpa81/PCLStorage.dll": {},
+          "lib/portable-win8+wpa81/PCLStorage.Abstractions.dll": {}
         }
       },
       "System.AppContext/4.0.0": {
@@ -3388,6 +3424,24 @@
         },
         "runtime": {
           "lib/dotnet/Microsoft.Win32.Primitives.dll": {}
+        }
+      },
+      "Newtonsoft.Json/7.0.1": {
+        "compile": {
+          "lib/portable-net45+wp80+win8+wpa81+dnxcore50/Newtonsoft.Json.dll": {}
+        },
+        "runtime": {
+          "lib/portable-net45+wp80+win8+wpa81+dnxcore50/Newtonsoft.Json.dll": {}
+        }
+      },
+      "PCLStorage/1.0.2": {
+        "compile": {
+          "lib/portable-win8+wpa81/PCLStorage.dll": {},
+          "lib/portable-win8+wpa81/PCLStorage.Abstractions.dll": {}
+        },
+        "runtime": {
+          "lib/portable-win8+wpa81/PCLStorage.dll": {},
+          "lib/portable-win8+wpa81/PCLStorage.Abstractions.dll": {}
         }
       },
       "System.AppContext/4.0.0": {
@@ -5006,6 +5060,24 @@
           "lib/dotnet/Microsoft.Win32.Primitives.dll": {}
         }
       },
+      "Newtonsoft.Json/7.0.1": {
+        "compile": {
+          "lib/portable-net45+wp80+win8+wpa81+dnxcore50/Newtonsoft.Json.dll": {}
+        },
+        "runtime": {
+          "lib/portable-net45+wp80+win8+wpa81+dnxcore50/Newtonsoft.Json.dll": {}
+        }
+      },
+      "PCLStorage/1.0.2": {
+        "compile": {
+          "lib/portable-win8+wpa81/PCLStorage.dll": {},
+          "lib/portable-win8+wpa81/PCLStorage.Abstractions.dll": {}
+        },
+        "runtime": {
+          "lib/portable-win8+wpa81/PCLStorage.dll": {},
+          "lib/portable-win8+wpa81/PCLStorage.Abstractions.dll": {}
+        }
+      },
       "System.AppContext/4.0.0": {
         "dependencies": {
           "System.Runtime": "[4.0.20, )",
@@ -6615,6 +6687,24 @@
         },
         "runtime": {
           "lib/dotnet/Microsoft.Win32.Primitives.dll": {}
+        }
+      },
+      "Newtonsoft.Json/7.0.1": {
+        "compile": {
+          "lib/portable-net45+wp80+win8+wpa81+dnxcore50/Newtonsoft.Json.dll": {}
+        },
+        "runtime": {
+          "lib/portable-net45+wp80+win8+wpa81+dnxcore50/Newtonsoft.Json.dll": {}
+        }
+      },
+      "PCLStorage/1.0.2": {
+        "compile": {
+          "lib/portable-win8+wpa81/PCLStorage.dll": {},
+          "lib/portable-win8+wpa81/PCLStorage.Abstractions.dll": {}
+        },
+        "runtime": {
+          "lib/portable-win8+wpa81/PCLStorage.dll": {},
+          "lib/portable-win8+wpa81/PCLStorage.Abstractions.dll": {}
         }
       },
       "System.AppContext/4.0.0": {
@@ -8233,6 +8323,24 @@
           "lib/dotnet/Microsoft.Win32.Primitives.dll": {}
         }
       },
+      "Newtonsoft.Json/7.0.1": {
+        "compile": {
+          "lib/portable-net45+wp80+win8+wpa81+dnxcore50/Newtonsoft.Json.dll": {}
+        },
+        "runtime": {
+          "lib/portable-net45+wp80+win8+wpa81+dnxcore50/Newtonsoft.Json.dll": {}
+        }
+      },
+      "PCLStorage/1.0.2": {
+        "compile": {
+          "lib/portable-win8+wpa81/PCLStorage.dll": {},
+          "lib/portable-win8+wpa81/PCLStorage.Abstractions.dll": {}
+        },
+        "runtime": {
+          "lib/portable-win8+wpa81/PCLStorage.dll": {},
+          "lib/portable-win8+wpa81/PCLStorage.Abstractions.dll": {}
+        }
+      },
       "System.AppContext/4.0.0": {
         "dependencies": {
           "System.Runtime": "[4.0.20, )",
@@ -9842,6 +9950,24 @@
         },
         "runtime": {
           "lib/dotnet/Microsoft.Win32.Primitives.dll": {}
+        }
+      },
+      "Newtonsoft.Json/7.0.1": {
+        "compile": {
+          "lib/portable-net45+wp80+win8+wpa81+dnxcore50/Newtonsoft.Json.dll": {}
+        },
+        "runtime": {
+          "lib/portable-net45+wp80+win8+wpa81+dnxcore50/Newtonsoft.Json.dll": {}
+        }
+      },
+      "PCLStorage/1.0.2": {
+        "compile": {
+          "lib/portable-win8+wpa81/PCLStorage.dll": {},
+          "lib/portable-win8+wpa81/PCLStorage.Abstractions.dll": {}
+        },
+        "runtime": {
+          "lib/portable-win8+wpa81/PCLStorage.dll": {},
+          "lib/portable-win8+wpa81/PCLStorage.Abstractions.dll": {}
         }
       },
       "System.AppContext/4.0.0": {
@@ -11865,6 +11991,75 @@
         "ref/xamarinios10/_._",
         "ref/xamarinmac20/_._",
         "package/services/metadata/core-properties/1d4eb9d0228b48b88d2df3822fba2d86.psmdcp",
+        "[Content_Types].xml"
+      ]
+    },
+    "Newtonsoft.Json/7.0.1": {
+      "sha512": "q3V4KLetMLnt1gpAVWgtXnHjKs0UG/RalBc29u2ZKxd5t5Ze4JBL5WiiYIklJyK/5CRiIiNwigVQUo0FgbsuWA==",
+      "type": "Package",
+      "files": [
+        "_rels/.rels",
+        "Newtonsoft.Json.nuspec",
+        "lib/net20/Newtonsoft.Json.dll",
+        "lib/net20/Newtonsoft.Json.xml",
+        "lib/net35/Newtonsoft.Json.dll",
+        "lib/net35/Newtonsoft.Json.xml",
+        "lib/net40/Newtonsoft.Json.dll",
+        "lib/net40/Newtonsoft.Json.xml",
+        "lib/net45/Newtonsoft.Json.dll",
+        "lib/net45/Newtonsoft.Json.xml",
+        "lib/portable-net40+sl5+wp80+win8+wpa81/Newtonsoft.Json.dll",
+        "lib/portable-net40+sl5+wp80+win8+wpa81/Newtonsoft.Json.xml",
+        "lib/portable-net45+wp80+win8+wpa81+dnxcore50/Newtonsoft.Json.dll",
+        "lib/portable-net45+wp80+win8+wpa81+dnxcore50/Newtonsoft.Json.xml",
+        "tools/install.ps1",
+        "package/services/metadata/core-properties/49e907fc018c4c7ab632e6d4ad4766f8.psmdcp",
+        "[Content_Types].xml"
+      ]
+    },
+    "PCLStorage/1.0.2": {
+      "sha512": "9If+1ZFCk3QaT/asfiL+J9FMnx2CTMrLCU8tDMUOI/aCGWGWl9vJ1/KcMkjf92op23ZknenvYJZBLDAqE3sFlg==",
+      "type": "Package",
+      "files": [
+        "_rels/.rels",
+        "PCLStorage.nuspec",
+        "lib/portable-net45+sl5+wp8+wpa81+win8+monoandroid+monotouch+Xamarin.iOS+Xamarin.Mac/PCLStorage.dll",
+        "lib/portable-net45+sl5+wp8+wpa81+win8+monoandroid+monotouch+Xamarin.iOS+Xamarin.Mac/PCLStorage.xml",
+        "lib/portable-net45+sl5+wp8+wpa81+win8+monoandroid+monotouch+Xamarin.iOS+Xamarin.Mac/PCLStorage.Abstractions.dll",
+        "lib/portable-net45+sl5+wp8+wpa81+win8+monoandroid+monotouch+Xamarin.iOS+Xamarin.Mac/PCLStorage.Abstractions.xml",
+        "lib/portable-net45+wp8+wpa81+win8+monoandroid+monotouch+Xamarin.iOS+Xamarin.Mac/PCLStorage.dll",
+        "lib/portable-net45+wp8+wpa81+win8+monoandroid+monotouch+Xamarin.iOS+Xamarin.Mac/PCLStorage.xml",
+        "lib/portable-net45+wp8+wpa81+win8+monoandroid+monotouch+Xamarin.iOS+Xamarin.Mac/PCLStorage.Abstractions.dll",
+        "lib/portable-net45+wp8+wpa81+win8+monoandroid+monotouch+Xamarin.iOS+Xamarin.Mac/PCLStorage.Abstractions.xml",
+        "lib/net45/PCLStorage.dll",
+        "lib/net45/PCLStorage.xml",
+        "lib/net45/PCLStorage.Abstractions.dll",
+        "lib/net45/PCLStorage.Abstractions.xml",
+        "lib/sl5/PCLStorage.dll",
+        "lib/sl5/PCLStorage.xml",
+        "lib/sl5/PCLStorage.Abstractions.dll",
+        "lib/sl5/PCLStorage.Abstractions.xml",
+        "lib/wp8/PCLStorage.dll",
+        "lib/wp8/PCLStorage.xml",
+        "lib/wp8/PCLStorage.Abstractions.dll",
+        "lib/wp8/PCLStorage.Abstractions.xml",
+        "lib/portable-win8+wpa81/PCLStorage.dll",
+        "lib/portable-win8+wpa81/PCLStorage.xml",
+        "lib/portable-win8+wpa81/PCLStorage.Abstractions.dll",
+        "lib/portable-win8+wpa81/PCLStorage.Abstractions.xml",
+        "lib/monoandroid/PCLStorage.dll",
+        "lib/monoandroid/PCLStorage.xml",
+        "lib/monoandroid/PCLStorage.Abstractions.dll",
+        "lib/monoandroid/PCLStorage.Abstractions.xml",
+        "lib/monotouch/PCLStorage.dll",
+        "lib/monotouch/PCLStorage.xml",
+        "lib/monotouch/PCLStorage.Abstractions.dll",
+        "lib/monotouch/PCLStorage.Abstractions.xml",
+        "lib/portable-Xamarin.iOS+Xamarin.Mac/PCLStorage.dll",
+        "lib/portable-Xamarin.iOS+Xamarin.Mac/PCLStorage.xml",
+        "lib/portable-Xamarin.iOS+Xamarin.Mac/PCLStorage.Abstractions.dll",
+        "lib/portable-Xamarin.iOS+Xamarin.Mac/PCLStorage.Abstractions.xml",
+        "package/services/metadata/core-properties/dba2944eebe04ff298a58a04f2282910.psmdcp",
         "[Content_Types].xml"
       ]
     },

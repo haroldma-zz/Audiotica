@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
@@ -16,16 +17,13 @@ namespace Audiotica.Core.Windows.Services
     {
         private readonly AutoResetEvent _backgroundAudioTaskStarted;
         private readonly IDispatcherUtility _dispatcherUtility;
-        private readonly ILibraryService _libraryService;
         private readonly ISettingsUtility _settingsUtility;
         private bool _isMyBackgroundTaskRunning;
 
-        public BackgroundAudioService(ISettingsUtility settingsUtility, IDispatcherUtility dispatcherUtility,
-            ILibraryService libraryService)
+        public BackgroundAudioService(ISettingsUtility settingsUtility, IDispatcherUtility dispatcherUtility)
         {
             _settingsUtility = settingsUtility;
             _dispatcherUtility = dispatcherUtility;
-            _libraryService = libraryService;
             // Setup the initialization lock
             _backgroundAudioTaskStarted = new AutoResetEvent(false);
         }
@@ -46,10 +44,10 @@ namespace Audiotica.Core.Windows.Services
         public MediaPlayerState CurrentState { get; set; }
 
         public int CurrentQueueId
-            => _settingsUtility.Read(ApplicationSettingsConstants.QueueId, -1);
+            => _settingsUtility.Read(ApplicationSettingsConstants.TrackId, -1);
 
         public event EventHandler<MediaPlayerState> MediaStateChanged;
-        public event EventHandler<QueueItem> QueueChanged;
+        public event EventHandler<int> TrackChanged;
 
         /// <summary>
         ///     Initialize Background Media Player Handlers and starts playback
@@ -73,13 +71,13 @@ namespace Audiotica.Core.Windows.Services
             });
         }
 
-        public async void Play(QueueItem item)
+        public async void Play(Track track)
         {
             // Start the background task if it wasn't running
             if (!IsBackgroundTaskRunning || MediaPlayerState.Closed == BackgroundMediaPlayer.Current.CurrentState)
             {
                 // First update the persisted start track
-                _settingsUtility.Write(ApplicationSettingsConstants.QueueId, item.Id);
+                _settingsUtility.Write(ApplicationSettingsConstants.TrackId, track.Id);
                 _settingsUtility.Write(ApplicationSettingsConstants.Position, TimeSpan.Zero);
 
                 // Start task
@@ -88,13 +86,25 @@ namespace Audiotica.Core.Windows.Services
             else
             {
                 // Switch to the selected track
-                MessageHelper.SendMessageToBackground(new QueueChangedMessage(item));
+                MessageHelper.SendMessageToBackground(new TrackChangedMessage(track.Id));
             }
 
             if (MediaPlayerState.Paused == BackgroundMediaPlayer.Current.CurrentState)
             {
                 BackgroundMediaPlayer.Current.Play();
             }
+        }
+
+        public async void Play(Track track, List<Track> tracks)
+        {
+            MessageHelper.SendMessageToBackground(new UpdatePlaylistMessage(tracks));
+            await Task.Delay(1000);
+            MessageHelper.SendMessageToBackground(new TrackChangedMessage(track.Id));
+        }
+
+        public void Play(List<Track> tracks)
+        {
+            Play(tracks[0], tracks);
         }
 
         /// <summary>
@@ -224,17 +234,13 @@ namespace Audiotica.Core.Windows.Services
             MediaPlayerDataReceivedEventArgs e)
         {
             var message = MessageHelper.ParseMessage(e.Data);
-            if (message is QueueChangedMessage)
+            if (message is TrackChangedMessage)
             {
-                var trackChangedMessage = message as QueueChangedMessage;
+                var trackChangedMessage = message as TrackChangedMessage;
                 // When foreground app is active change track based on background message
                 await
                     _dispatcherUtility.RunAsync(
-                        () =>
-                        {
-                            // TODO get the queue
-                            QueueChanged?.Invoke(sender, null);
-                        });
+                        () => { TrackChanged?.Invoke(sender, trackChangedMessage.TrackId); });
                 return;
             }
 

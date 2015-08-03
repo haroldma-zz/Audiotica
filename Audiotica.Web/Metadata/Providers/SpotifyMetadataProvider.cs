@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -195,7 +196,7 @@ namespace Audiotica.Web.Metadata.Providers
                 song.IsPartial = false;
 
                 if (full.Artist != null)
-                    song.Artist = CreateArtist(full.Artist);
+                    song.Artists = full.Artists.Select(CreateArtist).ToList();
                 else
                     song.IsPartial = true;
 
@@ -207,7 +208,7 @@ namespace Audiotica.Web.Metadata.Providers
             else
             {
                 if (track.Artist != null)
-                    song.Artist = CreateArtist(track.Artist);
+                    song.Artists = new List<WebArtist> {CreateArtist(track.Artist)};
             }
 
             return song;

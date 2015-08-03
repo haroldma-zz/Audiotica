@@ -125,7 +125,7 @@
     <Compile Include="Messages\SkipNextMessage.cs" />
     <Compile Include="Messages\SkipPreviousMessage.cs" />
     <Compile Include="Messages\StartPlaybackMessage.cs" />
-    <Compile Include="Messages\QueueChangedMessage.cs" />
+    <Compile Include="Messages\TrackChangedMessage.cs" />
     <Compile Include="Messages\UpdatePlaylistMessage.cs" />
     <Compile Include="Services\BackgroundAudioService.cs" />
     <Compile Include="Helpers\EnumHelper.cs" />

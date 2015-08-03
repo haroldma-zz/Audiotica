@@ -231,6 +231,10 @@
       <Project>{5a3452a6-cf57-43d5-a0d9-26192741fab1}</Project>
       <Name>Audiotica.Core.Windows</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Audiotica.Windows.Player\Audiotica.Windows.Player.csproj">
+      <Project>{51f65cd8-3f91-41f5-a18f-ae17fb2f0b69}</Project>
+      <Name>Audiotica.Windows.Player</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">

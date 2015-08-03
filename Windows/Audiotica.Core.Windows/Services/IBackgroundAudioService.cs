@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Windows.Media.Playback;
 using Audiotica.Database.Models;
@@ -11,7 +12,7 @@ namespace Audiotica.Core.Windows.Services
         MediaPlayerState CurrentState { get; set; }
         int CurrentQueueId { get; }
         event EventHandler<MediaPlayerState> MediaStateChanged;
-        event EventHandler<QueueItem> QueueChanged;
+        event EventHandler<int> TrackChanged;
 
         /// <summary>
         ///     Initialize Background Media Player Handlers and starts playback
@@ -19,7 +20,9 @@ namespace Audiotica.Core.Windows.Services
         Task<bool> StartBackgroundTaskAsync();
 
         void PlayOrPause();
-        void Play(QueueItem item);
+        void Play(Track track);
+        void Play(Track track, List<Track> tracks);
+        void Play(List<Track> tracks);
 
         /// <summary>
         ///     Sends message to the background task to skip to the previous track.
