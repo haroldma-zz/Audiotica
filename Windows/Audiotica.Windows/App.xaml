@@ -8,6 +8,9 @@
     <common1:BootStrapper.Resources>
         <ResourceDictionary>
             <viewModels:ViewModelLocator x:Key="ViewModelLocator" />
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Styles/SplitViewStyles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </common1:BootStrapper.Resources>
 </common1:BootStrapper>

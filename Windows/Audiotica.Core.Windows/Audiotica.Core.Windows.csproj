@@ -118,6 +118,7 @@
     <Compile Include="Extensions\ColorExtensions.cs" />
     <Compile Include="Helpers\ApplicationSettingsConstants.cs" />
     <Compile Include="Helpers\AsyncHelper.cs" />
+    <Compile Include="Helpers\DeviceHelper.cs" />
     <Compile Include="Helpers\MessageHelper.cs" />
     <Compile Include="Messages\AppResumedMessage.cs" />
     <Compile Include="Messages\AppSuspendedMessage.cs" />
@@ -131,6 +132,7 @@
     <Compile Include="Helpers\EnumHelper.cs" />
     <Compile Include="Helpers\StorageHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\DesignBackgroundAudioService.cs" />
     <Compile Include="Services\IBackgroundAudioService.cs" />
     <Compile Include="Utilities\CredentialUtility.cs" />
     <Compile Include="Utilities\DispatcherUtility.cs" />

@@ -10,6 +10,7 @@ namespace Audiotica.Windows.AppEngine.Modules
     {
         public override void LoadDesignTime(ContainerBuilder builder)
         {
+            builder.RegisterType<DesignBackgroundAudioService>().As<IBackgroundAudioService>().SingleInstance();
             builder.RegisterType<DesignNavigationService>().As<INavigationService>();
             builder.RegisterType<DesignMatchEngineService>().As<IMatchEngineService>();
         }

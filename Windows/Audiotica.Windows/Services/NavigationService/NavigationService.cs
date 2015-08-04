@@ -91,7 +91,7 @@ namespace Audiotica.Windows.Services.NavigationService
                         new Dictionary<string, Dictionary<string, object>>();
 
             if (string.IsNullOrEmpty(state))
-                Navigate(typeof (MainPage));
+                Navigate(typeof (ExplorePage));
             else
             {
                 _frame.SetNavigationState(state);

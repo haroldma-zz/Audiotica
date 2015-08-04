@@ -3,9 +3,9 @@ using Windows.UI.Xaml.Controls;
 
 namespace Audiotica.Windows.Views
 {
-    public sealed partial class MainPage
+    public sealed partial class ExplorePage
     {
-        public MainPage()
+        public ExplorePage()
         {
             InitializeComponent();
         }
