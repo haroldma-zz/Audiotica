@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Windows.ApplicationModel.Activation;
+using Windows.Graphics.Display;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Audiotica.Core.Windows.Helpers;
@@ -22,6 +23,10 @@ namespace Audiotica.Windows
         {
             // Set the bounds for the view to the core window
             ApplicationView.GetForCurrentView().SetDesiredBoundsMode(ApplicationViewBoundsMode.UseCoreWindow);
+
+            // Only portrait is supported on mobile
+            if (DeviceHelper.IsType(DeviceHelper.Family.Mobile))
+                DisplayInformation.AutoRotationPreferences = DisplayOrientations.Portrait;
 
             // Wrap the frame in the shell (hamburger menu)
             Window.Current.Content = new Shell(RootFrame);
