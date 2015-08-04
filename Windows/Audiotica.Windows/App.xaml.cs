@@ -23,11 +23,8 @@ namespace Audiotica.Windows
             // Set the bounds for the view to the core window
             ApplicationView.GetForCurrentView().SetDesiredBoundsMode(ApplicationViewBoundsMode.UseCoreWindow);
 
-            // Mobile will be using a different shell
-            if (DeviceHelper.IsType(DeviceHelper.Family.Mobile))
-                Window.Current.Content = new ShellPhone(RootFrame);
-            else
-                Window.Current.Content = new Shell(RootFrame);
+            // Wrap the frame in the shell (hamburger menu)
+            Window.Current.Content = new Shell(RootFrame);
 
             return Task.FromResult(0);
         }
