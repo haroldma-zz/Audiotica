@@ -7,6 +7,6 @@ namespace Audiotica.Windows.ViewModels
     {
         private AppKernel _kernel => App.Current?.Kernel ?? AppKernelFactory.Create();
 
-        public MainPageViewModel MainPage => _kernel.Resolve<MainPageViewModel>();
+        public ExplorePageViewModel ExplorePage => _kernel.Resolve<ExplorePageViewModel>();
     }
 }

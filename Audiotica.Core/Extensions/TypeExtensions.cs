@@ -1,10 +1,39 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 
 namespace Audiotica.Core.Extensions
 {
     public static class TypeExtensions
     {
+        public static List<Type> GetImplementations(this IEnumerable<Type> types, Type desiredType,
+            bool excludeAbstracts = true)
+        {
+            return
+                types.Select(p => p.GetTypeInfo())
+                    .GetImplementations(desiredType, excludeAbstracts)
+                    .ToList();
+        }
+
+        public static List<Type> GetImplementations(this IEnumerable<TypeInfo> types, Type desiredType,
+            bool excludeAbstracts = true)
+        {
+            return
+                types.GetImplementations(desiredType.GetTypeInfo(), excludeAbstracts)
+                    .Select(p => p.AsType())
+                    .ToList();
+        }
+
+        public static List<TypeInfo> GetImplementations(this IEnumerable<TypeInfo> types, TypeInfo desiredType,
+            bool excludeAbstracts = true)
+        {
+            return types.Where(p =>
+                desiredType.IsAssignableFrom(p) &&
+                (!excludeAbstracts || (!p.IsAbstract && !p.IsInterface)) &&
+                !p.Equals(desiredType)).ToList();
+        }
+
         /// <summary>
         ///     Sets the property from "from" to "to" using reflection.
         /// </summary>
@@ -15,7 +44,9 @@ namespace Audiotica.Core.Extensions
         public static void SetFrom<T>(this T to, T from, params string[] excludePropertys)
         {
             var propertys = to.GetType().GetRuntimeProperties();
-            foreach (var prop in propertys.Where(prop => prop.CanWrite && prop.CanRead && !excludePropertys.Contains(prop.Name)))
+            foreach (
+                var prop in
+                    propertys.Where(prop => prop.CanWrite && prop.CanRead && !excludePropertys.Contains(prop.Name)))
             {
                 prop.SetValue(to, prop.GetValue(@from));
             }

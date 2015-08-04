@@ -7,9 +7,25 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewModels="using:Audiotica.Windows.ViewModels"
     xmlns:navigationService="using:Audiotica.Windows.Services.NavigationService"
+    xmlns:customTriggers="using:Audiotica.Windows.CustomTriggers"
     mc:Ignorable="d"
-    DataContext="{Binding MainPage, Source={StaticResource ViewModelLocator}}">
+    DataContext="{Binding ExplorePage, Source={StaticResource ViewModelLocator}}">
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <TextBlock Text="WTF??????????????????????????" />
+        <RelativePanel>
+            <TextBlock x:Name="Hey" Text="WTF??????????????????????????" />
+            <TextBlock x:Name="Tes" Text="WTF??????????????????????????" RelativePanel.Below="Hey" />
+        </RelativePanel>
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup x:Name="DeviceFamilyStates">
+                <VisualState>
+                    <VisualState.StateTriggers>
+                        <customTriggers:DeviceFamilyTrigger DeviceFamily="Desktop" />
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="Tes.Visibility" Value="Collapsed" />
+                    </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
     </Grid>
 </navigationService:NavigatablePage>

@@ -1,5 +1,6 @@
-﻿using Audiotica.Web.Metadata.Interfaces;
-using Audiotica.Web.Metadata.Providers;
+﻿using System.Reflection;
+using Audiotica.Core.Extensions;
+using Audiotica.Web.Metadata.Interfaces;
 using Autofac;
 
 namespace Audiotica.Windows.AppEngine.Modules
@@ -12,8 +13,17 @@ namespace Audiotica.Windows.AppEngine.Modules
 
         public override void LoadRunTime(ContainerBuilder builder)
         {
-            builder.RegisterType<SpotifyMetadataProvider>().As<IMetadataProvider>();
-            builder.RegisterType<LastFmMetadataProvider>().As<IMetadataProvider>();
+            // Every metadata provider most implement this interface
+            var providerInterface = typeof (IMetadataProvider);
+
+            // they should also be located in that assembly (Audiotica.Web)
+            var assembly = providerInterface.GetTypeInfo().Assembly;
+
+            var types = assembly.ExportedTypes.GetImplementations(providerInterface);
+            foreach (var type in types)
+            {
+                builder.RegisterType(type).As(providerInterface);
+            }
         }
     }
 }

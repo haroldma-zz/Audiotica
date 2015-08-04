@@ -1,5 +1,6 @@
-﻿using Audiotica.Web.MatchEngine.Interfaces;
-using Audiotica.Web.MatchEngine.Providers;
+﻿using System.Reflection;
+using Audiotica.Core.Extensions;
+using Audiotica.Web.MatchEngine.Interfaces;
 using Autofac;
 
 namespace Audiotica.Windows.AppEngine.Modules
@@ -12,14 +13,17 @@ namespace Audiotica.Windows.AppEngine.Modules
 
         public override void LoadRunTime(ContainerBuilder builder)
         {
-            builder.RegisterType<MeileMatchProvider>().As<IMatchProvider>();
-            builder.RegisterType<NeteaseMatchProvider>().As<IMatchProvider>();
-            builder.RegisterType<SoundCloudMatchProvider>().As<IMatchProvider>();
-            builder.RegisterType<PleerMatchProvider>().As<IMatchProvider>();
-            builder.RegisterType<Mp3TruckMatchProvider>().As<IMatchProvider>();
-            builder.RegisterType<Mp3lioMatchProvider>().As<IMatchProvider>();
-            builder.RegisterType<Mp3FreexMatchProvider>().As<IMatchProvider>();
-            builder.RegisterType<Mp3PmProvider>().As<IMatchProvider>();
+            // Every provider most implement this interface
+            var providerInterface = typeof (IMatchProvider);
+
+            // they should also be located in that assembly (Audiotica.Web)
+            var assembly = providerInterface.GetTypeInfo().Assembly;
+
+            var types = assembly.ExportedTypes.GetImplementations(providerInterface);
+            foreach (var type in types)
+            {
+                builder.RegisterType(type).As(providerInterface);
+            }
         }
     }
 }

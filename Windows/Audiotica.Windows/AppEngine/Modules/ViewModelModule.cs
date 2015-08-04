@@ -1,5 +1,8 @@
-﻿using Audiotica.Windows.ViewModels;
+﻿using System.Reflection;
+using Audiotica.Core.Extensions;
+using Audiotica.Windows.Tools.Mvvm;
 using Autofac;
+using Module = Autofac.Module;
 
 namespace Audiotica.Windows.AppEngine.Modules
 {
@@ -7,7 +10,17 @@ namespace Audiotica.Windows.AppEngine.Modules
     {
         protected override void Load(ContainerBuilder builder)
         {
-            builder.RegisterType<MainPageViewModel>();
+            // Every view model is a child of this base
+            var viewModelBase = typeof (ViewModelBase);
+
+            // they should also be located in that assembly (Audiotica.Windows)
+            var assembly = viewModelBase.GetTypeInfo().Assembly;
+
+            var types = assembly.DefinedTypes.GetImplementations(viewModelBase);
+            foreach (var type in types)
+            {
+                builder.RegisterType(type);
+            }
         }
     }
 }

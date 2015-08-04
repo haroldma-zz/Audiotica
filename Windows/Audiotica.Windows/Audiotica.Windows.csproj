@@ -140,7 +140,9 @@
     <Compile Include="Tools\Converters\VisibilityConverter.cs" />
     <Compile Include="Tools\Mvvm\Command.cs" />
     <Compile Include="Tools\Mvvm\ViewModelBase.cs" />
-    <Compile Include="ViewModels\MainPageViewModel.cs" />
+    <Compile Include="ViewModels\AlbumsPageViewModel.cs" />
+    <Compile Include="ViewModels\ExplorePageViewModel.cs" />
+    <Compile Include="ViewModels\SearchPageViewModel.cs" />
     <Compile Include="ViewModels\ViewModelLocator.cs" />
     <Compile Include="Views\AlbumPage.xaml.cs">
       <DependentUpon>AlbumPage.xaml</DependentUpon>

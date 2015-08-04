@@ -11,9 +11,9 @@ using Audiotica.Windows.Tools.Mvvm;
 
 namespace Audiotica.Windows.ViewModels
 {
-    internal class MainPageViewModel : ViewModelBase
+    internal class ExplorePageViewModel : ViewModelBase
     {
-        public MainPageViewModel()
+        public ExplorePageViewModel()
         {
         }
 
