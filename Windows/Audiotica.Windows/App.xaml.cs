@@ -14,6 +14,14 @@ namespace Audiotica.Windows
         public App()
         {
             WindowsAppInitializer.InitializeAsync();
+
+            // Only portrait is supported on mobile
+            if (DeviceHelper.IsType(DeviceHelper.Family.Mobile))
+                DisplayInformation.AutoRotationPreferences = DisplayOrientations.Portrait;
+            // Only the dark theme is supported everything else (they only have light option)
+            else
+                RequestedTheme = ApplicationTheme.Dark;
+
             InitializeComponent();
         }
 
@@ -24,10 +32,6 @@ namespace Audiotica.Windows
             // Set the bounds for the view to the core window
             ApplicationView.GetForCurrentView().SetDesiredBoundsMode(ApplicationViewBoundsMode.UseCoreWindow);
 
-            // Only portrait is supported on mobile
-            if (DeviceHelper.IsType(DeviceHelper.Family.Mobile))
-                DisplayInformation.AutoRotationPreferences = DisplayOrientations.Portrait;
-
             // Wrap the frame in the shell (hamburger menu)
             Window.Current.Content = new Shell(RootFrame);
 
@@ -36,7 +40,7 @@ namespace Audiotica.Windows
 
         public override Task OnLaunchedAsync(ILaunchActivatedEventArgs e)
         {
-            NavigationService.Navigate(typeof (ExplorePage));
+            NavigationService.Navigate(NavigationService.DefaultPage);
             return Task.FromResult(0);
         }
     }

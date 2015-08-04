@@ -10,12 +10,9 @@ namespace Audiotica.Core.Windows.Utilities
 {
     public class SettingsUtility : ISettingsUtility
     {
-        const string Parse = "Parse";
         readonly Type[] _primitives = {
-            typeof (Enum),
             typeof (string),
             typeof (char),
-            typeof (Guid),
 
             typeof (bool),
             typeof (byte),
@@ -30,10 +27,6 @@ namespace Audiotica.Core.Windows.Utilities
             typeof (ushort),
             typeof (uint),
             typeof (ulong),
-
-            typeof (DateTime),
-            typeof (DateTimeOffset),
-            typeof (TimeSpan),
         };
 
         private IPropertySet Container(SettingsStrategy strategy)
@@ -61,14 +54,23 @@ namespace Audiotica.Core.Windows.Utilities
             var settings = Container(strategy);
             if (IsPrimitive(typeof(T)))
             {
-                try { settings[key] = value.ToString(); }
-                catch { settings[key] = string.Empty; }
+                try
+                {
+                    settings[key] = value;
+                }
+                catch
+                {
+                    // ignored
+                }
             }
             else
             {
                 var json = Serialize(value);
                 try { settings[key] = json; }
-                catch { settings[key] = string.Empty; }
+                catch
+                {
+                    // ignored
+                }
             }
         }
 
@@ -81,15 +83,10 @@ namespace Audiotica.Core.Windows.Utilities
             {
                 if (IsPrimitive(typeof(T)))
                 {
-                    var value = settings[key].ToString();
-                    var parse = typeof(T).GetRuntimeMethod(Parse, new[] { typeof(string) });
-                    return (T)parse.Invoke(null, new object[] { value });
+                    return (T)settings[key];
                 }
-                else
-                {
-                    var json = settings[key].ToString();
-                    return Deserialize<T>(json);
-                }
+                var json = settings[key].ToString();
+                return Deserialize<T>(json);
             }
             catch { return otherwise; }
         }

@@ -26,6 +26,7 @@ namespace Audiotica.Core.Windows.Services
             _dispatcherUtility = dispatcherUtility;
             // Setup the initialization lock
             _backgroundAudioTaskStarted = new AutoResetEvent(false);
+            _settingsUtility.Write(ApplicationSettingsConstants.AppState, AppState.Active);
         }
 
         public bool IsBackgroundTaskRunning

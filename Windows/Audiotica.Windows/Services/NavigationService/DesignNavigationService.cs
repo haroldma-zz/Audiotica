@@ -6,6 +6,7 @@ namespace Audiotica.Windows.Services.NavigationService
 {
     public class DesignNavigationService : INavigationService
     {
+        public Type DefaultPage { get; }
         public bool CanGoBack { get; }
         public bool CanGoForward { get; }
         public Type CurrentPageType { get; }

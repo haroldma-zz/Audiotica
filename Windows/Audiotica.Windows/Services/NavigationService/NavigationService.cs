@@ -28,6 +28,7 @@ namespace Audiotica.Windows.Services.NavigationService
             _frame.Navigating += (s, e) => NavigatedFrom(false);
         }
 
+        public Type DefaultPage => typeof (AlbumsPage);
         public bool CanGoBack => _frame.CanGoBack;
         public bool CanGoForward => _frame.CanGoForward;
         public Type CurrentPageType => _frame.CurrentPageType;
@@ -70,7 +71,7 @@ namespace Audiotica.Windows.Services.NavigationService
                         new Dictionary<string, Dictionary<string, object>>();
 
             if (string.IsNullOrEmpty(state))
-                Navigate(typeof (ExplorePage));
+                Navigate(DefaultPage);
             else
             {
                 _frame.SetNavigationState(state);

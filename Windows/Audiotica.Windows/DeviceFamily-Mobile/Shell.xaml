@@ -15,7 +15,7 @@
         </Grid.RowDefinitions>
         <SplitView Grid.Row="0" x:Name="ShellSplitView" DisplayMode="Overlay">
             <SplitView.Pane>
-                <Grid>
+                <Grid Margin="0, 20, 0, 0">
                     <Grid.Resources>
                         <ResourceDictionary>
                             <Style TargetType="TextBlock" BasedOn="{StaticResource SplitViewTextBlockStyle}" />
@@ -23,12 +23,11 @@
                         </ResourceDictionary>
                     </Grid.Resources>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="20" />
                         <RowDefinition Height="*" />
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
 
-                    <StackPanel Grid.Row="1">
+                    <StackPanel>
 
                         <!-- about -->
                         <RadioButton Command="{Binding NavCommand}" Content="About" GroupName="Nav">
@@ -53,7 +52,7 @@
                         <Rectangle Height="1" Fill="{StaticResource NavButtonPressedBackgroundBrush}" Margin="18,10,18,0" />
                     </StackPanel>
 
-                    <StackPanel Grid.Row="2" x:Name="RadioButtonContainer">
+                    <StackPanel Grid.Row="1" x:Name="RadioButtonContainer">
 
                         <!-- explore -->
                         <RadioButton Command="{Binding NavCommand}" Content="Explore" GroupName="Nav">

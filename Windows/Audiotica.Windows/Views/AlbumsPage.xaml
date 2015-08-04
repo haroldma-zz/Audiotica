@@ -6,10 +6,38 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:navigationService="using:Audiotica.Windows.Services.NavigationService"
+    xmlns:customTriggers="using:Audiotica.Windows.CustomTriggers"
+    xmlns:controls="using:Audiotica.Windows.Controls"
     mc:Ignorable="d"
     DataContext="{Binding AlbumsPage, Source={StaticResource ViewModelLocator}}">
 
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    <Grid x:Name="LayoutRoot" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Padding="{StaticResource PagePadding}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        
+        <!--No Music-->
+        <controls:NoMusicPanel Grid.Row="1" x:Name="NoMusicPanel"/>
 
+        <GridView Grid.Row="1" x:Name="AlbumsGridView">
+            
+        </GridView>
+        
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup x:Name="DeviceFamilyStates">
+                <VisualState>
+                    <VisualState.StateTriggers>
+                        <customTriggers:DeviceFamilyTrigger DeviceFamily="Mobile" />
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <!--On mobile we need to leave a gap for the status bar-->
+                        <Setter Target="NoMusicPanel.Margin" Value="{StaticResource MobileStatusBarMargin}" />
+                        <Setter Target="AlbumsGridView.Padding" Value="{StaticResource MobileStatusBarMargin}" />
+                        <Setter Target="LayoutRoot.Padding" Value="{StaticResource PageMobilePadding}" />
+                    </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
     </Grid>
 </navigationService:NavigatablePage>
