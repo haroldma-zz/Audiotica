@@ -9,13 +9,13 @@ namespace Audiotica.Windows.Services.NavigationService
         public bool CanGoBack { get; }
         public bool CanGoForward { get; }
         public Type CurrentPageType { get; }
-        public object CurrentPageParam { get; }
+        public string CurrentPageParam { get; }
         public void NavigatedTo(NavigationMode mode, string parameter)
         {
             throw new NotImplementedException();
         }
 
-        public bool Navigate(Type page, object parameter = null)
+        public bool Navigate(Type page, string parameter = null)
         {
             throw new NotImplementedException();
         }

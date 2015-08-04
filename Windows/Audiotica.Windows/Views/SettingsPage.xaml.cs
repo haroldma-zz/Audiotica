@@ -1,8 +1,8 @@
 ﻿namespace Audiotica.Windows.Views
 {
-    public sealed partial class AlbumsPage
+    public sealed partial class SettingsPage
     {
-        public AlbumsPage()
+        public SettingsPage()
         {
             InitializeComponent();
         }

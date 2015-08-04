@@ -9,9 +9,9 @@ namespace Audiotica.Windows.Services.NavigationService
         bool CanGoBack { get; }
         bool CanGoForward { get; }
         Type CurrentPageType { get; }
-        object CurrentPageParam { get; }
+        string CurrentPageParam { get; }
         void NavigatedTo(NavigationMode mode, string parameter);
-        bool Navigate(Type page, object parameter = null);
+        bool Navigate(Type page, string parameter = null);
         void RestoreSavedNavigation();
         void GoBack();
         void GoForward();

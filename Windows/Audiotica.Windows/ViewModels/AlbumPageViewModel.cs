@@ -4,9 +4,9 @@ using Audiotica.Windows.Tools.Mvvm;
 
 namespace Audiotica.Windows.ViewModels
 {
-    internal class AlbumsPageViewModel : ViewModelBase
+    internal class AlbumPageViewModel : ViewModelBase
     {
-        public AlbumsPageViewModel()
+        public AlbumPageViewModel()
         {
         }
 

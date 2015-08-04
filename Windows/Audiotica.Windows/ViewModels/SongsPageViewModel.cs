@@ -1,12 +1,12 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using Windows.UI.Xaml.Navigation;
 using Audiotica.Windows.Tools.Mvvm;
 
 namespace Audiotica.Windows.ViewModels
 {
-    internal class AlbumsPageViewModel : ViewModelBase
+    internal class SongsPageViewModel : ViewModelBase
     {
-        public AlbumsPageViewModel()
+        public SongsPageViewModel()
         {
         }
 

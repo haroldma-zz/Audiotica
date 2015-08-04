@@ -92,9 +92,9 @@ namespace Audiotica.Windows.Services.NavigationService
 
         public object Content => _frame.Content;
 
-        public Type CurrentPageType { get; internal set; }
+        public Type CurrentPageType { get; set; }
 
-        public object CurrentPageParam { get; internal set; }
+        public string CurrentPageParam { get; set; }
 
         public object GetValue(DependencyProperty dp) => _frame.GetValue(dp);
 

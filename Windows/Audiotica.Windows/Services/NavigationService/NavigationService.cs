@@ -4,7 +4,6 @@ using Windows.ApplicationModel;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
-using Audiotica.Core.Extensions;
 using Audiotica.Core.Utilities.Interfaces;
 using Audiotica.Windows.Views;
 
@@ -29,31 +28,16 @@ namespace Audiotica.Windows.Services.NavigationService
             _frame.Navigating += (s, e) => NavigatedFrom(false);
         }
 
-        private string LastNavigationParameter { get; set; /* TODO: persist */ }
-        private string LastNavigationType { get; set; /* TODO: persist */ }
         public bool CanGoBack => _frame.CanGoBack;
         public bool CanGoForward => _frame.CanGoForward;
         public Type CurrentPageType => _frame.CurrentPageType;
-        public object CurrentPageParam => _frame.CurrentPageParam;
+        public string CurrentPageParam => _frame.CurrentPageParam;
 
         public void NavigatedTo(NavigationMode mode, string parameter)
         {
-            if (_frame.CurrentPageType == typeof (WelcomePage) && _frame.BackStack.Count > 0)
-                _frame.BackStack.RemoveAt(_frame.BackStack.Count - 1);
-
+            _frame.CurrentPageParam = parameter;
             _frame.CurrentPageType = _frame.Content.GetType();
-
-            if (_frame.CurrentPageType == typeof (WelcomePage) && _frame.BackStack.Count > 0)
-            {
-                for (var i = 0; i < _frame.BackStack.Count; i++)
-                {
-                    _frame.BackStack.RemoveAt(0);
-                }
-            }
-
-            LastNavigationParameter = parameter;
-            LastNavigationType = _frame.Content.GetType().FullName;
-            var key = LastNavigationType + "-depth-" + _frame.BackStackDepth;
+            var key = CurrentPageType + "-depth-" + _frame.BackStackDepth;
 
             if (mode == NavigationMode.New)
             {
@@ -66,22 +50,17 @@ namespace Audiotica.Windows.Services.NavigationService
             var page = _frame.Content as FrameworkElement;
             var dataContext = page?.DataContext as INavigatable;
 
-            // By using WithTypeInfo, we don't need to know the type of the object for deserializing.
-            dataContext?.OnNavigatedTo(parameter.TryDeserializeJsonWithTypeInfo(), mode, _sessions[key]);
+            dataContext?.OnNavigatedTo(parameter, mode, _sessions[key]);
         }
 
-        public bool Navigate(Type page, object parameter = null)
+        public bool Navigate(Type page, string parameter = null)
         {
-            // Seriailizing, if we use non-primitive objects we can still save the nav state.
-            // The OnNavigatedTo auto-deserialized, so the ViewModel looks the same as using any object.
-            var paramString = parameter.SerializeToJsonWithTypeInfo();
-
             if (page == null)
                 throw new ArgumentNullException(nameof(page));
-            if (page.FullName.Equals(LastNavigationType)
-                && paramString == LastNavigationParameter)
+            if (page == CurrentPageType
+                && parameter == CurrentPageParam)
                 return false;
-            return _frame.Navigate(page, paramString);
+            return _frame.Navigate(page, parameter);
         }
 
         public void RestoreSavedNavigation()

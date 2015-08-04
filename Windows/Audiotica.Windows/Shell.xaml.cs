@@ -64,15 +64,15 @@ namespace Audiotica.Windows
         public void ExecuteNav(NavType navType)
         {
             var type = navType.Type;
-            var nav = ((App) Application.Current).NavigationService;
-
-            // when we nav home, clear history
-            if (type == typeof (ExplorePage))
-                nav.ClearHistory();
+            var nav = App.Current.NavigationService;
 
             // navigate only to new pages
             if (nav.CurrentPageType != null && nav.CurrentPageType != type)
+            {
+                // items from the sidebar should clear the history
+                nav.ClearHistory();
                 nav.Navigate(type, navType.Parameter);
+            }
         }
 
         // utility

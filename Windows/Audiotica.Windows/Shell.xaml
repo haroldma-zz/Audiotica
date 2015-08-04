@@ -102,7 +102,7 @@
 
                 <StackPanel Grid.Row="2" VerticalAlignment="Bottom">
 
-                    <!-- feedback -->
+                   <!-- ~1~ TODO: feedback @1@
                     <RadioButton Command="{Binding NavCommand}" Content="Send feedback" GroupName="Nav">
                         <RadioButton.CommandParameter>
                             <local:NavType Type="views:WelcomePage" />
@@ -110,12 +110,12 @@
                         <RadioButton.Tag>
                             <TextBlock Text="" />
                         </RadioButton.Tag>
-                    </RadioButton>
+                    </RadioButton>-->
 
                     <!-- about -->
                     <RadioButton Command="{Binding NavCommand}" Content="About" GroupName="Nav">
                         <RadioButton.CommandParameter>
-                            <local:NavType Type="views:WelcomePage" />
+                            <local:NavType Type="views:AboutPage" />
                         </RadioButton.CommandParameter>
                         <RadioButton.Tag>
                             <TextBlock Text="" />
@@ -125,7 +125,7 @@
                     <!-- settings -->
                     <RadioButton Command="{Binding NavCommand}" Content="Settings" GroupName="Nav">
                         <RadioButton.CommandParameter>
-                            <local:NavType Type="views:WelcomePage" />
+                            <local:NavType Type="views:SettingsPage" />
                         </RadioButton.CommandParameter>
                         <RadioButton.Tag>
                             <TextBlock Style="{StaticResource SettingsTextBlockStyle}" />

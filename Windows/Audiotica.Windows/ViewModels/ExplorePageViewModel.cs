@@ -17,7 +17,7 @@ namespace Audiotica.Windows.ViewModels
         {
         }
 
-        public override void OnNavigatedTo(object parameter, NavigationMode mode, Dictionary<string, object> state)
+        public override void OnNavigatedTo(string parameter, NavigationMode mode, Dictionary<string, object> state)
         {
         }
     }
