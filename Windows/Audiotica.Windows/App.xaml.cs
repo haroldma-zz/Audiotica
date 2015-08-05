@@ -1,7 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Windows.ApplicationModel.Activation;
 using Windows.Graphics.Display;
-using Windows.UI.Core;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Audiotica.Core.Windows.Helpers;
@@ -18,7 +17,7 @@ namespace Audiotica.Windows
             // Only portrait is supported on mobile
             if (DeviceHelper.IsType(DeviceHelper.Family.Mobile))
                 DisplayInformation.AutoRotationPreferences = DisplayOrientations.Portrait;
-            // Only the dark theme is supported everything else (they only have light option)
+            // Only the dark theme is supported in everything else (they only have light option)
             else
                 RequestedTheme = ApplicationTheme.Dark;
 
