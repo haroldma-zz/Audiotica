@@ -11,7 +11,7 @@ namespace Audiotica.Core.Windows.Services
     {
         public bool IsBackgroundTaskRunning { get; }
         public MediaPlayerState CurrentState { get; set; }
-        public int CurrentQueueId { get; }
+        public string CurrentQueueId { get; }
         public OptimizedObservableCollection<QueueTrack> PlaybackQueue { get; }
         public event EventHandler<MediaPlayerState> MediaStateChanged;
         public event EventHandler<string> TrackChanged;
@@ -30,7 +30,7 @@ namespace Audiotica.Core.Windows.Services
             throw new NotImplementedException();
         }
 
-        public void Update(List<Track> tracks)
+        public void SwitchTo(List<Track> tracks)
         {
             throw new NotImplementedException();
         }

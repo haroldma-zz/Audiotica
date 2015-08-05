@@ -42,6 +42,7 @@
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Extensions\TaskExtensions.cs" />
     <Compile Include="Extensions\TypeExtensions.cs" />
+    <Compile Include="Helpers\ActionHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utilities\DesignTime\DesignCredentialUtility.cs" />
     <Compile Include="Utilities\DesignTime\DesignDispatcherUtility.cs" />

@@ -1,9 +1,9 @@
 using Windows.Media.Core;
 using Audiotica.Database.Models;
 
-namespace Audiotica.Windows.Player
+namespace Audiotica.Core.Windows.Extensions
 {
-    internal static class MediaSourceExtension
+    public static class MediaSourceExtension
     {
         private const string TrackKey = "track";
 

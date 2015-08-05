@@ -203,14 +203,15 @@ namespace Audiotica.Web.Metadata.Providers
 
         private WebSong CreateSong(LastTrack track)
         {
-            var song = new WebSong
+            var song = new WebSong(GetType())
             {
+                MetadataProvider = GetType(),
                 Title = track.Name,
                 Token = new[] {track.Name, track.ArtistName}.Tokenize(),
                 // TODO: TrackNumber = 
                 Artists = new List<WebArtist>
                 {
-                    new WebArtist
+                    new WebArtist(GetType())
                     {
                         Name = track.ArtistName,
                         Token = track.ArtistName,
@@ -222,7 +223,7 @@ namespace Audiotica.Web.Metadata.Providers
             if (!string.IsNullOrEmpty(track.AlbumName))
             {
                 song.Album =
-                    new WebAlbum
+                    new WebAlbum(GetType())
                     {
                         Name = track.AlbumName,
                         Token = new[] {track.AlbumName, track.ArtistName}.Tokenize(),
@@ -238,7 +239,7 @@ namespace Audiotica.Web.Metadata.Providers
 
         private WebArtist CreateArtist(LastArtist artist)
         {
-            return new WebArtist
+            return new WebArtist(GetType())
             {
                 Name = artist.Name,
                 Token = artist.Name,
@@ -248,10 +249,10 @@ namespace Audiotica.Web.Metadata.Providers
 
         private WebAlbum CreateAlbum(LastAlbum album)
         {
-            var webAlbum = new WebAlbum
+            var webAlbum = new WebAlbum(GetType())
             {
                 Name = album.Name,
-                Artist = new WebArtist {Name = album.ArtistName, Token = album.ArtistName, IsPartial = true},
+                Artist = new WebArtist(GetType()) { Name = album.ArtistName, Token = album.ArtistName, IsPartial = true},
                 Token = new[] {album.Name, album.ArtistName}.Tokenize(),
                 Artwork = album.Images?.Largest
             };

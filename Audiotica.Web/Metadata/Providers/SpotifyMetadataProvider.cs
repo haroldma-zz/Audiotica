@@ -5,10 +5,10 @@ using System.Net;
 using System.Threading.Tasks;
 using Audiotica.Core.Extensions;
 using Audiotica.Core.Utilities.Interfaces;
-using Audiotica.Data.Spotify.Models;
 using Audiotica.Web.Enums;
 using Audiotica.Web.Exceptions;
 using Audiotica.Web.Http.Requets.Metadata.Spotify;
+using Audiotica.Web.Http.Requets.Metadata.Spotify.Models;
 using Audiotica.Web.Models;
 
 namespace Audiotica.Web.Metadata.Providers
@@ -160,7 +160,7 @@ namespace Audiotica.Web.Metadata.Providers
 
         private WebArtist CreateArtist(SimpleArtist artist)
         {
-            return new WebArtist
+            return new WebArtist(GetType())
             {
                 Name = artist.Name,
                 Token = artist.Id,
@@ -182,12 +182,13 @@ namespace Audiotica.Web.Metadata.Providers
 
         private WebSong CreateSong(SimpleTrack track)
         {
-            var song = new WebSong
+            var song = new WebSong(GetType())
             {
                 Title = track.Name,
                 Token = track.Id,
                 IsPartial = true,
-                TrackNumber = track.TrackNumber
+                TrackNumber = track.TrackNumber,
+                DiscNumber = track.DiscNumber
             };
 
             var full = track as FullTrack;
@@ -223,7 +224,7 @@ namespace Audiotica.Web.Metadata.Providers
 
         private WebAlbum CreateAlbum(SimpleAlbum album)
         {
-            var webAlbum = new WebAlbum
+            var webAlbum = new WebAlbum(GetType())
             {
                 Name = album.Name,
                 Token = album.Id,

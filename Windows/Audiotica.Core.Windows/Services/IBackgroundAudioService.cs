@@ -11,7 +11,7 @@ namespace Audiotica.Core.Windows.Services
     {
         bool IsBackgroundTaskRunning { get; }
         MediaPlayerState CurrentState { get; set; }
-        int CurrentQueueId { get; }
+        string CurrentQueueId { get; }
         OptimizedObservableCollection<QueueTrack> PlaybackQueue { get; }
         event EventHandler<MediaPlayerState> MediaStateChanged;
         event EventHandler<string> TrackChanged;
@@ -21,9 +21,28 @@ namespace Audiotica.Core.Windows.Services
         /// </summary>
         Task<bool> StartBackgroundTaskAsync();
 
+        /// <summary>
+        ///     Toggles between playing and pausing.
+        /// </summary>
         void PlayOrPause();
+
+        /// <summary>
+        ///     Adds the specified track to the queue.
+        /// </summary>
+        /// <param name="track">The track.</param>
+        /// <returns></returns>
         QueueTrack Add(Track track);
-        void Update(List<Track> tracks);
+
+        /// <summary>
+        ///     Swithces the current queue.
+        /// </summary>
+        /// <param name="tracks">The tracks.</param>
+        void SwitchTo(List<Track> tracks);
+
+        /// <summary>
+        ///     Plays the specified queue.
+        /// </summary>
+        /// <param name="queue">The queue.</param>
         void Play(QueueTrack queue);
 
         /// <summary>

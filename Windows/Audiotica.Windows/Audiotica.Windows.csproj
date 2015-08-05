@@ -107,6 +107,7 @@
     <Compile Include="AppEngine\AppModule.cs" />
     <Compile Include="AppEngine\Bootstrppers\BackgroundAudioBootstrapper.cs" />
     <Compile Include="AppEngine\Bootstrppers\IBootstrapper.cs" />
+    <Compile Include="AppEngine\Modules\ConverterModule.cs" />
     <Compile Include="AppEngine\Modules\MatchEngineProviderModule.cs" />
     <Compile Include="AppEngine\Modules\MatchEngineValidatorModule.cs" />
     <Compile Include="AppEngine\Modules\MetadataProviderModule.cs" />
@@ -271,6 +272,10 @@
     <ProjectReference Include="..\..\Audiotica.Database\Audiotica.Database.csproj">
       <Project>{3d53e627-45b5-410d-8043-ec7f22c3e010}</Project>
       <Name>Audiotica.Database</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Audiotica.Factory\Audiotica.Factory.csproj">
+      <Project>{60fe0825-e59e-4322-81a2-82cfcc3104eb}</Project>
+      <Name>Audiotica.Factory</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Audiotica.Web\Audiotica.Web.csproj">
       <Project>{0b8c5a00-8c9c-4663-a741-1b494c0e9e46}</Project>

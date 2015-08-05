@@ -8,6 +8,7 @@ using Windows.Media.Playback;
 using Audiotica.Core.Common;
 using Audiotica.Core.Utilities.Interfaces;
 using Audiotica.Core.Windows.Enums;
+using Audiotica.Core.Windows.Extensions;
 using Audiotica.Core.Windows.Helpers;
 using Audiotica.Core.Windows.Messages;
 using Audiotica.Database.Models;
@@ -30,6 +31,23 @@ namespace Audiotica.Core.Windows.Services
             _settingsUtility.Write(ApplicationSettingsConstants.AppState, AppState.Active);
         }
 
+        private void UpdatePlaybackQueue()
+        {
+            try
+            {
+                var tracks = BackgroundMediaPlayer.Current.Source as MediaPlaybackList;
+                if (tracks != null)
+                {
+                    var queueTracks = tracks.Items.Select(p => p.Source.Queue()).ToList();
+                    PlaybackQueue = new OptimizedObservableCollection<QueueTrack>(queueTracks);
+                }
+            }
+            catch (InvalidCastException)
+            {
+                // source is not set (odd exception tho)
+            }
+        }
+
         public bool IsBackgroundTaskRunning
         {
             get
@@ -45,8 +63,8 @@ namespace Audiotica.Core.Windows.Services
 
         public MediaPlayerState CurrentState { get; set; }
 
-        public int CurrentQueueId
-            => _settingsUtility.Read(ApplicationSettingsConstants.QueueId, -1);
+        public string CurrentQueueId
+            => _settingsUtility.Read(ApplicationSettingsConstants.QueueId, string.Empty);
 
         public OptimizedObservableCollection<QueueTrack> PlaybackQueue { get; private set; }
         public event EventHandler<MediaPlayerState> MediaStateChanged;
@@ -55,15 +73,18 @@ namespace Audiotica.Core.Windows.Services
         /// <summary>
         ///     Initialize Background Media Player Handlers and starts playback
         /// </summary>
-        public Task<bool> StartBackgroundTaskAsync()
+        public async Task<bool> StartBackgroundTaskAsync()
         {
             AddMediaPlayerEventHandlers();
 
-            return _dispatcherUtility.RunAsync(() =>
+            var started = await _dispatcherUtility.RunAsync(() =>
             {
                 var result = _backgroundAudioTaskStarted.WaitOne(10000);
                 return result;
             });
+            if (started)
+                UpdatePlaybackQueue();
+            return started;
         }
 
         public QueueTrack Add(Track track)
@@ -74,7 +95,7 @@ namespace Audiotica.Core.Windows.Services
             return queue;
         }
 
-        public void Update(List<Track> tracks)
+        public void SwitchTo(List<Track> tracks)
         {
             var queue = tracks.Select(p => new QueueTrack(p)).ToList();
             MessageHelper.SendMessageToBackground(new UpdatePlaylistMessage(queue));
@@ -156,7 +177,7 @@ namespace Audiotica.Core.Windows.Services
         ///     Otherwise, initializes MediaPlayer Handlers and starts playback
         ///     track or to pause if we're already playing.
         /// </summary>
-        public void PlayOrPause()
+        public async void PlayOrPause()
         {
             Debug.WriteLine("Play button pressed from App");
             if (IsBackgroundTaskRunning)
@@ -170,13 +191,13 @@ namespace Audiotica.Core.Windows.Services
                         BackgroundMediaPlayer.Current.Play();
                         break;
                     case MediaPlayerState.Closed:
-                        StartBackgroundTaskAsync();
+                        await StartBackgroundTaskAsync();
                         break;
                 }
             }
             else
             {
-                StartBackgroundTaskAsync();
+                await StartBackgroundTaskAsync();
             }
         }
 

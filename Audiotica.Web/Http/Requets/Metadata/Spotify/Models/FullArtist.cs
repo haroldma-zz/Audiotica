@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Newtonsoft.Json;
 
-namespace Audiotica.Data.Spotify.Models
+namespace Audiotica.Web.Http.Requets.Metadata.Spotify.Models
 {
     public class FullArtist : SimpleArtist
     {

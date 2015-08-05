@@ -14,6 +14,7 @@ namespace Audiotica.Windows.Factories
                 new MatchEngineValidatorModule(),
                 new MatchEngineProviderModule(),
                 new MetadataProviderModule(),
+                new ConverterModule(), 
                 new ServiceModule(),
                 new ViewModelModule()
             };

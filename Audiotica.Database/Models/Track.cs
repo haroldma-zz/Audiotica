@@ -92,7 +92,7 @@ namespace Audiotica.Database.Models
         /// <value>
         ///     The genre.
         /// </value>
-        public string Genre { get; set; }
+        public string Genres { get; set; }
 
         /// <summary>
         ///     Gets or sets the comment.
@@ -103,13 +103,21 @@ namespace Audiotica.Database.Models
         public string Comment { get; set; }
 
         /// <summary>
-        ///     Gets or sets the URI.
+        ///     Gets or sets the web audio URI.
         ///     Blank if is local.
         /// </summary>
         /// <value>
         ///     The URI.
         /// </value>
-        public Uri AudioUri { get; set; }
+        public Uri AudioWebUri { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the local audio URI.
+        /// </summary>
+        /// <value>
+        ///     The audio local URI.
+        /// </value>
+        public Uri AudioLocalUri { get; set; }
 
         /// <summary>
         ///     Gets or sets the album artist.
@@ -200,20 +208,12 @@ namespace Audiotica.Database.Models
         public long FileSize { get; set; }
 
         /// <summary>
-        ///     Gets or sets the date added.
-        /// </summary>
-        /// <value>
-        ///     The date added.
-        /// </value>
-        public DateTime DateAdded { get; set; }
-
-        /// <summary>
         ///     Gets or sets the last played.
         /// </summary>
         /// <value>
         ///     The last played.
         /// </value>
-        public DateTime LastPlayed { get; set; }
+        public DateTime? LastPlayed { get; set; }
 
         /// <summary>
         ///     Gets or sets the track type.
@@ -224,11 +224,19 @@ namespace Audiotica.Database.Models
         public TrackType Type { get; set; }
 
         /// <summary>
-        ///     Gets or sets the artwork path.
+        ///     Gets or sets the artwork URI.
         /// </summary>
         /// <value>
-        ///     The artwork path.
+        ///     The artwork URI.
         /// </value>
         public Uri ArtworkUri { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the artist artwork URI.
+        /// </summary>
+        /// <value>
+        ///     The artist artwork URI.
+        /// </value>
+        public Uri ArtistArtworkUri { get; set; }
     }
 }

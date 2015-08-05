@@ -3,6 +3,7 @@ using System.Diagnostics;
 using Windows.Media;
 using Windows.Media.Playback;
 using Windows.Storage.Streams;
+using Audiotica.Core.Windows.Extensions;
 
 namespace Audiotica.Windows.Player
 {

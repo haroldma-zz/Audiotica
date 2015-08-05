@@ -6,8 +6,10 @@ using Windows.Foundation;
 using Windows.Media;
 using Windows.Media.Core;
 using Windows.Media.Playback;
+using Audiotica.Core.Helpers;
 using Audiotica.Core.Utilities.Interfaces;
 using Audiotica.Core.Windows.Enums;
+using Audiotica.Core.Windows.Extensions;
 using Audiotica.Core.Windows.Helpers;
 using Audiotica.Core.Windows.Messages;
 using Audiotica.Database.Models;
@@ -93,14 +95,7 @@ namespace Audiotica.Windows.Player
         /// </summary>
         public void Pause()
         {
-            try
-            {
-                BackgroundMediaPlayer.Current.Pause();
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(ex.ToString());
-            }
+            ActionHelper.Try(() => BackgroundMediaPlayer.Current.Pause(), 2);
         }
 
         /// <summary>
@@ -139,7 +134,7 @@ namespace Audiotica.Windows.Player
             // Add playback items to the list
             foreach (var song in queues)
             {
-                var source = MediaSource.CreateFromUri(song.Track.AudioUri);
+                var source = MediaSource.CreateFromUri(song.Track.AudioWebUri);
                 source.Queue(song);
                 _mediaPlaybackList.Items.Add(new MediaPlaybackItem(source));
             }

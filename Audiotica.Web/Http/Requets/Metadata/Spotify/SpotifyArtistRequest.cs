@@ -1,5 +1,5 @@
-using Audiotica.Data.Spotify.Models;
 using Audiotica.Web.Extensions;
+using Audiotica.Web.Http.Requets.Metadata.Spotify.Models;
 
 namespace Audiotica.Web.Http.Requets.Metadata.Spotify
 {
