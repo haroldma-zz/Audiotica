@@ -16,11 +16,11 @@ namespace Audiotica.Core.Windows.Messages
 {
     public class UpdatePlaylistMessage
     {
-        public List<Track> Songs;
+        public List<QueueTrack> Tracks { get; set; }
 
-        public UpdatePlaylistMessage(List<Track> songs)
+        public UpdatePlaylistMessage(List<QueueTrack> tracks)
         {
-            Songs = songs;
+            Tracks = tracks;
         }
     }
 }

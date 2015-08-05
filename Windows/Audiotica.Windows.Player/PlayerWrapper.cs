@@ -41,12 +41,12 @@ namespace Audiotica.Windows.Player
         }
 
         public AppState ForegroundAppState { get; private set; }
-        public int? CurrentTrackId => _mediaPlaybackList?.CurrentItem?.Source?.Id();
+        public QueueTrack CurrentQueue => _mediaPlaybackList?.CurrentItem?.Source?.Queue();
 
         public void Dispose()
         {
             // save state
-            _settingsUtility.Write(ApplicationSettingsConstants.TrackId, CurrentTrackId);
+            _settingsUtility.Write(ApplicationSettingsConstants.QueueId, CurrentQueue.Id);
             _settingsUtility.Write(ApplicationSettingsConstants.Position, BackgroundMediaPlayer.Current.Position);
             _settingsUtility.Write(ApplicationSettingsConstants.BackgroundTaskState, BackgroundTaskState.Canceled);
             _settingsUtility.Write(ApplicationSettingsConstants.AppState, _foregroundMessenger);
@@ -71,11 +71,11 @@ namespace Audiotica.Windows.Player
                     _playbackStartedPreviously = true;
 
                     // If the task was cancelled we would have saved the current track and its position. We will try playback from there.
-                    var currentTrackId = _settingsUtility.Read(ApplicationSettingsConstants.TrackId, -1);
+                    var currentTrack = _settingsUtility.Read(ApplicationSettingsConstants.QueueId, string.Empty);
                     var currentTrackPosition = _settingsUtility.Read<TimeSpan?>(ApplicationSettingsConstants.Position,
                         null);
-                    if (currentTrackId != -1)
-                        InternalStartPlayer(currentTrackId, currentTrackPosition);
+                    if (!string.IsNullOrEmpty(currentTrack))
+                        InternalStartPlayer(currentTrack, currentTrackPosition);
                     else
                         BackgroundMediaPlayer.Current.Play();
                 }
@@ -130,22 +130,17 @@ namespace Audiotica.Windows.Player
         /// <summary>
         ///     Create a playback list from the list of songs received from the foreground app.
         /// </summary>
-        /// <param name="songs"></param>
-        public void CreatePlaybackList(IEnumerable<Track> songs)
+        /// <param name="queues"></param>
+        public void CreatePlaybackList(IEnumerable<QueueTrack> queues)
         {
             // Make a new list and enable looping
             _mediaPlaybackList = new MediaPlaybackList {AutoRepeatEnabled = true};
 
             // Add playback items to the list
-            foreach (var song in songs)
+            foreach (var song in queues)
             {
-                var source = MediaSource.CreateFromUri(song.AudioUri);
-                source.Id(song.Id);
-                source.Title(song.Title);
-                source.Artists(song.Artists);
-                source.AlbumTitle(song.Album);
-                source.AlbumArtist(song.AlbumArtist);
-                source.Artwork(song.ArtworkUri);
+                var source = MediaSource.CreateFromUri(song.Track.AudioUri);
+                source.Queue(song);
                 _mediaPlaybackList.Items.Add(new MediaPlaybackItem(source));
             }
 
@@ -161,11 +156,11 @@ namespace Audiotica.Windows.Player
 
         #region Internal
 
-        private void InternalStartPlayer(int currentTrackId, TimeSpan? currentTrackPosition)
+        private void InternalStartPlayer(string currentTrack, TimeSpan? currentTrackPosition)
         {
             // Find the index of the item by name
             var index = _mediaPlaybackList.Items.ToList().FindIndex(item =>
-                item.Source.Id() == currentTrackId);
+                item.Source.Queue().Id == currentTrack);
 
             if (index == -1) return;
 
@@ -216,18 +211,17 @@ namespace Audiotica.Windows.Player
             _smtcWrapper.UpdateUvcOnNewTrack(item);
 
             // Get the current track
-            var currentTrackId = -1;
-            if (item != null)
-                currentTrackId = item.Source.Id();
+            var currentTrack = item?.Source?.Queue();
+            if (currentTrack != null)
+            {
+                Debug.WriteLine("PlaybackList_CurrentItemChanged: " + currentTrack.Id);
 
-            Debug.WriteLine("PlaybackList_CurrentItemChanged: " + currentTrackId);
+                // Notify foreground of change or persist for later
+                if (ForegroundAppState == AppState.Active)
+                    MessageHelper.SendMessageToForeground(new TrackChangedMessage(currentTrack.Id));
 
-            // Notify foreground of change or persist for later
-            if (ForegroundAppState == AppState.Active)
-                MessageHelper.SendMessageToForeground(new TrackChangedMessage(currentTrackId));
-            else
-                _settingsUtility.Write(ApplicationSettingsConstants.TrackId,
-                    currentTrackId == -1 ? default(int?) : currentTrackId);
+                _settingsUtility.Write(ApplicationSettingsConstants.QueueId, currentTrack.Id);
+            }
         }
 
         private void Current_CurrentStateChanged(MediaPlayer sender, object args)
@@ -321,7 +315,8 @@ namespace Audiotica.Windows.Player
             // App is suspended, you can save your task state at this point
             Debug.WriteLine("App suspending");
             ForegroundAppState = AppState.Suspended;
-            _settingsUtility.Write(ApplicationSettingsConstants.TrackId, CurrentTrackId);
+            _settingsUtility.Write(ApplicationSettingsConstants.QueueId, CurrentQueue.Id);
+            _settingsUtility.Remove(ApplicationSettingsConstants.Position);
         }
 
         private void UnsubscribeFromMessenger()
@@ -333,14 +328,16 @@ namespace Audiotica.Windows.Player
             _foregroundMessenger.UpdatePlaylist -= ForegroundMessengerOnUpdatePlaylist;
         }
 
-        private void ForegroundMessengerOnUpdatePlaylist(object sender, List<Track> tracks)
+        private void ForegroundMessengerOnUpdatePlaylist(object sender, List<QueueTrack> tracks)
         {
+            _settingsUtility.Remove(ApplicationSettingsConstants.QueueId);
+            _settingsUtility.Remove(ApplicationSettingsConstants.Position);
             CreatePlaybackList(tracks);
         }
 
-        private void ForegroundMessengerOnTrackChanged(object sender, int trackId)
+        private void ForegroundMessengerOnTrackChanged(object sender, string queueId)
         {
-            var index = _mediaPlaybackList.Items.ToList().FindIndex(i => i.Source.Id() == trackId);
+            var index = _mediaPlaybackList.Items.ToList().FindIndex(i => i.Source.Queue().Id == queueId);
             Debug.WriteLine("Skipping to track " + index);
             _smtcWrapper.PlaybackStatus = MediaPlaybackStatus.Changing;
             _mediaPlaybackList.MoveTo((uint) index);

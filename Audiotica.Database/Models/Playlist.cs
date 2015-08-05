@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using SQLite;
 
 namespace Audiotica.Database.Models
 {
@@ -9,7 +10,7 @@ namespace Audiotica.Database.Models
     public class Playlist : DatabaseEntryBase
     {
         public string Name { get; set; }
-        public DateTime CreatedDate { get; set; }
-        public List<Track> Tracks { get; set; }
+        [Ignore]
+        public List<PlaylistTrack> Tracks { get; set; }
     }
 }

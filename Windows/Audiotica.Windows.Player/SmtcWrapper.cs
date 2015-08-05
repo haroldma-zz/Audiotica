@@ -49,14 +49,16 @@ namespace Audiotica.Windows.Player
                 return;
             }
 
+            var track = item.Source.Queue().Track;
+
             _smtc.PlaybackStatus = MediaPlaybackStatus.Playing;
             _smtc.DisplayUpdater.Type = MediaPlaybackType.Music;
-            _smtc.DisplayUpdater.MusicProperties.Title = item.Source.Title();
-            _smtc.DisplayUpdater.MusicProperties.Artist = item.Source.Artists();
-            _smtc.DisplayUpdater.MusicProperties.AlbumTitle = item.Source.AlbumTitle();
-            _smtc.DisplayUpdater.MusicProperties.AlbumArtist = item.Source.AlbumArtist();
+            _smtc.DisplayUpdater.MusicProperties.Title = track.Title;
+            _smtc.DisplayUpdater.MusicProperties.Artist = track.Artists;
+            _smtc.DisplayUpdater.MusicProperties.AlbumTitle = track.AlbumTitle;
+            _smtc.DisplayUpdater.MusicProperties.AlbumArtist = track.AlbumArtist;
 
-            var albumArt = item.Source.Artwork();
+            var albumArt = track.ArtworkUri;
             _smtc.DisplayUpdater.Thumbnail = albumArt != null
                 ? RandomAccessStreamReference.CreateFromUri(albumArt)
                 : null;

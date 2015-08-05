@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Windows.Media.Playback;
+using Audiotica.Core.Common;
 using Audiotica.Database.Models;
 
 namespace Audiotica.Core.Windows.Services
@@ -11,8 +12,9 @@ namespace Audiotica.Core.Windows.Services
         public bool IsBackgroundTaskRunning { get; }
         public MediaPlayerState CurrentState { get; set; }
         public int CurrentQueueId { get; }
+        public OptimizedObservableCollection<QueueTrack> PlaybackQueue { get; }
         public event EventHandler<MediaPlayerState> MediaStateChanged;
-        public event EventHandler<int> TrackChanged;
+        public event EventHandler<string> TrackChanged;
         public Task<bool> StartBackgroundTaskAsync()
         {
             throw new NotImplementedException();
@@ -23,17 +25,17 @@ namespace Audiotica.Core.Windows.Services
             throw new NotImplementedException();
         }
 
-        public void Play(Track track)
+        public QueueTrack Add(Track track)
         {
             throw new NotImplementedException();
         }
 
-        public void Play(Track track, List<Track> tracks)
+        public void Update(List<Track> tracks)
         {
             throw new NotImplementedException();
         }
 
-        public void Play(List<Track> tracks)
+        public void Play(QueueTrack queue)
         {
             throw new NotImplementedException();
         }

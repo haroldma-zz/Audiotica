@@ -16,7 +16,6 @@ namespace Audiotica.Core.Windows.Enums
     public enum BackgroundTaskState
     {
         Unknown,
-        Started,
         Running,
         Canceled
     }

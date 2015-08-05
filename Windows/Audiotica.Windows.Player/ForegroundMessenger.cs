@@ -25,8 +25,8 @@ namespace Audiotica.Windows.Player
         public event EventHandler StartPlayback;
         public event EventHandler SkipToNext;
         public event EventHandler SkipToPrev;
-        public event EventHandler<int> TrackChanged;
-        public event EventHandler<List<Track>> UpdatePlaylist;
+        public event EventHandler<string> TrackChanged;
+        public event EventHandler<List<QueueTrack>> UpdatePlaylist;
 
         /// <summary>
         ///     Raised when a message is recieved from the foreground app
@@ -52,14 +52,14 @@ namespace Audiotica.Windows.Player
             {
                 var changedMessage = message as TrackChangedMessage;
                 if (changedMessage != null)
-                    TrackChanged?.Invoke(this, changedMessage.TrackId);
+                    TrackChanged?.Invoke(this, changedMessage.QueueId);
 
                 else
                 {
                     var playlistMessage = message as UpdatePlaylistMessage;
                     if (playlistMessage != null)
                     {
-                        UpdatePlaylist?.Invoke(this, playlistMessage.Songs);
+                        UpdatePlaylist?.Invoke(this, playlistMessage.Tracks);
                     }
                 }
             }

@@ -1,15 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.Media.Playback;
+using Audiotica.Core.Common;
 using Audiotica.Core.Utilities.Interfaces;
 using Audiotica.Core.Windows.Enums;
 using Audiotica.Core.Windows.Helpers;
 using Audiotica.Core.Windows.Messages;
 using Audiotica.Database.Models;
-using Audiotica.Database.Services.Interfaces;
 
 namespace Audiotica.Core.Windows.Services
 {
@@ -45,10 +46,11 @@ namespace Audiotica.Core.Windows.Services
         public MediaPlayerState CurrentState { get; set; }
 
         public int CurrentQueueId
-            => _settingsUtility.Read(ApplicationSettingsConstants.TrackId, -1);
+            => _settingsUtility.Read(ApplicationSettingsConstants.QueueId, -1);
 
+        public OptimizedObservableCollection<QueueTrack> PlaybackQueue { get; private set; }
         public event EventHandler<MediaPlayerState> MediaStateChanged;
-        public event EventHandler<int> TrackChanged;
+        public event EventHandler<string> TrackChanged;
 
         /// <summary>
         ///     Initialize Background Media Player Handlers and starts playback
@@ -60,52 +62,34 @@ namespace Audiotica.Core.Windows.Services
             return _dispatcherUtility.RunAsync(() =>
             {
                 var result = _backgroundAudioTaskStarted.WaitOne(10000);
-                //Send message to initiate playback
-                if (result)
-                {
-                    // TODO send playlist
-                    //MessageHelper.SendMessageToBackground(new UpdatePlaylistMessage(playlistView.Songs.ToList()));
-                    //MessageHelper.SendMessageToBackground(new StartPlaybackMessage());
-                    return true;
-                }
-                return false;
+                return result;
             });
         }
 
-        public async void Play(Track track)
+        public QueueTrack Add(Track track)
         {
-            // Start the background task if it wasn't running
-            if (!IsBackgroundTaskRunning || MediaPlayerState.Closed == BackgroundMediaPlayer.Current.CurrentState)
-            {
-                // First update the persisted start track
-                _settingsUtility.Write(ApplicationSettingsConstants.TrackId, track.Id);
-                _settingsUtility.Write(ApplicationSettingsConstants.Position, TimeSpan.Zero);
+            var queue = new QueueTrack(track);
+            MessageHelper.SendMessageToBackground(new AddToPlaylistMessage(queue));
+            PlaybackQueue.Add(queue);
+            return queue;
+        }
 
-                // Start task
-                await StartBackgroundTaskAsync();
-            }
-            else
-            {
-                // Switch to the selected track
-                MessageHelper.SendMessageToBackground(new TrackChangedMessage(track.Id));
-            }
+        public void Update(List<Track> tracks)
+        {
+            var queue = tracks.Select(p => new QueueTrack(p)).ToList();
+            MessageHelper.SendMessageToBackground(new UpdatePlaylistMessage(queue));
+            PlaybackQueue = new OptimizedObservableCollection<QueueTrack>(queue);
+        }
+
+        public void Play(QueueTrack queue)
+        {
+            // Switch to the selected track
+            MessageHelper.SendMessageToBackground(new TrackChangedMessage(queue.Id));
 
             if (MediaPlayerState.Paused == BackgroundMediaPlayer.Current.CurrentState)
             {
                 BackgroundMediaPlayer.Current.Play();
             }
-        }
-
-        public async void Play(Track track, List<Track> tracks)
-        {
-            MessageHelper.SendMessageToBackground(new UpdatePlaylistMessage(tracks));
-            await Task.Delay(1000);
-            MessageHelper.SendMessageToBackground(new TrackChangedMessage(track.Id));
-        }
-
-        public void Play(List<Track> tracks)
-        {
-            Play(tracks[0], tracks);
         }
 
         /// <summary>
@@ -241,7 +225,7 @@ namespace Audiotica.Core.Windows.Services
                 // When foreground app is active change track based on background message
                 await
                     _dispatcherUtility.RunAsync(
-                        () => { TrackChanged?.Invoke(sender, trackChangedMessage.TrackId); });
+                        () => { TrackChanged?.Invoke(sender, trackChangedMessage.QueueId); });
                 return;
             }
 

@@ -120,6 +120,7 @@
     <Compile Include="Helpers\AsyncHelper.cs" />
     <Compile Include="Helpers\DeviceHelper.cs" />
     <Compile Include="Helpers\MessageHelper.cs" />
+    <Compile Include="Messages\AddToPlaylistMessage.cs" />
     <Compile Include="Messages\AppResumedMessage.cs" />
     <Compile Include="Messages\AppSuspendedMessage.cs" />
     <Compile Include="Messages\BackgroundAudioTaskStartedMessage.cs" />

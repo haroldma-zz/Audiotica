@@ -57,7 +57,7 @@ namespace Audiotica.Database.Services.Interfaces
         /// <summary>
         ///     Adds the track to the library, saves it to the db.
         /// </summary>
-        Track AddTrack();
+        void AddTrack(Track track);
 
         #endregion
 
@@ -76,7 +76,7 @@ namespace Audiotica.Database.Services.Interfaces
         /// <summary>
         ///     Adds the track to the library, saves it to the db.
         /// </summary>
-        Task<Track> AddTrackAsync();
+        Task AddTrackAsync(Track track);
 
         #endregion
     }

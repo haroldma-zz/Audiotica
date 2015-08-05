@@ -6,7 +6,7 @@ namespace Audiotica.Database.Models
     /// <summary>
     ///     Album object, not used in the database.
     /// </summary>
-    public class Album : DatabaseEntryBase
+    public class Album
     {
         public string Name { get; set; }
         public string Publisher { get; set; }

@@ -44,7 +44,7 @@ namespace Audiotica.Database.Models
         /// <value>
         ///     The album.
         /// </value>
-        public string Album { get; set; }
+        public string AlbumTitle { get; set; }
 
         /// <summary>
         ///     Gets or sets the year.

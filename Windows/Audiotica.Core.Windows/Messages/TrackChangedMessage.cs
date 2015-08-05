@@ -4,15 +4,15 @@ namespace Audiotica.Core.Windows.Messages
 {
     public class TrackChangedMessage
     {
-        public int TrackId;
+        public string QueueId;
 
         public TrackChangedMessage()
         {
         }
 
-        public TrackChangedMessage(int trackId)
+        public TrackChangedMessage(string queueId)
         {
-            TrackId = trackId;
+            QueueId = queueId;
         }
     }
 }
