@@ -1,10 +1,10 @@
 ﻿using System.Threading.Tasks;
 using Windows.ApplicationModel.Activation;
 using Windows.Graphics.Display;
+using Windows.UI.Core;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Audiotica.Core.Windows.Helpers;
-using Audiotica.Windows.Views;
 using Microsoft.ApplicationInsights;
 
 namespace Audiotica.Windows

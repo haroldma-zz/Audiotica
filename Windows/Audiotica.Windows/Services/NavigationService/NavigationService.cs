@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Windows.ApplicationModel;
+using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
@@ -21,11 +22,15 @@ namespace Audiotica.Windows.Services.NavigationService
         private Dictionary<string, Dictionary<string, object>> _sessions =
             new Dictionary<string, Dictionary<string, object>>();
 
+        private readonly SystemNavigationManager _currentView;
+
         public NavigationService(Frame frame, ISettingsUtility settingsUtility)
         {
             _settingsUtility = settingsUtility;
             _frame = new NavigationFacade(frame);
             _frame.Navigating += (s, e) => NavigatedFrom(false);
+
+            _currentView = SystemNavigationManager.GetForCurrentView();
         }
 
         public Type DefaultPage => typeof (AlbumsPage);
@@ -36,6 +41,8 @@ namespace Audiotica.Windows.Services.NavigationService
 
         public void NavigatedTo(NavigationMode mode, string parameter)
         {
+            _currentView.AppViewBackButtonVisibility = _frame.BackStackDepth > 1 ? AppViewBackButtonVisibility.Visible : AppViewBackButtonVisibility.Collapsed;
+
             _frame.CurrentPageParam = parameter;
             _frame.CurrentPageType = _frame.Content.GetType();
             var key = CurrentPageType + "-depth-" + _frame.BackStackDepth;

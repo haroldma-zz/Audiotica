@@ -25,15 +25,6 @@
 
                 <ScrollViewer Grid.Row="0" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Auto">
                     <StackPanel>
-                        <!-- back -->
-                        <RadioButton Checked="DontCheck" Command="{Binding BackCommand}"
-                                     Background="{ThemeResource SystemControlBackgroundAccentBrush}">
-                            <RadioButton.Tag>
-                                <TextBlock Text="{StaticResource BackButtonIconText}"
-                                           FontSize="{StaticResource SplitViewLargeNavFontSize}" />
-                            </RadioButton.Tag>
-                        </RadioButton>
-
                         <!-- hamburger -->
                         <RadioButton Checked="DontCheck" Command="{Binding MenuCommand}"
                                      Style="{StaticResource SplitViewRadioButtonStyle}">
