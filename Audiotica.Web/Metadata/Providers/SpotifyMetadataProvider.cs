@@ -233,6 +233,7 @@ namespace Audiotica.Web.Metadata.Providers
         {
             var webTrack = CreateSong(track as SimpleTrack);
             webTrack.Album = CreateAlbum(track.Album);
+            webTrack.IsPartial = false;
             return webTrack;
         }
 

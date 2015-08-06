@@ -8,6 +8,8 @@
     xmlns:viewModels="using:Audiotica.Windows.ViewModels"
     xmlns:navigationService="using:Audiotica.Windows.Services.NavigationService"
     xmlns:customTriggers="using:Audiotica.Windows.CustomTriggers"
+    xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
+    xmlns:core="using:Microsoft.Xaml.Interactions.Core"
     mc:Ignorable="d"
     DataContext="{Binding ExplorePage, Source={StaticResource ViewModelLocator}}">
     <ScrollViewer x:Name="LayoutRoot" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Padding="{StaticResource PagePadding}">
@@ -22,7 +24,14 @@
             </Grid.RowDefinitions>
             <StackPanel x:Name="TopSongsPanel">
                 <TextBlock Text="Top Songs" Style="{StaticResource HeaderTextBlockStyle}" />
-                <GridView ItemsSource="{Binding TopSongs}" ScrollViewer.VerticalScrollBarVisibility="Disabled">
+                <GridView ItemsSource="{Binding TopSongs}" IsItemClickEnabled="True" 
+                          ScrollViewer.VerticalScrollBarVisibility="Disabled">
+                    <interactivity:Interaction.Behaviors>
+                        <core:EventTriggerBehavior EventName="ItemClick">
+                            <core:InvokeCommandAction Command="{Binding SongClickCommand}"/>
+                        </core:EventTriggerBehavior>
+                    </interactivity:Interaction.Behaviors>
+
                     <GridView.ItemTemplate>
                         <DataTemplate>
                             <Grid Margin="5" Width="200">

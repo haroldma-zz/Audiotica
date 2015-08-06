@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Audiotica.Database.Models;
 using Audiotica.Web.Metadata.Interfaces;
+using Audiotica.Web.Metadata.Providers;
 using Audiotica.Web.Models;
 
 namespace Audiotica.Factory
@@ -22,7 +23,13 @@ namespace Audiotica.Factory
 
             if (other.IsPartial)
                 other = await provider.GetSongAsync(other.Token);
-            if (other.Album.IsPartial)
+            if (other.Album == null)
+                other.Album = new WebAlbum(typeof(ILocalMetadataProvider))
+                {
+                    Title = other.Title,
+                    Artist = other.Artists[0]
+                };
+            else if (other.Album.IsPartial)
                 other.Album = await provider.GetAlbumAsync(other.Album.Token);
             if (other.Album.Artist.IsPartial)
                 other.Album.Artist = await provider.GetArtistAsync(other.Album.Artist.Token);
@@ -42,7 +49,7 @@ namespace Audiotica.Factory
                 TrackNumber = other.TrackNumber,
                 DiscNumber = other.DiscNumber,
                 Year = other.Album.ReleasedDate?.Year ?? 0,
-                TrackCount = other.Album.Tracks.Count,
+                TrackCount = other.Album.Tracks?.Count ?? 0,
                 Genres = other.Genres,
                 Type = Track.TrackType.Stream,
             };

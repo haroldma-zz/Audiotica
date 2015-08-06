@@ -5,13 +5,9 @@ using Autofac;
 
 namespace Audiotica.Windows.AppEngine.Modules
 {
-    internal class ConverterModule : AppModule
+    internal class ConverterModule : Module
     {
-        public override void LoadDesignTime(ContainerBuilder builder)
-        {
-        }
-
-        public override void LoadRunTime(ContainerBuilder builder)
+        protected override void Load(ContainerBuilder builder)
         {
             builder.RegisterType<TrackToWebSongConverter>().As<IConverter<Track, WebSong>>();
         }

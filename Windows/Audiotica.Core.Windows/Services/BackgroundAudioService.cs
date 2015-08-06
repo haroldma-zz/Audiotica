@@ -29,6 +29,7 @@ namespace Audiotica.Core.Windows.Services
             // Setup the initialization lock
             _backgroundAudioTaskStarted = new AutoResetEvent(false);
             _settingsUtility.Write(ApplicationSettingsConstants.AppState, AppState.Active);
+            PlaybackQueue = new OptimizedObservableCollection<QueueTrack>();
         }
 
         private void UpdatePlaybackQueue()
@@ -95,7 +96,7 @@ namespace Audiotica.Core.Windows.Services
             return queue;
         }
 
-        public void SwitchTo(List<Track> tracks)
+        public void Play(List<Track> tracks)
         {
             var queue = tracks.Select(p => new QueueTrack(p)).ToList();
             MessageHelper.SendMessageToBackground(new UpdatePlaylistMessage(queue));

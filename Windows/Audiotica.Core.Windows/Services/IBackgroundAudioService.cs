@@ -37,7 +37,7 @@ namespace Audiotica.Core.Windows.Services
         ///     Swithces the current queue.
         /// </summary>
         /// <param name="tracks">The tracks.</param>
-        void SwitchTo(List<Track> tracks);
+        void Play(List<Track> tracks);
 
         /// <summary>
         ///     Plays the specified queue.

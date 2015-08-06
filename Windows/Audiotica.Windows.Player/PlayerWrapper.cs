@@ -30,7 +30,6 @@ namespace Audiotica.Windows.Player
             _smtcWrapper = smtcWrapper;
             _foregroundMessenger = foregroundMessenger;
             _settingsUtility = settingsUtility;
-            _mediaPlaybackList = new MediaPlaybackList();
 
             SubscribeToMessenger();
             SubscribeToSmtc();
@@ -139,8 +138,8 @@ namespace Audiotica.Windows.Player
                 _mediaPlaybackList.Items.Add(new MediaPlaybackItem(source));
             }
 
-            // Don't auto start
-            BackgroundMediaPlayer.Current.AutoPlay = false;
+            // auto start
+            BackgroundMediaPlayer.Current.AutoPlay = true;
 
             // Assign the list to the player
             BackgroundMediaPlayer.Current.Source = _mediaPlaybackList;

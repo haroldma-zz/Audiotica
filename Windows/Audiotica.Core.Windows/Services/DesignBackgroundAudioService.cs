@@ -30,7 +30,7 @@ namespace Audiotica.Core.Windows.Services
             throw new NotImplementedException();
         }
 
-        public void SwitchTo(List<Track> tracks)
+        public void Play(List<Track> tracks)
         {
             throw new NotImplementedException();
         }
