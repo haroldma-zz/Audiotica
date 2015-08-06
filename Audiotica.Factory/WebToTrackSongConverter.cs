@@ -8,11 +8,11 @@ using Audiotica.Web.Models;
 
 namespace Audiotica.Factory
 {
-    public class TrackToWebSongConverter : IConverter<Track, WebSong>
+    public class WebToTrackSongConverter : IConverter<Track, WebSong>
     {
         private readonly IMetadataProvider[] _providers;
 
-        public TrackToWebSongConverter(IMetadataProvider[] providers)
+        public WebToTrackSongConverter(IMetadataProvider[] providers)
         {
             _providers = providers;
         }

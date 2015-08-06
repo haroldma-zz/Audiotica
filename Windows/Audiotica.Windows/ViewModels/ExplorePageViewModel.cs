@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
+using Audiotica.Core.Windows.Helpers;
 using Audiotica.Core.Windows.Services;
 using Audiotica.Database.Models;
 using Audiotica.Factory;
@@ -17,14 +18,16 @@ namespace Audiotica.Windows.ViewModels
 {
     internal sealed class ExplorePageViewModel : ViewModelBase
     {
-        private readonly IConverter<Track, WebSong> _webSongConverter;
         private readonly IBackgroundAudioService _backgroundAudioService;
         private readonly IMatchEngineService _matchEngineService;
+        private readonly IConverter<Track, WebSong> _webSongConverter;
         private List<WebAlbum> _topAlbums;
         private List<WebArtist> _topArtists;
         private List<WebSong> _topSongs;
 
-        public ExplorePageViewModel(IEnumerable<IMetadataProvider> metadataProviders, IConverter<Track, WebSong> webSongConverter, IBackgroundAudioService backgroundAudioService, IMatchEngineService matchEngineService)
+        public ExplorePageViewModel(IEnumerable<IMetadataProvider> metadataProviders,
+            IConverter<Track, WebSong> webSongConverter, IBackgroundAudioService backgroundAudioService,
+            IMatchEngineService matchEngineService)
         {
             _webSongConverter = webSongConverter;
             _backgroundAudioService = backgroundAudioService;
@@ -71,18 +74,19 @@ namespace Audiotica.Windows.ViewModels
 
         public override void OnNavigatedTo(string parameter, NavigationMode mode, Dictionary<string, object> state)
         {
-            LoadTopSongs();
-            LoadTopArtists();
-            LoadTopAlbums();
+            var count = DeviceHelper.IsType(DeviceHelper.Family.Mobile) ? 6 : 40;
+            LoadTopSongs(count);
+            LoadTopArtists(count);
+            LoadTopAlbums(count);
         }
 
-        private async void LoadTopSongs()
+        private async void LoadTopSongs(int count)
         {
             foreach (var metadataProvider in MetadataProviders)
             {
                 try
                 {
-                    var results = await metadataProvider.GetTopSongsAsync(20);
+                    var results = await metadataProvider.GetTopSongsAsync(count);
                     TopSongs = results.Songs;
                     break;
                 }
@@ -95,13 +99,13 @@ namespace Audiotica.Windows.ViewModels
             }
         }
 
-        private async void LoadTopArtists()
+        private async void LoadTopArtists(int count)
         {
             foreach (var metadataProvider in MetadataProviders)
             {
                 try
                 {
-                    var results = await metadataProvider.GetTopArtistsAsync(20);
+                    var results = await metadataProvider.GetTopArtistsAsync(count);
                     TopArtists = results.Artists;
                     break;
                 }
@@ -114,13 +118,13 @@ namespace Audiotica.Windows.ViewModels
             }
         }
 
-        private async void LoadTopAlbums()
+        private async void LoadTopAlbums(int count)
         {
             foreach (var metadataProvider in MetadataProviders)
             {
                 try
                 {
-                    var results = await metadataProvider.GetTopAlbumsAsync(20);
+                    var results = await metadataProvider.GetTopAlbumsAsync(count);
                     TopAlbums = results.Albums;
                     break;
                 }
