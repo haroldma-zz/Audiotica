@@ -99,6 +99,21 @@ namespace Audiotica.Web.Metadata.Providers
             }
         }
 
+        public override Task<WebResults> GetTopSongsAsync(int limit = 50, string pageToken = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override Task<WebResults> GetTopAlbumsAsync(int limit = 50, string pageToken = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override Task<WebResults> GetTopArtistsAsync(int limit = 50, string pageToken = null)
+        {
+            throw new NotImplementedException();
+        }
+
         public override async Task<WebResults> GetArtistTopSongsAsync(string artistToken, int limit = 50,
             string pageToken = null)
         {
@@ -143,8 +158,7 @@ namespace Audiotica.Web.Metadata.Providers
 
         public override Task<string> GetLyricAsync(string song, string artist)
         {
-            // Spotify doesn't provide lyrics.
-            return Task.FromResult(string.Empty);
+            throw new NotImplementedException();
         }
 
         #region Helpers
@@ -226,7 +240,7 @@ namespace Audiotica.Web.Metadata.Providers
         {
             var webAlbum = new WebAlbum(GetType())
             {
-                Name = album.Name,
+                Title = album.Name,
                 Token = album.Id,
                 IsPartial = true
             };

@@ -10,22 +10,91 @@
     xmlns:customTriggers="using:Audiotica.Windows.CustomTriggers"
     mc:Ignorable="d"
     DataContext="{Binding ExplorePage, Source={StaticResource ViewModelLocator}}">
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <RelativePanel>
-            <TextBlock x:Name="Hey" Text="WTF??????????????????????????" />
-            <TextBlock x:Name="Tes" Text="WTF??????????????????????????" RelativePanel.Below="Hey" />
-        </RelativePanel>
+    <ScrollViewer x:Name="LayoutRoot" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Padding="{StaticResource PagePadding}">
+        <Grid x:Name="ContentRoot">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width=".75*" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <StackPanel x:Name="TopSongsPanel">
+                <TextBlock Text="Top Songs" Style="{StaticResource HeaderTextBlockStyle}" />
+                <GridView ItemsSource="{Binding TopSongs}" ScrollViewer.VerticalScrollBarVisibility="Disabled">
+                    <GridView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Margin="5" Width="200">
+                                <StackPanel>
+                                    <TextBlock Text="{Binding Title}" FontSize="18"
+                                               TextTrimming="CharacterEllipsis"/>
+                                    <TextBlock Text="{Binding Artists[0].Name}" 
+                                               Style="{StaticResource SubtleTextBlockStyle}" 
+                                               TextTrimming="CharacterEllipsis"/>
+                                </StackPanel>
+                            </Grid>
+                        </DataTemplate>
+                    </GridView.ItemTemplate>
+                </GridView>
+            </StackPanel>
+
+            <StackPanel x:Name="TopArtistsPanel" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Right">
+                <TextBlock Text="Top Artists" Style="{StaticResource HeaderTextBlockStyle}" />
+                <GridView  ItemsSource="{Binding TopArtists}" ScrollViewer.VerticalScrollBarVisibility="Disabled">
+                    <GridView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Margin="5" Width="150" Height="150">
+                                <Grid.Background>
+                                    <ImageBrush Stretch="UniformToFill" Opacity=".5" ImageSource="{Binding Artwork}" />
+                                </Grid.Background>
+                                <TextBlock Text="{Binding Name}" Margin="2"
+                                           VerticalAlignment="Center" TextAlignment="Center"
+                                               TextTrimming="CharacterEllipsis"/>
+                            </Grid>
+                        </DataTemplate>
+                    </GridView.ItemTemplate>
+                </GridView>
+            </StackPanel>
+        </Grid>
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroup x:Name="DeviceFamilyStates">
                 <VisualState>
                     <VisualState.StateTriggers>
-                        <customTriggers:DeviceFamilyTrigger DeviceFamily="Desktop" />
+                        <customTriggers:DeviceFamilyTrigger DeviceFamily="Mobile" />
                     </VisualState.StateTriggers>
                     <VisualState.Setters>
-                        <Setter Target="Tes.Visibility" Value="Collapsed" />
+                        <Setter Target="ContentRoot.Padding" Value="{StaticResource MobileStatusBarMargin}" />
+                        <Setter Target="LayoutRoot.Padding" Value="{StaticResource PageMobilePadding}" />
                     </VisualState.Setters>
                 </VisualState>
             </VisualStateGroup>
+            <VisualStateGroup x:Name="WindowSizeStates">
+                <VisualState x:Name="NarrowScreen"  >
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="0"/>
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="ContentRoot.ColumnDefinitions[1].Width" Value="0"/>
+                        <Setter Target="TopArtistsPanel.(Grid.Column)" Value="0"/>
+                        <Setter Target="TopArtistsPanel.(Grid.Row)" Value="1"/>
+                        <Setter Target="TopArtistsPanel.HorizontalAlignment" Value="Stretch"/>
+                    </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="WideScreen">
+                    <VisualState.StateTriggers>
+
+                        <AdaptiveTrigger MinWindowWidth="600" />
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="ContentRoot.ColumnDefinitions[1].Width" Value=".75*"/>
+                        <Setter Target="TopArtistsPanel.(Grid.Column)" Value="1"/>
+                        <Setter Target="TopArtistsPanel.(Grid.Row)" Value="0"/>
+                        <Setter Target="TopArtistsPanel.HorizontalAlignment" Value="Right"/>
+                    </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
+
         </VisualStateManager.VisualStateGroups>
-    </Grid>
+    </ScrollViewer>
 </navigationService:NavigatablePage>

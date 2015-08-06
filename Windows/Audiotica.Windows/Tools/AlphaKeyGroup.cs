@@ -5,7 +5,7 @@ using System.Linq;
 using Windows.Globalization.Collation;
 using Audiotica.Core.Common;
 
-namespace Audiotica.Windows.Tools.Converters
+namespace Audiotica.Windows.Tools
 {
     public class AlphaKeyGroup<T> : OptimizedObservableCollection<T>
     {

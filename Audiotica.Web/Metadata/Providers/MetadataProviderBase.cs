@@ -37,6 +37,9 @@ namespace Audiotica.Web.Metadata.Providers
         public abstract Task<WebAlbum> GetAlbumAsync(string albumToken);
         public abstract Task<WebSong> GetSongAsync(string songToken);
         public abstract Task<WebArtist> GetArtistAsync(string artistToken);
+        public abstract Task<WebResults> GetTopSongsAsync(int limit = 50, string pageToken = null);
+        public abstract Task<WebResults> GetTopAlbumsAsync(int limit = 50, string pageToken = null);
+        public abstract Task<WebResults> GetTopArtistsAsync(int limit = 50, string pageToken = null);
 
         public abstract Task<WebResults> GetArtistTopSongsAsync(string artistToken, int limit = 50,
             string pageToken = null);
@@ -52,7 +55,7 @@ namespace Audiotica.Web.Metadata.Providers
             if (albumMatch == null)
                 return null;
 
-            if (albumMatch.Name.ToAudioticaSlug() != album.ToAudioticaSlug() ||
+            if (albumMatch.Title.ToAudioticaSlug() != album.ToAudioticaSlug() ||
                 albumMatch.Artist.Name.ToAudioticaSlug() != artist.ToAudioticaSlug())
                 return null;
 

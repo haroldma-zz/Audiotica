@@ -143,12 +143,60 @@ namespace Audiotica.Web.Metadata.Providers
             }
         }
 
+        public override async Task<WebResults> GetTopSongsAsync(int limit = 50, string pageToken = null)
+        {
+            using (var client = CreateClient())
+            {
+                var result = await client.Chart
+                    .GetTopTracksAsync(pageToken == null
+                        ? 1
+                        : int.Parse(pageToken), limit);
+
+                if (result.Success)
+                {
+                    var webResults = CreateResults(result);
+                    webResults.Songs = result.Content.Select(CreateSong).ToList();
+                    return webResults;
+                }
+
+                throw new ProviderException(result.Status.ToString());
+            }
+        }
+
+        public override Task<WebResults> GetTopAlbumsAsync(int limit = 50, string pageToken = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override async Task<WebResults> GetTopArtistsAsync(int limit = 50, string pageToken = null)
+        {
+            using (var client = CreateClient())
+            {
+                var result = await client.Chart
+                    .GetTopArtistsAsync(pageToken == null
+                        ? 1
+                        : int.Parse(pageToken), limit);
+
+                if (result.Success)
+                {
+                    var webResults = CreateResults(result);
+                    webResults.Artists = result.Content.Select(CreateArtist).ToList();
+                    return webResults;
+                }
+
+                throw new ProviderException(result.Status.ToString());
+            }
+        }
+
         public override async Task<WebResults> GetArtistTopSongsAsync(string artistToken, int limit = 50,
             string pageToken = null)
         {
             using (var client = CreateClient())
             {
-                var result = await client.Artist.GetTopTracksAsync(artistToken, page: string.IsNullOrEmpty(pageToken) ? 1 : int.Parse(pageToken));
+                var result =
+                    await
+                        client.Artist.GetTopTracksAsync(artistToken,
+                            page: string.IsNullOrEmpty(pageToken) ? 1 : int.Parse(pageToken));
 
                 if (result.Success)
                 {
@@ -169,7 +217,10 @@ namespace Audiotica.Web.Metadata.Providers
         {
             using (var client = CreateClient())
             {
-                var result = await client.Artist.GetTopAlbumsAsync(artistToken, page: string.IsNullOrEmpty(pageToken) ? 1 : int.Parse(pageToken));
+                var result =
+                    await
+                        client.Artist.GetTopAlbumsAsync(artistToken,
+                            page: string.IsNullOrEmpty(pageToken) ? 1 : int.Parse(pageToken));
 
                 if (result.Success)
                 {
@@ -187,7 +238,7 @@ namespace Audiotica.Web.Metadata.Providers
 
         public override Task<string> GetLyricAsync(string song, string artist)
         {
-            return Task.FromResult(string.Empty);
+            throw new NotImplementedException();
         }
 
         #region Helpers
@@ -225,7 +276,7 @@ namespace Audiotica.Web.Metadata.Providers
                 song.Album =
                     new WebAlbum(GetType())
                     {
-                        Name = track.AlbumName,
+                        Title = track.AlbumName,
                         Token = new[] {track.AlbumName, track.ArtistName}.Tokenize(),
                         Artwork = track.Images?.Largest,
                         IsPartial = true
@@ -251,8 +302,8 @@ namespace Audiotica.Web.Metadata.Providers
         {
             var webAlbum = new WebAlbum(GetType())
             {
-                Name = album.Name,
-                Artist = new WebArtist(GetType()) { Name = album.ArtistName, Token = album.ArtistName, IsPartial = true},
+                Title = album.Name,
+                Artist = new WebArtist(GetType()) {Name = album.ArtistName, Token = album.ArtistName, IsPartial = true},
                 Token = new[] {album.Name, album.ArtistName}.Tokenize(),
                 Artwork = album.Images?.Largest
             };

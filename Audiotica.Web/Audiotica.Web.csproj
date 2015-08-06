@@ -102,6 +102,7 @@
     <Compile Include="MatchEngine\Providers\MatchProviderBase.cs" />
     <Compile Include="MatchEngine\Providers\SoundCloudMatchProvider.cs" />
     <Compile Include="MatchEngine\Validators\SongInstrumentalTypeValidator.cs" />
+    <Compile Include="Metadata\Providers\DesignMetadataProvider.cs" />
     <Compile Include="Metadata\Providers\LastFmMetadataProvider.cs" />
     <Compile Include="Metadata\Providers\MetadataProviderBase.cs" />
     <Compile Include="Http\Requets\MatchEngine\Netease\Models\NeteaseAlbum.cs" />

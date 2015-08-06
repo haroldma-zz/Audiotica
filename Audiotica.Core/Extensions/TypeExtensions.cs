@@ -8,30 +8,31 @@ namespace Audiotica.Core.Extensions
     public static class TypeExtensions
     {
         public static List<Type> GetImplementations(this IEnumerable<Type> types, Type desiredType,
-            bool excludeAbstracts = true)
+            bool excludeAbstracts = true, params Type[] excludeTypes)
         {
             return
                 types.Select(p => p.GetTypeInfo())
-                    .GetImplementations(desiredType, excludeAbstracts)
+                    .GetImplementations(desiredType, excludeAbstracts, excludeTypes)
                     .ToList();
         }
 
         public static List<Type> GetImplementations(this IEnumerable<TypeInfo> types, Type desiredType,
-            bool excludeAbstracts = true)
+            bool excludeAbstracts = true, params Type[] excludeTypes)
         {
             return
-                types.GetImplementations(desiredType.GetTypeInfo(), excludeAbstracts)
+                types.GetImplementations(desiredType.GetTypeInfo(), excludeAbstracts, excludeTypes)
                     .Select(p => p.AsType())
                     .ToList();
         }
 
         public static List<TypeInfo> GetImplementations(this IEnumerable<TypeInfo> types, TypeInfo desiredType,
-            bool excludeAbstracts = true)
+            bool excludeAbstracts = true, params Type[] excludeTypes)
         {
             return types.Where(p =>
                 desiredType.IsAssignableFrom(p) &&
                 (!excludeAbstracts || (!p.IsAbstract && !p.IsInterface)) &&
-                !p.Equals(desiredType)).ToList();
+                !p.Equals(desiredType) 
+                && (excludeTypes.Length == 0 || excludeTypes.All(m => m != p.AsType()))).ToList();
         }
 
         /// <summary>

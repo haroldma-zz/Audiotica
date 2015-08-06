@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace Audiotica.Core.Helpers
 {
@@ -17,7 +18,7 @@ namespace Audiotica.Core.Helpers
                 catch (Exception e)
                 {
                     Debug.WriteLine($"ActionHelper.Try ({attempts}): {e}");
-                    return false;
+                    attempts--;
                 }
             }
             return false;

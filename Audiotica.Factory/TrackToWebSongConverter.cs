@@ -34,7 +34,7 @@ namespace Audiotica.Factory
             {
                 Title = other.Title,
                 Artists = string.Join(";", other.Artists.Select(p => p.Name)),
-                AlbumTitle = other.Album.Name,
+                AlbumTitle = other.Album.Title,
                 AlbumArtist = other.Album.Artist.Name,
                 ArtworkUri = other.Album.Artwork,
                 ArtistArtworkUri = other.Artists[0].Artwork,

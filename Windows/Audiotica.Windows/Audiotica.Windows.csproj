@@ -132,13 +132,14 @@
     <Compile Include="Services\NavigationService\NavigationEventArgs.cs" />
     <Compile Include="Services\NavigationService\NavigationFacade.cs" />
     <Compile Include="Services\NavigationService\NavigationService.cs" />
-    <Compile Include="Tools\Converters\AlphaKeyGroup.cs" />
+    <Compile Include="Tools\AlphaKeyGroup.cs" />
     <Compile Include="Tools\Converters\BoolToColorBrushConverter.cs" />
     <Compile Include="Tools\Converters\ContentConverter.cs" />
     <Compile Include="Tools\Converters\EmptyListToVisibilityConverter.cs" />
     <Compile Include="Tools\Converters\EmptyStringToVisibilityConverter.cs" />
     <Compile Include="Tools\Converters\ListToStringConverter.cs" />
     <Compile Include="Tools\Converters\NullToVisibilityConverter.cs" />
+    <Compile Include="Tools\Converters\PercentageConverter.cs" />
     <Compile Include="Tools\Converters\StringFormatConverter.cs" />
     <Compile Include="Tools\Converters\TimespanToStringConverter.cs" />
     <Compile Include="Tools\Converters\UpperCaseConverter.cs" />

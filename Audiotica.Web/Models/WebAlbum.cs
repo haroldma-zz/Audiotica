@@ -8,7 +8,7 @@ namespace Audiotica.Web.Models
         {
         }
 
-        public string Name { get; set; }
+        public string Title { get; set; }
         public WebArtist Artist { get; set; }
         public DateTime? ReleasedDate { get; set; }
         public Uri Artwork { get; set; }
