@@ -4,6 +4,7 @@ using Windows.Media;
 using Windows.Media.Playback;
 using Windows.Storage.Streams;
 using Audiotica.Core.Windows.Extensions;
+using Audiotica.Database.Models;
 
 namespace Audiotica.Windows.Player
 {
@@ -37,23 +38,22 @@ namespace Audiotica.Windows.Player
         /// <summary>
         ///     Update Universal Volume Control (UVC) using SystemMediaTransPortControl APIs
         /// </summary>
-        public void UpdateUvcOnNewTrack(MediaPlaybackItem item)
+        public void UpdateUvcOnNewTrack(Track track)
         {
-            if (item == null)
+            _smtc.DisplayUpdater.Type = MediaPlaybackType.Music;
+            if (track == null)
             {
                 _smtc.PlaybackStatus = MediaPlaybackStatus.Stopped;
                 _smtc.DisplayUpdater.MusicProperties.Title = string.Empty;
                 _smtc.DisplayUpdater.MusicProperties.Artist = string.Empty;
                 _smtc.DisplayUpdater.MusicProperties.AlbumTitle = string.Empty;
                 _smtc.DisplayUpdater.MusicProperties.AlbumArtist = string.Empty;
+                _smtc.DisplayUpdater.Thumbnail = null;
                 _smtc.DisplayUpdater.Update();
                 return;
             }
-
-            var track = item.Source.Queue().Track;
-
+            
             _smtc.PlaybackStatus = MediaPlaybackStatus.Playing;
-            _smtc.DisplayUpdater.Type = MediaPlaybackType.Music;
             _smtc.DisplayUpdater.MusicProperties.Title = track.Title;
             _smtc.DisplayUpdater.MusicProperties.Artist = track.Artists;
             _smtc.DisplayUpdater.MusicProperties.AlbumTitle = track.AlbumTitle;
@@ -63,7 +63,6 @@ namespace Audiotica.Windows.Player
             _smtc.DisplayUpdater.Thumbnail = albumArt != null
                 ? RandomAccessStreamReference.CreateFromUri(albumArt)
                 : null;
-
             _smtc.DisplayUpdater.Update();
         }
 

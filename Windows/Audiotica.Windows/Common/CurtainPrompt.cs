@@ -278,4 +278,5 @@ namespace Audiotica.Windows.Common
             sbHide.Begin();
         }
     }
+
 }

@@ -1,6 +1,7 @@
 ﻿using Audiotica.Core.Windows.Services;
 using Audiotica.Web.MatchEngine.Interfaces.Providers;
 using Audiotica.Web.MatchEngine.Services;
+using Audiotica.Windows.Services;
 using Audiotica.Windows.Services.NavigationService;
 using Autofac;
 
@@ -20,6 +21,7 @@ namespace Audiotica.Windows.AppEngine.Modules
             builder.RegisterType<BackgroundAudioService>().As<IBackgroundAudioService>().SingleInstance();
             builder.RegisterType<NavigationService>().As<INavigationService>().SingleInstance();
             builder.RegisterType<MatchEngineService>().As<IMatchEngineService>();
+            builder.RegisterType<WindowsPlayerService>().As<IWindowsPlayerService>();
         }
     }
 }

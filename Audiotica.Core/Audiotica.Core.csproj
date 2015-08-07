@@ -35,6 +35,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Common\ApiKeys.cs" />
+    <Compile Include="Common\IConverter.cs" />
     <Compile Include="Common\ObservableObject.cs" />
     <Compile Include="Extensions\EnumerableExtensions.cs" />
     <Compile Include="Extensions\NumberExtensions.cs" />

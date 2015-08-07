@@ -146,6 +146,26 @@ namespace Audiotica.Windows.Player
 
             // Add handler for future playlist item changes
             _mediaPlaybackList.CurrentItemChanged += MediaPlaybackListOnCurrentItemChanged;
+            _mediaPlaybackList.ItemOpened += MediaPlaybackListOnItemOpened;
+        }
+
+        private void MediaPlaybackListOnItemOpened(MediaPlaybackList sender, MediaPlaybackItemOpenedEventArgs args)
+        {
+            _smtcWrapper.UpdateUvcOnPlaybackStarted(CurrentQueue.Track);
+        }
+
+        public void AddToPlaybackList(QueueTrack queue)
+        {
+            if (_mediaPlaybackList == null 
+                || BackgroundMediaPlayer.Current.Source != _mediaPlaybackList)
+                CreatePlaybackList(new[] {queue});
+
+            else
+            {
+                var source = MediaSource.CreateFromUri(queue.Track.AudioWebUri);
+                source.Queue(queue);
+                _mediaPlaybackList.Items.Add(new MediaPlaybackItem(source));
+            }
         }
 
         #region Internal
@@ -201,11 +221,12 @@ namespace Audiotica.Windows.Player
             // Get the new item
             var item = args.NewItem;
 
-            // Update the system view
-            _smtcWrapper.UpdateUvcOnNewTrack(item);
-
             // Get the current track
             var currentTrack = item?.Source?.Queue();
+
+            // Update the system view
+            _smtcWrapper.UpdateUvcOnNewTrack();
+
             if (currentTrack != null)
             {
                 Debug.WriteLine("PlaybackList_CurrentItemChanged: " + currentTrack.Id);
@@ -294,8 +315,24 @@ namespace Audiotica.Windows.Player
             _foregroundMessenger.StartPlayback += ForegroundMessengerOnStartPlayback;
             _foregroundMessenger.TrackChanged += ForegroundMessengerOnTrackChanged;
             _foregroundMessenger.UpdatePlaylist += ForegroundMessengerOnUpdatePlaylist;
+            _foregroundMessenger.AddToPlaylist += ForegroundMessengerOnAddToPlaylist;
             _foregroundMessenger.AppSuspended += ForegroundMessengerOnAppSuspended;
             _foregroundMessenger.AppResumed += ForegroundMessengerOnAppResumed;
+        }
+
+        private void UnsubscribeFromMessenger()
+        {
+            _foregroundMessenger.SkipToNext -= ForegroundMessengerOnSkipToNext;
+            _foregroundMessenger.SkipToPrev -= ForegroundMessengerOnSkipToPrev;
+            _foregroundMessenger.StartPlayback -= ForegroundMessengerOnStartPlayback;
+            _foregroundMessenger.TrackChanged -= ForegroundMessengerOnTrackChanged;
+            _foregroundMessenger.AddToPlaylist -= ForegroundMessengerOnAddToPlaylist;
+            _foregroundMessenger.UpdatePlaylist -= ForegroundMessengerOnUpdatePlaylist;
+        }
+
+        private void ForegroundMessengerOnAddToPlaylist(object sender, QueueTrack queueTrack)
+        {
+            AddToPlaybackList(queueTrack);
         }
 
         private void ForegroundMessengerOnAppResumed(object sender, EventArgs eventArgs)
@@ -311,15 +348,6 @@ namespace Audiotica.Windows.Player
             ForegroundAppState = AppState.Suspended;
             _settingsUtility.Write(ApplicationSettingsConstants.QueueId, CurrentQueue.Id);
             _settingsUtility.Remove(ApplicationSettingsConstants.Position);
-        }
-
-        private void UnsubscribeFromMessenger()
-        {
-            _foregroundMessenger.SkipToNext -= ForegroundMessengerOnSkipToNext;
-            _foregroundMessenger.SkipToPrev -= ForegroundMessengerOnSkipToPrev;
-            _foregroundMessenger.StartPlayback -= ForegroundMessengerOnStartPlayback;
-            _foregroundMessenger.TrackChanged -= ForegroundMessengerOnTrackChanged;
-            _foregroundMessenger.UpdatePlaylist -= ForegroundMessengerOnUpdatePlaylist;
         }
 
         private void ForegroundMessengerOnUpdatePlaylist(object sender, List<QueueTrack> tracks)

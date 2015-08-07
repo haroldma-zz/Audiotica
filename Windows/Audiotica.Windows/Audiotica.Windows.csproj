@@ -118,6 +118,7 @@
     <Compile Include="AppEngine\Providers\ProviderHelper.cs" />
     <Compile Include="Common\BootStrapper.cs" />
     <Compile Include="Common\CurtainPrompt.cs" />
+    <Compile Include="Common\UiBlocker.cs" />
     <Compile Include="Controls\NoMusicPanel.xaml.cs">
       <DependentUpon>NoMusicPanel.xaml</DependentUpon>
     </Compile>
@@ -132,6 +133,7 @@
     <Compile Include="Services\NavigationService\NavigationEventArgs.cs" />
     <Compile Include="Services\NavigationService\NavigationFacade.cs" />
     <Compile Include="Services\NavigationService\NavigationService.cs" />
+    <Compile Include="Services\WindowsPlayerService.cs" />
     <Compile Include="Tools\AlphaKeyGroup.cs" />
     <Compile Include="Tools\Converters\BoolToColorBrushConverter.cs" />
     <Compile Include="Tools\Converters\ContentConverter.cs" />
