@@ -40,6 +40,7 @@ namespace Audiotica.Windows.Player
         /// </summary>
         public void UpdateUvcOnNewTrack(Track track)
         {
+            _smtc.DisplayUpdater.ClearAll();
             _smtc.DisplayUpdater.Type = MediaPlaybackType.Music;
             if (track == null)
             {

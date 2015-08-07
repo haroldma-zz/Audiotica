@@ -146,12 +146,6 @@ namespace Audiotica.Windows.Player
 
             // Add handler for future playlist item changes
             _mediaPlaybackList.CurrentItemChanged += MediaPlaybackListOnCurrentItemChanged;
-            _mediaPlaybackList.ItemOpened += MediaPlaybackListOnItemOpened;
-        }
-
-        private void MediaPlaybackListOnItemOpened(MediaPlaybackList sender, MediaPlaybackItemOpenedEventArgs args)
-        {
-            _smtcWrapper.UpdateUvcOnPlaybackStarted(CurrentQueue.Track);
         }
 
         public void AddToPlaybackList(QueueTrack queue)
@@ -225,7 +219,7 @@ namespace Audiotica.Windows.Player
             var currentTrack = item?.Source?.Queue();
 
             // Update the system view
-            _smtcWrapper.UpdateUvcOnNewTrack();
+            _smtcWrapper.UpdateUvcOnNewTrack(currentTrack?.Track);
 
             if (currentTrack != null)
             {
