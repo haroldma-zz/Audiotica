@@ -18,10 +18,10 @@ namespace Audiotica.Windows.Services
     {
         private readonly IBackgroundAudioService _backgroundAudioService;
         private readonly IMatchEngineService _matchEngineService;
-        private readonly IConverter<Track, WebSong> _webSongConverter;
+        private readonly IConverter<WebSong, Track> _webSongConverter;
 
         public WindowsPlayerService(IBackgroundAudioService backgroundAudioService,
-            IMatchEngineService matchEngineService, IConverter<Track, WebSong> webSongConverter)
+            IMatchEngineService matchEngineService, IConverter<WebSong, Track> webSongConverter)
         {
             _backgroundAudioService = backgroundAudioService;
             _matchEngineService = matchEngineService;

@@ -10,7 +10,8 @@ namespace Audiotica.Windows.AppEngine.Modules
     {
         protected override void Load(ContainerBuilder builder)
         {
-            builder.RegisterType<WebToTrackSongConverter>().As<IConverter<Track, WebSong>>();
+            builder.RegisterType<WebToTrackConverter>().As<IConverter<WebSong, Track>>();
+            builder.RegisterType<WebToArtistConverter>().As<IConverter<WebArtist, Artist>>();
         }
     }
 }

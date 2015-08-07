@@ -134,13 +134,19 @@ namespace Audiotica.Web.Metadata.Providers
                 if (result.Success)
                     return CreateArtist(result.Content);
 
-                // Album not found, return null
+                // Artist not found, return null
                 if (result.Status == LastResponseStatus.MissingParameters)
                     return null;
 
                 // Something happened, throw exception
                 throw new ProviderException(result.Status.ToString());
             }
+        }
+
+        public override Task<WebArtist> GetArtistByNameAsync(string artistName)
+        {
+            // In this provider we use the artist name as token.
+            return GetArtistAsync(artistName);
         }
 
         public override async Task<WebResults> GetTopSongsAsync(int limit = 50, string pageToken = null)

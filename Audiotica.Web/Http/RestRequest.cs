@@ -157,6 +157,8 @@ namespace Audiotica.Web.Http
 
         #endregion
 
+        public bool DeserializeOnError { get; set; }
+
         #region Helper functions
 
         /// <summary>
@@ -195,7 +197,7 @@ namespace Audiotica.Web.Http
                 result.HttpResponse = await Client.SendAsync(
                     Request, ExternalToken).DontMarshall();
 
-                if (result.HttpResponse.IsSuccessStatusCode)
+                if (result.HttpResponse.IsSuccessStatusCode || DeserializeOnError)
                     result.Data = await TryDeserialization<T>(result.HttpResponse).DontMarshall();
             }
             catch (Exception exc)

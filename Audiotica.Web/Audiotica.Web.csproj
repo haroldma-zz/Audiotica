@@ -72,6 +72,7 @@
     <Compile Include="Http\Requets\Metadata\Spotify\Models\FullTrack.cs" />
     <Compile Include="Http\Requets\Metadata\Spotify\Models\Image.cs" />
     <Compile Include="Http\Requets\Metadata\Spotify\Models\Paging.cs" />
+    <Compile Include="Http\Requets\Metadata\Spotify\Models\PlainTrackResponse.cs" />
     <Compile Include="Http\Requets\Metadata\Spotify\Models\SearchItem.cs" />
     <Compile Include="Http\Requets\Metadata\Spotify\Models\SimpleAlbum.cs" />
     <Compile Include="Http\Requets\Metadata\Spotify\Models\SimpleArtist.cs" />

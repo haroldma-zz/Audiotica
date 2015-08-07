@@ -3,40 +3,43 @@ using System.Collections.Generic;
 using System.Linq;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
-using Audiotica.Core.Common;
+using Audiotica.Core.Extensions;
 using Audiotica.Core.Windows.Helpers;
-using Audiotica.Core.Windows.Services;
-using Audiotica.Database.Models;
-using Audiotica.Factory;
 using Audiotica.Web.Exceptions;
-using Audiotica.Web.MatchEngine.Interfaces.Providers;
 using Audiotica.Web.Metadata.Interfaces;
 using Audiotica.Web.Models;
-using Audiotica.Windows.Common;
 using Audiotica.Windows.Services;
+using Audiotica.Windows.Services.NavigationService;
 using Audiotica.Windows.Tools.Mvvm;
+using Audiotica.Windows.Views;
 
 namespace Audiotica.Windows.ViewModels
 {
     internal sealed class ExplorePageViewModel : ViewModelBase
     {
+        private readonly INavigationService _navigationService;
         private readonly IWindowsPlayerService _windowsPlayerService;
         private List<WebAlbum> _topAlbums;
         private List<WebArtist> _topArtists;
         private List<WebSong> _topSongs;
 
-        public ExplorePageViewModel(IEnumerable<IMetadataProvider> metadataProviders, IWindowsPlayerService windowsPlayerService)
+        public ExplorePageViewModel(INavigationService navigationService,
+            IEnumerable<IMetadataProvider> metadataProviders,
+            IWindowsPlayerService windowsPlayerService)
         {
+            _navigationService = navigationService;
             _windowsPlayerService = windowsPlayerService;
             MetadataProviders = metadataProviders.Where(p => p.IsEnabled)
                 .OrderByDescending(p => p.Priority).ToList();
 
             SongClickCommand = new Command<ItemClickEventArgs>(SongClickExecute);
+            ArtistClickCommand = new Command<ItemClickEventArgs>(ArtistClickExecute);
 
             if (IsInDesignMode)
                 OnNavigatedTo(null, NavigationMode.New, new Dictionary<string, object>());
         }
 
+        public Command<ItemClickEventArgs> ArtistClickCommand { get; set; }
         public Command<ItemClickEventArgs> SongClickCommand { get; }
         public List<IMetadataProvider> MetadataProviders { get; }
 
@@ -56,6 +59,13 @@ namespace Audiotica.Windows.ViewModels
         {
             get { return _topArtists; }
             set { Set(ref _topArtists, value); }
+        }
+
+        private void ArtistClickExecute(ItemClickEventArgs e)
+        {
+            var artist = (WebArtist) e.ClickedItem;
+            _navigationService.Navigate(typeof (ArtistPage),
+                new[] {artist.MetadataProvider.AssemblyQualifiedName, artist.Token, artist.Name}.Tokenize());
         }
 
         private void SongClickExecute(ItemClickEventArgs e)

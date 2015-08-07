@@ -30,7 +30,12 @@ namespace Audiotica.Web.Metadata.Providers
 
         public Task<WebArtist> GetArtistAsync(string artistToken)
         {
-            throw new NotImplementedException();
+            return Task.FromResult(CreateDummyArtists()[0]);
+        }
+
+        public Task<WebArtist> GetArtistByNameAsync(string artistName)
+        {
+            return Task.FromResult(CreateDummyArtists()[0]);
         }
 
         public Task<WebResults> GetTopSongsAsync(int limit = 50, string pageToken = null)
@@ -40,7 +45,7 @@ namespace Audiotica.Web.Metadata.Providers
 
         public Task<WebResults> GetTopAlbumsAsync(int limit = 50, string pageToken = null)
         {
-            throw new NotImplementedException();
+            return Task.FromResult(CreateAlbumsResult(CreateDummyAlbums()));
         }
 
         public Task<WebResults> GetTopArtistsAsync(int limit = 50, string pageToken = null)
@@ -50,7 +55,7 @@ namespace Audiotica.Web.Metadata.Providers
 
         public Task<WebResults> GetArtistTopSongsAsync(string artistToken, int limit = 50, string pageToken = null)
         {
-            throw new NotImplementedException();
+            return Task.FromResult(CreateSongsResult(CreateDummySongs()));
         }
 
         public Task<WebResults> GetArtistAlbumsAsync(string artistToken, int limit = 50, string pageToken = null)
@@ -77,13 +82,14 @@ namespace Audiotica.Web.Metadata.Providers
             };
         }
 
-        private WebAlbum CreateAlbum(string title, WebArtist artist, string artwork)
+        private WebAlbum CreateAlbum(string title, WebArtist artist, string artwork, List<WebSong> tracks = null)
         {
             return new WebAlbum(GetType())
             {
                 Title = title,
                 Artist = artist,
-                Artwork = new Uri(artwork)
+                Artwork = new Uri(artwork),
+                Tracks = tracks
             };
         }
 
@@ -116,7 +122,26 @@ namespace Audiotica.Web.Metadata.Providers
                 "http://static1.1.sqspcdn.com/static/f/362468/13350786/1311549110307/Childish-Gambino.jpg?token=%2F%2FxvckXhTw1vqbFHcrSvgEN5hhE%3D";
             return new List<WebArtist>
             {
-                CreateArtist("Childish Gambino", gambinoArtwork)
+                CreateArtist("Childish Gambino", gambinoArtwork),
+            };
+        }
+
+        private List<WebAlbum> CreateDummyAlbums()
+        {
+            var kauaiArtwork = "https://runthetrap.com/wp-content/uploads/2014/10/stream-childish-gambino-kauai-ep1.jpg";
+            var gambinoArtwork =
+                "http://static1.1.sqspcdn.com/static/f/362468/13350786/1311549110307/Childish-Gambino.jpg?token=%2F%2FxvckXhTw1vqbFHcrSvgEN5hhE%3D";
+            return new List<WebAlbum>
+            {
+                CreateAlbum("Kauai", CreateArtist("Childish Gambino", gambinoArtwork), kauaiArtwork, CreateDummySongs())
+            };
+        }
+
+        private WebResults CreateAlbumsResult(List<WebAlbum> albums)
+        {
+            return new WebResults
+            {
+                Albums = albums
             };
         }
 

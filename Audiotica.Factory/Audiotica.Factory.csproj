@@ -113,7 +113,8 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="WebToTrackSongConverter.cs" />
+    <Compile Include="WebToArtistConverter.cs" />
+    <Compile Include="WebToTrackConverter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Content Include="Properties\Audiotica.Factory.rd.xml" />
   </ItemGroup>

@@ -3,9 +3,9 @@ using System.Threading.Tasks;
 
 namespace Audiotica.Core.Common
 {
-    public interface IConverter<T, TT> where TT : IConvertibleObject
+    public interface IConverter<T, TT> where T : IConvertibleObject
     {
-        Task<T> ConvertAsync(TT other, Action<TT> saveChanges = null);
+        Task<TT> ConvertAsync(T other, Action<T> saveChanges = null);
     }
 
     public interface IConvertibleObject

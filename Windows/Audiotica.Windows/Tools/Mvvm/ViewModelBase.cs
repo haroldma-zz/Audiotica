@@ -10,6 +10,8 @@ namespace Audiotica.Windows.Tools.Mvvm
     {
         public bool IsInDesignMode => DesignMode.DesignModeEnabled;
 
+        public string PageKey { get; set; }
+
         public virtual void OnNavigatedTo(string parameter, NavigationMode mode, Dictionary<string, object> state)
         {   
         }

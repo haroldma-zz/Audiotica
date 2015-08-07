@@ -9,7 +9,14 @@
     mc:Ignorable="d"
     DataContext="{Binding ArtistPage, Source={StaticResource ViewModelLocator}}">
 
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-
+    <Grid>
+        <Grid.Background >
+            <ImageBrush Stretch="UniformToFill" Opacity=".1" AlignmentY="Top" ImageSource="{Binding Artist.ArtworkUri}" />
+        </Grid.Background>
+        <StackPanel>
+            <TextBlock Text="{Binding Artist.Name}" />
+            <ListView ItemsSource="{Binding TopSongs}" />
+            <ListView ItemsSource="{Binding TopAlbums}" />
+        </StackPanel>
     </Grid>
 </navigationService:NavigatablePage>

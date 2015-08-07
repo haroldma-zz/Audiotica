@@ -39,6 +39,8 @@ namespace Audiotica.Web.Metadata.Providers
                         .DontMarshall())
             {
                 if (!response.HasData) return null;
+                if (response.Data.HasError())
+                    throw new ProviderException(response.Data.ErrorResponse.Message);
 
                 WebResults results;
 
@@ -68,7 +70,11 @@ namespace Audiotica.Web.Metadata.Providers
             using (var response = await new SpotifyAlbumRequest(albumToken).ToResponseAsync())
             {
                 if (response.HasData)
+                {
+                    if (response.Data.HasError())
+                        throw new ProviderException(response.Data.ErrorResponse.Message);
                     return CreateAlbum(response.Data);
+                }
                 if (response.HttpResponse.StatusCode == HttpStatusCode.NotFound)
                     return null;
                 throw new ProviderException();
@@ -80,7 +86,11 @@ namespace Audiotica.Web.Metadata.Providers
             using (var response = await new SpotifyTrackRequest(songToken).ToResponseAsync())
             {
                 if (response.HasData)
+                {
+                    if (response.Data.HasError())
+                        throw new ProviderException(response.Data.ErrorResponse.Message);
                     return CreateSong(response.Data);
+                }
                 if (response.HttpResponse.StatusCode == HttpStatusCode.NotFound)
                     return null;
                 throw new ProviderException();
@@ -92,11 +102,23 @@ namespace Audiotica.Web.Metadata.Providers
             using (var response = await new SpotifyArtistRequest(artistToken).ToResponseAsync())
             {
                 if (response.HasData)
+                {
+                    if (response.Data.HasError())
+                        throw new ProviderException(response.Data.ErrorResponse.Message);
                     return CreateArtist(response.Data);
+                }
                 if (response.HttpResponse.StatusCode == HttpStatusCode.NotFound)
                     return null;
                 throw new ProviderException();
             }
+        }
+
+        public override async Task<WebArtist> GetArtistByNameAsync(string artistName)
+        {
+            // No api for getting by artist name, so do a search to find the id.
+            var results = await SearchAsync(artistName, WebResults.Type.Artist, 1);
+            return results.Artists.FirstOrDefault(p => string.Equals(p.Name, artistName, 
+                StringComparison.CurrentCultureIgnoreCase));
         }
 
         public override Task<WebResults> GetTopSongsAsync(int limit = 50, string pageToken = null)
@@ -118,8 +140,6 @@ namespace Audiotica.Web.Metadata.Providers
             string pageToken = null)
         {
             using (var response = await new SpotifyArtistTopTracksRequest(artistToken)
-                .Offset(pageToken == null ? 0 : int.Parse(pageToken))
-                .Limit(limit)
                 .ToResponseAsync())
             {
                 if (!response.HasData)
@@ -128,9 +148,10 @@ namespace Audiotica.Web.Metadata.Providers
                         return null;
                     throw new ProviderException();
                 }
+                if (response.Data.HasError())
+                    throw new ProviderException(response.Data.ErrorResponse.Message);
 
-                var results = CreateResults(response.Data);
-                results.Songs = response.Data.Items.Select(CreateSong).ToList();
+                var results = new WebResults {Songs = response.Data.Tracks.Select(CreateSong).ToList()};
                 return results;
             }
         }
@@ -141,6 +162,7 @@ namespace Audiotica.Web.Metadata.Providers
             using (var response = await new SpotifyArtistAlbumsRequest(artistToken)
                 .Offset(pageToken == null ? 0 : int.Parse(pageToken))
                 .Limit(limit)
+                .Types(AlbumType.Album | AlbumType.Compilation | AlbumType.Single)
                 .ToResponseAsync())
             {
                 if (!response.HasData)
@@ -149,6 +171,8 @@ namespace Audiotica.Web.Metadata.Providers
                         return null;
                     throw new ProviderException();
                 }
+                if (response.Data.HasError())
+                    throw new ProviderException(response.Data.ErrorResponse.Message);
 
                 var results = CreateResults(response.Data);
                 results.Albums = response.Data.Items.Select(CreateAlbum).ToList();

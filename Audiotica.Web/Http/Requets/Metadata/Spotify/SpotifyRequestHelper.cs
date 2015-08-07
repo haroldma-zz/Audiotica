@@ -9,6 +9,7 @@ namespace Audiotica.Web.Http.Requets.Metadata.Spotify
         public static T ConfigureSpotify<T>(this T request, string path)
             where T : RestRequest
         {
+            request.DeserializeOnError = true;
             return request.Url(BasePath + path).QParam("market", "US").Get();
         }
     }

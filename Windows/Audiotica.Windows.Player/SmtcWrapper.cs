@@ -41,19 +41,9 @@ namespace Audiotica.Windows.Player
         public void UpdateUvcOnNewTrack(Track track)
         {
             _smtc.DisplayUpdater.ClearAll();
+            if (track == null) return;
+
             _smtc.DisplayUpdater.Type = MediaPlaybackType.Music;
-            if (track == null)
-            {
-                _smtc.PlaybackStatus = MediaPlaybackStatus.Stopped;
-                _smtc.DisplayUpdater.MusicProperties.Title = string.Empty;
-                _smtc.DisplayUpdater.MusicProperties.Artist = string.Empty;
-                _smtc.DisplayUpdater.MusicProperties.AlbumTitle = string.Empty;
-                _smtc.DisplayUpdater.MusicProperties.AlbumArtist = string.Empty;
-                _smtc.DisplayUpdater.Thumbnail = null;
-                _smtc.DisplayUpdater.Update();
-                return;
-            }
-            
             _smtc.PlaybackStatus = MediaPlaybackStatus.Playing;
             _smtc.DisplayUpdater.MusicProperties.Title = track.Title;
             _smtc.DisplayUpdater.MusicProperties.Artist = track.Artists;

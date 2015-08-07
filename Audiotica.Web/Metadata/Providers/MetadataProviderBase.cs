@@ -37,6 +37,7 @@ namespace Audiotica.Web.Metadata.Providers
         public abstract Task<WebAlbum> GetAlbumAsync(string albumToken);
         public abstract Task<WebSong> GetSongAsync(string songToken);
         public abstract Task<WebArtist> GetArtistAsync(string artistToken);
+        public abstract Task<WebArtist> GetArtistByNameAsync(string artistName);
         public abstract Task<WebResults> GetTopSongsAsync(int limit = 50, string pageToken = null);
         public abstract Task<WebResults> GetTopAlbumsAsync(int limit = 50, string pageToken = null);
         public abstract Task<WebResults> GetTopArtistsAsync(int limit = 50, string pageToken = null);

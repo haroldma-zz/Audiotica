@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Windows.ApplicationModel;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
@@ -16,13 +17,12 @@ namespace Audiotica.Windows.Services.NavigationService
         private const string SettingsPrefix = "NavService_";
         private const string SettingsNavigationState = SettingsPrefix + "NavigationState";
         private const string SettingsSessions = SettingsPrefix + "NavigationSessions";
+        private readonly SystemNavigationManager _currentView;
         private readonly NavigationFacade _frame;
         private readonly ISettingsUtility _settingsUtility;
 
         private Dictionary<string, Dictionary<string, object>> _sessions =
             new Dictionary<string, Dictionary<string, object>>();
-
-        private readonly SystemNavigationManager _currentView;
 
         public NavigationService(Frame frame, ISettingsUtility settingsUtility)
         {
@@ -41,24 +41,28 @@ namespace Audiotica.Windows.Services.NavigationService
 
         public void NavigatedTo(NavigationMode mode, string parameter)
         {
-            _currentView.AppViewBackButtonVisibility = _frame.BackStackDepth > 1 ? AppViewBackButtonVisibility.Visible : AppViewBackButtonVisibility.Collapsed;
+            _currentView.AppViewBackButtonVisibility = _frame.BackStackDepth > 0
+                ? AppViewBackButtonVisibility.Visible
+                : AppViewBackButtonVisibility.Collapsed;
 
             _frame.CurrentPageParam = parameter;
             _frame.CurrentPageType = _frame.Content.GetType();
-            var key = CurrentPageType + "-depth-" + _frame.BackStackDepth;
-
-            if (mode == NavigationMode.New)
-            {
-                if (_sessions.ContainsKey(key))
-                    _sessions[key] = new Dictionary<string, object>();
-                else
-                    _sessions.Add(key, new Dictionary<string, object>());
-            }
-
             var page = _frame.Content as FrameworkElement;
             var dataContext = page?.DataContext as INavigatable;
 
-            dataContext?.OnNavigatedTo(parameter, mode, _sessions[key]);
+            if (dataContext != null)
+            {
+                dataContext.PageKey = CurrentPageType + parameter;
+
+                if (mode == NavigationMode.New)
+                {
+                    if (_sessions.ContainsKey(dataContext.PageKey))
+                        _sessions[dataContext.PageKey] = new Dictionary<string, object>();
+                    else
+                        _sessions.Add(dataContext.PageKey, new Dictionary<string, object>());
+                }
+                dataContext.OnNavigatedTo(parameter, mode, _sessions[dataContext.PageKey]);
+            }
         }
 
         public bool Navigate(Type page, string parameter = null)
@@ -99,6 +103,10 @@ namespace Audiotica.Windows.Services.NavigationService
 
         public void ClearHistory()
         {
+            foreach (var keyValuePair in _sessions.Where(p => !p.Key.EndsWith("0")).ToList())
+            {
+                _sessions.Remove(keyValuePair.Key);
+            }
             _frame.SetNavigationState(EmptyNavigation);
         }
 
@@ -124,9 +132,9 @@ namespace Audiotica.Windows.Services.NavigationService
         {
             var page = _frame.Content as FrameworkElement;
             if (page == null) return;
-            var key = page.GetType().FullName + "-depth-" + _frame.BackStackDepth;
             var dataContext = page.DataContext as INavigatable;
-            dataContext?.OnNavigatedFrom(suspending, _sessions[key]);
+            dataContext?.OnNavigatedFrom(suspending,
+                _sessions.ContainsKey(dataContext.PageKey) ? _sessions[dataContext.PageKey] : null);
         }
     }
 

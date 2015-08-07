@@ -127,6 +127,7 @@
     <Compile Include="CustomTriggers\InputTypeTrigger.cs" />
     <Compile Include="Factories\AppKernelFactory.cs" />
     <Compile Include="Common\MessageBox.cs" />
+    <Compile Include="Interactions\NavigateToPageAction.cs" />
     <Compile Include="Services\NavigationService\DesignNavigationService.cs" />
     <Compile Include="Services\NavigationService\INavigatable.cs" />
     <Compile Include="Services\NavigationService\INavigationService.cs" />
