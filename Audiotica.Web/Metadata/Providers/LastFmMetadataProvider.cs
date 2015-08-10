@@ -79,9 +79,9 @@ namespace Audiotica.Web.Metadata.Providers
                 if (result.Success)
                     return CreateAlbum(result.Content);
 
-                // Album not found, return null
+                // Album not found
                 if (result.Status == LastResponseStatus.MissingParameters)
-                    return null;
+                    throw new ProviderNotFoundException();
 
                 // Something happened, throw exception
                 throw new ProviderException(result.Status.ToString());
@@ -115,10 +115,9 @@ namespace Audiotica.Web.Metadata.Providers
 
                     return song;
                 }
-
-                // Album not found, return null
+                
                 if (result.Status == LastResponseStatus.MissingParameters)
-                    return null;
+                    throw new ProviderNotFoundException();
 
                 // Something happened, throw exception
                 throw new ProviderException(result.Status.ToString());
@@ -133,10 +132,9 @@ namespace Audiotica.Web.Metadata.Providers
 
                 if (result.Success)
                     return CreateArtist(result.Content);
-
-                // Artist not found, return null
+                
                 if (result.Status == LastResponseStatus.MissingParameters)
-                    return null;
+                    throw new ProviderNotFoundException();
 
                 // Something happened, throw exception
                 throw new ProviderException(result.Status.ToString());
@@ -212,7 +210,7 @@ namespace Audiotica.Web.Metadata.Providers
                 }
 
                 if (result.Status == LastResponseStatus.MissingParameters)
-                    return null;
+                    throw new ProviderNotFoundException();
 
                 throw new ProviderException(result.Status.ToString());
             }
@@ -236,7 +234,7 @@ namespace Audiotica.Web.Metadata.Providers
                 }
 
                 if (result.Status == LastResponseStatus.MissingParameters)
-                    return null;
+                    throw new ProviderNotFoundException();
 
                 throw new ProviderException(result.Status.ToString());
             }

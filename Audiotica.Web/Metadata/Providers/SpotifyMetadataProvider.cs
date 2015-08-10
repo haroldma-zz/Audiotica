@@ -32,7 +32,8 @@ namespace Audiotica.Web.Metadata.Providers
 
             using (
                 var response =
-                    await new SpotifySearchRequest(query, searchType.ToString().ToLower().Replace("song", "track"))
+                    await new SpotifySearchRequest(query)
+                        .Type(searchType)
                         .Limit(limit)
                         .Offset(offset)
                         .ToResponseAsync()
@@ -76,7 +77,7 @@ namespace Audiotica.Web.Metadata.Providers
                     return CreateAlbum(response.Data);
                 }
                 if (response.HttpResponse.StatusCode == HttpStatusCode.NotFound)
-                    return null;
+                    throw new ProviderNotFoundException();
                 throw new ProviderException();
             }
         }
@@ -92,7 +93,7 @@ namespace Audiotica.Web.Metadata.Providers
                     return CreateSong(response.Data);
                 }
                 if (response.HttpResponse.StatusCode == HttpStatusCode.NotFound)
-                    return null;
+                    throw new ProviderNotFoundException();
                 throw new ProviderException();
             }
         }
@@ -108,7 +109,7 @@ namespace Audiotica.Web.Metadata.Providers
                     return CreateArtist(response.Data);
                 }
                 if (response.HttpResponse.StatusCode == HttpStatusCode.NotFound)
-                    return null;
+                    throw new ProviderNotFoundException();
                 throw new ProviderException();
             }
         }
@@ -155,7 +156,7 @@ namespace Audiotica.Web.Metadata.Providers
                 if (!response.HasData)
                 {
                     if (response.HttpResponse.StatusCode == HttpStatusCode.NotFound)
-                        return null;
+                        throw new ProviderNotFoundException();
                     throw new ProviderException();
                 }
                 if (response.Data.HasError())
@@ -178,7 +179,7 @@ namespace Audiotica.Web.Metadata.Providers
                 if (!response.HasData)
                 {
                     if (response.HttpResponse.StatusCode == HttpStatusCode.NotFound)
-                        return null;
+                        throw new ProviderNotFoundException();
                     throw new ProviderException();
                 }
                 if (response.Data.HasError())
@@ -265,7 +266,7 @@ namespace Audiotica.Web.Metadata.Providers
                 Token = track.Id,
                 IsPartial = true,
                 TrackNumber = track.TrackNumber,
-                DiscNumber = track.DiscNumber
+                DiskNumber = track.DiscNumber
             };
 
             var full = track as FullTrack;
@@ -295,8 +296,6 @@ namespace Audiotica.Web.Metadata.Providers
         private WebSong CreateSong(FullTrack track)
         {
             var webTrack = CreateSong(track as SimpleTrack);
-            webTrack.Album = CreateAlbum(track.Album);
-            webTrack.IsPartial = false;
             return webTrack;
         }
 
@@ -323,6 +322,7 @@ namespace Audiotica.Web.Metadata.Providers
             webAlbum.IsPartial = false;
             webAlbum.Tracks = album.Tracks?.Items?.Select(CreateSong).ToList();
             webAlbum.Artist = CreateArtist(album.Artist);
+            webAlbum.Genres = album.Genres;
 
             DateTime released;
             if (DateTime.TryParse(album.ReleaseDate, out released))

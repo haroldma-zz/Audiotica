@@ -17,29 +17,60 @@
     DataContext="{Binding ExplorePage, Source={StaticResource ViewModelLocator}}">
     <ScrollViewer x:Name="LayoutRoot" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Padding="{StaticResource PagePadding}">
         <Grid x:Name="ContentRoot">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width=".75*" />
-            </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
-            <StackPanel x:Name="TopSongsPanel">
-                <TextBlock Text="Top Songs" Style="{StaticResource HeaderTextBlockStyle}" />
-                <controls:AlternatingRowListView ItemsSource="{Binding TopSongs}"
-                                             OddRowBackground="{StaticResource OddRowBackgroundBrush}"
-                                             ItemTemplate="{StaticResource WebSongNarrowTemplate}" 
-                                                 IsItemClickEnabled="True">
-                    <interactivity:Interaction.Behaviors>
-                        <core:EventTriggerBehavior EventName="ItemClick">
-                            <core:InvokeCommandAction Command="{Binding SongClickCommand}"/>
-                        </core:EventTriggerBehavior>
-                    </interactivity:Interaction.Behaviors>
-                </controls:AlternatingRowListView>
-            </StackPanel>
+            <Grid x:Name="SideBySideContent">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width=".75*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <StackPanel x:Name="TopSongsPanel">
+                    <TextBlock Text="Top Songs" Style="{StaticResource HeaderTextBlockStyle}" />
+                    <controls:AlternatingRowListView ItemsSource="{Binding TopSongs}"
+                                                     OddRowBackground="{StaticResource OddRowBackgroundBrush}"
+                                                     ItemTemplate="{StaticResource WebSongNarrowTemplate}"
+                                                     IsItemClickEnabled="True">
+                        <interactivity:Interaction.Behaviors>
+                            <core:EventTriggerBehavior EventName="ItemClick">
+                                <core:InvokeCommandAction Command="{Binding SongClickCommand}" />
+                            </core:EventTriggerBehavior>
+                        </interactivity:Interaction.Behaviors>
+                    </controls:AlternatingRowListView>
+                </StackPanel>
 
-            <StackPanel x:Name="TopArtistsPanel" Grid.Row="0" Grid.Column="1">
+                <StackPanel x:Name="TopAlbumsPanel" Grid.Row="0" Grid.Column="1">
+                    <TextBlock Text="Top Albums" Style="{StaticResource HeaderTextBlockStyle}" />
+                    <GridView ItemsSource="{Binding TopAlbums}" IsItemClickEnabled="True"
+                              ScrollViewer.VerticalScrollBarVisibility="Disabled">
+                        <interactivity:Interaction.Behaviors>
+                            <core:EventTriggerBehavior EventName="ItemClick">
+                                <core:InvokeCommandAction Command="{Binding ArtistClickCommand}" />
+                            </core:EventTriggerBehavior>
+                        </interactivity:Interaction.Behaviors>
+                        <GridView.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Margin="5" Width="150" Height="150">
+                                    <Grid.Background>
+                                        <ImageBrush Stretch="UniformToFill" Opacity=".5"
+                                                    ImageSource="{Binding Artwork}" />
+                                    </Grid.Background>
+                                    <TextBlock Text="{Binding Title}" Margin="2"
+                                               VerticalAlignment="Center" TextAlignment="Center"
+                                               TextTrimming="CharacterEllipsis" />
+                                </Grid>
+                            </DataTemplate>
+                        </GridView.ItemTemplate>
+                    </GridView>
+                </StackPanel>
+
+            </Grid>
+            <StackPanel Grid.Row="1" x:Name="TopArtistsPanel">
                 <TextBlock Text="Top Artists" Style="{StaticResource HeaderTextBlockStyle}" />
                 <GridView  ItemsSource="{Binding TopArtists}" IsItemClickEnabled="True" ScrollViewer.VerticalScrollBarVisibility="Disabled">
                     <interactivity:Interaction.Behaviors>
@@ -80,10 +111,9 @@
                         <AdaptiveTrigger MinWindowWidth="0"/>
                     </VisualState.StateTriggers>
                     <VisualState.Setters>
-                        <Setter Target="ContentRoot.ColumnDefinitions[1].Width" Value="0"/>
-                        <Setter Target="TopArtistsPanel.(Grid.Column)" Value="0"/>
-                        <Setter Target="TopArtistsPanel.(Grid.Row)" Value="1"/>
-                        <Setter Target="TopArtistsPanel.HorizontalAlignment" Value="Stretch"/>
+                        <Setter Target="SideBySideContent.ColumnDefinitions[1].Width" Value="0"/>
+                        <Setter Target="TopAlbumsPanel.(Grid.Column)" Value="0"/>
+                        <Setter Target="TopAlbumsPanel.(Grid.Row)" Value="1"/>
                     </VisualState.Setters>
                 </VisualState>
                 <VisualState x:Name="WideScreen">
@@ -92,10 +122,9 @@
                         <AdaptiveTrigger MinWindowWidth="600" />
                     </VisualState.StateTriggers>
                     <VisualState.Setters>
-                        <Setter Target="ContentRoot.ColumnDefinitions[1].Width" Value=".75*"/>
-                        <Setter Target="TopArtistsPanel.(Grid.Column)" Value="1"/>
-                        <Setter Target="TopArtistsPanel.(Grid.Row)" Value="0"/>
-                        <Setter Target="TopArtistsPanel.HorizontalAlignment" Value="Right"/>
+                        <Setter Target="SideBySideContent.ColumnDefinitions[1].Width" Value=".75*"/>
+                        <Setter Target="TopAlbumsPanel.(Grid.Column)" Value="1"/>
+                        <Setter Target="TopAlbumsPanel.(Grid.Row)" Value="0"/>
                     </VisualState.Setters>
                 </VisualState>
             </VisualStateGroup>

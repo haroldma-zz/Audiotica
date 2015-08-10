@@ -12,4 +12,8 @@ namespace Audiotica.Web.Exceptions
         {
         }
     }
+
+    public class ProviderNotFoundException : Exception
+    {
+    }
 }

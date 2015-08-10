@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Audiotica.Core.Common;
-using Audiotica.Core.Helpers;
 using Audiotica.Database.Models;
 using Audiotica.Database.Services.Interfaces;
 using Audiotica.Web.Metadata.Interfaces;
@@ -14,8 +13,8 @@ namespace Audiotica.Factory
 {
     public class WebToTrackConverter : IConverter<WebSong, Track>
     {
-        private readonly IMetadataProvider[] _providers;
         private readonly ILibraryService _libraryService;
+        private readonly IMetadataProvider[] _providers;
 
         public WebToTrackConverter(IMetadataProvider[] providers, ILibraryService libraryService)
         {
@@ -43,6 +42,13 @@ namespace Audiotica.Factory
                 && other.Artists[0].IsPartial)
                 other.Artists[0] = await provider.GetArtistAsync(other.Artists[0].Token);
 
+            // some providers only have genres in the album object, others on the song
+            var genres = new List<string>();
+            if (other.Genres != null)
+                genres = other.Genres;
+            if (other.Album.Genres != null)
+                genres.AddRange(other.Album.Genres);
+
             var track = new Track
             {
                 Title = other.Title,
@@ -53,14 +59,14 @@ namespace Audiotica.Factory
                 ArtistArtworkUri = other.Artists[0].Artwork,
                 DisplayArtist = other.Artists[0].Name,
                 TrackNumber = other.TrackNumber != 0 ? other.TrackNumber : 1,
-                DiscNumber = other.DiscNumber != 0 ? other.DiscNumber : 1,
-                DiscCount = 1,
+                DiscNumber = other.DiskNumber != 0 ? other.DiskNumber : 1,
                 Year = other.Album.ReleasedDate?.Year,
                 TrackCount = other.Album.Tracks?.Count ?? 1,
-                Genres = other.Genres,
+                Genres = string.Join("; ", genres.Distinct()),
                 Type = Track.TrackType.Stream
             };
 
+            track.DiscCount = track.DiscNumber;
             other.PreviousConversion = track;
             saveChanges?.Invoke(other);
 

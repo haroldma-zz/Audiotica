@@ -9,9 +9,10 @@ namespace Audiotica.Web.Http.Requets.Metadata.Spotify.Models
     {
         [JsonProperty("artists")]
         public List<SimpleArtist> Artists { get; set; }
-        public SimpleArtist Artist { get { return Artists.FirstOrDefault(); } }
+        public SimpleArtist Artist => Artists.FirstOrDefault();
+
         [JsonProperty("genres")]
-        public List<String> Genres { get; set; }
+        public List<string> Genres { get; set; }
         [JsonProperty("popularity")]
         public int Popularity { get; set; }
         [JsonProperty("release_date")]

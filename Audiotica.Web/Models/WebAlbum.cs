@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Audiotica.Web.Models
 {
@@ -12,5 +13,6 @@ namespace Audiotica.Web.Models
         public WebArtist Artist { get; set; }
         public DateTime? ReleasedDate { get; set; }
         public Uri Artwork { get; set; }
+        public List<string> Genres{ get; set; }
     }
 }

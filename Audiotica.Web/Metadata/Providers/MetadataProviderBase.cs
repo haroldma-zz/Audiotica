@@ -22,7 +22,7 @@ namespace Audiotica.Web.Metadata.Providers
         public abstract ProviderCollectionSize CollectionSize { get; }
         public abstract ProviderCollectionType CollectionType { get; }
         public abstract string DisplayName { get; }
-        public int Priority => 10;
+        public int Priority => (int)CollectionSize + (int)Speed + (int)CollectionType;
 
         public bool IsEnabled
         {

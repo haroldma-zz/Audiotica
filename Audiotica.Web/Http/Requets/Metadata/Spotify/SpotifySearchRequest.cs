@@ -1,13 +1,19 @@
 ﻿using Audiotica.Web.Extensions;
 using Audiotica.Web.Http.Requets.Metadata.Spotify.Models;
+using Audiotica.Web.Models;
 
 namespace Audiotica.Web.Http.Requets.Metadata.Spotify
 {
     public class SpotifySearchRequest : RestObjectRequest<SearchItem>
     {
-        public SpotifySearchRequest(string query, string type)
+        public SpotifySearchRequest(string query)
         {
-            this.ConfigureSpotify("search").QParam("type", type).QParam("q", query);
+            this.ConfigureSpotify("search").Type(WebResults.Type.Song).QParam("q", query);
+        }
+
+        public SpotifySearchRequest Type(WebResults.Type type)
+        {
+            return this.Param("type", type.ToString().ToLower().Replace("song", "track"));
         }
 
         public SpotifySearchRequest Limit(int limit)
