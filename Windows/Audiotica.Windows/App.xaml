@@ -4,48 +4,33 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:common="using:Audiotica.Windows.Common"
     xmlns:viewModels="using:Audiotica.Windows.ViewModels"
-    xmlns:converters="using:Audiotica.Windows.Tools.Converters">
+    xmlns:converters="using:Audiotica.Windows.Tools.Converters"
+    xmlns:controls="using:Audiotica.Windows.Controls">
     <common:BootStrapper.Resources>
         <ResourceDictionary>
             <viewModels:ViewModelLocator x:Key="ViewModelLocator" />
 
-            <converters:PercentageConverter x:Key="PercentageConverter"/>
-            
-            <SolidColorBrush x:Name="SubtleTextBrush" Color="{ThemeResource SystemBaseMediumColor}"/>
-            <SolidColorBrush x:Name="OddRowBackgroundBrush" Color="{ThemeResource SystemChromeLowColor}"/>
-            
+            <converters:VisibilityConverter x:Key="VisibilityConverter" />
+            <converters:PercentageConverter x:Key="PercentageConverter" />
+
+            <SolidColorBrush x:Name="SubtleTextBrush" Color="{ThemeResource SystemBaseMediumColor}" />
+            <SolidColorBrush x:Name="OddRowBackgroundBrush" Color="{ThemeResource SystemChromeLowColor}" />
+
             <Thickness x:Key="MobileStatusBarMargin">0, 26, 0, 0</Thickness>
             <Thickness x:Key="PagePadding">10, 5, 10, 0</Thickness>
             <Thickness x:Key="PageMobilePadding">10, 0</Thickness>
 
             <DataTemplate x:Key="TrackTemplate">
-                <Grid Margin="0,15">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width=".2*" />
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Text="{Binding Title}"
-                                           Style="{StaticResource BaseTextBlockStyle}" Margin="0,0,10,0" />
-                        <TextBlock Grid.Column="1" Text="{Binding Artists}"
-                                           Style="{StaticResource SubtleTextBlockStyle}" Margin="0,0,10,0" />
-                        <TextBlock Grid.Column="2" Text="{Binding AlbumTitle}"
-                                           Style="{StaticResource SubtleTextBlockStyle}" Margin="0,0,10,0" />
-                        <TextBlock Grid.Column="3" Text="{Binding Year}"
-                                           Style="{StaticResource SubtleTextBlockStyle}" />
-                    </Grid>
-                </Grid>
+                <controls:TrackViewer IsSelected="{Binding Tag, RelativeSource={RelativeSource Mode=TemplatedParent}}" />
             </DataTemplate>
-            
+
             <DataTemplate x:Key="TrackNarrowTemplate">
                 <Grid Margin="0,15">
                     <StackPanel>
                         <TextBlock Text="{Binding Title}"
-                                           Style="{StaticResource TitleTextBlockStyle}" />
+                                   Style="{StaticResource TitleTextBlockStyle}" />
                         <TextBlock Text="{Binding Artists}"
-                                           Style="{StaticResource SubtleTextBlockStyle}" />
+                                   Style="{StaticResource SubtleTextBlockStyle}" />
                     </StackPanel>
                 </Grid>
             </DataTemplate>
@@ -60,13 +45,13 @@
                             <ColumnDefinition Width=".2*" />
                         </Grid.ColumnDefinitions>
                         <TextBlock Text="{Binding Title}"
-                                           Style="{StaticResource BaseTextBlockStyle}" Margin="0,0,10,0" />
+                                   Style="{StaticResource BaseTextBlockStyle}" Margin="0,0,10,0" />
                         <TextBlock Grid.Column="1" Text="{Binding Artists[0].Name}"
-                                           Style="{StaticResource SubtleTextBlockStyle}" Margin="0,0,10,0" />
+                                   Style="{StaticResource SubtleTextBlockStyle}" Margin="0,0,10,0" />
                         <TextBlock Grid.Column="2" Text="{Binding Album.Title}"
-                                           Style="{StaticResource SubtleTextBlockStyle}" Margin="0,0,10,0" />
+                                   Style="{StaticResource SubtleTextBlockStyle}" Margin="0,0,10,0" />
                         <TextBlock Grid.Column="3" Text="{Binding Album.ReleasedDate.Year}"
-                                           Style="{StaticResource SubtleTextBlockStyle}" />
+                                   Style="{StaticResource SubtleTextBlockStyle}" />
                     </Grid>
                 </Grid>
             </DataTemplate>
@@ -75,15 +60,16 @@
                 <Grid Margin="0,15">
                     <StackPanel>
                         <TextBlock Text="{Binding Title}"
-                                           Style="{StaticResource TitleTextBlockStyle}" />
+                                   Style="{StaticResource TitleTextBlockStyle}" />
                         <TextBlock Text="{Binding Artists[0].Name}"
-                                           Style="{StaticResource SubtleTextBlockStyle}" />
+                                   Style="{StaticResource SubtleTextBlockStyle}" />
                     </StackPanel>
                 </Grid>
             </DataTemplate>
 
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/Styles/TextStyles.xaml" />
+                <ResourceDictionary Source="/Styles/ControlStyles.xaml" />
                 <ResourceDictionary Source="/Styles/SplitViewStyles.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>

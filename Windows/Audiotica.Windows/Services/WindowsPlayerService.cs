@@ -26,36 +26,37 @@ namespace Audiotica.Windows.Services
         public async void Play(WebSong song)
         {
             var track = song.PreviousConversion as Track;
-            using (var blocker = new UiBlocker())
-            {
-                if (track == null)
+            if (track == null)
+                using (var blocker = new UiBlocker())
                 {
                     blocker.UpdateProgress("Getting data...");
                     track = await _webSongConverter.ConvertAsync(song, webSong => { song.SetFrom(webSong); });
                 }
-            }
             Play(track);
         }
 
         public async void Play(Track track)
         {
-            using (var blocker = new UiBlocker())
+            var queue = _backgroundAudioService.PlaybackQueue
+                .FirstOrDefault(p => TrackComparer.AreEqual(track, p.Track));
+
+            if (queue == null)
             {
                 if (track.AudioWebUri == null)
-                {
-                    blocker.UpdateProgress("Matching...");
-                    track.AudioWebUri = await _matchEngineService.GetLinkAsync(track.Title, track.DisplayArtist);
-                }
+                    using (var blocker = new UiBlocker())
+                    {
+                        blocker.UpdateProgress("Matching...");
+                        track.AudioWebUri = await _matchEngineService.GetLinkAsync(track.Title, track.DisplayArtist);
+
+                        if (track.AudioWebUri == null)
+                        {
+                            CurtainPrompt.ShowError("Problem matching the song, try saving and manual matching it.");
+                            return;
+                        }
+                    }
             }
-            if (track.AudioWebUri == null)
-                CurtainPrompt.ShowError("Problem matching the song, try saving and manual matching it.");
-            else
-            {
-                var queue = _backgroundAudioService.PlaybackQueue
-                    .FirstOrDefault(p => TrackComparer.AreEqual(track, p.Track))
-                            ?? _backgroundAudioService.Add(track);
-                _backgroundAudioService.Play(queue);
-            }
+
+            _backgroundAudioService.Play(queue ?? _backgroundAudioService.Add(track));
         }
     }
 }

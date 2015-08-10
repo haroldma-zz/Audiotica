@@ -1,0 +1,56 @@
+﻿<UserControl
+    x:Class="Audiotica.Windows.Controls.TrackViewer"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Audiotica.Windows.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    x:Name="Element"
+    d:DesignHeight="300"
+    d:DesignWidth="400">
+
+    <Grid Margin="0,15">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width=".2*" />
+            </Grid.ColumnDefinitions>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="{Binding Title}"
+                           Style="{StaticResource BaseTextBlockStyle}" Margin="0,0,10,0" />
+                <StackPanel Grid.Column="1" Margin="20,0,20,0" Orientation="Horizontal"
+                            Visibility="{Binding IsSelected, ElementName=Element, Converter={StaticResource VisibilityConverter}}">
+                    <Button Style="{StaticResource PlainButtonStyle}" Padding="-5" Margin="0,0,40,0" Click="PlayButton_Click">
+                        <SymbolIcon Symbol="Play" RenderTransformOrigin="0.5,0.5">
+                            <SymbolIcon.RenderTransform>
+                                <CompositeTransform ScaleX=".7" ScaleY=".7" />
+                            </SymbolIcon.RenderTransform>
+                        </SymbolIcon>
+                    </Button>
+                    <Button Style="{StaticResource PlainButtonStyle}" Padding="-5" Click="AddButton_Click">
+                        <SymbolIcon Symbol="Add" RenderTransformOrigin="0.5,0.5">
+                            <SymbolIcon.RenderTransform>
+                                <CompositeTransform ScaleX=".7" ScaleY=".7" />
+                            </SymbolIcon.RenderTransform>
+                        </SymbolIcon>
+                    </Button>
+                </StackPanel>
+            </Grid>
+            <TextBlock Grid.Column="1" Text="{Binding Artists}"
+                       Style="{StaticResource SubtleTextBlockStyle}" Margin="0,0,10,0" />
+            <TextBlock
+
+                Grid.Column="2" Text="{Binding AlbumTitle}"
+                Style="{StaticResource SubtleTextBlockStyle}" Margin="0,0,10,0" />
+            <TextBlock Grid.Column="3" Text="{Binding Year}"
+                       Style="{StaticResource SubtleTextBlockStyle}" />
+        </Grid>
+    </Grid>
+</UserControl>

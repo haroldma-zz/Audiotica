@@ -29,7 +29,14 @@
                 <TextBlock Text="Top Songs" Style="{StaticResource HeaderTextBlockStyle}" />
                 <controls:AlternatingRowListView ItemsSource="{Binding TopSongs}"
                                              OddRowBackground="{StaticResource OddRowBackgroundBrush}"
-                                             ItemTemplate="{StaticResource WebSongNarrowTemplate}" />
+                                             ItemTemplate="{StaticResource WebSongNarrowTemplate}" 
+                                                 IsItemClickEnabled="True">
+                    <interactivity:Interaction.Behaviors>
+                        <core:EventTriggerBehavior EventName="ItemClick">
+                            <core:InvokeCommandAction Command="{Binding SongClickCommand}"/>
+                        </core:EventTriggerBehavior>
+                    </interactivity:Interaction.Behaviors>
+                </controls:AlternatingRowListView>
             </StackPanel>
 
             <StackPanel x:Name="TopArtistsPanel" Grid.Row="0" Grid.Column="1">

@@ -1,5 +1,6 @@
 ﻿using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Media;
 
 namespace Audiotica.Windows.Controls
@@ -29,7 +30,6 @@ namespace Audiotica.Windows.Controls
         }
 
         protected override void PrepareContainerForItemOverride(DependencyObject element, object item)
-
         {
             base.PrepareContainerForItemOverride(element, item);
 

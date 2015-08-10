@@ -123,6 +123,9 @@
     <Compile Include="Controls\NoMusicPanel.xaml.cs">
       <DependentUpon>NoMusicPanel.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\TrackViewer.xaml.cs">
+      <DependentUpon>TrackViewer.xaml</DependentUpon>
+    </Compile>
     <Compile Include="CustomTriggers\ControlSizeTrigger.cs" />
     <Compile Include="CustomTriggers\DeviceFamilyTrigger.cs" />
     <Compile Include="CustomTriggers\InputTypeTrigger.cs" />
@@ -219,7 +222,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Controls\TrackViewer.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="DeviceFamily-Mobile\Shell.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Styles\ControlStyles.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

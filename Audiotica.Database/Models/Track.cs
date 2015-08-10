@@ -245,7 +245,7 @@ namespace Audiotica.Database.Models
     {
         public bool Equals(Track x, Track y)
         {
-            if (x.Id > 0)
+            if (x.Id > 0 && y.Id > 0)
                 return x.Id == y.Id;
             return GetHashCode(x) == GetHashCode(y);
         }
@@ -253,8 +253,8 @@ namespace Audiotica.Database.Models
         public int GetHashCode(Track obj)
         {
             return (obj.Title + obj.Artists + obj.DisplayArtist
-                    + obj.AlbumArtist + obj.ArtistArtworkUri
-                    + obj.AlbumTitle + obj.ArtworkUri + obj.AudioWebUri + obj.AudioLocalUri).GetHashCode();
+                    + obj.AlbumArtist
+                    + obj.AlbumTitle).GetHashCode();
         }
 
         public static bool AreEqual(Track x, Track y)

@@ -22,7 +22,7 @@ namespace Audiotica.Web.Metadata.Providers
         }
 
         public override string DisplayName => "Last.FM";
-        public override ProviderSpeed Speed => ProviderSpeed.Fast;
+        public override ProviderSpeed Speed => ProviderSpeed.Average;
         public override ProviderCollectionSize CollectionSize => ProviderCollectionSize.Large;
         public override ProviderCollectionType CollectionType => ProviderCollectionType.MainstreamAndRare;
         private LastfmClient CreateClient() => new LastfmClient(ApiKeys.LastFmId, ApiKeys.LastFmSecret);
