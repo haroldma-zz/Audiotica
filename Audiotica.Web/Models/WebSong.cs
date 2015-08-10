@@ -6,6 +6,11 @@ namespace Audiotica.Web.Models
 {
     public class WebSong : WebItem, IConvertibleObject
     {
+        public WebSong()
+        {
+            
+        }
+
         public WebSong(Type provider) : base(provider)
         {
         }

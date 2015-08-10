@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.UI.Xaml.Navigation;
 using Audiotica.Core.Common;
 using Audiotica.Core.Extensions;
 using Audiotica.Database.Models;
+using Audiotica.Database.Services.Interfaces;
+using Audiotica.Factory;
 using Audiotica.Web.Exceptions;
 using Audiotica.Web.Metadata.Interfaces;
 using Audiotica.Web.Models;
@@ -19,19 +22,25 @@ namespace Audiotica.Windows.ViewModels
     {
         private readonly List<IMetadataProvider> _metadataProviders;
         private readonly INavigationService _navigationService;
+        private readonly ILibraryService _libraryService;
         private readonly IConverter<WebArtist, Artist> _webArtistConverter;
+        private readonly IConverter<WebSong, Track> _webSongConverter;
         private Artist _artist;
-        private List<WebSong> _topSongs;
+        private List<Track> _topSongs;
         private List<WebAlbum> _topAlbums;
 
         public ArtistPageViewModel(INavigationService navigationService,
+            ILibraryService libraryService,
             IEnumerable<IMetadataProvider> metadataProviders,
-            IConverter<WebArtist, Artist> webArtistConverter)
+            IConverter<WebArtist, Artist> webArtistConverter,
+            IConverter<WebSong, Track> webSongConverter)
         {
             _navigationService = navigationService;
+            _libraryService = libraryService;
             _metadataProviders = metadataProviders.Where(p => p.IsEnabled)
                 .OrderByDescending(p => p.Priority).ToList();
             _webArtistConverter = webArtistConverter;
+            _webSongConverter = webSongConverter;
 
             if (IsInDesignMode)
                 OnNavigatedTo("1", NavigationMode.New, new Dictionary<string, object>());
@@ -49,7 +58,7 @@ namespace Audiotica.Windows.ViewModels
             set { Set(ref _topAlbums, value); }
         }
 
-        public List<WebSong> TopSongs
+        public List<Track> TopSongs
         {
             get { return _topSongs; }
             set { Set(ref _topSongs, value); }
@@ -73,7 +82,7 @@ namespace Audiotica.Windows.ViewModels
                 var metadataProvider = _metadataProviders.FirstOrDefault(p => p.GetType() == provider);
                 try
                 {
-                    // try to find the artist in the library
+                    // TODO: try to find the artist in the library
 
                     // otherwise get it from the provider
                     var webArtist = await metadataProvider.GetArtistAsync(webToken);
@@ -104,7 +113,12 @@ namespace Audiotica.Windows.ViewModels
                     var webArtist = await metadataProvider.GetArtistByNameAsync(Artist.Name);
                     if (webArtist == null) continue;
 
-                    await LoadWebData(metadataProvider, webArtist.Token);
+                    if (TopSongs == null)
+                        TopSongs = await _webSongConverter.ConvertAsync(
+                            (await metadataProvider.GetArtistTopSongsAsync(webArtist.Token)).Songs);
+                    
+                    if (TopAlbums == null)
+                        TopAlbums = (await metadataProvider.GetArtistAlbumsAsync(webArtist.Token)).Albums;
 
                     if (TopSongs != null && TopAlbums != null) break;
                 }
@@ -119,15 +133,6 @@ namespace Audiotica.Windows.ViewModels
                     // ignored
                 }
             }
-        }
-
-        private async Task LoadWebData(IMetadataProvider metadataProvider, string webToken)
-        {
-            if (TopSongs == null)
-                TopSongs = (await metadataProvider.GetArtistTopSongsAsync(webToken)).Songs;
-
-            if (TopAlbums == null)
-                TopAlbums = (await metadataProvider.GetArtistAlbumsAsync(webToken)).Albums;
         }
     }
 }

@@ -119,6 +119,7 @@
     <Compile Include="Common\BootStrapper.cs" />
     <Compile Include="Common\CurtainPrompt.cs" />
     <Compile Include="Common\UiBlocker.cs" />
+    <Compile Include="Controls\AlternatingRowListView.cs" />
     <Compile Include="Controls\NoMusicPanel.xaml.cs">
       <DependentUpon>NoMusicPanel.xaml</DependentUpon>
     </Compile>
@@ -128,6 +129,8 @@
     <Compile Include="Factories\AppKernelFactory.cs" />
     <Compile Include="Common\MessageBox.cs" />
     <Compile Include="Interactions\NavigateToPageAction.cs" />
+    <Compile Include="Services\DesignWindowsPlayerService.cs" />
+    <Compile Include="Services\IWindowsPlayerService.cs" />
     <Compile Include="Services\NavigationService\DesignNavigationService.cs" />
     <Compile Include="Services\NavigationService\INavigatable.cs" />
     <Compile Include="Services\NavigationService\INavigationService.cs" />
@@ -219,6 +222,10 @@
     <Page Include="DeviceFamily-Mobile\Shell.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Styles\TextStyles.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Styles\SplitViewStyles.xaml">
       <Generator>MSBuild:Compile</Generator>

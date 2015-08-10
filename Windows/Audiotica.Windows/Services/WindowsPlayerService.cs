@@ -9,11 +9,6 @@ using Audiotica.Windows.Common;
 
 namespace Audiotica.Windows.Services
 {
-    public interface IWindowsPlayerService
-    {
-        void Play(WebSong song);
-    }
-
     public class WindowsPlayerService : IWindowsPlayerService
     {
         private readonly IBackgroundAudioService _backgroundAudioService;
@@ -38,7 +33,14 @@ namespace Audiotica.Windows.Services
                     blocker.UpdateProgress("Getting data...");
                     track = await _webSongConverter.ConvertAsync(song, webSong => { song.SetFrom(webSong); });
                 }
+            }
+            Play(track);
+        }
 
+        public async void Play(Track track)
+        {
+            using (var blocker = new UiBlocker())
+            {
                 if (track.AudioWebUri == null)
                 {
                     blocker.UpdateProgress("Matching...");

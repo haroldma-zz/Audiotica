@@ -42,6 +42,14 @@ namespace Audiotica.Database.Services.Interfaces
 
         #endregion
 
+        #region Helpers
+
+        Track Find(long id);
+        Track Find(Track track);
+        Track Find(string title, string artists, string albumTitle, string albumArtist);
+
+        #endregion
+
         #region Sync
 
         /// <summary>

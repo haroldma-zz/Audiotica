@@ -49,6 +49,7 @@
     <Compile Include="Models\QueueTrack.cs" />
     <Compile Include="Models\Track.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\Interfaces\DesignLibraryService.cs" />
     <Compile Include="Services\Interfaces\ILibraryService.cs" />
   </ItemGroup>
   <ItemGroup>

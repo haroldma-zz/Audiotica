@@ -53,7 +53,7 @@ namespace Audiotica.Database.Models
         /// <value>
         ///     The year.
         /// </value>
-        public int Year { get; set; }
+        public int? Year { get; set; }
 
         /// <summary>
         ///     Gets or sets the track number.

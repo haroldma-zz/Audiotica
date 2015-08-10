@@ -118,7 +118,6 @@
     <Compile Include="Extensions\ColorExtensions.cs" />
     <Compile Include="Extensions\MediaSourceExtension.cs" />
     <Compile Include="Helpers\ApplicationSettingsConstants.cs" />
-    <Compile Include="Helpers\AsyncHelper.cs" />
     <Compile Include="Helpers\DeviceHelper.cs" />
     <Compile Include="Helpers\MessageHelper.cs" />
     <Compile Include="Messages\AddToPlaylistMessage.cs" />

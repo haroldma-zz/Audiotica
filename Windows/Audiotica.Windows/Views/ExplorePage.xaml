@@ -12,6 +12,7 @@
     xmlns:core="using:Microsoft.Xaml.Interactions.Core"
     xmlns:interactions="using:Audiotica.Windows.Interactions"
     xmlns:views="using:Audiotica.Windows.Views"
+    xmlns:controls="using:Audiotica.Windows.Controls"
     mc:Ignorable="d"
     DataContext="{Binding ExplorePage, Source={StaticResource ViewModelLocator}}">
     <ScrollViewer x:Name="LayoutRoot" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Padding="{StaticResource PagePadding}">
@@ -26,31 +27,12 @@
             </Grid.RowDefinitions>
             <StackPanel x:Name="TopSongsPanel">
                 <TextBlock Text="Top Songs" Style="{StaticResource HeaderTextBlockStyle}" />
-                <GridView ItemsSource="{Binding TopSongs}" IsItemClickEnabled="True" 
-                          ScrollViewer.VerticalScrollBarVisibility="Disabled">
-                    <interactivity:Interaction.Behaviors>
-                        <core:EventTriggerBehavior EventName="ItemClick">
-                            <core:InvokeCommandAction Command="{Binding SongClickCommand}"/>
-                        </core:EventTriggerBehavior>
-                    </interactivity:Interaction.Behaviors>
-
-                    <GridView.ItemTemplate>
-                        <DataTemplate>
-                            <Grid Margin="5" Width="200">
-                                <StackPanel>
-                                    <TextBlock Text="{Binding Title}" FontSize="18"
-                                               TextTrimming="CharacterEllipsis"/>
-                                    <TextBlock Text="{Binding Artists[0].Name}" 
-                                               Style="{StaticResource SubtleTextBlockStyle}" 
-                                               TextTrimming="CharacterEllipsis"/>
-                                </StackPanel>
-                            </Grid>
-                        </DataTemplate>
-                    </GridView.ItemTemplate>
-                </GridView>
+                <controls:AlternatingRowListView ItemsSource="{Binding TopSongs}"
+                                             OddRowBackground="{StaticResource OddRowBackgroundBrush}"
+                                             ItemTemplate="{StaticResource WebSongNarrowTemplate}" />
             </StackPanel>
 
-            <StackPanel x:Name="TopArtistsPanel" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Right">
+            <StackPanel x:Name="TopArtistsPanel" Grid.Row="0" Grid.Column="1">
                 <TextBlock Text="Top Artists" Style="{StaticResource HeaderTextBlockStyle}" />
                 <GridView  ItemsSource="{Binding TopArtists}" IsItemClickEnabled="True" ScrollViewer.VerticalScrollBarVisibility="Disabled">
                     <interactivity:Interaction.Behaviors>

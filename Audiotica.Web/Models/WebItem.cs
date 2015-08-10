@@ -5,6 +5,10 @@ namespace Audiotica.Web.Models
 {
     public class WebItem
     {
+        public WebItem()
+        {
+            
+        }
         public WebItem(Type provider)
         {
             MetadataProvider = provider;

@@ -1,5 +1,4 @@
-﻿using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
+﻿using Windows.UI.Xaml.Navigation;
 
 namespace Audiotica.Windows.Views
 {
@@ -8,6 +7,7 @@ namespace Audiotica.Windows.Views
         public ExplorePage()
         {
             InitializeComponent();
+            NavigationCacheMode = NavigationCacheMode.Required;
         }
     }
 }
