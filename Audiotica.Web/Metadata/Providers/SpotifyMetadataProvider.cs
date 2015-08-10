@@ -117,13 +117,23 @@ namespace Audiotica.Web.Metadata.Providers
         {
             // No api for getting by artist name, so do a search to find the id.
             var results = await SearchAsync(artistName, WebResults.Type.Artist, 1);
-            return results.Artists.FirstOrDefault(p => string.Equals(p.Name, artistName, 
+            return results.Artists.FirstOrDefault(p => string.Equals(p.Name, artistName,
                 StringComparison.CurrentCultureIgnoreCase));
         }
 
-        public override Task<WebResults> GetTopSongsAsync(int limit = 50, string pageToken = null)
+        public override async Task<WebResults> GetTopSongsAsync(int limit = 50, string pageToken = null)
         {
-            throw new NotImplementedException();
+            using (var response = await new SpotifyChartRequest().ToResponseAsync())
+            {
+                if (response.HasData)
+                    return new WebResults
+                    {
+                        HasMore = false,
+                        Songs = response.Data.Tracks.Select(CreateSong).Take(limit).ToList()
+                    };
+
+                throw new ProviderException();
+            }
         }
 
         public override Task<WebResults> GetTopAlbumsAsync(int limit = 50, string pageToken = null)
@@ -151,7 +161,7 @@ namespace Audiotica.Web.Metadata.Providers
                 if (response.Data.HasError())
                     throw new ProviderException(response.Data.ErrorResponse.Message);
 
-                var results = new WebResults {Songs = response.Data.Tracks.Select(CreateSong).ToList()};
+                var results = new WebResults {Songs = response.Data.Tracks.Select(CreateSong).Take(limit).ToList()};
                 return results;
             }
         }
@@ -216,6 +226,35 @@ namespace Audiotica.Web.Metadata.Providers
                 webArtist.Artwork = new Uri(image.Url);
 
             return webArtist;
+        }
+
+        private WebSong CreateSong(ChartTrack track)
+        {
+            var song = new WebSong(GetType())
+            {
+                Title = track.Name,
+                Token = track.Id,
+                IsPartial = true,
+                Artists = new List<WebArtist>
+                {
+                    new WebArtist(GetType())
+                    {
+                        Name = track.ArtistName,
+                        IsPartial = true,
+                        Token = track.ArtistId
+                    }
+                },
+                Album = new WebAlbum(GetType())
+                {
+                    Title = track.AlbumName,
+                    IsPartial = true,
+                    Token = track.AlbumId,
+                    Artwork = new Uri(track.ArtworkUrl)
+                }
+            };
+
+
+            return song;
         }
 
         private WebSong CreateSong(SimpleTrack track)

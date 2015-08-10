@@ -66,6 +66,7 @@
     <Compile Include="Http\Requets\MatchEngine\Pleer\PleerDetailsRequest.cs" />
     <Compile Include="Http\Requets\MatchEngine\Pleer\PleerSearchRequest.cs" />
     <Compile Include="Http\Requets\Metadata\Spotify\Models\BasicModel.cs" />
+    <Compile Include="Http\Requets\Metadata\Spotify\Models\ChartTrack.cs" />
     <Compile Include="Http\Requets\Metadata\Spotify\Models\Error.cs" />
     <Compile Include="Http\Requets\Metadata\Spotify\Models\FullAlbum.cs" />
     <Compile Include="Http\Requets\Metadata\Spotify\Models\FullArtist.cs" />
@@ -77,10 +78,12 @@
     <Compile Include="Http\Requets\Metadata\Spotify\Models\SimpleAlbum.cs" />
     <Compile Include="Http\Requets\Metadata\Spotify\Models\SimpleArtist.cs" />
     <Compile Include="Http\Requets\Metadata\Spotify\Models\SimpleTrack.cs" />
+    <Compile Include="Http\Requets\Metadata\Spotify\Models\SpotifyChartsResponse.cs" />
     <Compile Include="Http\Requets\Metadata\Spotify\SpotifyAlbumRequest.cs" />
     <Compile Include="Http\Requets\Metadata\Spotify\SpotifyArtistAlbumsRequest.cs" />
     <Compile Include="Http\Requets\Metadata\Spotify\SpotifyArtistRequest.cs" />
     <Compile Include="Http\Requets\Metadata\Spotify\SpotifyArtistTopTracksRequest.cs" />
+    <Compile Include="Http\Requets\Metadata\Spotify\SpotifyChartRequest.cs" />
     <Compile Include="Http\Requets\Metadata\Spotify\SpotifyRequestHelper.cs" />
     <Compile Include="Http\Requets\Metadata\Spotify\SpotifySearchRequest.cs" />
     <Compile Include="Http\Requets\Metadata\Spotify\SpotifyTrackRequest.cs" />
