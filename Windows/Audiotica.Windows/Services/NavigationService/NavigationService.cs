@@ -6,6 +6,7 @@ using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
+using Audiotica.Core.Extensions;
 using Audiotica.Core.Utilities.Interfaces;
 using Audiotica.Windows.Views;
 
@@ -61,16 +62,17 @@ namespace Audiotica.Windows.Services.NavigationService
                     else
                         _sessions.Add(dataContext.PageKey, new Dictionary<string, object>());
                 }
-                dataContext.OnNavigatedTo(parameter, mode, _sessions[dataContext.PageKey]);
+                dataContext.OnNavigatedTo(parameter.TryDeserializeJsonWithTypeInfo(), mode, _sessions[dataContext.PageKey]);
             }
         }
 
-        public bool Navigate(Type page, string parameter = null)
+        public bool Navigate(Type page, object parameter = null)
         {
+            parameter = parameter.SerializeToJsonWithTypeInfo();
             if (page == null)
                 throw new ArgumentNullException(nameof(page));
             if (page == CurrentPageType
-                && parameter == CurrentPageParam)
+                && (string) parameter == CurrentPageParam)
                 return false;
             return _frame.Navigate(page, parameter);
         }
@@ -119,7 +121,7 @@ namespace Audiotica.Windows.Services.NavigationService
             _settingsUtility.Write(SettingsSessions, _sessions);
         }
 
-        public void Show(SettingsFlyout flyout, string parameter = null)
+        public void Show(SettingsFlyout flyout, object parameter = null)
         {
             if (flyout == null)
                 throw new ArgumentNullException(nameof(flyout));

@@ -6,12 +6,5 @@ namespace Audiotica.Windows.ViewModels
 {
     internal class SongsPageViewModel : ViewModelBase
     {
-        public SongsPageViewModel()
-        {
-        }
-
-        public override void OnNavigatedTo(string parameter, NavigationMode mode, Dictionary<string, object> state)
-        {
-        }
     }
 }

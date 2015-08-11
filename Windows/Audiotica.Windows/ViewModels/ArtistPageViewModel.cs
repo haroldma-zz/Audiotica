@@ -64,17 +64,17 @@ namespace Audiotica.Windows.ViewModels
             set { Set(ref _topSongs, value); }
         }
 
-        public override async void OnNavigatedTo(string parameter, NavigationMode mode, Dictionary<string, object> state)
+        public override async void OnNavigatedTo(object parameter, NavigationMode mode, Dictionary<string, object> state)
         {
-            long id;
+            var id = parameter as long?;
 
-            if (long.TryParse(parameter, out id))
+            if (id != null)
             {
                 // TODO get the artist from the library
             }
             else
             {
-                var detokenized = parameter.DeTokenize();
+                var detokenized = parameter.ToString().DeTokenize();
                 var provider = Type.GetType(detokenized[0]);
                 var webToken = detokenized[1];
                 var name = detokenized[2];

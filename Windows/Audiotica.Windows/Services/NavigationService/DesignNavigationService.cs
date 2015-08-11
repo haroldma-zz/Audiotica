@@ -16,7 +16,7 @@ namespace Audiotica.Windows.Services.NavigationService
             throw new NotImplementedException();
         }
 
-        public bool Navigate(Type page, string parameter = null)
+        public bool Navigate(Type page, object parameter = null)
         {
             throw new NotImplementedException();
         }
@@ -46,7 +46,7 @@ namespace Audiotica.Windows.Services.NavigationService
             throw new NotImplementedException();
         }
 
-        public void Show(SettingsFlyout flyout, string parameter = null)
+        public void Show(SettingsFlyout flyout, object parameter = null)
         {
             throw new NotImplementedException();
         }

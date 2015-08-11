@@ -12,12 +12,12 @@ namespace Audiotica.Windows.Services.NavigationService
         Type CurrentPageType { get; }
         string CurrentPageParam { get; }
         void NavigatedTo(NavigationMode mode, string parameter);
-        bool Navigate(Type page, string parameter = null);
+        bool Navigate(Type page, object parameter = null);
         void RestoreSavedNavigation();
         void GoBack();
         void GoForward();
         void ClearHistory();
         void Suspending();
-        void Show(SettingsFlyout flyout, string parameter = null);
+        void Show(SettingsFlyout flyout, object parameter = null);
     }
 }

@@ -12,7 +12,7 @@ namespace Audiotica.Windows.Tools.Mvvm
 
         public string PageKey { get; set; }
 
-        public virtual void OnNavigatedTo(string parameter, NavigationMode mode, Dictionary<string, object> state)
+        public virtual void OnNavigatedTo(object parameter, NavigationMode mode, Dictionary<string, object> state)
         {   
         }
 

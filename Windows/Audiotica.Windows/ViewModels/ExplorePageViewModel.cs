@@ -75,7 +75,7 @@ namespace Audiotica.Windows.ViewModels
             _windowsPlayerService.Play(song);
         }
 
-        public override void OnNavigatedTo(string parameter, NavigationMode mode, Dictionary<string, object> state)
+        public override void OnNavigatedTo(object parameter, NavigationMode mode, Dictionary<string, object> state)
         {
             var count = DeviceHelper.IsType(DeviceHelper.Family.Mobile) ? 6 : 40;
             LoadTopSongs(count);
