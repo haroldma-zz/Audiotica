@@ -70,20 +70,14 @@ namespace Audiotica.Factory
             other.PreviousConversion = track;
             saveChanges?.Invoke(other);
 
-            return track;
+            var libraryTrack = track; //TODO: _libraryService
+            return libraryTrack ?? track;
         }
 
         public async Task<List<Track>> ConvertAsync(IEnumerable<WebSong> others)
         {
-            var tasks = others.Select(LibraryConvert).ToList();
+            var tasks = others.Select(p => ConvertAsync(p)).ToList();
             return (await Task.WhenAll(tasks)).ToList();
-        }
-
-        private async Task<Track> LibraryConvert(WebSong webSong)
-        {
-            var track = await ConvertAsync(webSong);
-            var libraryTrack = track; //TODO: _libraryService
-            return libraryTrack ?? track;
         }
     }
 }
