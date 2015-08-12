@@ -13,7 +13,7 @@ namespace Audiotica.Web.Metadata.Providers
         public bool IsEnabled { get; set; } = true;
 
         public Task<WebResults> SearchAsync(string query, WebResults.Type searchType = WebResults.Type.Song,
-            int limit = 10, string pagingToken = null)
+            int limit = 10, string pageToken = null)
         {
             throw new NotImplementedException();
         }

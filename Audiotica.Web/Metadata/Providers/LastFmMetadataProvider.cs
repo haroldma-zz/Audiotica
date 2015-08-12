@@ -29,11 +29,11 @@ namespace Audiotica.Web.Metadata.Providers
 
         public override async Task<WebResults> SearchAsync(string query,
             WebResults.Type searchType = WebResults.Type.Song,
-            int limit = 10, string pagingToken = null)
+            int limit = 20, string pageToken = null)
         {
             using (var client = CreateClient())
             {
-                var page = string.IsNullOrEmpty(pagingToken) ? 1 : int.Parse(pagingToken);
+                var page = string.IsNullOrEmpty(pageToken) ? 1 : int.Parse(pageToken);
 
                 WebResults results;
 
@@ -147,7 +147,7 @@ namespace Audiotica.Web.Metadata.Providers
             return GetArtistAsync(artistName);
         }
 
-        public override async Task<WebResults> GetTopSongsAsync(int limit = 50, string pageToken = null)
+        public override async Task<WebResults> GetTopSongsAsync(int limit = 20, string pageToken = null)
         {
             using (var client = CreateClient())
             {
@@ -167,12 +167,12 @@ namespace Audiotica.Web.Metadata.Providers
             }
         }
 
-        public override Task<WebResults> GetTopAlbumsAsync(int limit = 50, string pageToken = null)
+        public override Task<WebResults> GetTopAlbumsAsync(int limit = 20, string pageToken = null)
         {
             throw new NotImplementedException();
         }
 
-        public override async Task<WebResults> GetTopArtistsAsync(int limit = 50, string pageToken = null)
+        public override async Task<WebResults> GetTopArtistsAsync(int limit = 20, string pageToken = null)
         {
             using (var client = CreateClient())
             {
@@ -192,7 +192,7 @@ namespace Audiotica.Web.Metadata.Providers
             }
         }
 
-        public override async Task<WebResults> GetArtistTopSongsAsync(string artistToken, int limit = 50,
+        public override async Task<WebResults> GetArtistTopSongsAsync(string artistToken, int limit = 20,
             string pageToken = null)
         {
             using (var client = CreateClient())
@@ -216,7 +216,7 @@ namespace Audiotica.Web.Metadata.Providers
             }
         }
 
-        public override async Task<WebResults> GetArtistAlbumsAsync(string artistToken, int limit = 50,
+        public override async Task<WebResults> GetArtistAlbumsAsync(string artistToken, int limit = 20,
             string pageToken = null)
         {
             using (var client = CreateClient())

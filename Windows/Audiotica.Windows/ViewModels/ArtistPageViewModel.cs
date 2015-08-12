@@ -11,6 +11,7 @@ using Audiotica.Database.Services.Interfaces;
 using Audiotica.Factory;
 using Audiotica.Web.Exceptions;
 using Audiotica.Web.Metadata.Interfaces;
+using Audiotica.Web.Metadata.Providers;
 using Audiotica.Web.Models;
 using Audiotica.Windows.Common;
 using Audiotica.Windows.Services.NavigationService;
@@ -115,10 +116,10 @@ namespace Audiotica.Windows.ViewModels
 
                     if (TopSongs == null)
                         TopSongs = await _webSongConverter.ConvertAsync(
-                            (await metadataProvider.GetArtistTopSongsAsync(webArtist.Token)).Songs);
+                            (await metadataProvider.GetArtistTopSongsAsync(webArtist.Token, 10)).Songs);
                     
                     if (TopAlbums == null)
-                        TopAlbums = (await metadataProvider.GetArtistAlbumsAsync(webArtist.Token)).Albums;
+                        TopAlbums = (await metadataProvider.GetArtistAlbumsAsync(webArtist.Token, 10)).Albums;
 
                     if (TopSongs != null && TopAlbums != null) break;
                 }

@@ -7,7 +7,7 @@ namespace Audiotica.Web.Metadata.Interfaces
     public interface IMetadataProvider : IConfigurableProvider
     {
         Task<WebResults> SearchAsync(string query, WebResults.Type searchType = WebResults.Type.Song,
-            int limit = 10, string pagingToken = null);
+            int limit = 10, string pageToken = null);
 
         Task<WebAlbum> GetAlbumAsync(string albumToken);
         Task<WebSong> GetSongAsync(string songToken);

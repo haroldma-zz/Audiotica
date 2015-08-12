@@ -27,10 +27,10 @@ namespace Audiotica.Web.Metadata.Providers
 
         public override async Task<WebResults> SearchAsync(string query,
             WebResults.Type searchType = WebResults.Type.Song,
-            int limit = 10, string pagingToken = null)
+            int limit = 20, string pageToken = null)
         {
             int offset;
-            int.TryParse(pagingToken, out offset);
+            int.TryParse(pageToken, out offset);
 
             using (
                 var response =
@@ -65,7 +65,7 @@ namespace Audiotica.Web.Metadata.Providers
         public override async Task<WebAlbum> GetAlbumAsync(string albumToken)
         {
             using (var response = await new DeezerAlbumRequest(albumToken)
-               .ToResponseAsync().DontMarshall())
+                .ToResponseAsync().DontMarshall())
             {
                 if (response.HasData)
                     return CreateAlbum(response.Data);
@@ -93,7 +93,7 @@ namespace Audiotica.Web.Metadata.Providers
         public override async Task<WebArtist> GetArtistAsync(string artistToken)
         {
             using (var response = await new DeezerArtistRequest(artistToken)
-               .ToResponseAsync().DontMarshall())
+                .ToResponseAsync().DontMarshall())
             {
                 if (response.HasData)
                     return CreateArtist(response.Data);
@@ -107,7 +107,7 @@ namespace Audiotica.Web.Metadata.Providers
         public override async Task<WebArtist> GetArtistByNameAsync(string artistName)
         {
             using (var response = await new DeezerArtistRequest(artistName.Replace(" ", "-"))
-               .ToResponseAsync().DontMarshall())
+                .ToResponseAsync().DontMarshall())
             {
                 if (response.HasData)
                     return CreateArtist(response.Data);
@@ -118,7 +118,7 @@ namespace Audiotica.Web.Metadata.Providers
             }
         }
 
-        public override async Task<WebResults> GetTopSongsAsync(int limit = 50, string pageToken = null)
+        public override async Task<WebResults> GetTopSongsAsync(int limit = 20, string pageToken = null)
         {
             int offset;
             int.TryParse(pageToken, out offset);
@@ -140,7 +140,7 @@ namespace Audiotica.Web.Metadata.Providers
             }
         }
 
-        public override async Task<WebResults> GetTopAlbumsAsync(int limit = 50, string pageToken = null)
+        public override async Task<WebResults> GetTopAlbumsAsync(int limit = 20, string pageToken = null)
         {
             int offset;
             int.TryParse(pageToken, out offset);
@@ -162,7 +162,7 @@ namespace Audiotica.Web.Metadata.Providers
             }
         }
 
-        public override async Task<WebResults> GetTopArtistsAsync(int limit = 50, string pageToken = null)
+        public override async Task<WebResults> GetTopArtistsAsync(int limit = 20, string pageToken = null)
         {
             int offset;
             int.TryParse(pageToken, out offset);
@@ -184,16 +184,50 @@ namespace Audiotica.Web.Metadata.Providers
             }
         }
 
-        public override Task<WebResults> GetArtistTopSongsAsync(string artistToken, int limit = 50,
+        public override async Task<WebResults> GetArtistTopSongsAsync(string artistToken, int limit = 20,
             string pageToken = null)
         {
-            throw new NotImplementedException();
+            int offset;
+            int.TryParse(pageToken, out offset);
+
+            using (
+                var response =
+                    await new DeezerArtistTopTracksRequest(int.Parse(artistToken))
+                        .Limit(limit)
+                        .Offset(offset)
+                        .ToResponseAsync()
+                        .DontMarshall())
+            {
+                if (!response.HasData) return null;
+
+                var results = CreateResults(response.Data, limit, offset);
+                results.Songs = response.Data.Data?.Select(CreateSong).ToList();
+
+                return results;
+            }
         }
 
-        public override Task<WebResults> GetArtistAlbumsAsync(string artistToken, int limit = 50,
+        public override async Task<WebResults> GetArtistAlbumsAsync(string artistToken, int limit = 20,
             string pageToken = null)
         {
-            throw new NotImplementedException();
+            int offset;
+            int.TryParse(pageToken, out offset);
+
+            using (
+                var response =
+                    await new DeezerArtistAlbumsRequest(int.Parse(artistToken))
+                        .Limit(limit)
+                        .Offset(offset)
+                        .ToResponseAsync()
+                        .DontMarshall())
+            {
+                if (!response.HasData) return null;
+
+                var results = CreateResults(response.Data, limit, offset);
+                results.Albums = response.Data.Data?.Select(CreateAlbum).ToList();
+
+                return results;
+            }
         }
 
         public override Task<string> GetLyricAsync(string song, string artist)

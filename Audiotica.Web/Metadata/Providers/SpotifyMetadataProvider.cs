@@ -25,10 +25,10 @@ namespace Audiotica.Web.Metadata.Providers
         public override ProviderCollectionType CollectionType => ProviderCollectionType.Mainstream;
 
         public override async Task<WebResults> SearchAsync(string query,
-            WebResults.Type searchType = WebResults.Type.Song, int limit = 10, string pagingToken = null)
+            WebResults.Type searchType = WebResults.Type.Song, int limit = 20, string pageToken = null)
         {
             int offset;
-            int.TryParse(pagingToken, out offset);
+            int.TryParse(pageToken, out offset);
 
             using (
                 var response =
@@ -122,7 +122,7 @@ namespace Audiotica.Web.Metadata.Providers
                 StringComparison.CurrentCultureIgnoreCase));
         }
 
-        public override async Task<WebResults> GetTopSongsAsync(int limit = 50, string pageToken = null)
+        public override async Task<WebResults> GetTopSongsAsync(int limit = 20, string pageToken = null)
         {
             using (var response = await new SpotifyChartRequest().ToResponseAsync())
             {
@@ -137,17 +137,17 @@ namespace Audiotica.Web.Metadata.Providers
             }
         }
 
-        public override Task<WebResults> GetTopAlbumsAsync(int limit = 50, string pageToken = null)
+        public override Task<WebResults> GetTopAlbumsAsync(int limit = 20, string pageToken = null)
         {
             throw new NotImplementedException();
         }
 
-        public override Task<WebResults> GetTopArtistsAsync(int limit = 50, string pageToken = null)
+        public override Task<WebResults> GetTopArtistsAsync(int limit = 20, string pageToken = null)
         {
             throw new NotImplementedException();
         }
 
-        public override async Task<WebResults> GetArtistTopSongsAsync(string artistToken, int limit = 50,
+        public override async Task<WebResults> GetArtistTopSongsAsync(string artistToken, int limit = 20,
             string pageToken = null)
         {
             using (var response = await new SpotifyArtistTopTracksRequest(artistToken)
@@ -167,7 +167,7 @@ namespace Audiotica.Web.Metadata.Providers
             }
         }
 
-        public override async Task<WebResults> GetArtistAlbumsAsync(string artistToken, int limit = 50,
+        public override async Task<WebResults> GetArtistAlbumsAsync(string artistToken, int limit = 20,
             string pageToken = null)
         {
             using (var response = await new SpotifyArtistAlbumsRequest(artistToken)

@@ -32,20 +32,20 @@ namespace Audiotica.Web.Metadata.Providers
         }
 
         public abstract Task<WebResults> SearchAsync(string query,
-            WebResults.Type searchType = WebResults.Type.Song, int limit = 10, string pagingToken = null);
+            WebResults.Type searchType = WebResults.Type.Song, int limit = 20, string pageToken = null);
 
         public abstract Task<WebAlbum> GetAlbumAsync(string albumToken);
         public abstract Task<WebSong> GetSongAsync(string songToken);
         public abstract Task<WebArtist> GetArtistAsync(string artistToken);
         public abstract Task<WebArtist> GetArtistByNameAsync(string artistName);
-        public abstract Task<WebResults> GetTopSongsAsync(int limit = 50, string pageToken = null);
-        public abstract Task<WebResults> GetTopAlbumsAsync(int limit = 50, string pageToken = null);
-        public abstract Task<WebResults> GetTopArtistsAsync(int limit = 50, string pageToken = null);
+        public abstract Task<WebResults> GetTopSongsAsync(int limit = 20, string pageToken = null);
+        public abstract Task<WebResults> GetTopAlbumsAsync(int limit = 20, string pageToken = null);
+        public abstract Task<WebResults> GetTopArtistsAsync(int limit = 20, string pageToken = null);
 
-        public abstract Task<WebResults> GetArtistTopSongsAsync(string artistToken, int limit = 50,
+        public abstract Task<WebResults> GetArtistTopSongsAsync(string artistToken, int limit = 20,
             string pageToken = null);
 
-        public abstract Task<WebResults> GetArtistAlbumsAsync(string artistToken, int limit = 50,
+        public abstract Task<WebResults> GetArtistAlbumsAsync(string artistToken, int limit = 20,
             string pageToken = null);
 
         public virtual async Task<Uri> GetArtworkAsync(string album, string artist)
