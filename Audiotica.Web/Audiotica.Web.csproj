@@ -73,6 +73,10 @@
     <Compile Include="Http\Requets\Metadata\Deezer\DeezerSearchRequest.cs" />
     <Compile Include="Http\Requets\Metadata\Deezer\DeezerTrackRequest.cs" />
     <Compile Include="Http\Requets\Metadata\Deezer\Models\DataResponse.cs" />
+    <Compile Include="Http\Requets\Metadata\LyricsFind\LyricsFindRequest.cs" />
+    <Compile Include="Http\Requets\Metadata\LyricsFind\Models\LyricsFindArtist.cs" />
+    <Compile Include="Http\Requets\Metadata\LyricsFind\Models\LyricsFindResponse.cs" />
+    <Compile Include="Http\Requets\Metadata\LyricsFind\Models\LyricsTrack.cs" />
     <Compile Include="Http\Requets\Metadata\Spotify\Models\BasicModel.cs" />
     <Compile Include="Http\Requets\Metadata\Spotify\Models\ChartTrack.cs" />
     <Compile Include="Http\Requets\Metadata\Spotify\Models\Error.cs" />
@@ -118,12 +122,14 @@
     <Compile Include="Metadata\Providers\DesignMetadataProvider.cs" />
     <Compile Include="Metadata\Providers\ILocalMetadataProvider.cs" />
     <Compile Include="Metadata\Providers\LastFmMetadataProvider.cs" />
+    <Compile Include="Metadata\Providers\LyricsFindMetadataProvider.cs" />
     <Compile Include="Metadata\Providers\MetadataProviderBase.cs" />
     <Compile Include="Http\Requets\MatchEngine\Netease\Models\NeteaseAlbum.cs" />
     <Compile Include="Http\Requets\MatchEngine\Netease\Models\NeteaseResult.cs" />
     <Compile Include="Http\Requets\MatchEngine\Netease\Models\NeteaseRoot.cs" />
     <Compile Include="Http\Requets\MatchEngine\Netease\Models\NeteaseSong.cs" />
     <Compile Include="Exceptions\ProviderException.cs" />
+    <Compile Include="Metadata\Providers\MetadataProviderLyricsOnlyBase.cs" />
     <Compile Include="Models\WebAlbum.cs" />
     <Compile Include="Models\WebArtist.cs" />
     <Compile Include="Models\WebItem.cs" />
