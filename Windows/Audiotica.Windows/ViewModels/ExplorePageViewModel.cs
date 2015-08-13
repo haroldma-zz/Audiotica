@@ -7,7 +7,6 @@ using Audiotica.Core.Extensions;
 using Audiotica.Core.Windows.Helpers;
 using Audiotica.Web.Exceptions;
 using Audiotica.Web.Metadata.Interfaces;
-using Audiotica.Web.Metadata.Providers;
 using Audiotica.Web.Models;
 using Audiotica.Windows.Services;
 using Audiotica.Windows.Services.NavigationService;

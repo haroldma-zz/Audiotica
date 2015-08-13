@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Audiotica.Core.Common;
+using Audiotica.Core.Exceptions;
 using Audiotica.Core.Extensions;
 using Audiotica.Core.Utilities.Interfaces;
 using Audiotica.Database.Models;
@@ -55,7 +56,7 @@ namespace Audiotica.Database.Services.RunTime
         public void Load()
         {
             if (IsLoaded) return;
-            
+
             CreateTables();
             LoadTracks();
             LoadPlaylists();
@@ -63,9 +64,18 @@ namespace Audiotica.Database.Services.RunTime
             IsLoaded = true;
         }
 
-        public void AddTrack(Track track)
+        public Track AddTrack(Track track)
         {
-            throw new NotImplementedException();
+            var existing = Find(track) != null;
+            if (existing) throw new LibraryException("Track already saved.");
+
+            // This should be set to zero
+            track.Id = 0;
+
+            _sqLiteConnection.Insert(track);
+            CreateRelatedObjects(track);
+            Tracks.Add(track);
+            return track;
         }
 
         public Task LoadAsync()
@@ -73,7 +83,7 @@ namespace Audiotica.Database.Services.RunTime
             return Task.Factory.StartNew(Load);
         }
 
-        public Task AddTrackAsync(Track track)
+        public Task<Track> AddTrackAsync(Track track)
         {
             return Task.Factory.StartNew(() => AddTrack(track));
         }
@@ -147,7 +157,7 @@ namespace Audiotica.Database.Services.RunTime
 
         private void CreateSecondaryArtists(Track track)
         {
-            var artistAppearing = track.Artists.Split(';');
+            var artistAppearing = track.Artists.Split(';').Select(p => p.Trim());
 
             foreach (var artistName in artistAppearing
                 .Where(p => !p.EqualsIgnoreCase(track.DisplayArtist)
@@ -171,7 +181,7 @@ namespace Audiotica.Database.Services.RunTime
         private void CreateAlbum(Track track, Artist albumArtist)
         {
             var album = Albums.FirstOrDefault(p =>
-                p.Title.EqualsIgnoreCase(track.AlbumTitle));
+                p.Title.EqualsIgnoreCase(track.AlbumTitle) && p.Artist == albumArtist);
             if (album == null)
             {
                 album = new Album
@@ -184,6 +194,7 @@ namespace Audiotica.Database.Services.RunTime
                     Publisher = track.Publisher
                 };
                 Albums.Add(album);
+                albumArtist.Albums.Add(album);
             }
             else if (album.ArtworkUri == null)
                 album.ArtworkUri = track.ArtworkUri;
@@ -192,7 +203,17 @@ namespace Audiotica.Database.Services.RunTime
         }
     }
 
-    public class NotLoadedException : Exception
+    public class NotLoadedException : LibraryException
     {
+        public NotLoadedException() : base("LibraryNotLoaded")
+        {
+        }
+    }
+
+    public class LibraryException : AppException
+    {
+        public LibraryException(string message) : base(message)
+        {
+        }
     }
 }

@@ -8,12 +8,25 @@ namespace Audiotica.Database.Models
     /// </summary>
     public class Track : DatabaseEntryBase
     {
+        public enum TrackStatus
+        {
+            None,
+            NotAvailable,
+            NoMatch,
+            Downloading,
+            Matching,
+            Saving
+        }
+
         public enum TrackType
         {
             Local,
             Stream,
             Download
         }
+
+        private TrackStatus _status;
+        private TrackType _type;
 
         /// <summary>
         ///     Gets or sets a value indicating whether this instance is from the music library.
@@ -230,7 +243,22 @@ namespace Audiotica.Database.Models
         /// <value>
         ///     The type.
         /// </value>
-        public TrackType Type { get; set; }
+        public TrackType Type
+        {
+            get { return _type; }
+            set { Set(ref _type, value); }
+        }
+
+        public TrackStatus Status
+        {
+            get { return _status; }
+            set
+            {
+                Set(ref _status, value);
+                // ReSharper disable once ExplicitCallerInfoArgument
+                RaisePropertyChanged("IsFromLibrary");
+            }
+        }
 
         /// <summary>
         ///     Gets or sets the artwork URI.

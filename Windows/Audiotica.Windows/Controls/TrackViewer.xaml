@@ -27,14 +27,16 @@
                            Style="{StaticResource BaseTextBlockStyle}" Margin="0,0,10,0" />
                 <StackPanel Grid.Column="1" Margin="20,0,20,0" Orientation="Horizontal"
                             Visibility="{Binding IsSelected, ElementName=Element, Converter={StaticResource VisibilityConverter}}">
-                    <Button Style="{StaticResource PlainButtonStyle}" Padding="-5" Margin="0,0,40,0" Click="PlayButton_Click">
+                    <Button Style="{StaticResource PlainButtonStyle}" Padding="-5" Click="PlayButton_Click">
                         <SymbolIcon Symbol="Play" RenderTransformOrigin="0.5,0.5">
                             <SymbolIcon.RenderTransform>
                                 <CompositeTransform ScaleX=".7" ScaleY=".7" />
                             </SymbolIcon.RenderTransform>
                         </SymbolIcon>
                     </Button>
-                    <Button Style="{StaticResource PlainButtonStyle}" Padding="-5" Click="AddButton_Click">
+                    <Button Margin="40,0,0,0" Style="{StaticResource PlainButtonStyle}" Padding="-5" Click="AddButton_Click" 
+                            IsEnabled="{Binding Status, Converter={StaticResource NotSavingStatusConverter}}" 
+                            Visibility="{Binding IsFromLibrary, Converter={StaticResource ReverseVisibilityConverter}}">
                         <SymbolIcon Symbol="Add" RenderTransformOrigin="0.5,0.5">
                             <SymbolIcon.RenderTransform>
                                 <CompositeTransform ScaleX=".7" ScaleY=".7" />

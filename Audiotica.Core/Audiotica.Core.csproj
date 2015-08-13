@@ -34,6 +34,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Exceptions\AppException.cs" />
     <Compile Include="Helpers\AsyncHelper.cs" />
     <Compile Include="Common\ApiKeys.cs" />
     <Compile Include="Common\IConverter.cs" />

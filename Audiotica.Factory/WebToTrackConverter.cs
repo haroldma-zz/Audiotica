@@ -24,6 +24,9 @@ namespace Audiotica.Factory
 
         public async Task<Track> ConvertAsync(WebSong other, Action<WebSong> saveChanges = null)
         {
+            var conversion = other.PreviousConversion as Track;
+            if (conversion != null) return conversion;
+
             var provider = _providers.FirstOrDefault(p => p.GetType() == other.MetadataProvider);
 
             if (other.IsPartial)
@@ -38,8 +41,9 @@ namespace Audiotica.Factory
                 other.Album = await provider.GetAlbumAsync(other.Album.Token);
             if (other.Album.Artist.IsPartial)
                 other.Album.Artist = await provider.GetArtistAsync(other.Album.Artist.Token);
-            if (other.Artists[0].Token != other.Album.Artist.Token
-                && other.Artists[0].IsPartial)
+            if (other.Artists[0].Token == other.Album.Artist.Token)
+                other.Artists[0] = other.Album.Artist;
+            else if (other.Artists[0].IsPartial)
                 other.Artists[0] = await provider.GetArtistAsync(other.Artists[0].Token);
 
             // some providers only have genres in the album object, others on the song
@@ -55,8 +59,8 @@ namespace Audiotica.Factory
                 Artists = string.Join("; ", other.Artists.Select(p => p.Name)),
                 AlbumTitle = other.Album.Title,
                 AlbumArtist = other.Album.Artist.Name,
-                ArtworkUri = other.Album.Artwork.ToString(),
-                ArtistArtworkUri = other.Artists[0].Artwork.ToString(),
+                ArtworkUri = other.Album.Artwork?.ToString(),
+                ArtistArtworkUri = other.Artists[0].Artwork?.ToString(),
                 DisplayArtist = other.Artists[0].Name,
                 TrackNumber = other.TrackNumber != 0 ? other.TrackNumber : 1,
                 DiscNumber = other.DiskNumber != 0 ? other.DiskNumber : 1,

@@ -2,11 +2,12 @@
 using Audiotica.Database.Services.DesignTime;
 using Audiotica.Database.Services.Interfaces;
 using Audiotica.Database.Services.RunTime;
-using Audiotica.Factory;
 using Audiotica.Web.MatchEngine.Interfaces.Providers;
 using Audiotica.Web.MatchEngine.Services;
 using Audiotica.Windows.Services;
+using Audiotica.Windows.Services.Interfaces;
 using Audiotica.Windows.Services.NavigationService;
+using Audiotica.Windows.Services.RunTime;
 using Autofac;
 
 namespace Audiotica.Windows.AppEngine.Modules
@@ -29,6 +30,7 @@ namespace Audiotica.Windows.AppEngine.Modules
             builder.RegisterType<LibraryService>().As<ILibraryService>().SingleInstance();
             builder.RegisterType<MatchEngineService>().As<IMatchEngineService>();
             builder.RegisterType<WindowsPlayerService>().As<IWindowsPlayerService>();
+            builder.RegisterType<TrackSaveService>().As<ITrackSaveService>();
         }
     }
 }

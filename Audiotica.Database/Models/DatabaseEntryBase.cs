@@ -1,9 +1,10 @@
 ﻿using System;
+using Audiotica.Core.Common;
 using SQLite.Net.Attributes;
 
 namespace Audiotica.Database.Models
 {
-    public abstract class DatabaseEntryBase
+    public abstract class DatabaseEntryBase : ObservableObject
     {
         protected DatabaseEntryBase()
         {
