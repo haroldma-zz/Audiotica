@@ -17,7 +17,7 @@ namespace Audiotica.Database.Models
         public string Publisher { get; set; }
         public string Copyright { get; set; }
         public int? Year { get; set; }
-        public Uri ArtworkUri { get; set; }
+        public string ArtworkUri { get; set; }
         public List<Track> Tracks { get; set; }
         public Artist Artist { get; set; }
     }

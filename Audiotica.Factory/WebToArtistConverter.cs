@@ -29,7 +29,7 @@ namespace Audiotica.Factory
             var artist = new Artist
             {
                 Name = other.Name,
-                ArtworkUri = other.Artwork
+                ArtworkUri = other.Artwork.ToString()
             };
 
             other.PreviousConversion = artist;

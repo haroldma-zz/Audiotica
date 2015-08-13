@@ -118,7 +118,7 @@ namespace Audiotica.Database.Models
         /// <value>
         ///     The URI.
         /// </value>
-        public Uri AudioWebUri { get; set; }
+        public string AudioWebUri { get; set; }
 
         /// <summary>
         ///     Gets or sets the local audio URI.
@@ -126,7 +126,7 @@ namespace Audiotica.Database.Models
         /// <value>
         ///     The audio local URI.
         /// </value>
-        public Uri AudioLocalUri { get; set; }
+        public string AudioLocalUri { get; set; }
 
         /// <summary>
         ///     Gets or sets the album artist.
@@ -238,7 +238,7 @@ namespace Audiotica.Database.Models
         /// <value>
         ///     The artwork URI.
         /// </value>
-        public Uri ArtworkUri { get; set; }
+        public string ArtworkUri { get; set; }
 
         /// <summary>
         ///     Gets or sets the artist artwork URI.
@@ -246,7 +246,7 @@ namespace Audiotica.Database.Models
         /// <value>
         ///     The artist artwork URI.
         /// </value>
-        public Uri ArtistArtworkUri { get; set; }
+        public string ArtistArtworkUri { get; set; }
     }
 
     public class TrackComparer : IEqualityComparer<Track>

@@ -55,7 +55,7 @@ namespace Audiotica.Database.Services.RunTime
         public void Load()
         {
             if (IsLoaded) return;
-
+            
             CreateTables();
             LoadTracks();
             LoadPlaylists();

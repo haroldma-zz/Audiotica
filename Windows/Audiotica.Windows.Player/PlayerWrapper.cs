@@ -133,7 +133,7 @@ namespace Audiotica.Windows.Player
             // Add playback items to the list
             foreach (var song in queues)
             {
-                var source = MediaSource.CreateFromUri(song.Track.AudioWebUri);
+                var source = MediaSource.CreateFromUri(new Uri(song.Track.AudioWebUri));
                 source.Queue(song);
                 _mediaPlaybackList.Items.Add(new MediaPlaybackItem(source));
             }
@@ -156,7 +156,7 @@ namespace Audiotica.Windows.Player
 
             else
             {
-                var source = MediaSource.CreateFromUri(queue.Track.AudioWebUri);
+                var source = MediaSource.CreateFromUri(new Uri(queue.Track.AudioWebUri));
                 source.Queue(queue);
                 _mediaPlaybackList.Items.Add(new MediaPlaybackItem(source));
             }

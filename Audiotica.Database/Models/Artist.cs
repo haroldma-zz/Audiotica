@@ -19,6 +19,6 @@ namespace Audiotica.Database.Models
         public List<Track> Tracks { get; set; }
         public List<Track> TracksThatAppearsIn { get; set; }
         public List<Album> Albums { get; set; }
-        public Uri ArtworkUri { get; set; }
+        public string ArtworkUri { get; set; }
     }
 }

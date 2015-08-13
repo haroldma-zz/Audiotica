@@ -52,7 +52,7 @@ namespace Audiotica.Windows.Player
 
             var albumArt = track.ArtworkUri;
             _smtc.DisplayUpdater.Thumbnail = albumArt != null
-                ? RandomAccessStreamReference.CreateFromUri(albumArt)
+                ? RandomAccessStreamReference.CreateFromUri(new Uri(albumArt))
                 : null;
             _smtc.DisplayUpdater.Update();
         }

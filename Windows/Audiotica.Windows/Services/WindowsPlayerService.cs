@@ -46,13 +46,14 @@ namespace Audiotica.Windows.Services
                     using (var blocker = new UiBlocker())
                     {
                         blocker.UpdateProgress("Matching...");
-                        track.AudioWebUri = await _matchEngineService.GetLinkAsync(track.Title, track.DisplayArtist);
+                        var uri = await _matchEngineService.GetLinkAsync(track.Title, track.DisplayArtist);
 
-                        if (track.AudioWebUri == null)
+                        if (uri == null)
                         {
                             CurtainPrompt.ShowError("Problem matching the song, try saving and manual matching it.");
                             return;
                         }
+                        track.AudioWebUri = uri.ToString();
                     }
             }
 
