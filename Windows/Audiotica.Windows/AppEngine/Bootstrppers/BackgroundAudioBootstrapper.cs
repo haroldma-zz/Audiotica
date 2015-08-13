@@ -1,45 +1,46 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Audiotica.Core.Windows.Services;
+using Autofac;
 
 namespace Audiotica.Windows.AppEngine.Bootstrppers
 {
     public class BackgroundAudioBootstrapper : AppBootStrapper
     {
-        protected Task StartTaskAsync(AppKernel kernel)
+        protected Task StartTaskAsync(IComponentContext context)
         {
-            var service = kernel.Resolve<IBackgroundAudioService>();
+            var service = context.Resolve<IBackgroundAudioService>();
             return service.StartBackgroundTaskAsync();
         }
 
-        public override Task OnLaunchedAsync(AppKernel kernel)
+        public override Task OnLaunchedAsync(IComponentContext context)
         {
-            return StartTaskAsync(kernel);
+            return StartTaskAsync(context);
         }
 
-        public override Task OnRelaunchedAsync(AppKernel kernel, Dictionary<string, object> state)
+        public override Task OnRelaunchedAsync(IComponentContext context, Dictionary<string, object> state)
         {
-            return StartTaskAsync(kernel);
+            return StartTaskAsync(context);
         }
 
-        public override Task OnResumingAsync(AppKernel kernel)
+        public override Task OnResumingAsync(IComponentContext context)
         {
-            var service = kernel.Resolve<IBackgroundAudioService>();
+            var service = context.Resolve<IBackgroundAudioService>();
 
             // Tell the background audio that the app is being resumed
             service.Resuming();
 
-            return base.OnResumingAsync(kernel);
+            return base.OnResumingAsync(context);
         }
 
-        public override Task OnSuspendingAsync(AppKernel kernel, Dictionary<string, object> state)
+        public override Task OnSuspendingAsync(IComponentContext context, Dictionary<string, object> state)
         {
-            var service = kernel.Resolve<IBackgroundAudioService>();
+            var service = context.Resolve<IBackgroundAudioService>();
 
             // Tell the background audio that the app is being suspended
             service.Suspending();
 
-            return base.OnSuspendingAsync(kernel, state);
+            return base.OnSuspendingAsync(context, state);
         }
     }
 }

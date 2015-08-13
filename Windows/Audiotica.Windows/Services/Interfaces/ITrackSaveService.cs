@@ -7,7 +7,7 @@ namespace Audiotica.Windows.Services.Interfaces
 {
     public interface ITrackSaveService
     {
-        Task<Track> SaveAsync(WebSong song, Action<WebSong> saveChanges = null);
-        Task<Track> SaveAsync(Track track);
+        Task<Track> SaveAsync(WebSong song);
+        Task SaveAsync(Track track);
     }
 }

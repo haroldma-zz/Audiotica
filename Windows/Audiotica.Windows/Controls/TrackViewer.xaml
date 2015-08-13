@@ -34,8 +34,7 @@
                             </SymbolIcon.RenderTransform>
                         </SymbolIcon>
                     </Button>
-                    <Button Margin="40,0,0,0" Style="{StaticResource PlainButtonStyle}" Padding="-5" Click="AddButton_Click" 
-                            IsEnabled="{Binding Status, Converter={StaticResource NotSavingStatusConverter}}" 
+                    <Button Margin="40,0,0,0" Style="{StaticResource PlainButtonStyle}" Padding="-5" Click="AddButton_Click"
                             Visibility="{Binding IsFromLibrary, Converter={StaticResource ReverseVisibilityConverter}}">
                         <SymbolIcon Symbol="Add" RenderTransformOrigin="0.5,0.5">
                             <SymbolIcon.RenderTransform>

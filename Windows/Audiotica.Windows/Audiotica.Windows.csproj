@@ -106,7 +106,7 @@
     <Compile Include="AppEngine\AppKernel.cs" />
     <Compile Include="AppEngine\AppModule.cs" />
     <Compile Include="AppEngine\Bootstrppers\BackgroundAudioBootstrapper.cs" />
-    <Compile Include="AppEngine\Bootstrppers\CollectionBootstrapper.cs" />
+    <Compile Include="AppEngine\Bootstrppers\LibraryBootstrapper.cs" />
     <Compile Include="AppEngine\Bootstrppers\IBootstrapper.cs" />
     <Compile Include="AppEngine\Modules\ConverterModule.cs" />
     <Compile Include="AppEngine\Modules\MatchEngineProviderModule.cs" />
@@ -135,8 +135,10 @@
     <Compile Include="Common\MessageBox.cs" />
     <Compile Include="Interactions\NavigateToPageAction.cs" />
     <Compile Include="Services\DesignTime\DesignWindowsPlayerService.cs" />
+    <Compile Include="Services\Interfaces\ILibraryMatchingService.cs" />
     <Compile Include="Services\Interfaces\ITrackSaveService.cs" />
     <Compile Include="Services\Interfaces\IWindowsPlayerService.cs" />
+    <Compile Include="Services\RunTime\LibraryMatchingService.cs" />
     <Compile Include="Services\RunTime\TrackSaveService.cs" />
     <Compile Include="Services\NavigationService\DesignNavigationService.cs" />
     <Compile Include="Services\NavigationService\INavigatable.cs" />
@@ -155,7 +157,7 @@
     <Compile Include="Tools\Converters\PercentageConverter.cs" />
     <Compile Include="Tools\Converters\StringFormatConverter.cs" />
     <Compile Include="Tools\Converters\TimespanToStringConverter.cs" />
-    <Compile Include="Tools\Converters\TrackStatusConverter.cs" />
+    <Compile Include="Tools\Converters\TrackStatusToBoolConverter.cs" />
     <Compile Include="Tools\Converters\UpperCaseConverter.cs" />
     <Compile Include="Tools\Converters\VisibilityConverter.cs" />
     <Compile Include="Tools\Mvvm\Command.cs" />

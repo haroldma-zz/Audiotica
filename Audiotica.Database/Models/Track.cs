@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using SQLite.Net.Attributes;
 
 namespace Audiotica.Database.Models
 {
@@ -14,8 +15,7 @@ namespace Audiotica.Database.Models
             NotAvailable,
             NoMatch,
             Downloading,
-            Matching,
-            Saving
+            Matching
         }
 
         public enum TrackType
@@ -34,7 +34,8 @@ namespace Audiotica.Database.Models
         /// <value>
         ///     <c>true</c> if this instance is from the library; otherwise, <c>false</c>.
         /// </value>
-        public bool IsFromLibrary => Id > 0;
+        [Ignore]
+        public bool IsFromLibrary { get; set; }
 
         /// <summary>
         ///     Gets or sets the track's title.
@@ -252,12 +253,7 @@ namespace Audiotica.Database.Models
         public TrackStatus Status
         {
             get { return _status; }
-            set
-            {
-                Set(ref _status, value);
-                // ReSharper disable once ExplicitCallerInfoArgument
-                RaisePropertyChanged("IsFromLibrary");
-            }
+            set { Set(ref _status, value); }
         }
 
         /// <summary>

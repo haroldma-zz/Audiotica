@@ -64,7 +64,7 @@ namespace Audiotica.Database.Services.RunTime
             IsLoaded = true;
         }
 
-        public Track AddTrack(Track track)
+        public void AddTrack(Track track)
         {
             var existing = Find(track) != null;
             if (existing) throw new LibraryException("Track already saved.");
@@ -75,7 +75,11 @@ namespace Audiotica.Database.Services.RunTime
             _sqLiteConnection.Insert(track);
             CreateRelatedObjects(track);
             Tracks.Add(track);
-            return track;
+        }
+
+        public void UpdateTrack(Track track)
+        {
+            _sqLiteConnection.Update(track);
         }
 
         public Task LoadAsync()
@@ -83,9 +87,14 @@ namespace Audiotica.Database.Services.RunTime
             return Task.Factory.StartNew(Load);
         }
 
-        public Task<Track> AddTrackAsync(Track track)
+        public Task AddTrackAsync(Track track)
         {
             return Task.Factory.StartNew(() => AddTrack(track));
+        }
+
+        public Task UpdateTrackAsync(Track track)
+        {
+            return Task.Factory.StartNew(() => UpdateTrack(track));
         }
 
         private void CreateTables()
@@ -111,6 +120,8 @@ namespace Audiotica.Database.Services.RunTime
 
         private void CreateRelatedObjects(Track track)
         {
+            track.IsFromLibrary = true;
+
             var displaySameAsAlbumArtist = track.DisplayArtist.EqualsIgnoreCase(track.AlbumArtist);
 
             var albumArtist = Artists.FirstOrDefault(p =>

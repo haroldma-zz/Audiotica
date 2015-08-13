@@ -13,7 +13,6 @@
             <converters:VisibilityConverter x:Key="VisibilityConverter" />
             <converters:VisibilityConverter x:Key="ReverseVisibilityConverter" Reverse="True" />
             <converters:PercentageConverter x:Key="PercentageConverter" />
-            <converters:TrackStatusConverter x:Key="NotSavingStatusConverter" DesiredStatus="Saving" NotDesired="True" />
             
             <SolidColorBrush x:Name="SubtleTextBrush" Color="{ThemeResource SystemBaseMediumColor}" />
             <SolidColorBrush x:Name="OddRowBackgroundBrush" Color="{ThemeResource SystemChromeLowColor}" />

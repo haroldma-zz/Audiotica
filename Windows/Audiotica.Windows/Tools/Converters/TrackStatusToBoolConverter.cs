@@ -5,7 +5,7 @@ using Audiotica.Database.Models;
 
 namespace Audiotica.Windows.Tools.Converters
 {
-    public class TrackStatusConverter : IValueConverter
+    public class TrackStatusToBoolConverter : IValueConverter
     {
 
         public Track.TrackStatus DesiredStatus { get; set; }

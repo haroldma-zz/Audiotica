@@ -54,7 +54,8 @@ namespace Audiotica.Windows.AppEngine
         {
             foreach (var bootstrapper in _bootStrappers)
             {
-                await bootstrapper.OnLaunchedAsync(this);
+                using (var scope = BeginScope())
+                    await bootstrapper.OnLaunchedAsync(scope);
             }
         }
 
@@ -65,7 +66,8 @@ namespace Audiotica.Windows.AppEngine
             foreach (var bootstrapper in _bootStrappers)
             {
                 var key = $"module-state-{bootstrapper.GetType().FullName}";
-                await bootstrapper.OnRelaunchedAsync(this, settings.Read(key, new Dictionary<string, object>()));
+                using (var scope = BeginScope())
+                    await bootstrapper.OnRelaunchedAsync(scope, settings.Read(key, new Dictionary<string, object>()));
 
                 // Erase the module state
                 settings.Remove(key);
@@ -76,7 +78,8 @@ namespace Audiotica.Windows.AppEngine
         {
             foreach (var bootstrapper in _bootStrappers)
             {
-                await bootstrapper.OnResumingAsync(this);
+                using (var scope = BeginScope())
+                    await bootstrapper.OnResumingAsync(scope);
             }
         }
 
@@ -89,7 +92,8 @@ namespace Audiotica.Windows.AppEngine
                 var key = $"module-state-{bootstrapper.GetType().FullName}";
                 var dict = new Dictionary<string, object>();
 
-                await bootstrapper.OnSuspendingAsync(this, dict);
+                using (var scope = BeginScope())
+                    await bootstrapper.OnSuspendingAsync(scope, dict);
 
                 // Save the module state
                 settings.Write(key, dict);

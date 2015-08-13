@@ -1,47 +1,44 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Audiotica.Core.Common;
-using Audiotica.Core.Exceptions;
+using Audiotica.Core.Extensions;
 using Audiotica.Database.Models;
 using Audiotica.Database.Services.Interfaces;
-using Audiotica.Web.MatchEngine.Interfaces.Providers;
 using Audiotica.Web.Models;
 using Audiotica.Windows.Services.Interfaces;
 
 namespace Audiotica.Windows.Services.RunTime
 {
-    public class TrackSaveService : ITrackSaveService
+    internal class TrackSaveService : ITrackSaveService
     {
+        private readonly ILibraryMatchingService _libraryMatchingService;
         private readonly ILibraryService _libraryService;
-        private readonly IMatchEngineService _matchEngineService;
         private readonly IConverter<WebSong, Track> _webSongConverter;
 
         public TrackSaveService(ILibraryService libraryService, IConverter<WebSong, Track> webSongConverter,
-            IMatchEngineService matchEngineService)
+            ILibraryMatchingService libraryMatchingService)
         {
             _libraryService = libraryService;
             _webSongConverter = webSongConverter;
-            _matchEngineService = matchEngineService;
+            _libraryMatchingService = libraryMatchingService;
         }
 
-        public async Task<Track> SaveAsync(WebSong song, Action<WebSong> saveChanges = null)
+        public async Task<Track> SaveAsync(WebSong song)
         {
-            var track = await _webSongConverter.ConvertAsync(song, webSong => saveChanges?.Invoke(webSong));
-            return await SaveAsync(track);
+            var track = await _webSongConverter.ConvertAsync(song, other => song.SetFrom(other));
+            await SaveAsync(track);
+            return track;
         }
 
-        public async Task<Track> SaveAsync(Track track)
+        public async Task SaveAsync(Track track)
         {
-            if (track.AudioWebUri == null && track.AudioLocalUri == null)
-            {
-                // TODO: match in the background
-                var uri = await _matchEngineService.GetLinkAsync(track.Title, track.DisplayArtist);
-                if (uri == null) throw new NoMatchFoundException();
-                track.AudioWebUri = uri.ToString();
-            }
+            var isMatching = track.AudioWebUri == null && track.AudioLocalUri == null;
+            track.Status = isMatching ? Track.TrackStatus.Matching : Track.TrackStatus.None;
 
-            track.Status = Track.TrackStatus.None;
-            return await _libraryService.AddTrackAsync(track);
+            await _libraryService.AddTrackAsync(track);
+
+            // queue it to be matched
+            if (isMatching)
+                _libraryMatchingService.Queue(track);
         }
     }
 }

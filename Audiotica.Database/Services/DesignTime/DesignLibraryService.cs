@@ -27,7 +27,12 @@ namespace Audiotica.Database.Services.DesignTime
             throw new System.NotImplementedException();
         }
 
-        public Track AddTrack(Track track)
+        public void AddTrack(Track track)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public void UpdateTrack(Track track)
         {
             throw new System.NotImplementedException();
         }
@@ -37,7 +42,12 @@ namespace Audiotica.Database.Services.DesignTime
             throw new System.NotImplementedException();
         }
 
-        public Task<Track> AddTrackAsync(Track track)
+        public Task AddTrackAsync(Track track)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public Task UpdateTrackAsync(Track track)
         {
             throw new System.NotImplementedException();
         }

@@ -1,4 +1,5 @@
 ﻿using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
 using Audiotica.Core.Exceptions;
 using Audiotica.Core.Extensions;
 using Audiotica.Database.Models;
@@ -40,20 +41,26 @@ namespace Audiotica.Windows.Controls
 
         private async void AddButton_Click(object sender, RoutedEventArgs e)
         {
-            using (var lifetimeScope = App.Current.Kernel.BeginScope())
+            var button = (Button) sender;
+            button.IsEnabled = false;
+
+            using (var scope = App.Current.Kernel.BeginScope())
             {
-                var trackSaveService = lifetimeScope.Resolve<ITrackSaveService>();
+                var trackSaveService = scope.Resolve<ITrackSaveService>();
 
                 try
                 {
-                    Track.Status = Track.TrackStatus.Saving;
-                    Track.SetFrom(await trackSaveService.SaveAsync(Track));
+                    await trackSaveService.SaveAsync(Track);
                     CurtainPrompt.Show("Song saved.");
                 }
                 catch (AppException ex)
                 {
                     Track.Status = Track.TrackStatus.None;
                     CurtainPrompt.ShowError(ex.Message ?? "Problem saving song.");
+                }
+                finally
+                {
+                    button.IsEnabled = true;
                 }
             }
         }
