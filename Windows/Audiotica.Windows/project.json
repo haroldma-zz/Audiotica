@@ -6,7 +6,7 @@
     "Microsoft.ApplicationInsights.WindowsApps": "1.0.0",
     "Microsoft.NETCore.UniversalWindowsPlatform": "5.0.0",
     "PCLStorage": "1.0.2",
-    "sqlite-net-pcl": "1.0.11"
+    "SQLite.Net-PCL": "3.0.5"
   },
   "frameworks": {
     "uap10.0": {}

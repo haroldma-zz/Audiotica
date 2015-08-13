@@ -8,6 +8,13 @@ namespace Audiotica.Database.Models
     /// </summary>
     public class Artist
     {
+        public Artist()
+        {
+            Albums = new List<Album>();
+            Tracks = new List<Track>();
+            TracksThatAppearsIn = new List<Track>();
+        }
+
         public string Name { get; set; }
         public List<Track> Tracks { get; set; }
         public List<Track> TracksThatAppearsIn { get; set; }

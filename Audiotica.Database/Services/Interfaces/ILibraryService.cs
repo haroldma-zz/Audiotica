@@ -8,6 +8,8 @@ namespace Audiotica.Database.Services.Interfaces
     {
         #region Properties
 
+        bool IsLoaded { get; }
+
         /// <summary>
         ///     Gets the tracks.
         /// </summary>
@@ -46,21 +48,12 @@ namespace Audiotica.Database.Services.Interfaces
 
         Track Find(long id);
         Track Find(Track track);
-        Track Find(string title, string artists, string albumTitle, string albumArtist);
 
         #endregion
 
         #region Sync
 
-        /// <summary>
-        ///     Loads all the tracks from the database, then creates album and artist objects using their tags.
-        /// </summary>
-        void LoadLibrary();
-
-        /// <summary>
-        ///     Loads the playlists by reading the playlist files, serialized using json.
-        /// </summary>
-        void LoadPlaylists();
+        void Load();
 
         /// <summary>
         ///     Adds the track to the library, saves it to the db.
@@ -70,16 +63,8 @@ namespace Audiotica.Database.Services.Interfaces
         #endregion
 
         #region Async
-
-        /// <summary>
-        ///     Loads all the tracks from the database, then creates album and artist objects using their tags.
-        /// </summary>
-        Task LoadLibraryAsync();
-
-        /// <summary>
-        ///     Loads the playlists by reading the playlist files, serialized using json.
-        /// </summary>
-        Task LoadPlaylistsAsync();
+        
+        Task LoadAsync();
 
         /// <summary>
         ///     Adds the track to the library, saves it to the db.

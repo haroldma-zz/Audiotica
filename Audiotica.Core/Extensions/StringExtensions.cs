@@ -10,6 +10,9 @@ namespace Audiotica.Core.Extensions
 {
     public static class StringExtensions
     {
+        public static bool EqualsIgnoreCase(this string text, string other) =>
+            text.Equals(other, StringComparison.CurrentCultureIgnoreCase);
+
         /// <summary>
         ///     Slugifies the text using the Audiotica algorith.
         ///     Used to compared song titles/artists without worrying about unimportant variations.

@@ -2,7 +2,9 @@
 using Audiotica.Core.Utilities.Interfaces;
 using Audiotica.Core.Utilities.RunTime;
 using Audiotica.Core.Windows.Utilities;
+using Audiotica.Windows.AppEngine.Providers;
 using Autofac;
+using SQLite.Net;
 
 namespace Audiotica.Windows.AppEngine.Modules
 {
@@ -18,6 +20,7 @@ namespace Audiotica.Windows.AppEngine.Modules
 
         public override void LoadRunTime(ContainerBuilder builder)
         {
+            builder.RegisterType<SQLiteConnection, SQLiteConnectionProvider>().SingleInstance();
             builder.RegisterType<DispatcherUtility>().As<IDispatcherUtility>();
             builder.RegisterType<CredentialUtility>().As<ICredentialUtility>();
             builder.RegisterType<SettingsUtility>().As<ISettingsUtility>();

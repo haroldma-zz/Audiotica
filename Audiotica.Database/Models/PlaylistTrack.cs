@@ -1,14 +1,16 @@
-﻿using SQLite;
+﻿using Newtonsoft.Json;
 
 namespace Audiotica.Database.Models
 {
-    public class PlaylistTrack : DatabaseEntryBase
+    /// <summary>
+    /// Not used in db.
+    /// </summary>
+    public class PlaylistTrack
     {
-        public long PrevId { get; set; }
-        public long TrackId { get; set; }
-        public long NextId { get; set; }
+        public string Id { get; set; }
+        public string TrackId { get; set; }
 
-        [Ignore]
+        [JsonIgnore]
         public Track Track { get; set; }
     }
 }

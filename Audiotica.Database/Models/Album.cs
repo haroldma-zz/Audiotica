@@ -8,11 +8,16 @@ namespace Audiotica.Database.Models
     /// </summary>
     public class Album
     {
-        public string Name { get; set; }
+        public Album()
+        {
+            Tracks = new List<Track>();
+        }
+
+        public string Title { get; set; }
         public string Publisher { get; set; }
         public string Copyright { get; set; }
-        public int Year { get; set; }
-        public Uri CoverPath { get; set; }
+        public int? Year { get; set; }
+        public Uri ArtworkUri { get; set; }
         public List<Track> Tracks { get; set; }
         public Artist Artist { get; set; }
     }

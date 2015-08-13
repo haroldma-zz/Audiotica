@@ -70,7 +70,7 @@ namespace Audiotica.Factory
             other.PreviousConversion = track;
             saveChanges?.Invoke(other);
 
-            var libraryTrack = track; //TODO: _libraryService
+            var libraryTrack = _libraryService.Find(track);
             return libraryTrack ?? track;
         }
 

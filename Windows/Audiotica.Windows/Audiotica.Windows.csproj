@@ -106,6 +106,7 @@
     <Compile Include="AppEngine\AppKernel.cs" />
     <Compile Include="AppEngine\AppModule.cs" />
     <Compile Include="AppEngine\Bootstrppers\BackgroundAudioBootstrapper.cs" />
+    <Compile Include="AppEngine\Bootstrppers\CollectionBootstrapper.cs" />
     <Compile Include="AppEngine\Bootstrppers\IBootstrapper.cs" />
     <Compile Include="AppEngine\Modules\ConverterModule.cs" />
     <Compile Include="AppEngine\Modules\MatchEngineProviderModule.cs" />
@@ -116,6 +117,7 @@
     <Compile Include="AppEngine\Modules\ViewModelModule.cs" />
     <Compile Include="AppEngine\Providers\IProvider.cs" />
     <Compile Include="AppEngine\Providers\ProviderHelper.cs" />
+    <Compile Include="AppEngine\Providers\SQLiteConnectionProvider.cs" />
     <Compile Include="Common\BootStrapper.cs" />
     <Compile Include="Common\CurtainPrompt.cs" />
     <Compile Include="Common\UiBlocker.cs" />

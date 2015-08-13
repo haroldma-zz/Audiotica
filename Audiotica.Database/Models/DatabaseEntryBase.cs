@@ -1,5 +1,5 @@
 ﻿using System;
-using SQLite;
+using SQLite.Net.Attributes;
 
 namespace Audiotica.Database.Models
 {
@@ -12,6 +12,7 @@ namespace Audiotica.Database.Models
 
         [PrimaryKey, AutoIncrement]
         public long Id { get; set; }
+
         public DateTime CreatedAt { get; set; }
         public DateTime? EditedAt { get; set; }
         public DateTime? DeletedAt { get; set; }

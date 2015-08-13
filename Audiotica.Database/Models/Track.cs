@@ -16,6 +16,14 @@ namespace Audiotica.Database.Models
         }
 
         /// <summary>
+        ///     Gets or sets a value indicating whether this instance is from the music library.
+        /// </summary>
+        /// <value>
+        ///     <c>true</c> if this instance is from the library; otherwise, <c>false</c>.
+        /// </value>
+        public bool IsFromLibrary => Id > 0;
+
+        /// <summary>
         ///     Gets or sets the track's title.
         /// </summary>
         /// <value>
@@ -245,7 +253,7 @@ namespace Audiotica.Database.Models
     {
         public bool Equals(Track x, Track y)
         {
-            if (x.Id > 0 && y.Id > 0)
+            if (x.IsFromLibrary && y.IsFromLibrary)
                 return x.Id == y.Id;
             return GetHashCode(x) == GetHashCode(y);
         }
