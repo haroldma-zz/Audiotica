@@ -49,6 +49,11 @@ namespace Audiotica.Windows.Services.RunTime
                     track.Status = Track.TrackStatus.None;
                     await _libraryService.UpdateTrackAsync(track);
                 }
+                else
+                {
+                    track.Status = Track.TrackStatus.NoMatch;
+                    await _libraryService.UpdateTrackAsync(track);
+                }
             }
             catch
             {
@@ -58,6 +63,8 @@ namespace Audiotica.Windows.Services.RunTime
 
         private async void RunTasks()
         {
+            // TODO: only run when internet is available?
+
             IsMatching = true;
 
             while (_matchingTasks.Count > 0)

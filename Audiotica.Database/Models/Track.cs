@@ -27,6 +27,7 @@ namespace Audiotica.Database.Models
 
         private TrackStatus _status;
         private TrackType _type;
+        private bool _isFromLibrary;
 
         /// <summary>
         ///     Gets or sets a value indicating whether this instance is from the music library.
@@ -35,7 +36,11 @@ namespace Audiotica.Database.Models
         ///     <c>true</c> if this instance is from the library; otherwise, <c>false</c>.
         /// </value>
         [Ignore]
-        public bool IsFromLibrary { get; set; }
+        public bool IsFromLibrary
+        {
+            get { return _isFromLibrary; }
+            set { Set(ref _isFromLibrary, value); }
+        }
 
         /// <summary>
         ///     Gets or sets the track's title.
