@@ -13,13 +13,16 @@ namespace Audiotica.Database.Services.RunTime
 {
     public class LibraryService : ILibraryService, IDisposable
     {
+        private readonly IDispatcherUtility _dispatcherUtility;
         private readonly SQLiteConnection _sqLiteConnection;
         private readonly IStorageUtility _storageUtility;
 
-        public LibraryService(SQLiteConnection sqLiteConnection, IStorageUtility storageUtility)
+        public LibraryService(SQLiteConnection sqLiteConnection, IStorageUtility storageUtility,
+            IDispatcherUtility dispatcherUtility)
         {
             _sqLiteConnection = sqLiteConnection;
             _storageUtility = storageUtility;
+            _dispatcherUtility = dispatcherUtility;
         }
 
         public void Dispose()
@@ -75,6 +78,7 @@ namespace Audiotica.Database.Services.RunTime
             _sqLiteConnection.Insert(track);
             CreateRelatedObjects(track);
             Tracks.Add(track);
+            _dispatcherUtility.RunAsync(() => track.IsFromLibrary = true);
         }
 
         public void UpdateTrack(Track track)
@@ -113,6 +117,7 @@ namespace Audiotica.Database.Services.RunTime
 
             foreach (var track in tracks)
             {
+                track.IsFromLibrary = true;
                 CreateRelatedObjects(track);
                 Tracks.Add(track);
             }
@@ -120,8 +125,6 @@ namespace Audiotica.Database.Services.RunTime
 
         private void CreateRelatedObjects(Track track)
         {
-            track.IsFromLibrary = true;
-
             var displaySameAsAlbumArtist = track.DisplayArtist.EqualsIgnoreCase(track.AlbumArtist);
 
             var albumArtist = Artists.FirstOrDefault(p =>
