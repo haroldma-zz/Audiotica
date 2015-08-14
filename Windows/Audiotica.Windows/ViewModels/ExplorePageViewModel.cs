@@ -15,7 +15,7 @@ using Audiotica.Windows.Views;
 
 namespace Audiotica.Windows.ViewModels
 {
-    internal sealed class ExplorePageViewModel : ViewModelBase
+    public sealed class ExplorePageViewModel : ViewModelBase
     {
         private readonly INavigationService _navigationService;
         private readonly IWindowsPlayerService _windowsPlayerService;

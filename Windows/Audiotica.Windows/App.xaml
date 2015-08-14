@@ -5,7 +5,8 @@
     xmlns:common="using:Audiotica.Windows.Common"
     xmlns:viewModels="using:Audiotica.Windows.ViewModels"
     xmlns:converters="using:Audiotica.Windows.Tools.Converters"
-    xmlns:controls="using:Audiotica.Windows.Controls">
+    xmlns:controls="using:Audiotica.Windows.Controls"
+    xmlns:dataTemplates="using:Audiotica.Windows.DataTemplates">
     <common:BootStrapper.Resources>
         <ResourceDictionary>
             <viewModels:ViewModelLocator x:Key="ViewModelLocator" />
@@ -15,6 +16,7 @@
             <converters:PercentageConverter x:Key="PercentageConverter" />
             <converters:EmptyListToVisibilityConverter x:Key="EmptyListToVisibilityConverter" />
             <converters:EmptyListToVisibilityConverter x:Key="ReverseEmptyListToVisibilityConverter" Reverse="True" />
+            <converters:ImageSourceConverter x:Key="ImageSourceConverter" />
             
             <SolidColorBrush x:Name="SubtleTextBrush" Color="{ThemeResource SystemBaseMediumColor}" />
             <SolidColorBrush x:Name="OddRowBackgroundBrush" Color="{ThemeResource SystemChromeLowColor}" />
@@ -23,14 +25,6 @@
             <Thickness x:Key="PageThickness">30, 20, 30, 0</Thickness>
             <Thickness x:Key="PageMobileThickness">10, 0</Thickness>
             <Thickness x:Key="PageMobileStatusBarThickness">10, 26, 10, 0</Thickness>
-
-            <DataTemplate x:Key="TrackTemplate">
-                <controls:TrackViewer IsSelected="{Binding Tag, RelativeSource={RelativeSource Mode=TemplatedParent}}" />
-            </DataTemplate>
-
-            <DataTemplate x:Key="TrackNarrowTemplate">
-                <controls:TrackNarrowViewer IsSelected="{Binding Tag, RelativeSource={RelativeSource Mode=TemplatedParent}}" />
-            </DataTemplate>
 
             <DataTemplate x:Key="WebSongTemplate">
                 <Grid Margin="0,15">
@@ -65,6 +59,7 @@
             </DataTemplate>
 
             <ResourceDictionary.MergedDictionaries>
+                <dataTemplates:LibraryDictionary />
                 <ResourceDictionary Source="/Styles/TextStyles.xaml" />
                 <ResourceDictionary Source="/Styles/ControlStyles.xaml" />
                 <ResourceDictionary Source="/Styles/SplitViewStyles.xaml" />

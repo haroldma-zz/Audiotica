@@ -1,7 +1,8 @@
-﻿using Windows.UI.Xaml;
+﻿using System.ComponentModel;
+using System.Runtime.CompilerServices;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Audiotica.Core.Exceptions;
-using Audiotica.Core.Extensions;
 using Audiotica.Database.Models;
 using Audiotica.Windows.Common;
 using Audiotica.Windows.Services;
@@ -14,6 +15,8 @@ namespace Audiotica.Windows.Controls
     {
         public static readonly DependencyProperty IsSelectedProperty =
             DependencyProperty.Register("IsSelected", typeof (bool), typeof (TrackViewer), null);
+
+        private Track _track;
 
         public TrackViewer()
         {
@@ -28,7 +31,15 @@ namespace Audiotica.Windows.Controls
             set { SetValue(IsSelectedProperty, value); }
         }
 
-        public Track Track => DataContext as Track;
+        public Track Track
+        {
+            get { return _track; }
+            set
+            {
+                _track = value;
+                Bindings.Update();
+            }
+        }
 
         private void PlayButton_Click(object sender, RoutedEventArgs e)
         {

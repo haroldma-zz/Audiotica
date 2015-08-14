@@ -20,10 +20,10 @@
         <!--No Music-->
         <controls:NoMusicPanel Grid.Row="1" x:Name="NoMusicPanel"
                                Padding="{StaticResource PageThickness}"
-                               Visibility="{Binding LibraryService.Tracks, Converter={StaticResource ReverseEmptyListToVisibilityConverter}}" />
+                               Visibility="{x:Bind ViewModel.LibraryService.Tracks, Converter={StaticResource ReverseEmptyListToVisibilityConverter}}" />
 
         <controls:AlternatingRowListView Grid.Row="1" x:Name="SongsListView"
-                                         ItemsSource="{Binding LibraryService.Tracks}"
+                                         ItemsSource="{x:Bind ViewModel.LibraryService.Tracks}"
                                          Padding="{StaticResource PageThickness}"
                                          OddRowBackground="{StaticResource OddRowBackgroundBrush}"
                                          ItemTemplate="{StaticResource TrackTemplate}" />

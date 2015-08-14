@@ -1,0 +1,14 @@
+﻿<ResourceDictionary
+    x:Class="Audiotica.Windows.DataTemplates.LibraryDictionary"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="using:Audiotica.Windows.Controls"
+    xmlns:databaseModels="using:Audiotica.Database.Models">
+    <DataTemplate x:Key="TrackTemplate" x:DataType="databaseModels:Track">
+        <controls:TrackViewer Track="{x:Bind}" IsSelected="{Binding Tag, RelativeSource={RelativeSource Mode=TemplatedParent}}" />
+    </DataTemplate>
+
+    <DataTemplate x:Key="TrackNarrowTemplate" x:DataType="databaseModels:Track">
+        <controls:TrackNarrowViewer Track="{x:Bind}" IsSelected="{Binding Tag, RelativeSource={RelativeSource Mode=TemplatedParent}}" />
+    </DataTemplate>
+</ResourceDictionary>

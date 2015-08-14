@@ -1,4 +1,5 @@
 ﻿using Windows.UI.Xaml.Navigation;
+using Audiotica.Windows.ViewModels;
 
 namespace Audiotica.Windows.Views
 {
@@ -7,7 +8,10 @@ namespace Audiotica.Windows.Views
         public ExplorePage()
         {
             InitializeComponent();
+            ViewModel = DataContext as ExplorePageViewModel;
             NavigationCacheMode = NavigationCacheMode.Required;
         }
+
+        public ExplorePageViewModel ViewModel { get; set; }
     }
 }

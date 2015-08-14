@@ -6,7 +6,6 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    x:Name="Element"
     d:DesignHeight="300"
     d:DesignWidth="400">
 
@@ -16,13 +15,13 @@
             <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
         <StackPanel>
-            <TextBlock Text="{Binding Title}"
+            <TextBlock Text="{x:Bind Track.Title, Mode=OneWay}"
                                    Style="{StaticResource TitleTextBlockStyle}" />
-            <TextBlock Text="{Binding Artists}"
+            <TextBlock Text="{x:Bind Track.Artists, Mode=OneWay}"
                                    Style="{StaticResource SubtleTextBlockStyle}" />
         </StackPanel>
         <StackPanel Grid.Column="1" Margin="20,0,20,0" Orientation="Horizontal"
-                            Visibility="{Binding IsSelected, ElementName=Element, Converter={StaticResource VisibilityConverter}}">
+                            Visibility="{x:Bind IsSelected, Mode=OneWay, Converter={StaticResource VisibilityConverter}}">
             <Button Style="{StaticResource PlainButtonStyle}" Padding="-5" Click="PlayButton_Click">
                 <SymbolIcon Symbol="Play" RenderTransformOrigin="0.5,0.5">
                     <SymbolIcon.RenderTransform>
@@ -31,7 +30,7 @@
                 </SymbolIcon>
             </Button>
             <Button Margin="40,0,0,0" Style="{StaticResource PlainButtonStyle}" Padding="-5" Click="AddButton_Click"
-                            Visibility="{Binding IsFromLibrary, Converter={StaticResource ReverseVisibilityConverter}}">
+                            Visibility="{x:Bind Track.IsFromLibrary, Mode=OneWay, Converter={StaticResource ReverseVisibilityConverter}}">
                 <SymbolIcon Symbol="Add" RenderTransformOrigin="0.5,0.5">
                     <SymbolIcon.RenderTransform>
                         <CompositeTransform ScaleX=".7" ScaleY=".7" />

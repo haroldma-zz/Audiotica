@@ -6,52 +6,48 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    x:Name="Element"
     d:DesignHeight="300"
     d:DesignWidth="400">
 
     <Grid Margin="0,15">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width=".2*" />
+        </Grid.ColumnDefinitions>
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width=".2*" />
+                <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
-                <TextBlock Text="{Binding Title}"
-                           Style="{StaticResource BaseTextBlockStyle}" Margin="0,0,10,0" />
-                <StackPanel Grid.Column="1" Margin="20,0,20,0" Orientation="Horizontal"
-                            Visibility="{Binding IsSelected, ElementName=Element, Converter={StaticResource VisibilityConverter}}">
-                    <Button Style="{StaticResource PlainButtonStyle}" Padding="-5" Click="PlayButton_Click">
-                        <SymbolIcon Symbol="Play" RenderTransformOrigin="0.5,0.5">
-                            <SymbolIcon.RenderTransform>
-                                <CompositeTransform ScaleX=".7" ScaleY=".7" />
-                            </SymbolIcon.RenderTransform>
-                        </SymbolIcon>
-                    </Button>
-                    <Button Margin="40,0,0,0" Style="{StaticResource PlainButtonStyle}" Padding="-5" Click="AddButton_Click"
-                            Visibility="{Binding IsFromLibrary, Converter={StaticResource ReverseVisibilityConverter}}">
-                        <SymbolIcon Symbol="Add" RenderTransformOrigin="0.5,0.5">
-                            <SymbolIcon.RenderTransform>
-                                <CompositeTransform ScaleX=".7" ScaleY=".7" />
-                            </SymbolIcon.RenderTransform>
-                        </SymbolIcon>
-                    </Button>
-                </StackPanel>
-            </Grid>
-            <TextBlock Grid.Column="1" Text="{Binding Artists}"
-                       Style="{StaticResource SubtleTextBlockStyle}" Margin="0,0,10,0" />
-            <TextBlock
-
-                Grid.Column="2" Text="{Binding AlbumTitle}"
-                Style="{StaticResource SubtleTextBlockStyle}" Margin="0,0,10,0" />
-            <TextBlock Grid.Column="3" Text="{Binding Year}"
-                       Style="{StaticResource SubtleTextBlockStyle}" />
+            <TextBlock Text="{x:Bind Track.Title, Mode=OneWay}"
+                       Style="{StaticResource BaseTextBlockStyle}" Margin="0,0,10,0" />
+            <StackPanel Grid.Column="1" Margin="20,0,20,0" Orientation="Horizontal"
+                        Visibility="{x:Bind IsSelected, Mode=OneWay, Converter={StaticResource VisibilityConverter}}">
+                <Button Style="{StaticResource PlainButtonStyle}" Padding="-5" Click="PlayButton_Click">
+                    <SymbolIcon Symbol="Play" RenderTransformOrigin="0.5,0.5">
+                        <SymbolIcon.RenderTransform>
+                            <CompositeTransform ScaleX=".7" ScaleY=".7" />
+                        </SymbolIcon.RenderTransform>
+                    </SymbolIcon>
+                </Button>
+                <Button Margin="40,0,0,0" Style="{StaticResource PlainButtonStyle}" Padding="-5"
+                        Click="AddButton_Click"
+                        Visibility="{x:Bind Track.IsFromLibrary, Mode=OneWay, Converter={StaticResource ReverseVisibilityConverter}}">
+                    <SymbolIcon Symbol="Add" RenderTransformOrigin="0.5,0.5">
+                        <SymbolIcon.RenderTransform>
+                            <CompositeTransform ScaleX=".7" ScaleY=".7" />
+                        </SymbolIcon.RenderTransform>
+                    </SymbolIcon>
+                </Button>
+            </StackPanel>
         </Grid>
+        <TextBlock Grid.Column="1" Text="{x:Bind Track.Artists, Mode=OneWay}"
+                   Style="{StaticResource SubtleTextBlockStyle}" Margin="0,0,10,0" />
+        <TextBlock Grid.Column="2" Text="{x:Bind Track.AlbumTitle, Mode=OneWay}"
+                   Style="{StaticResource SubtleTextBlockStyle}" Margin="0,0,10,0" />
+        <TextBlock Grid.Column="3" Text="{x:Bind Track.Year, Mode=OneWay}"
+                   Style="{StaticResource SubtleTextBlockStyle}" />
     </Grid>
 </UserControl>

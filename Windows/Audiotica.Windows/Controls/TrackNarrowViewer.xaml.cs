@@ -15,6 +15,8 @@ namespace Audiotica.Windows.Controls
         public static readonly DependencyProperty IsSelectedProperty =
             DependencyProperty.Register("IsSelected", typeof (bool), typeof (TrackNarrowViewer), null);
 
+        private Track _track;
+
         public TrackNarrowViewer()
         {
             InitializeComponent();
@@ -28,7 +30,15 @@ namespace Audiotica.Windows.Controls
             set { SetValue(IsSelectedProperty, value); }
         }
 
-        public Track Track => DataContext as Track;
+        public Track Track
+        {
+            get { return _track; }
+            set
+            {
+                _track = value;
+                Bindings.Update();
+            }
+        }
 
         private void PlayButton_Click(object sender, RoutedEventArgs e)
         {

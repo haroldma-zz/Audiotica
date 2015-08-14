@@ -12,6 +12,7 @@
     xmlns:core="using:Microsoft.Xaml.Interactions.Core"
     xmlns:interactions="using:Audiotica.Windows.Interactions"
     xmlns:views="using:Audiotica.Windows.Views"
+    xmlns:webModels="using:Audiotica.Web.Models"
     xmlns:controls="using:Audiotica.Windows.Controls"
     mc:Ignorable="d"
     DataContext="{Binding ExplorePage, Source={StaticResource ViewModelLocator}}">
@@ -32,13 +33,13 @@
                 </Grid.RowDefinitions>
                 <StackPanel x:Name="TopSongsPanel">
                     <TextBlock Text="Top Songs" Style="{StaticResource HeaderTextBlockStyle}" />
-                    <controls:AlternatingRowListView ItemsSource="{Binding TopSongs}"
+                    <controls:AlternatingRowListView ItemsSource="{x:Bind ViewModel.TopSongs, Mode=OneWay}"
                                                      OddRowBackground="{StaticResource OddRowBackgroundBrush}"
                                                      ItemTemplate="{StaticResource WebSongNarrowTemplate}"
                                                      IsItemClickEnabled="True">
                         <interactivity:Interaction.Behaviors>
                             <core:EventTriggerBehavior EventName="ItemClick">
-                                <core:InvokeCommandAction Command="{Binding SongClickCommand}" />
+                                <core:InvokeCommandAction Command="{x:Bind ViewModel.SongClickCommand}" />
                             </core:EventTriggerBehavior>
                         </interactivity:Interaction.Behaviors>
                     </controls:AlternatingRowListView>
@@ -46,21 +47,21 @@
 
                 <StackPanel x:Name="TopAlbumsPanel" Grid.Row="0" Grid.Column="1">
                     <TextBlock Text="Top Albums" Style="{StaticResource HeaderTextBlockStyle}" />
-                    <GridView ItemsSource="{Binding TopAlbums}" IsItemClickEnabled="True"
+                    <GridView ItemsSource="{x:Bind ViewModel.TopAlbums, Mode=OneWay}" IsItemClickEnabled="True"
                               ScrollViewer.VerticalScrollBarVisibility="Disabled">
                         <interactivity:Interaction.Behaviors>
                             <core:EventTriggerBehavior EventName="ItemClick">
-                                <core:InvokeCommandAction Command="{Binding ArtistClickCommand}" />
+                                <core:InvokeCommandAction Command="{x:Bind ViewModel.ArtistClickCommand}" />
                             </core:EventTriggerBehavior>
                         </interactivity:Interaction.Behaviors>
                         <GridView.ItemTemplate>
-                            <DataTemplate>
+                            <DataTemplate x:DataType="webModels:WebAlbum">
                                 <Grid Margin="5" Width="150" Height="150">
                                     <Grid.Background>
                                         <ImageBrush Stretch="UniformToFill" Opacity=".5"
-                                                    ImageSource="{Binding Artwork}" />
+                                                    ImageSource="{x:Bind Artwork, Converter={StaticResource ImageSourceConverter}}" />
                                     </Grid.Background>
-                                    <TextBlock Text="{Binding Title}" Margin="2"
+                                    <TextBlock Text="{x:Bind Title}" Margin="2"
                                                VerticalAlignment="Center" TextAlignment="Center"
                                                TextTrimming="CharacterEllipsis" />
                                 </Grid>
@@ -72,19 +73,19 @@
             </Grid>
             <StackPanel Grid.Row="1" x:Name="TopArtistsPanel">
                 <TextBlock Text="Top Artists" Style="{StaticResource HeaderTextBlockStyle}" />
-                <GridView  ItemsSource="{Binding TopArtists}" IsItemClickEnabled="True" ScrollViewer.VerticalScrollBarVisibility="Disabled">
+                <GridView  ItemsSource="{x:Bind ViewModel.TopArtists, Mode=OneWay}" IsItemClickEnabled="True" ScrollViewer.VerticalScrollBarVisibility="Disabled">
                     <interactivity:Interaction.Behaviors>
                         <core:EventTriggerBehavior EventName="ItemClick">
-                            <core:InvokeCommandAction Command="{Binding ArtistClickCommand}"/>
+                            <core:InvokeCommandAction Command="{x:Bind ViewModel.ArtistClickCommand}"/>
                         </core:EventTriggerBehavior>
                     </interactivity:Interaction.Behaviors>
                     <GridView.ItemTemplate>
-                        <DataTemplate>
+                        <DataTemplate x:DataType="webModels:WebArtist">
                             <Grid Margin="5" Width="150" Height="150">
                                 <Grid.Background>
-                                    <ImageBrush Stretch="UniformToFill" Opacity=".5" ImageSource="{Binding Artwork}" />
+                                    <ImageBrush Stretch="UniformToFill" Opacity=".5" ImageSource="{x:Bind Artwork, Converter={StaticResource ImageSourceConverter}}" />
                                 </Grid.Background>
-                                <TextBlock Text="{Binding Name}" Margin="2"
+                                <TextBlock Text="{x:Bind  Name}" Margin="2"
                                            VerticalAlignment="Center" TextAlignment="Center"
                                                TextTrimming="CharacterEllipsis"/>
                             </Grid>

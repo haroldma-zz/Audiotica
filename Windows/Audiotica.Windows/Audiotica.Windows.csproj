@@ -122,6 +122,9 @@
     <Compile Include="Common\CurtainPrompt.cs" />
     <Compile Include="Common\UiBlocker.cs" />
     <Compile Include="Controls\AlternatingRowListView.cs" />
+    <Compile Include="DataTemplates\LibraryDictionary.xaml.cs">
+      <DependentUpon>LibraryDictionary.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\NoMusicPanel.xaml.cs">
       <DependentUpon>NoMusicPanel.xaml</DependentUpon>
     </Compile>
@@ -160,6 +163,7 @@
     <Compile Include="Tools\Converters\ContentConverter.cs" />
     <Compile Include="Tools\Converters\EmptyListToVisibilityConverter.cs" />
     <Compile Include="Tools\Converters\EmptyStringToVisibilityConverter.cs" />
+    <Compile Include="Tools\Converters\ImageSourceConverter.cs" />
     <Compile Include="Tools\Converters\ListToStringConverter.cs" />
     <Compile Include="Tools\Converters\NullToVisibilityConverter.cs" />
     <Compile Include="Tools\Converters\PercentageConverter.cs" />
@@ -233,6 +237,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="DataTemplates\LibraryDictionary.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Controls\NoMusicPanel.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
