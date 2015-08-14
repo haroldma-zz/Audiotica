@@ -15,7 +15,7 @@ using Audiotica.Windows.Tools.Mvvm;
 
 namespace Audiotica.Windows.ViewModels
 {
-    internal sealed class ArtistPageViewModel : ViewModelBase
+    public sealed class ArtistPageViewModel : ViewModelBase
     {
         private readonly ILibraryService _libraryService;
         private readonly List<IMetadataProvider> _metadataProviders;

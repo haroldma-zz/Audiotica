@@ -26,38 +26,6 @@
             <Thickness x:Key="PageMobileThickness">10, 0</Thickness>
             <Thickness x:Key="PageMobileStatusBarThickness">10, 26, 10, 0</Thickness>
 
-            <DataTemplate x:Key="WebSongTemplate">
-                <Grid Margin="0,15">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width=".2*" />
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Text="{Binding Title}"
-                                   Style="{StaticResource BaseTextBlockStyle}" Margin="0,0,10,0" />
-                        <TextBlock Grid.Column="1" Text="{Binding Artists[0].Name}"
-                                   Style="{StaticResource SubtleTextBlockStyle}" Margin="0,0,10,0" />
-                        <TextBlock Grid.Column="2" Text="{Binding Album.Title}"
-                                   Style="{StaticResource SubtleTextBlockStyle}" Margin="0,0,10,0" />
-                        <TextBlock Grid.Column="3" Text="{Binding Album.ReleasedDate.Year}"
-                                   Style="{StaticResource SubtleTextBlockStyle}" />
-                    </Grid>
-                </Grid>
-            </DataTemplate>
-
-            <DataTemplate x:Key="WebSongNarrowTemplate">
-                <Grid Margin="0,15">
-                    <StackPanel>
-                        <TextBlock Text="{Binding Title}"
-                                   Style="{StaticResource TitleTextBlockStyle}" />
-                        <TextBlock Text="{Binding Artists[0].Name}"
-                                   Style="{StaticResource SubtleTextBlockStyle}" />
-                    </StackPanel>
-                </Grid>
-            </DataTemplate>
-
             <ResourceDictionary.MergedDictionaries>
                 <dataTemplates:LibraryDictionary />
                 <ResourceDictionary Source="/Styles/TextStyles.xaml" />

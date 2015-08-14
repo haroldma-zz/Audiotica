@@ -1,83 +1,190 @@
-﻿using Windows.UI.Core;
-using Windows.UI.ViewManagement;
+﻿using System.Collections;
+using System.Collections.Specialized;
+using System.Linq;
+using Windows.ApplicationModel;
+using Windows.Foundation;
+using Windows.Foundation.Collections;
+using Windows.Graphics.Display;
 using Windows.UI.Xaml;
-using Audiotica.Core.Windows.Helpers;
 using Audiotica.Windows.Common;
 
 namespace Audiotica.Windows.CustomTriggers
 {
     /// <summary>
-    ///     A trigger that changes state based on the orientation of the current window.
+    ///     Enables a state if an Object is <c>null</c> or a String/IEnumerable is empty
     /// </summary>
-    public class OrientationTrigger : StateTriggerBase
+    public class IsNullOrEmptyStateTrigger : StateTriggerBase
     {
-        #region Constructors
+        /// <summary>
+        ///     Identifies the <see cref="Value" /> DependencyProperty
+        /// </summary>
+        public static readonly DependencyProperty ValueProperty =
+            DependencyProperty.Register("Value", typeof (object), typeof (IsNullOrEmptyStateTrigger),
+                new PropertyMetadata(true, OnValuePropertyChanged));
 
         /// <summary>
-        ///     Initializes a new <see cref="OrientationTrigger" /> instance.
+        ///     Gets or sets the value used to check for <c>null</c> or empty.
         /// </summary>
-        public OrientationTrigger()
+        public object Value
         {
-            // Create a weak subscription to the SizeChanged event so that we don't pin the trigger or page in memory
-            WeakEvent.Subscribe<WindowSizeChangedEventHandler>(Window.Current, "SizeChanged", Window_SizeChanged);
-
-            // Calculate the initial state
-            CalculateState();
+            get { return GetValue(ValueProperty); }
+            set { SetValue(ValueProperty, value); }
         }
 
-        #endregion // Constructors
-
-        #region Internal Methods
-
-        private void CalculateState()
+        private static void OnValuePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            if (MobileOnly && !DeviceHelper.IsType(DeviceHelper.Family.Mobile))
+            var obj = (IsNullOrEmptyStateTrigger) d;
+            var val = e.NewValue;
+
+            obj.SetActive(IsNullOrEmpty(val));
+
+            if (val == null)
+                return;
+
+            // Try to listen for various notification events
+            // Starting with INorifyCollectionChanged
+            var valNotifyCollection = val as INotifyCollectionChanged;
+            if (valNotifyCollection != null)
             {
-                WeakEvent.Unsubscribe<WindowSizeChangedEventHandler>(Window.Current, "SizeChanged", Window_SizeChanged);
+                WeakEvent.Subscribe<NotifyCollectionChangedEventHandler>(valNotifyCollection, "CollectionChanged",
+                    (sender, args) => obj.SetActive(IsNullOrEmpty(valNotifyCollection)));
                 return;
             }
 
-            var currentOrientation = ApplicationView.GetForCurrentView().Orientation;
-            SetActive(currentOrientation == _orientation);
-        }
-
-        #endregion // Internal Methods
-
-        #region Overrides / Event Handlers
-
-        private void Window_SizeChanged(object sender, WindowSizeChangedEventArgs e)
-        {
-            // System.Diagnostics.Debug.WriteLine(string.Format("Size Changed {0}", this.GetHashCode()));
-            CalculateState();
-        }
-
-        #endregion // Overrides / Event Handlers
-
-        #region Public Properties
-
-        private ApplicationViewOrientation _orientation;
-
-        /// <summary>
-        ///     Gets or sets the orientation that will satisfy the trigger.
-        /// </summary>
-        /// <value>
-        ///     The orientation that will satisfy the trigger.
-        /// </value>
-        public ApplicationViewOrientation Orientation
-        {
-            get { return _orientation; }
-            set
+            // Not INotifyCollectionChanged, try IObservableVector
+            var valObservableVector = val as IObservableVector<object>;
+            if (valObservableVector != null)
             {
-                if (_orientation != value)
-                {
-                    _orientation = value;
-                    CalculateState();
-                }
+                WeakEvent.Subscribe<VectorChangedEventHandler<object>>(valObservableVector, "VectorChanged",
+                    (sender, args) => obj.SetActive(IsNullOrEmpty(valObservableVector)));
+                return;
+            }
+
+            // Not INotifyCollectionChanged, try IObservableMap
+            var valObservableMap = val as IObservableMap<object, object>;
+            if (valObservableMap != null)
+            {
+                WeakEvent.Subscribe<MapChangedEventHandler<object, object>>(valObservableMap, "MapChanged",
+                    (sender, args) => obj.SetActive(IsNullOrEmpty(valObservableMap)));
             }
         }
 
-        public bool MobileOnly { get; set; }
+        private static bool IsNullOrEmpty(object val)
+        {
+            if (val == null) return true;
 
-        #endregion // Public Properties
+            // Object is not null, check for an empty string
+            var valString = val as string;
+            if (valString != null)
+            {
+                return (valString.Length == 0);
+            }
+
+            // Object is not a string, check for an empty ICollection (faster)
+            var valCollection = val as ICollection;
+            if (valCollection != null)
+            {
+                return (valCollection.Count == 0);
+            }
+
+            // Object is not an ICollection, check for an empty IEnumerable
+            var valEnumerable = val as IEnumerable;
+            if (valEnumerable != null)
+            {
+                return !valEnumerable.Cast<object>().Any();
+            }
+
+            // Not null and not a known type to test for emptiness
+            return false;
+        }
+    }
+
+    /// <summary>
+    ///     Trigger for switching when the screen orientation changes
+    /// </summary>
+    public class OrientationStateTrigger : StateTriggerBase
+    {
+        /// <summary>
+        ///     Orientations
+        /// </summary>
+        public enum Orientations
+        {
+            /// <summary>
+            ///     none
+            /// </summary>
+            None,
+
+            /// <summary>
+            ///     landscape
+            /// </summary>
+            Landscape,
+
+            /// <summary>
+            ///     portrait
+            /// </summary>
+            Portrait
+        }
+
+        /// <summary>
+        ///     Identifies the <see cref="Orientation" /> parameter.
+        /// </summary>
+        public static readonly DependencyProperty OrientationProperty =
+            DependencyProperty.Register("Orientation", typeof (Orientations), typeof (OrientationStateTrigger),
+                new PropertyMetadata(Orientations.None, OnOrientationPropertyChanged));
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="OrientationStateTrigger" /> class.
+        /// </summary>
+        public OrientationStateTrigger()
+        {
+            if (!DesignMode.DesignModeEnabled)
+            {
+                WeakEvent.Subscribe<TypedEventHandler<DisplayInformation, object>>(
+                    DisplayInformation.GetForCurrentView(), "OrientationChanged",
+                    OrientationStateTrigger_OrientationChanged);
+            }
+        }
+
+        /// <summary>
+        ///     Gets or sets the orientation to trigger on.
+        /// </summary>
+        public Orientations Orientation
+        {
+            get { return (Orientations) GetValue(OrientationProperty); }
+            set { SetValue(OrientationProperty, value); }
+        }
+
+        private void OrientationStateTrigger_OrientationChanged(DisplayInformation sender, object args)
+        {
+            UpdateTrigger(sender.CurrentOrientation);
+        }
+
+        private void UpdateTrigger(DisplayOrientations orientation)
+        {
+            switch (orientation)
+            {
+                case DisplayOrientations.None:
+                    SetActive(false);
+                    break;
+                case DisplayOrientations.Landscape:
+                case DisplayOrientations.LandscapeFlipped:
+                    SetActive(Orientation == Orientations.Landscape);
+                    break;
+                case DisplayOrientations.Portrait:
+                case DisplayOrientations.PortraitFlipped:
+                    SetActive(Orientation == Orientations.Portrait);
+                    break;
+            }
+        }
+
+        private static void OnOrientationPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var obj = (OrientationStateTrigger) d;
+            if (!DesignMode.DesignModeEnabled)
+            {
+                var orientation = DisplayInformation.GetForCurrentView().CurrentOrientation;
+                obj.UpdateTrigger(orientation);
+            }
+        }
     }
 }

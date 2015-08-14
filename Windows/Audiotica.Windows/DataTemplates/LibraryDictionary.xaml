@@ -3,12 +3,45 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:controls="using:Audiotica.Windows.Controls"
-    xmlns:databaseModels="using:Audiotica.Database.Models">
+    xmlns:databaseModels="using:Audiotica.Database.Models"
+    xmlns:webModels="using:Audiotica.Web.Models">
     <DataTemplate x:Key="TrackTemplate" x:DataType="databaseModels:Track">
         <controls:TrackViewer Track="{x:Bind}" IsSelected="{Binding Tag, RelativeSource={RelativeSource Mode=TemplatedParent}}" />
     </DataTemplate>
 
     <DataTemplate x:Key="TrackNarrowTemplate" x:DataType="databaseModels:Track">
         <controls:TrackNarrowViewer Track="{x:Bind}" IsSelected="{Binding Tag, RelativeSource={RelativeSource Mode=TemplatedParent}}" />
+    </DataTemplate>
+
+    <DataTemplate x:Key="WebSongTemplate"  x:DataType="webModels:WebSong">
+        <Grid Margin="0,15">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width=".2*" />
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="{x:Bind Title}"
+                                   Style="{StaticResource BaseTextBlockStyle}" Margin="0,0,10,0" />
+                <TextBlock Grid.Column="1" Text="{x:Bind Artists[0].Name}"
+                                   Style="{StaticResource SubtleTextBlockStyle}" Margin="0,0,10,0" />
+                <TextBlock Grid.Column="2" Text="{x:Bind Album.Title}"
+                                   Style="{StaticResource SubtleTextBlockStyle}" Margin="0,0,10,0" />
+                <TextBlock Grid.Column="3" Text="{x:Bind Album.ReleasedDate.Value.Year}"
+                                   Style="{StaticResource SubtleTextBlockStyle}" />
+            </Grid>
+        </Grid>
+    </DataTemplate>
+
+    <DataTemplate x:Key="WebSongNarrowTemplate" x:DataType="webModels:WebSong">
+        <Grid Margin="0,15">
+            <StackPanel>
+                <TextBlock Text="{x:Bind Title}"
+                                   Style="{StaticResource TitleTextBlockStyle}" />
+                <TextBlock Text="{x:Bind Artists[0].Name}"
+                                   Style="{StaticResource SubtleTextBlockStyle}" />
+            </StackPanel>
+        </Grid>
     </DataTemplate>
 </ResourceDictionary>

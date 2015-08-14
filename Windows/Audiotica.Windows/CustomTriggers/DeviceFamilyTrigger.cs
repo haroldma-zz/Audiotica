@@ -6,9 +6,9 @@ namespace Audiotica.Windows.CustomTriggers
     public class DeviceFamilyTrigger : StateTriggerBase
     {
         //private variables
-        private DeviceHelper.Family _queriedDeviceFamily;
+        private DeviceFamily _queriedDeviceFamily;
         //Public property
-        public DeviceHelper.Family DeviceFamily
+        public DeviceFamily DeviceFamily
         {
             get { return _queriedDeviceFamily; }
             set

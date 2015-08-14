@@ -17,13 +17,13 @@
         </Grid.Background>
         <ScrollViewer x:Name="ContentScrollViewer" Padding="{StaticResource PageThickness}">
             <StackPanel>
-                <TextBlock Text="{Binding Artist.Name}" />
+                <TextBlock Text="{x:Bind ViewModel.Artist.Name, Mode=OneWay}" />
                 <controls:AlternatingRowListView x:Name="TopTracksListView"
-                                                 ItemsSource="{Binding TopSongs}"
+                                                 ItemsSource="{x:Bind ViewModel.TopSongs, Mode=OneWay}"
                                                  OddRowBackground="{StaticResource OddRowBackgroundBrush}"
                                                  ItemTemplate="{StaticResource TrackTemplate}"
                                                  ScrollViewer.VerticalScrollBarVisibility="Disabled" />
-                <ListView ItemsSource="{Binding TopAlbums}" ScrollViewer.VerticalScrollBarVisibility="Disabled" />
+                <ListView ItemsSource="{x:Bind ViewModel.TopAlbums, Mode=OneWay}" ScrollViewer.VerticalScrollBarVisibility="Disabled" />
             </StackPanel>
         </ScrollViewer>
 
@@ -35,8 +35,22 @@
                     </VisualState.StateTriggers>
                     <VisualState.Setters>
                         <Setter Target="ContentScrollViewer.Padding" Value="{StaticResource PageMobileThickness}" />
+                    </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
+            <VisualStateGroup x:Name="WindowSizeStates">
+                <VisualState x:Name="NarrowScreen">
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="0" />
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
                         <Setter Target="TopTracksListView.ItemTemplate" Value="{StaticResource TrackNarrowTemplate}" />
                     </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="WideScreen">
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="600" />
+                    </VisualState.StateTriggers>
                 </VisualState>
             </VisualStateGroup>
         </VisualStateManager.VisualStateGroups>
