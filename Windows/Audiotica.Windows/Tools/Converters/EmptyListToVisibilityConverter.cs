@@ -8,7 +8,18 @@ namespace Audiotica.Windows.Tools.Converters
 {
     public class EmptyListToVisibilityConverter : IValueConverter
     {
-        public object Convert(object value, Type targetType, object parameter, string language) => !(value is IEnumerable<object>) || !((IEnumerable<object>) value).Any() ? Visibility.Collapsed : Visibility.Visible;
+        public bool Reverse { get; set; }
+
+        public object Convert(object value, Type targetType, object parameter, string language)
+        {
+            if (!(value is IEnumerable<object>))
+                return Visibility.Collapsed;
+            var any = ((IEnumerable<object>) value).Any();
+
+            return Reverse && any || !Reverse && !any
+                ? Visibility.Collapsed
+                : Visibility.Visible;
+        }
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)
         {

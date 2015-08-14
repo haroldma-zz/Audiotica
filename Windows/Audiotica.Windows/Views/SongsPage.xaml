@@ -18,11 +18,12 @@
         </Grid.RowDefinitions>
 
         <!--No Music-->
-        <controls:NoMusicPanel Grid.Row="1" x:Name="NoMusicPanel"/>
+        <controls:NoMusicPanel Grid.Row="1" x:Name="NoMusicPanel" 
+                               Visibility="{Binding LibraryService.Tracks, Converter={StaticResource ReverseEmptyListToVisibilityConverter}}"/>
 
-        <ListView Grid.Row="1" x:Name="SongsListView">
-
-        </ListView>
+        <controls:AlternatingRowListView Grid.Row="1" x:Name="SongsListView" ItemsSource="{Binding LibraryService.Tracks}"
+                                             OddRowBackground="{StaticResource OddRowBackgroundBrush}"
+                                             ItemTemplate="{StaticResource TrackTemplate}"/>
 
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroup x:Name="DeviceFamilyStates">
