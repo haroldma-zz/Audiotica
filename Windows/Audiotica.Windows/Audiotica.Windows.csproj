@@ -134,9 +134,14 @@
     <Compile Include="CustomTriggers\ControlSizeTrigger.cs" />
     <Compile Include="CustomTriggers\DeviceFamilyTrigger.cs" />
     <Compile Include="CustomTriggers\InputTypeTrigger.cs" />
+    <Compile Include="CustomTriggers\OrientationTrigger.cs" />
+    <Compile Include="Common\WeakEvent.cs" />
     <Compile Include="Factories\AppKernelFactory.cs" />
     <Compile Include="Common\MessageBox.cs" />
     <Compile Include="Interactions\NavigateToPageAction.cs" />
+    <Compile Include="CustomTriggers\NetworkAvailableStateTrigger.cs" />
+    <Compile Include="Interactions\TextBoxEnterKeyBehavior.cs" />
+    <Compile Include="Interactions\TimerTriggerBehavior.cs" />
     <Compile Include="Services\DesignTime\DesignWindowsPlayerService.cs" />
     <Compile Include="Services\Interfaces\ILibraryMatchingService.cs" />
     <Compile Include="Services\Interfaces\ITrackSaveService.cs" />
