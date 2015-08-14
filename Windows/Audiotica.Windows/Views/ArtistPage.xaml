@@ -7,6 +7,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:navigationService="using:Audiotica.Windows.Services.NavigationService"
     xmlns:controls="using:Audiotica.Windows.Controls"
+    xmlns:customTriggers="using:Audiotica.Windows.CustomTriggers"
     mc:Ignorable="d"
     DataContext="{Binding ArtistPage, Source={StaticResource ViewModelLocator}}">
 
@@ -14,12 +15,30 @@
         <Grid.Background>
             <ImageBrush Stretch="UniformToFill" Opacity=".1" AlignmentY="Top" ImageSource="{Binding Artist.ArtworkUri}" />
         </Grid.Background>
-        <StackPanel>
-            <TextBlock Text="{Binding Artist.Name}" />
-            <controls:AlternatingRowListView ItemsSource="{Binding TopSongs}"
-                                             OddRowBackground="{StaticResource OddRowBackgroundBrush}"
-                                             ItemTemplate="{StaticResource TrackTemplate}"/>
-            <ListView ItemsSource="{Binding TopAlbums}" />
-        </StackPanel>
+        <ScrollViewer x:Name="ContentScrollViewer" Padding="{StaticResource PageThickness}">
+            <StackPanel>
+                <TextBlock Text="{Binding Artist.Name}" />
+                <controls:AlternatingRowListView x:Name="TopTracksListView"
+                                                 ItemsSource="{Binding TopSongs}"
+                                                 OddRowBackground="{StaticResource OddRowBackgroundBrush}"
+                                                 ItemTemplate="{StaticResource TrackTemplate}"
+                                                 ScrollViewer.VerticalScrollBarVisibility="Disabled" />
+                <ListView ItemsSource="{Binding TopAlbums}" ScrollViewer.VerticalScrollBarVisibility="Disabled" />
+            </StackPanel>
+        </ScrollViewer>
+
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup x:Name="DeviceFamilyStates">
+                <VisualState>
+                    <VisualState.StateTriggers>
+                        <customTriggers:DeviceFamilyTrigger DeviceFamily="Mobile" />
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="ContentScrollViewer.Padding" Value="{StaticResource PageMobileThickness}" />
+                        <Setter Target="TopTracksListView.ItemTemplate" Value="{StaticResource TrackNarrowTemplate}" />
+                    </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
     </Grid>
 </navigationService:NavigatablePage>

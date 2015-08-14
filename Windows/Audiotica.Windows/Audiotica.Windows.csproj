@@ -125,6 +125,9 @@
     <Compile Include="Controls\NoMusicPanel.xaml.cs">
       <DependentUpon>NoMusicPanel.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\TrackNarrowViewer.xaml.cs">
+      <DependentUpon>TrackNarrowViewer.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\TrackViewer.xaml.cs">
       <DependentUpon>TrackViewer.xaml</DependentUpon>
     </Compile>
@@ -228,6 +231,10 @@
     <Page Include="Controls\NoMusicPanel.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\TrackNarrowViewer.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Controls\TrackViewer.xaml">
       <SubType>Designer</SubType>

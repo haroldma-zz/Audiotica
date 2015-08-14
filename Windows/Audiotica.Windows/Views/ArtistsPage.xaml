@@ -11,7 +11,7 @@
     mc:Ignorable="d"
     DataContext="{Binding ArtistsPage, Source={StaticResource ViewModelLocator}}">
 
-    <Grid x:Name="LayoutRoot" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Padding="{StaticResource PagePadding}">
+    <Grid x:Name="LayoutRoot" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Padding="{StaticResource PageThickness}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
@@ -32,9 +32,9 @@
                     </VisualState.StateTriggers>
                     <VisualState.Setters>
                         <!--On mobile we need to leave a gap for the status bar-->
-                        <Setter Target="NoMusicPanel.Margin" Value="{StaticResource MobileStatusBarMargin}" />
-                        <Setter Target="ArtistsGridView.Padding" Value="{StaticResource MobileStatusBarMargin}" />
-                        <Setter Target="LayoutRoot.Padding" Value="{StaticResource PageMobilePadding}" />
+                        <Setter Target="NoMusicPanel.Margin" Value="{StaticResource MobileStatusBarThickness}" />
+                        <Setter Target="ArtistsGridView.Padding" Value="{StaticResource MobileStatusBarThickness}" />
+                        <Setter Target="LayoutRoot.Padding" Value="{StaticResource PageMobileThickness}" />
                     </VisualState.Setters>
                 </VisualState>
             </VisualStateGroup>

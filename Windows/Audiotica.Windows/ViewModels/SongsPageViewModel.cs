@@ -3,7 +3,7 @@ using Audiotica.Windows.Tools.Mvvm;
 
 namespace Audiotica.Windows.ViewModels
 {
-    internal class SongsPageViewModel : ViewModelBase
+    public class SongsPageViewModel : ViewModelBase
     {
         public SongsPageViewModel(ILibraryService libraryService)
         {

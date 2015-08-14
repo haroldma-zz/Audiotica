@@ -11,19 +11,22 @@
     mc:Ignorable="d"
     DataContext="{Binding SongsPage, Source={StaticResource ViewModelLocator}}">
 
-    <Grid x:Name="LayoutRoot" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Padding="{StaticResource PagePadding}">
+    <Grid x:Name="LayoutRoot" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
         <!--No Music-->
-        <controls:NoMusicPanel Grid.Row="1" x:Name="NoMusicPanel" 
-                               Visibility="{Binding LibraryService.Tracks, Converter={StaticResource ReverseEmptyListToVisibilityConverter}}"/>
+        <controls:NoMusicPanel Grid.Row="1" x:Name="NoMusicPanel"
+                               Padding="{StaticResource PageThickness}"
+                               Visibility="{Binding LibraryService.Tracks, Converter={StaticResource ReverseEmptyListToVisibilityConverter}}" />
 
-        <controls:AlternatingRowListView Grid.Row="1" x:Name="SongsListView" ItemsSource="{Binding LibraryService.Tracks}"
-                                             OddRowBackground="{StaticResource OddRowBackgroundBrush}"
-                                             ItemTemplate="{StaticResource TrackTemplate}"/>
+        <controls:AlternatingRowListView Grid.Row="1" x:Name="SongsListView"
+                                         ItemsSource="{Binding LibraryService.Tracks}"
+                                         Padding="{StaticResource PageThickness}"
+                                         OddRowBackground="{StaticResource OddRowBackgroundBrush}"
+                                         ItemTemplate="{StaticResource TrackTemplate}" />
 
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroup x:Name="DeviceFamilyStates">
@@ -32,10 +35,9 @@
                         <customTriggers:DeviceFamilyTrigger DeviceFamily="Mobile" />
                     </VisualState.StateTriggers>
                     <VisualState.Setters>
-                        <!--On mobile we need to leave a gap for the status bar-->
-                        <Setter Target="NoMusicPanel.Margin" Value="{StaticResource MobileStatusBarMargin}" />
-                        <Setter Target="SongsListView.Padding" Value="{StaticResource MobileStatusBarMargin}" />
-                        <Setter Target="LayoutRoot.Padding" Value="{StaticResource PageMobilePadding}" />
+                        <Setter Target="NoMusicPanel.Margin" Value="{StaticResource PageMobileStatusBarThickness}" />
+                        <Setter Target="SongsListView.Padding" Value="{StaticResource PageMobileStatusBarThickness}" />
+                        <Setter Target="SongsListView.ItemTemplate" Value="{StaticResource TrackNarrowTemplate}" />
                     </VisualState.Setters>
                 </VisualState>
             </VisualStateGroup>

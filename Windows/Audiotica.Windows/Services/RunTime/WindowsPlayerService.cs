@@ -42,6 +42,11 @@ namespace Audiotica.Windows.Services
 
             if (queue == null)
             {
+                if (track.Status == Track.TrackStatus.Matching 
+                    || track.Status == Track.TrackStatus.NoMatch
+                    || track.Status == Track.TrackStatus.NotAvailable)
+                    return;
+
                 if (track.AudioWebUri == null)
                     using (var blocker = new UiBlocker())
                     {

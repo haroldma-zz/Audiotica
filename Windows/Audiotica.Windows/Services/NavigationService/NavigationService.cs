@@ -34,7 +34,7 @@ namespace Audiotica.Windows.Services.NavigationService
             _currentView = SystemNavigationManager.GetForCurrentView();
         }
 
-        public Type DefaultPage => typeof (ExplorePage);
+        public Type DefaultPage => typeof (AlbumsPage);
         public bool CanGoBack => _frame.CanGoBack;
         public bool CanGoForward => _frame.CanGoForward;
         public Type CurrentPageType => _frame.CurrentPageType;

@@ -19,23 +19,17 @@
             <SolidColorBrush x:Name="SubtleTextBrush" Color="{ThemeResource SystemBaseMediumColor}" />
             <SolidColorBrush x:Name="OddRowBackgroundBrush" Color="{ThemeResource SystemChromeLowColor}" />
 
-            <Thickness x:Key="MobileStatusBarMargin">0, 26, 0, 0</Thickness>
-            <Thickness x:Key="PagePadding">10, 5, 10, 0</Thickness>
-            <Thickness x:Key="PageMobilePadding">10, 0</Thickness>
+            <Thickness x:Key="MobileStatusBarThickness">0, 26, 0, 0</Thickness>
+            <Thickness x:Key="PageThickness">30, 20, 30, 0</Thickness>
+            <Thickness x:Key="PageMobileThickness">10, 0</Thickness>
+            <Thickness x:Key="PageMobileStatusBarThickness">10, 26, 10, 0</Thickness>
 
             <DataTemplate x:Key="TrackTemplate">
                 <controls:TrackViewer IsSelected="{Binding Tag, RelativeSource={RelativeSource Mode=TemplatedParent}}" />
             </DataTemplate>
 
             <DataTemplate x:Key="TrackNarrowTemplate">
-                <Grid Margin="0,15">
-                    <StackPanel>
-                        <TextBlock Text="{Binding Title}"
-                                   Style="{StaticResource TitleTextBlockStyle}" />
-                        <TextBlock Text="{Binding Artists}"
-                                   Style="{StaticResource SubtleTextBlockStyle}" />
-                    </StackPanel>
-                </Grid>
+                <controls:TrackNarrowViewer IsSelected="{Binding Tag, RelativeSource={RelativeSource Mode=TemplatedParent}}" />
             </DataTemplate>
 
             <DataTemplate x:Key="WebSongTemplate">

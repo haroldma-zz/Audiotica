@@ -15,7 +15,7 @@
     xmlns:controls="using:Audiotica.Windows.Controls"
     mc:Ignorable="d"
     DataContext="{Binding ExplorePage, Source={StaticResource ViewModelLocator}}">
-    <ScrollViewer x:Name="LayoutRoot" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Padding="{StaticResource PagePadding}">
+    <ScrollViewer x:Name="LayoutRoot" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Padding="{StaticResource PageThickness}">
         <Grid x:Name="ContentRoot">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
@@ -100,8 +100,8 @@
                         <customTriggers:DeviceFamilyTrigger DeviceFamily="Mobile" />
                     </VisualState.StateTriggers>
                     <VisualState.Setters>
-                        <Setter Target="ContentRoot.Padding" Value="{StaticResource MobileStatusBarMargin}" />
-                        <Setter Target="LayoutRoot.Padding" Value="{StaticResource PageMobilePadding}" />
+                        <Setter Target="ContentRoot.Padding" Value="{StaticResource MobileStatusBarThickness}" />
+                        <Setter Target="LayoutRoot.Padding" Value="{StaticResource PageMobileThickness}" />
                     </VisualState.Setters>
                 </VisualState>
             </VisualStateGroup>

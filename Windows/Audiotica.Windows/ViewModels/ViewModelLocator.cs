@@ -5,7 +5,7 @@ namespace Audiotica.Windows.ViewModels
 {
     internal class ViewModelLocator
     {
-        private static AppKernel Kernel => App.Current?.Kernel ?? AppKernelFactory.Create();
+        public static AppKernel Kernel => App.Current?.Kernel ?? AppKernelFactory.Create();
         public ExplorePageViewModel ExplorePage => Kernel.Resolve<ExplorePageViewModel>();
         public AlbumsPageViewModel AlbumsPage => Kernel.Resolve<AlbumsPageViewModel>();
         public AlbumPageViewModel AlbumPage => Kernel.Resolve<AlbumPageViewModel>();
