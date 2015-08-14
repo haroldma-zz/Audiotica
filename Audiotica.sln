@@ -17,7 +17,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Audiotica.Database", "Audio
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Audiotica.Windows.Player", "Windows\Audiotica.Windows.Player\Audiotica.Windows.Player.csproj", "{51F65CD8-3F91-41F5-A18F-AE17FB2F0B69}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Audiotica.Factory", "Audiotica.Factory\Audiotica.Factory.csproj", "{60FE0825-E59E-4322-81A2-82CFCC3104EB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Audiotica.Converters", "Audiotica.Converters\Audiotica.Converters.csproj", "{1F2A3DCD-0350-4468-9C9A-85EA6CF0509E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -131,22 +131,22 @@ Global
 		{51F65CD8-3F91-41F5-A18F-AE17FB2F0B69}.Release|x64.Build.0 = Release|x64
 		{51F65CD8-3F91-41F5-A18F-AE17FB2F0B69}.Release|x86.ActiveCfg = Release|x86
 		{51F65CD8-3F91-41F5-A18F-AE17FB2F0B69}.Release|x86.Build.0 = Release|x86
-		{60FE0825-E59E-4322-81A2-82CFCC3104EB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{60FE0825-E59E-4322-81A2-82CFCC3104EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{60FE0825-E59E-4322-81A2-82CFCC3104EB}.Debug|ARM.ActiveCfg = Debug|ARM
-		{60FE0825-E59E-4322-81A2-82CFCC3104EB}.Debug|ARM.Build.0 = Debug|ARM
-		{60FE0825-E59E-4322-81A2-82CFCC3104EB}.Debug|x64.ActiveCfg = Debug|x64
-		{60FE0825-E59E-4322-81A2-82CFCC3104EB}.Debug|x64.Build.0 = Debug|x64
-		{60FE0825-E59E-4322-81A2-82CFCC3104EB}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{60FE0825-E59E-4322-81A2-82CFCC3104EB}.Debug|x86.Build.0 = Debug|Any CPU
-		{60FE0825-E59E-4322-81A2-82CFCC3104EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{60FE0825-E59E-4322-81A2-82CFCC3104EB}.Release|Any CPU.Build.0 = Release|Any CPU
-		{60FE0825-E59E-4322-81A2-82CFCC3104EB}.Release|ARM.ActiveCfg = Release|ARM
-		{60FE0825-E59E-4322-81A2-82CFCC3104EB}.Release|ARM.Build.0 = Release|ARM
-		{60FE0825-E59E-4322-81A2-82CFCC3104EB}.Release|x64.ActiveCfg = Release|x64
-		{60FE0825-E59E-4322-81A2-82CFCC3104EB}.Release|x64.Build.0 = Release|x64
-		{60FE0825-E59E-4322-81A2-82CFCC3104EB}.Release|x86.ActiveCfg = Release|x86
-		{60FE0825-E59E-4322-81A2-82CFCC3104EB}.Release|x86.Build.0 = Release|x86
+		{1F2A3DCD-0350-4468-9C9A-85EA6CF0509E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1F2A3DCD-0350-4468-9C9A-85EA6CF0509E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1F2A3DCD-0350-4468-9C9A-85EA6CF0509E}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{1F2A3DCD-0350-4468-9C9A-85EA6CF0509E}.Debug|ARM.Build.0 = Debug|Any CPU
+		{1F2A3DCD-0350-4468-9C9A-85EA6CF0509E}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{1F2A3DCD-0350-4468-9C9A-85EA6CF0509E}.Debug|x64.Build.0 = Debug|Any CPU
+		{1F2A3DCD-0350-4468-9C9A-85EA6CF0509E}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{1F2A3DCD-0350-4468-9C9A-85EA6CF0509E}.Debug|x86.Build.0 = Debug|Any CPU
+		{1F2A3DCD-0350-4468-9C9A-85EA6CF0509E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1F2A3DCD-0350-4468-9C9A-85EA6CF0509E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1F2A3DCD-0350-4468-9C9A-85EA6CF0509E}.Release|ARM.ActiveCfg = Release|Any CPU
+		{1F2A3DCD-0350-4468-9C9A-85EA6CF0509E}.Release|ARM.Build.0 = Release|Any CPU
+		{1F2A3DCD-0350-4468-9C9A-85EA6CF0509E}.Release|x64.ActiveCfg = Release|Any CPU
+		{1F2A3DCD-0350-4468-9C9A-85EA6CF0509E}.Release|x64.Build.0 = Release|Any CPU
+		{1F2A3DCD-0350-4468-9C9A-85EA6CF0509E}.Release|x86.ActiveCfg = Release|Any CPU
+		{1F2A3DCD-0350-4468-9C9A-85EA6CF0509E}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

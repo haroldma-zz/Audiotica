@@ -306,6 +306,10 @@
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Audiotica.Converters\Audiotica.Converters.csproj">
+      <Project>{1f2a3dcd-0350-4468-9c9a-85ea6cf0509e}</Project>
+      <Name>Audiotica.Converters</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Audiotica.Core\Audiotica.Core.csproj">
       <Project>{3b0d02a1-a45f-4925-93f0-cb4451317c80}</Project>
       <Name>Audiotica.Core</Name>
@@ -313,10 +317,6 @@
     <ProjectReference Include="..\..\Audiotica.Database\Audiotica.Database.csproj">
       <Project>{3d53e627-45b5-410d-8043-ec7f22c3e010}</Project>
       <Name>Audiotica.Database</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Audiotica.Factory\Audiotica.Factory.csproj">
-      <Project>{60fe0825-e59e-4322-81a2-82cfcc3104eb}</Project>
-      <Name>Audiotica.Factory</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Audiotica.Web\Audiotica.Web.csproj">
       <Project>{0b8c5a00-8c9c-4663-a741-1b494c0e9e46}</Project>

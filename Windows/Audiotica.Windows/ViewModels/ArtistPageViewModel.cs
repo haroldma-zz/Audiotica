@@ -1,17 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Threading.Tasks;
 using Windows.UI.Xaml.Navigation;
 using Audiotica.Core.Common;
 using Audiotica.Core.Extensions;
 using Audiotica.Database.Models;
 using Audiotica.Database.Services.Interfaces;
-using Audiotica.Factory;
 using Audiotica.Web.Exceptions;
 using Audiotica.Web.Metadata.Interfaces;
-using Audiotica.Web.Metadata.Providers;
 using Audiotica.Web.Models;
 using Audiotica.Windows.Common;
 using Audiotica.Windows.Services.NavigationService;
@@ -21,14 +17,14 @@ namespace Audiotica.Windows.ViewModels
 {
     internal sealed class ArtistPageViewModel : ViewModelBase
     {
+        private readonly ILibraryService _libraryService;
         private readonly List<IMetadataProvider> _metadataProviders;
         private readonly INavigationService _navigationService;
-        private readonly ILibraryService _libraryService;
         private readonly IConverter<WebArtist, Artist> _webArtistConverter;
         private readonly IConverter<WebSong, Track> _webSongConverter;
         private Artist _artist;
-        private List<Track> _topSongs;
         private List<WebAlbum> _topAlbums;
+        private List<Track> _topSongs;
 
         public ArtistPageViewModel(INavigationService navigationService,
             ILibraryService libraryService,
@@ -44,7 +40,7 @@ namespace Audiotica.Windows.ViewModels
             _webSongConverter = webSongConverter;
 
             if (IsInDesignMode)
-                OnNavigatedTo("1", NavigationMode.New, new Dictionary<string, object>());
+                OnNavigatedTo(1, NavigationMode.New, new Dictionary<string, object>());
         }
 
         public Artist Artist
@@ -117,7 +113,7 @@ namespace Audiotica.Windows.ViewModels
                     if (TopSongs == null)
                         TopSongs = await _webSongConverter.ConvertAsync(
                             (await metadataProvider.GetArtistTopSongsAsync(webArtist.Token, 10)).Songs);
-                    
+
                     if (TopAlbums == null)
                         TopAlbums = (await metadataProvider.GetArtistAlbumsAsync(webArtist.Token, 10)).Albums;
 
