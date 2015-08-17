@@ -14,11 +14,15 @@ namespace Audiotica.Converters
     public class WebToTrackConverter : IConverter<WebSong, Track>
     {
         private readonly ILibraryService _libraryService;
-        private readonly IMetadataProvider[] _providers;
+        private readonly List<IBasicMetadataProvider> _providers;
 
-        public WebToTrackConverter(IMetadataProvider[] providers, ILibraryService libraryService)
+        public WebToTrackConverter(IEnumerable<IMetadataProvider> providers, ILibraryService libraryService)
         {
-            _providers = providers;
+            _providers = providers.Where(p => p.IsEnabled)
+                .OrderByDescending(p => p.Priority)
+                .Where(p => p is IBasicMetadataProvider)
+                .Cast<IBasicMetadataProvider>()
+                .ToList();
             _libraryService = libraryService;
         }
 

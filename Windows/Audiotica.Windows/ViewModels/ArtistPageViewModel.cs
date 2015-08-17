@@ -18,7 +18,7 @@ namespace Audiotica.Windows.ViewModels
     public sealed class ArtistPageViewModel : ViewModelBase
     {
         private readonly ILibraryService _libraryService;
-        private readonly List<IMetadataProvider> _metadataProviders;
+        private readonly List<IExtendedMetadataProvider> _metadataProviders;
         private readonly INavigationService _navigationService;
         private readonly IConverter<WebArtist, Artist> _webArtistConverter;
         private readonly IConverter<WebSong, Track> _webSongConverter;
@@ -35,7 +35,10 @@ namespace Audiotica.Windows.ViewModels
             _navigationService = navigationService;
             _libraryService = libraryService;
             _metadataProviders = metadataProviders.Where(p => p.IsEnabled)
-                .OrderByDescending(p => p.Priority).ToList();
+                .OrderByDescending(p => p.Priority)
+                .Where(p => p is IExtendedMetadataProvider)
+                .Cast<IExtendedMetadataProvider>()
+                .ToList();
             _webArtistConverter = webArtistConverter;
             _webSongConverter = webSongConverter;
 

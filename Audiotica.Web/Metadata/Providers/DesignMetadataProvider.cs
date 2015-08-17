@@ -1,22 +1,35 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Audiotica.Web.Enums;
 using Audiotica.Web.Metadata.Interfaces;
 using Audiotica.Web.Models;
 
 namespace Audiotica.Web.Metadata.Providers
 {
-    public class DesignMetadataProvider : IMetadataProvider
+    public class DesignMetadataProvider : IExtendedMetadataProvider, ISearchMetadataProvider, IChartMetadataProvider, ILyricsMetadataProvider
     {
+        public Task<WebResults> GetTopSongsAsync(int limit = 50, string pageToken = null)
+        {
+            return Task.FromResult(CreateSongsResult(CreateDummySongs()));
+        }
+
+        public Task<WebResults> GetTopAlbumsAsync(int limit = 50, string pageToken = null)
+        {
+            return Task.FromResult(CreateAlbumsResult(CreateDummyAlbums()));
+        }
+
+        public Task<WebResults> GetTopArtistsAsync(int limit = 50, string pageToken = null)
+        {
+            return Task.FromResult(CreateArtistsResult(CreateDummyArtists()));
+        }
+
         public string DisplayName { get; } = "Design Time";
         public int Priority { get; } = 10;
         public bool IsEnabled { get; set; } = true;
-
-        public Task<WebResults> SearchAsync(string query, WebResults.Type searchType = WebResults.Type.Song,
-            int limit = 10, string pageToken = null)
-        {
-            throw new NotImplementedException();
-        }
+        public ProviderSpeed Speed { get; }
+        public ProviderCollectionSize CollectionSize { get; }
+        public ProviderCollectionType CollectionType { get; }
 
         public Task<WebAlbum> GetAlbumAsync(string albumToken)
         {
@@ -38,21 +51,6 @@ namespace Audiotica.Web.Metadata.Providers
             return Task.FromResult(CreateDummyArtists()[0]);
         }
 
-        public Task<WebResults> GetTopSongsAsync(int limit = 50, string pageToken = null)
-        {
-            return Task.FromResult(CreateSongsResult(CreateDummySongs()));
-        }
-
-        public Task<WebResults> GetTopAlbumsAsync(int limit = 50, string pageToken = null)
-        {
-            return Task.FromResult(CreateAlbumsResult(CreateDummyAlbums()));
-        }
-
-        public Task<WebResults> GetTopArtistsAsync(int limit = 50, string pageToken = null)
-        {
-            return Task.FromResult(CreateArtistsResult(CreateDummyArtists()));
-        }
-
         public Task<WebResults> GetArtistTopSongsAsync(string artistToken, int limit = 50, string pageToken = null)
         {
             return Task.FromResult(CreateSongsResult(CreateDummySongs()));
@@ -64,6 +62,12 @@ namespace Audiotica.Web.Metadata.Providers
         }
 
         public Task<Uri> GetArtworkAsync(string album, string artist)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<WebResults> SearchAsync(string query, WebResults.Type searchType = WebResults.Type.Song,
+            int limit = 10, string pageToken = null)
         {
             throw new NotImplementedException();
         }
@@ -122,7 +126,7 @@ namespace Audiotica.Web.Metadata.Providers
                 "http://static1.1.sqspcdn.com/static/f/362468/13350786/1311549110307/Childish-Gambino.jpg?token=%2F%2FxvckXhTw1vqbFHcrSvgEN5hhE%3D";
             return new List<WebArtist>
             {
-                CreateArtist("Childish Gambino", gambinoArtwork),
+                CreateArtist("Childish Gambino", gambinoArtwork)
             };
         }
 

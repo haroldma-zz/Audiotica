@@ -9,11 +9,13 @@ using Audiotica.Web.Enums;
 using Audiotica.Web.Exceptions;
 using Audiotica.Web.Http.Requets.Metadata.Spotify;
 using Audiotica.Web.Http.Requets.Metadata.Spotify.Models;
+using Audiotica.Web.Metadata.Interfaces;
 using Audiotica.Web.Models;
 
 namespace Audiotica.Web.Metadata.Providers
 {
-    public class SpotifyMetadataProvider : MetadataProviderBase
+    public class SpotifyMetadataProvider : MetadataProviderWithSearchBase,
+        IExtendedMetadataProvider, IChartMetadataProvider
     {
         public SpotifyMetadataProvider(ISettingsUtility settingsUtility) : base(settingsUtility)
         {
@@ -24,43 +26,71 @@ namespace Audiotica.Web.Metadata.Providers
         public override ProviderCollectionSize CollectionSize => ProviderCollectionSize.Large;
         public override ProviderCollectionType CollectionType => ProviderCollectionType.Mainstream;
 
-        public override async Task<WebResults> SearchAsync(string query,
-            WebResults.Type searchType = WebResults.Type.Song, int limit = 20, string pageToken = null)
+        public async Task<WebResults> GetTopSongsAsync(int limit = 20, string pageToken = null)
         {
-            int offset;
-            int.TryParse(pageToken, out offset);
-
-            using (
-                var response =
-                    await new SpotifySearchRequest(query)
-                        .Type(searchType)
-                        .Limit(limit)
-                        .Offset(offset)
-                        .ToResponseAsync()
-                        .DontMarshall())
+            using (var response = await new SpotifyChartRequest().ToResponseAsync())
             {
-                if (!response.HasData) return null;
+                if (response.HasData)
+                    return new WebResults
+                    {
+                        HasMore = false,
+                        Songs = response.Data.Tracks.Select(CreateSong).Take(limit).ToList()
+                    };
+
+                throw new ProviderException();
+            }
+        }
+
+        public Task<WebResults> GetTopAlbumsAsync(int limit = 20, string pageToken = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<WebResults> GetTopArtistsAsync(int limit = 20, string pageToken = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<WebResults> GetArtistTopSongsAsync(string artistToken, int limit = 20,
+            string pageToken = null)
+        {
+            using (var response = await new SpotifyArtistTopTracksRequest(artistToken)
+                .ToResponseAsync())
+            {
+                if (!response.HasData)
+                {
+                    if (response.HttpResponse.StatusCode == HttpStatusCode.NotFound)
+                        throw new ProviderNotFoundException();
+                    throw new ProviderException();
+                }
                 if (response.Data.HasError())
                     throw new ProviderException(response.Data.ErrorResponse.Message);
 
-                WebResults results;
+                var results = new WebResults {Songs = response.Data.Tracks.Select(CreateSong).Take(limit).ToList()};
+                return results;
+            }
+        }
 
-                switch (searchType)
+        public async Task<WebResults> GetArtistAlbumsAsync(string artistToken, int limit = 20,
+            string pageToken = null)
+        {
+            using (var response = await new SpotifyArtistAlbumsRequest(artistToken)
+                .Offset(pageToken == null ? 0 : int.Parse(pageToken))
+                .Limit(limit)
+                .Types(AlbumType.Album | AlbumType.Compilation | AlbumType.Single)
+                .ToResponseAsync())
+            {
+                if (!response.HasData)
                 {
-                    case WebResults.Type.Song:
-                        results = CreateResults(response.Data.Tracks);
-                        results.Songs = response.Data.Tracks?.Items?.Select(CreateSong).ToList();
-                        break;
-                    case WebResults.Type.Artist:
-                        results = CreateResults(response.Data.Artists);
-                        results.Artists = response.Data.Artists?.Items?.Select(CreateArtist).ToList();
-                        break;
-                    default:
-                        results = CreateResults(response.Data.Albums);
-                        results.Albums = response.Data.Albums?.Items?.Select(CreateAlbum).ToList();
-                        break;
+                    if (response.HttpResponse.StatusCode == HttpStatusCode.NotFound)
+                        throw new ProviderNotFoundException();
+                    throw new ProviderException();
                 }
+                if (response.Data.HasError())
+                    throw new ProviderException(response.Data.ErrorResponse.Message);
 
+                var results = CreateResults(response.Data);
+                results.Albums = response.Data.Items.Select(CreateAlbum).ToList();
                 return results;
             }
         }
@@ -122,78 +152,45 @@ namespace Audiotica.Web.Metadata.Providers
                 StringComparison.CurrentCultureIgnoreCase));
         }
 
-        public override async Task<WebResults> GetTopSongsAsync(int limit = 20, string pageToken = null)
+        public override async Task<WebResults> SearchAsync(string query,
+            WebResults.Type searchType = WebResults.Type.Song, int limit = 20, string pageToken = null)
         {
-            using (var response = await new SpotifyChartRequest().ToResponseAsync())
+            int offset;
+            int.TryParse(pageToken, out offset);
+
+            using (
+                var response =
+                    await new SpotifySearchRequest(query)
+                        .Type(searchType)
+                        .Limit(limit)
+                        .Offset(offset)
+                        .ToResponseAsync()
+                        .DontMarshall())
             {
-                if (response.HasData)
-                    return new WebResults
-                    {
-                        HasMore = false,
-                        Songs = response.Data.Tracks.Select(CreateSong).Take(limit).ToList()
-                    };
-
-                throw new ProviderException();
-            }
-        }
-
-        public override Task<WebResults> GetTopAlbumsAsync(int limit = 20, string pageToken = null)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override Task<WebResults> GetTopArtistsAsync(int limit = 20, string pageToken = null)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override async Task<WebResults> GetArtistTopSongsAsync(string artistToken, int limit = 20,
-            string pageToken = null)
-        {
-            using (var response = await new SpotifyArtistTopTracksRequest(artistToken)
-                .ToResponseAsync())
-            {
-                if (!response.HasData)
-                {
-                    if (response.HttpResponse.StatusCode == HttpStatusCode.NotFound)
-                        throw new ProviderNotFoundException();
-                    throw new ProviderException();
-                }
+                if (!response.HasData) return null;
                 if (response.Data.HasError())
                     throw new ProviderException(response.Data.ErrorResponse.Message);
 
-                var results = new WebResults {Songs = response.Data.Tracks.Select(CreateSong).Take(limit).ToList()};
-                return results;
-            }
-        }
+                WebResults results;
 
-        public override async Task<WebResults> GetArtistAlbumsAsync(string artistToken, int limit = 20,
-            string pageToken = null)
-        {
-            using (var response = await new SpotifyArtistAlbumsRequest(artistToken)
-                .Offset(pageToken == null ? 0 : int.Parse(pageToken))
-                .Limit(limit)
-                .Types(AlbumType.Album | AlbumType.Compilation | AlbumType.Single)
-                .ToResponseAsync())
-            {
-                if (!response.HasData)
+                switch (searchType)
                 {
-                    if (response.HttpResponse.StatusCode == HttpStatusCode.NotFound)
-                        throw new ProviderNotFoundException();
-                    throw new ProviderException();
+                    case WebResults.Type.Song:
+                        results = CreateResults(response.Data.Tracks);
+                        results.Songs = response.Data.Tracks?.Items?.Select(CreateSong).ToList();
+                        break;
+                    case WebResults.Type.Artist:
+                        results = CreateResults(response.Data.Artists);
+                        results.Artists = response.Data.Artists?.Items?.Select(CreateArtist).ToList();
+                        break;
+                    default:
+                        results = CreateResults(response.Data.Albums);
+                        results.Albums = response.Data.Albums?.Items?.Select(CreateAlbum).ToList();
+                        break;
                 }
-                if (response.Data.HasError())
-                    throw new ProviderException(response.Data.ErrorResponse.Message);
 
-                var results = CreateResults(response.Data);
-                results.Albums = response.Data.Items.Select(CreateAlbum).ToList();
                 return results;
             }
-        }
-
-        public override Task<string> GetLyricAsync(string song, string artist)
-        {
-            throw new NotImplementedException();
         }
 
         #region Helpers

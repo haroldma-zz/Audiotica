@@ -7,6 +7,7 @@ using Audiotica.Core.Extensions;
 using Audiotica.Core.Utilities.Interfaces;
 using Audiotica.Web.Enums;
 using Audiotica.Web.Exceptions;
+using Audiotica.Web.Metadata.Interfaces;
 using Audiotica.Web.Models;
 using IF.Lastfm.Core.Api;
 using IF.Lastfm.Core.Api.Enums;
@@ -15,7 +16,7 @@ using IF.Lastfm.Core.Objects;
 
 namespace Audiotica.Web.Metadata.Providers
 {
-    public class LastFmMetadataProvider : MetadataProviderBase
+    public class LastFmMetadataProvider : MetadataProviderWithSearchBase, IExtendedMetadataProvider, IChartMetadataProvider
     {
         public LastFmMetadataProvider(ISettingsUtility settingsUtility) : base(settingsUtility)
         {
@@ -25,6 +26,100 @@ namespace Audiotica.Web.Metadata.Providers
         public override ProviderSpeed Speed => ProviderSpeed.Average;
         public override ProviderCollectionSize CollectionSize => ProviderCollectionSize.Large;
         public override ProviderCollectionType CollectionType => ProviderCollectionType.MainstreamAndRare;
+
+        public async Task<WebResults> GetTopSongsAsync(int limit = 20, string pageToken = null)
+        {
+            using (var client = CreateClient())
+            {
+                var result = await client.Chart
+                    .GetTopTracksAsync(pageToken == null
+                        ? 1
+                        : int.Parse(pageToken), limit);
+
+                if (result.Success)
+                {
+                    var webResults = CreateResults(result);
+                    webResults.Songs = result.Content.Select(CreateSong).ToList();
+                    return webResults;
+                }
+
+                throw new ProviderException(result.Status.ToString());
+            }
+        }
+
+        public Task<WebResults> GetTopAlbumsAsync(int limit = 20, string pageToken = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<WebResults> GetTopArtistsAsync(int limit = 20, string pageToken = null)
+        {
+            using (var client = CreateClient())
+            {
+                var result = await client.Chart
+                    .GetTopArtistsAsync(pageToken == null
+                        ? 1
+                        : int.Parse(pageToken), limit);
+
+                if (result.Success)
+                {
+                    var webResults = CreateResults(result);
+                    webResults.Artists = result.Content.Select(CreateArtist).ToList();
+                    return webResults;
+                }
+
+                throw new ProviderException(result.Status.ToString());
+            }
+        }
+
+        public async Task<WebResults> GetArtistTopSongsAsync(string artistToken, int limit = 20,
+            string pageToken = null)
+        {
+            using (var client = CreateClient())
+            {
+                var result =
+                    await
+                        client.Artist.GetTopTracksAsync(artistToken,
+                            page: string.IsNullOrEmpty(pageToken) ? 1 : int.Parse(pageToken));
+
+                if (result.Success)
+                {
+                    var webResults = CreateResults(result);
+                    webResults.Songs = result.Content.Select(CreateSong).ToList();
+                    return webResults;
+                }
+
+                if (result.Status == LastResponseStatus.MissingParameters)
+                    throw new ProviderNotFoundException();
+
+                throw new ProviderException(result.Status.ToString());
+            }
+        }
+
+        public async Task<WebResults> GetArtistAlbumsAsync(string artistToken, int limit = 20,
+            string pageToken = null)
+        {
+            using (var client = CreateClient())
+            {
+                var result =
+                    await
+                        client.Artist.GetTopAlbumsAsync(artistToken,
+                            page: string.IsNullOrEmpty(pageToken) ? 1 : int.Parse(pageToken));
+
+                if (result.Success)
+                {
+                    var webResults = CreateResults(result);
+                    webResults.Albums = result.Content.Select(CreateAlbum).ToList();
+                    return webResults;
+                }
+
+                if (result.Status == LastResponseStatus.MissingParameters)
+                    throw new ProviderNotFoundException();
+
+                throw new ProviderException(result.Status.ToString());
+            }
+        }
+
         private LastfmClient CreateClient() => new LastfmClient(ApiKeys.LastFmId, ApiKeys.LastFmSecret);
 
         public override async Task<WebResults> SearchAsync(string query,
@@ -115,7 +210,7 @@ namespace Audiotica.Web.Metadata.Providers
 
                     return song;
                 }
-                
+
                 if (result.Status == LastResponseStatus.MissingParameters)
                     throw new ProviderNotFoundException();
 
@@ -132,7 +227,7 @@ namespace Audiotica.Web.Metadata.Providers
 
                 if (result.Success)
                     return CreateArtist(result.Content);
-                
+
                 if (result.Status == LastResponseStatus.MissingParameters)
                     throw new ProviderNotFoundException();
 
@@ -145,104 +240,6 @@ namespace Audiotica.Web.Metadata.Providers
         {
             // In this provider we use the artist name as token.
             return GetArtistAsync(artistName);
-        }
-
-        public override async Task<WebResults> GetTopSongsAsync(int limit = 20, string pageToken = null)
-        {
-            using (var client = CreateClient())
-            {
-                var result = await client.Chart
-                    .GetTopTracksAsync(pageToken == null
-                        ? 1
-                        : int.Parse(pageToken), limit);
-
-                if (result.Success)
-                {
-                    var webResults = CreateResults(result);
-                    webResults.Songs = result.Content.Select(CreateSong).ToList();
-                    return webResults;
-                }
-
-                throw new ProviderException(result.Status.ToString());
-            }
-        }
-
-        public override Task<WebResults> GetTopAlbumsAsync(int limit = 20, string pageToken = null)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override async Task<WebResults> GetTopArtistsAsync(int limit = 20, string pageToken = null)
-        {
-            using (var client = CreateClient())
-            {
-                var result = await client.Chart
-                    .GetTopArtistsAsync(pageToken == null
-                        ? 1
-                        : int.Parse(pageToken), limit);
-
-                if (result.Success)
-                {
-                    var webResults = CreateResults(result);
-                    webResults.Artists = result.Content.Select(CreateArtist).ToList();
-                    return webResults;
-                }
-
-                throw new ProviderException(result.Status.ToString());
-            }
-        }
-
-        public override async Task<WebResults> GetArtistTopSongsAsync(string artistToken, int limit = 20,
-            string pageToken = null)
-        {
-            using (var client = CreateClient())
-            {
-                var result =
-                    await
-                        client.Artist.GetTopTracksAsync(artistToken,
-                            page: string.IsNullOrEmpty(pageToken) ? 1 : int.Parse(pageToken));
-
-                if (result.Success)
-                {
-                    var webResults = CreateResults(result);
-                    webResults.Songs = result.Content.Select(CreateSong).ToList();
-                    return webResults;
-                }
-
-                if (result.Status == LastResponseStatus.MissingParameters)
-                    throw new ProviderNotFoundException();
-
-                throw new ProviderException(result.Status.ToString());
-            }
-        }
-
-        public override async Task<WebResults> GetArtistAlbumsAsync(string artistToken, int limit = 20,
-            string pageToken = null)
-        {
-            using (var client = CreateClient())
-            {
-                var result =
-                    await
-                        client.Artist.GetTopAlbumsAsync(artistToken,
-                            page: string.IsNullOrEmpty(pageToken) ? 1 : int.Parse(pageToken));
-
-                if (result.Success)
-                {
-                    var webResults = CreateResults(result);
-                    webResults.Albums = result.Content.Select(CreateAlbum).ToList();
-                    return webResults;
-                }
-
-                if (result.Status == LastResponseStatus.MissingParameters)
-                    throw new ProviderNotFoundException();
-
-                throw new ProviderException(result.Status.ToString());
-            }
-        }
-
-        public override Task<string> GetLyricAsync(string song, string artist)
-        {
-            throw new NotImplementedException();
         }
 
         #region Helpers

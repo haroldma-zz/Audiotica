@@ -11,11 +11,15 @@ namespace Audiotica.Converters
 {
     public class WebToArtistConverter : IConverter<WebArtist, Artist>
     {
-        private readonly IMetadataProvider[] _providers;
+        private readonly List<IBasicMetadataProvider> _providers;
 
-        public WebToArtistConverter(IMetadataProvider[] providers)
+        public WebToArtistConverter(IEnumerable<IMetadataProvider> providers)
         {
-            _providers = providers;
+            _providers = providers.Where(p => p.IsEnabled)
+                .OrderByDescending(p => p.Priority)
+                .Where(p => p is IBasicMetadataProvider)
+                .Cast<IBasicMetadataProvider>()
+                .ToList();
         }
 
         public async Task<Artist> ConvertAsync(WebArtist other, Action<WebArtist> saveChanges = null)

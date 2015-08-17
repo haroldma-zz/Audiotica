@@ -17,6 +17,7 @@ namespace Audiotica.Windows.ViewModels
 {
     public sealed class ExplorePageViewModel : ViewModelBase
     {
+        private readonly List<IChartMetadataProvider> _metadataProviders;
         private readonly INavigationService _navigationService;
         private readonly IWindowsPlayerService _windowsPlayerService;
         private List<WebAlbum> _topAlbums;
@@ -29,8 +30,11 @@ namespace Audiotica.Windows.ViewModels
         {
             _navigationService = navigationService;
             _windowsPlayerService = windowsPlayerService;
-            MetadataProviders = metadataProviders.Where(p => p.IsEnabled)
-                .OrderByDescending(p => p.Priority).ToList();
+            _metadataProviders = metadataProviders.Where(p => p.IsEnabled)
+                .OrderByDescending(p => p.Priority)
+                .Where(p => p is IChartMetadataProvider)
+                .Cast<IChartMetadataProvider>()
+                .ToList();
 
             SongClickCommand = new Command<ItemClickEventArgs>(SongClickExecute);
             ArtistClickCommand = new Command<ItemClickEventArgs>(ArtistClickExecute);
@@ -41,7 +45,6 @@ namespace Audiotica.Windows.ViewModels
 
         public Command<ItemClickEventArgs> ArtistClickCommand { get; set; }
         public Command<ItemClickEventArgs> SongClickCommand { get; }
-        public List<IMetadataProvider> MetadataProviders { get; }
 
         public List<WebSong> TopSongs
         {
@@ -84,7 +87,7 @@ namespace Audiotica.Windows.ViewModels
 
         private async void LoadTopSongs(int count)
         {
-            foreach (var metadataProvider in MetadataProviders)
+            foreach (var metadataProvider in _metadataProviders)
             {
                 try
                 {
@@ -103,7 +106,7 @@ namespace Audiotica.Windows.ViewModels
 
         private async void LoadTopArtists(int count)
         {
-            foreach (var metadataProvider in MetadataProviders)
+            foreach (var metadataProvider in _metadataProviders)
             {
                 try
                 {
@@ -122,7 +125,7 @@ namespace Audiotica.Windows.ViewModels
 
         private async void LoadTopAlbums(int count)
         {
-            foreach (var metadataProvider in MetadataProviders)
+            foreach (var metadataProvider in _metadataProviders)
             {
                 try
                 {

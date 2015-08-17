@@ -118,6 +118,7 @@
     <Compile Include="MatchEngine\Providers\MatchProviderBase.cs" />
     <Compile Include="MatchEngine\Providers\SoundCloudMatchProvider.cs" />
     <Compile Include="MatchEngine\Validators\SongInstrumentalTypeValidator.cs" />
+    <Compile Include="Metadata\Providers\MetadataProviderWithSearchBase.cs" />
     <Compile Include="Metadata\Providers\DeezerMetadataProvider.cs" />
     <Compile Include="Metadata\Providers\DesignMetadataProvider.cs" />
     <Compile Include="Metadata\Providers\ILocalMetadataProvider.cs" />
