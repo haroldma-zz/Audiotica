@@ -13,7 +13,7 @@
 
     <Grid>
         <Grid.Background>
-            <ImageBrush Stretch="UniformToFill" Opacity=".1" AlignmentY="Top" ImageSource="{x:Bind ViewModel.Artist.ArtworkUri, Converter={StaticResource ImageSourceConverter}}" />
+            <ImageBrush Stretch="UniformToFill" Opacity=".1" AlignmentY="Top" ImageSource="{Binding Artist.ArtworkUri}" />
         </Grid.Background>
         <ScrollViewer x:Name="ContentScrollViewer" Padding="{StaticResource PageThickness}">
             <StackPanel>

@@ -10,7 +10,7 @@
     xmlns:controls="using:Audiotica.Windows.Controls"
     mc:Ignorable="d"
     DataContext="{Binding AlbumsPage, Source={StaticResource ViewModelLocator}}">
-
+    
     <Grid x:Name="LayoutRoot" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -26,8 +26,13 @@
                   ItemsSource="{x:Bind ViewModel.LibraryService.Albums}"
                   Padding="{StaticResource PageThickness}" 
                   ItemTemplate="{StaticResource AlbumTemplate}"/>
+        
+        <ListView Grid.Row="1" x:Name="AlbumsListView" Visibility="Collapsed"
+                  ItemsSource="{x:Bind ViewModel.LibraryService.Albums}"
+                  Padding="{StaticResource PageMobileStatusBarThickness}" 
+                  ItemTemplate="{StaticResource AlbumNarrowTemplate}"/>
 
-            <VisualStateManager.VisualStateGroups>
+        <VisualStateManager.VisualStateGroups>
             <VisualStateGroup x:Name="DeviceFamilyStates">
                 <VisualState>
                     <VisualState.StateTriggers>
@@ -37,6 +42,22 @@
                         <Setter Target="NoMusicPanel.Margin" Value="{StaticResource PageMobileStatusBarThickness}" />
                         <Setter Target="AlbumsGridView.Padding" Value="{StaticResource PageMobileStatusBarThickness}" />
                     </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
+            <VisualStateGroup x:Name="WindowSizeStates">
+                <VisualState x:Name="NarrowScreen">
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="0" />
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="AlbumsListView.Visibility" Value="Visible" />
+                        <Setter Target="AlbumsGridView.Visibility" Value="Collapsed" />
+                    </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="WideScreen">
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="600" />
+                    </VisualState.StateTriggers>
                 </VisualState>
             </VisualStateGroup>
         </VisualStateManager.VisualStateGroups>

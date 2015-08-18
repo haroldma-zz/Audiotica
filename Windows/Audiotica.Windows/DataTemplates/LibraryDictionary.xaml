@@ -14,14 +14,35 @@
     </DataTemplate>
 
     <DataTemplate x:Key="AlbumTemplate" x:DataType="databaseModels:Album">
-        <StackPanel Margin="10" Width="150" Height="210">
-            <Grid Width="150" Height="150" Background="{ThemeResource SystemControlBackgroundAccentBrush}" Margin="0,0,0,5">
+        <StackPanel Width="140" Height="210" Margin="4">
+            <Grid Width="140" Height="140" Background="{ThemeResource SystemControlBackgroundAccentBrush}" Margin="0,0,0,5">
                 <Image Source="{x:Bind ArtworkUri, Converter={StaticResource ImageSourceConverter}}" Stretch="UniformToFill" />
             </Grid>
             <TextBlock Text="{x:Bind Title}" TextWrapping="Wrap" Margin="0,0,0,5" 
                                    MaxHeight="40" LineHeight="20" LineStackingStrategy="BlockLineHeight" />
             <TextBlock Text="{x:Bind Artist.Name}" Style="{StaticResource SubtleTextBlockStyle}" />
         </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate x:Key="AlbumNarrowTemplate" x:DataType="databaseModels:Album">
+        <Grid Margin="0,4">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Grid Width="100" Height="100" Background="{ThemeResource SystemControlBackgroundAccentBrush}" Margin="0,0,5,0">
+                <Image Source="{x:Bind ArtworkUri, Converter={StaticResource ImageSourceConverter}}" Stretch="UniformToFill" />
+            </Grid>
+            <Grid Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <TextBlock Text="{x:Bind Title}" TextWrapping="Wrap" Margin="0,0,0,5" 
+                                   MaxHeight="80" LineHeight="20" LineStackingStrategy="BlockLineHeight" />
+                <TextBlock Grid.Row="1" Text="{x:Bind Artist.Name}" Style="{StaticResource SubtleTextBlockStyle}" />
+            </Grid>
+        </Grid>
     </DataTemplate>
 
     <DataTemplate x:Key="WebSongTemplate"  x:DataType="webModels:WebSong">
