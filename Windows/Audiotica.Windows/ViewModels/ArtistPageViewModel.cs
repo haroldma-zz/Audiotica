@@ -64,6 +64,13 @@ namespace Audiotica.Windows.ViewModels
             set { Set(ref _topSongs, value); }
         }
 
+        public override string SimplifiedParameter(object parameter)
+        {
+            var id = parameter as long?;
+
+            return id != null ? id.ToString() : parameter.ToString().DeTokenize().LastOrDefault();
+        }
+
         public override async void OnNavigatedTo(object parameter, NavigationMode mode, Dictionary<string, object> state)
         {
             var id = parameter as long?;

@@ -12,8 +12,15 @@ namespace Audiotica.Windows.AppEngine.Bootstrppers
         {
             var service = context.Resolve<ILibraryService>();
             var libraryMatching = context.Resolve<ILibraryMatchingService>();
+            var insights = context.Resolve<IInsightsService>();
 
-            await service.LoadAsync();
+            using (var timer = insights.TrackTimeEvent("Loaded library"))
+            {
+                await service.LoadAsync();
+                timer.AddProperty("Track count", service.Tracks.Count.ToString());
+            }
+
+
             libraryMatching.OnStartup();
         }
 

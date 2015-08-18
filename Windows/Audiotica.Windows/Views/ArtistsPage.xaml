@@ -11,17 +11,40 @@
     mc:Ignorable="d"
     DataContext="{Binding ArtistsPage, Source={StaticResource ViewModelLocator}}">
 
-    <Grid x:Name="LayoutRoot" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Padding="{StaticResource PageThickness}">
+    <Grid x:Name="LayoutRoot" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
         <!--No Music-->
-        <controls:NoMusicPanel Grid.Row="1" x:Name="NoMusicPanel"/>
+        <controls:NoMusicPanel Grid.Row="1" x:Name="NoMusicPanel"
+                               Padding="{StaticResource PageThickness}"
+                               Visibility="{Binding LibraryService.Artists, Converter={StaticResource ReverseEmptyListToVisibilityConverter}}" />
 
-        <GridView Grid.Row="1" x:Name="ArtistsGridView">
-
+        <GridView Grid.Row="1" x:Name="ArtistsGridView" ItemsSource="{Binding LibraryService.Artists}" Padding="{StaticResource PageThickness}">
+            <GridView.ItemTemplate>
+                <DataTemplate>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <Ellipse Width="140" Height="140" Fill="#333" />
+                        <Ellipse Grid.Row="0" Width="140" Height="140">
+                            <Ellipse.Fill>
+                                <ImageBrush ImageSource="{Binding ArtworkUri}" Stretch="UniformToFill" />
+                            </Ellipse.Fill>
+                        </Ellipse>
+                        <TextBlock Grid.Row="1" Text="{Binding Name}" TextAlignment="Center" Margin="0,10,0,0" />
+                        <TextBlock Grid.Row="2" TextAlignment="Center" Style="{StaticResource SubtleTextBlockStyle}" >
+                            <Run Text="{Binding Albums.Count}" />
+                            <Run Text="album(s)" />
+                        </TextBlock>
+                    </Grid>
+                </DataTemplate>
+            </GridView.ItemTemplate>
         </GridView>
 
         <VisualStateManager.VisualStateGroups>
@@ -31,10 +54,8 @@
                         <customTriggers:DeviceFamilyTrigger DeviceFamily="Mobile" />
                     </VisualState.StateTriggers>
                     <VisualState.Setters>
-                        <!--On mobile we need to leave a gap for the status bar-->
-                        <Setter Target="NoMusicPanel.Margin" Value="{StaticResource MobileStatusBarThickness}" />
-                        <Setter Target="ArtistsGridView.Padding" Value="{StaticResource MobileStatusBarThickness}" />
-                        <Setter Target="LayoutRoot.Padding" Value="{StaticResource PageMobileThickness}" />
+                        <Setter Target="NoMusicPanel.Margin" Value="{StaticResource PageMobileStatusBarThickness}" />
+                        <Setter Target="ArtistsGridView.Padding" Value="{StaticResource PageMobileStatusBarThickness}" />
                     </VisualState.Setters>
                 </VisualState>
             </VisualStateGroup>

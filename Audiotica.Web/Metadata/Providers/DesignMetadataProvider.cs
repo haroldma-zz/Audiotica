@@ -66,6 +66,11 @@ namespace Audiotica.Web.Metadata.Providers
             throw new NotImplementedException();
         }
 
+        public Task<Uri> GetArtistArtworkAsync(string artist)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<WebResults> SearchAsync(string query, WebResults.Type searchType = WebResults.Type.Song,
             int limit = 10, string pageToken = null)
         {

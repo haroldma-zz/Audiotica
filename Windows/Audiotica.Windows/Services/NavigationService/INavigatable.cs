@@ -8,5 +8,6 @@ namespace Audiotica.Windows.Services.NavigationService
         string PageKey { get; set; }
         void OnNavigatedTo(object parameter, NavigationMode mode, Dictionary<string, object> state);
         void OnNavigatedFrom(bool suspending, Dictionary<string, object> state);
+        string SimplifiedParameter(object parameter);
     }
 }

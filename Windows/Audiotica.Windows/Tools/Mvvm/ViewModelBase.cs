@@ -9,15 +9,19 @@ namespace Audiotica.Windows.Tools.Mvvm
     public abstract class ViewModelBase : ObservableObject, INavigatable
     {
         public bool IsInDesignMode => DesignMode.DesignModeEnabled;
-
         public string PageKey { get; set; }
 
         public virtual void OnNavigatedTo(object parameter, NavigationMode mode, Dictionary<string, object> state)
-        {   
+        {
         }
 
         public virtual void OnNavigatedFrom(bool suspending, Dictionary<string, object> state)
         {
+        }
+
+        public virtual string SimplifiedParameter(object parameter)
+        {
+            return parameter?.ToString();
         }
     }
 }

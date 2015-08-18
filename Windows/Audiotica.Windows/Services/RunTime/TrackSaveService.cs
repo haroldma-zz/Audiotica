@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Audiotica.Core.Common;
 using Audiotica.Core.Extensions;
 using Audiotica.Database.Models;
@@ -10,16 +11,18 @@ namespace Audiotica.Windows.Services.RunTime
 {
     internal class TrackSaveService : ITrackSaveService
     {
+        private readonly IInsightsService _insightsService;
         private readonly ILibraryMatchingService _libraryMatchingService;
         private readonly ILibraryService _libraryService;
         private readonly IConverter<WebSong, Track> _webSongConverter;
 
         public TrackSaveService(ILibraryService libraryService, IConverter<WebSong, Track> webSongConverter,
-            ILibraryMatchingService libraryMatchingService)
+            ILibraryMatchingService libraryMatchingService, IInsightsService insightsService)
         {
             _libraryService = libraryService;
             _webSongConverter = webSongConverter;
             _libraryMatchingService = libraryMatchingService;
+            _insightsService = insightsService;
         }
 
         public async Task<Track> SaveAsync(WebSong song)
@@ -31,14 +34,24 @@ namespace Audiotica.Windows.Services.RunTime
 
         public async Task SaveAsync(Track track)
         {
-            var isMatching = track.AudioWebUri == null && track.AudioLocalUri == null;
-            track.Status = isMatching ? Track.TrackStatus.Matching : Track.TrackStatus.None;
+            using (_insightsService.TrackTimeEvent("Saved song", new Dictionary<string, string>
+            {
+                {"Track type", track.Type.ToString()},
+                {"Title", track.Title},
+                {"Artists", track.Artists},
+                {"Album", track.AlbumTitle},
+                {"Album artist", track.AlbumArtist}
+            }))
+            {
+                var isMatching = track.AudioWebUri == null && track.AudioLocalUri == null;
+                track.Status = isMatching ? Track.TrackStatus.Matching : Track.TrackStatus.None;
 
-            await _libraryService.AddTrackAsync(track);
+                await _libraryService.AddTrackAsync(track);
 
-            // queue it to be matched
-            if (isMatching)
-                _libraryMatchingService.Queue(track);
+                // queue it to be matched
+                if (isMatching)
+                    _libraryMatchingService.Queue(track);
+            }
         }
     }
 }

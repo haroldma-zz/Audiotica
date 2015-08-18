@@ -141,6 +141,9 @@
     <Compile Include="Common\WeakEvent.cs" />
     <Compile Include="Factories\AppKernelFactory.cs" />
     <Compile Include="Common\MessageBox.cs" />
+    <Compile Include="Services\DesignTime\DesignInsightsService.cs" />
+    <Compile Include="Services\Interfaces\IInsightsService.cs" />
+    <Compile Include="Services\RunTime\InsightsService.cs" />
     <Compile Include="Interactions\NavigateToPageAction.cs" />
     <Compile Include="CustomTriggers\NetworkAvailableStateTrigger.cs" />
     <Compile Include="Interactions\TextBoxEnterKeyBehavior.cs" />

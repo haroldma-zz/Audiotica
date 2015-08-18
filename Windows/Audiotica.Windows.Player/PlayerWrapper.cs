@@ -340,7 +340,7 @@ namespace Audiotica.Windows.Player
             // App is suspended, you can save your task state at this point
             Debug.WriteLine("App suspending");
             ForegroundAppState = AppState.Suspended;
-            _settingsUtility.Write(ApplicationSettingsConstants.QueueId, CurrentQueue.Id);
+            _settingsUtility.Write(ApplicationSettingsConstants.QueueId, CurrentQueue?.Id);
             _settingsUtility.Remove(ApplicationSettingsConstants.Position);
         }
 

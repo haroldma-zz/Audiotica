@@ -56,6 +56,15 @@ namespace Audiotica.Database.Services.DesignTime
                     ArtworkUri = kauaiArtwork
                 }
             };
+
+            Artists = new OptimizedObservableCollection<Artist>
+            {
+                new Artist
+                {
+                    Name = "Childish Gambino",
+                    ArtworkUri = gambinoArtwork
+                }
+            };
         }
 
         public void AddTrack(Track track)

@@ -12,14 +12,17 @@ namespace Audiotica.Windows.Services.RunTime
     internal class LibraryMatchingService : ILibraryMatchingService
     {
         private const int MaxParallels = 5;
+        private readonly IInsightsService _insightsService;
         private readonly ILibraryService _libraryService;
         private readonly IMatchEngineService _matchEngineService;
         private readonly List<Task> _matchingTasks = new List<Task>();
 
-        public LibraryMatchingService(ILibraryService libraryService, IMatchEngineService matchEngineService)
+        public LibraryMatchingService(ILibraryService libraryService, IMatchEngineService matchEngineService,
+            IInsightsService insightsService)
         {
             _libraryService = libraryService;
             _matchEngineService = matchEngineService;
+            _insightsService = insightsService;
         }
 
         public bool IsMatching { get; private set; }
@@ -40,25 +43,34 @@ namespace Audiotica.Windows.Services.RunTime
 
         private async Task CreateTask(Track track)
         {
-            try
+            using (var timer = _insightsService.TrackTimeEvent("Matched song", new Dictionary<string, string>
             {
-                var uri = await _matchEngineService.GetLinkAsync(track.Title, track.DisplayArtist);
-                if (uri != null)
+                {"Title", track.Title},
+                {"Artists", track.Artists},
+                {"Album", track.AlbumTitle},
+                {"Album artist", track.AlbumArtist}
+            }))
+                try
                 {
-                    track.AudioWebUri = uri.ToString();
-                    track.Status = Track.TrackStatus.None;
-                    await _libraryService.UpdateTrackAsync(track);
+                    var uri = await _matchEngineService.GetLinkAsync(track.Title, track.DisplayArtist);
+                    if (uri != null)
+                    {
+                        timer.AddProperty("Status", "Found match");
+                        track.AudioWebUri = uri.ToString();
+                        track.Status = Track.TrackStatus.None;
+                        await _libraryService.UpdateTrackAsync(track);
+                    }
+                    else
+                    {
+                        timer.AddProperty("Status", "No match");
+                        track.Status = Track.TrackStatus.NoMatch;
+                        await _libraryService.UpdateTrackAsync(track);
+                    }
                 }
-                else
+                catch
                 {
-                    track.Status = Track.TrackStatus.NoMatch;
-                    await _libraryService.UpdateTrackAsync(track);
+                    timer.AddProperty("Status", "Error");
                 }
-            }
-            catch
-            {
-                // ignored
-            }
         }
 
         private async void RunTasks()

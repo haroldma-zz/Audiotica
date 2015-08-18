@@ -8,11 +8,13 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 using Audiotica.Core.Extensions;
 using Audiotica.Core.Utilities.Interfaces;
+using Audiotica.Windows.Services.Interfaces;
 using Audiotica.Windows.Views;
+using Microsoft.ApplicationInsights.DataContracts;
 
 namespace Audiotica.Windows.Services.NavigationService
 {
-    public class NavigationService : INavigationService
+    internal class NavigationService : INavigationService
     {
         private const string EmptyNavigation = "1,0";
         private const string SettingsPrefix = "NavService_";
@@ -21,13 +23,15 @@ namespace Audiotica.Windows.Services.NavigationService
         private readonly SystemNavigationManager _currentView;
         private readonly NavigationFacade _frame;
         private readonly ISettingsUtility _settingsUtility;
+        private readonly IInsightsService _insightsService;
 
         private Dictionary<string, Dictionary<string, object>> _sessions =
             new Dictionary<string, Dictionary<string, object>>();
 
-        public NavigationService(Frame frame, ISettingsUtility settingsUtility)
+        public NavigationService(Frame frame, ISettingsUtility settingsUtility, IInsightsService insightsService)
         {
             _settingsUtility = settingsUtility;
+            _insightsService = insightsService;
             _frame = new NavigationFacade(frame);
             _frame.Navigating += (s, e) => NavigatedFrom(false);
 
@@ -48,11 +52,15 @@ namespace Audiotica.Windows.Services.NavigationService
 
             _frame.CurrentPageParam = parameter;
             _frame.CurrentPageType = _frame.Content.GetType();
+            
             var page = _frame.Content as FrameworkElement;
             var dataContext = page?.DataContext as INavigatable;
 
             if (dataContext != null)
             {
+                var deserializedParameter = parameter.TryDeserializeJsonWithTypeInfo();
+                _insightsService.TrackPageView(CurrentPageType.Name, dataContext.SimplifiedParameter(deserializedParameter));
+
                 dataContext.PageKey = CurrentPageType + parameter;
 
                 if (mode == NavigationMode.New)
@@ -62,7 +70,7 @@ namespace Audiotica.Windows.Services.NavigationService
                     else
                         _sessions.Add(dataContext.PageKey, new Dictionary<string, object>());
                 }
-                dataContext.OnNavigatedTo(parameter.TryDeserializeJsonWithTypeInfo(), mode, _sessions[dataContext.PageKey]);
+                dataContext.OnNavigatedTo(deserializedParameter, mode, _sessions[dataContext.PageKey]);
             }
         }
 

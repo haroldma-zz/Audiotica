@@ -8,7 +8,7 @@ using Audiotica.Web.Models;
 
 namespace Audiotica.Web.Metadata.Providers
 {
-    public abstract class MetadataProviderWithSearchBase : MetadataProviderBase, IBasicMetadataProvider, ISearchMetadataProvider
+    public abstract class MetadataProviderWithSearchBase : MetadataProviderBase, ISearchMetadataProvider
     {
         protected MetadataProviderWithSearchBase(ISettingsUtility settingsUtility) : base(settingsUtility)
         {
@@ -35,6 +35,17 @@ namespace Audiotica.Web.Metadata.Providers
                 return null;
 
             return albumMatch.Artwork;
+        }
+
+        public virtual async Task<Uri> GetArtistArtworkAsync(string artist)
+        {
+            var results = await SearchAsync(artist, WebResults.Type.Artist, 1);
+            var artistMatch = results.Artists?.FirstOrDefault();
+
+            if (artistMatch == null)
+                return null;
+
+            return artistMatch.Name.ToAudioticaSlug() != artist.ToAudioticaSlug() ? null : artistMatch.Artwork;
         }
     }
 }

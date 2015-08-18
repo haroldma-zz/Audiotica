@@ -1,9 +1,9 @@
 ﻿using Audiotica.Database.Models;
 using Audiotica.Web.Models;
 
-namespace Audiotica.Windows.Services
+namespace Audiotica.Windows.Services.DesignTime
 {
-    public class DesignWindowsPlayerService : IWindowsPlayerService
+    internal class DesignWindowsPlayerService : IWindowsPlayerService
     {
         public void Play(WebSong song)
         {

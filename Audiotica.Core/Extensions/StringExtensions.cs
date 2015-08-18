@@ -87,6 +87,8 @@ namespace Audiotica.Core.Extensions
 
         public static object TryDeserializeJsonWithTypeInfo(this string json)
         {
+            if (string.IsNullOrEmpty(json)) return json;
+
             try
             {
                 return JsonConvert.DeserializeObject(json, new JsonSerializerSettings

@@ -18,13 +18,14 @@ namespace Audiotica.Web.Metadata.Interfaces
         Task<WebSong> GetSongAsync(string songToken);
         Task<WebArtist> GetArtistAsync(string artistToken);
         Task<WebArtist> GetArtistByNameAsync(string artistName);
+        Task<Uri> GetArtworkAsync(string album, string artist);
+        Task<Uri> GetArtistArtworkAsync(string artist);
     }
 
     public interface IExtendedMetadataProvider : IBasicMetadataProvider
     {
         Task<WebResults> GetArtistTopSongsAsync(string artistToken, int limit = 50, string pageToken = null);
         Task<WebResults> GetArtistAlbumsAsync(string artistToken, int limit = 50, string pageToken = null);
-        Task<Uri> GetArtworkAsync(string album, string artist);
     }
 
     public interface IChartMetadataProvider : IBasicMetadataProvider
