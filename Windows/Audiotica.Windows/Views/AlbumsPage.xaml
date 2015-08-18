@@ -11,30 +11,31 @@
     mc:Ignorable="d"
     DataContext="{Binding AlbumsPage, Source={StaticResource ViewModelLocator}}">
 
-    <Grid x:Name="LayoutRoot" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Padding="{StaticResource PageThickness}">
+    <Grid x:Name="LayoutRoot" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        
-        <!--No Music-->
-        <controls:NoMusicPanel Grid.Row="1" x:Name="NoMusicPanel"/>
 
-        <GridView Grid.Row="1" x:Name="AlbumsGridView">
-            
-        </GridView>
-        
-        <VisualStateManager.VisualStateGroups>
+        <!--No Music-->
+        <controls:NoMusicPanel Grid.Row="1" x:Name="NoMusicPanel"
+                               Padding="{StaticResource PageThickness}"
+                               Visibility="{x:Bind ViewModel.LibraryService.Albums, Converter={StaticResource ReverseEmptyListToVisibilityConverter}}" />
+
+        <GridView Grid.Row="1" x:Name="AlbumsGridView"
+                  ItemsSource="{x:Bind ViewModel.LibraryService.Albums}"
+                  Padding="{StaticResource PageThickness}" 
+                  ItemTemplate="{StaticResource AlbumTemplate}"/>
+
+            <VisualStateManager.VisualStateGroups>
             <VisualStateGroup x:Name="DeviceFamilyStates">
                 <VisualState>
                     <VisualState.StateTriggers>
                         <customTriggers:DeviceFamilyTrigger DeviceFamily="Mobile" />
                     </VisualState.StateTriggers>
                     <VisualState.Setters>
-                        <!--On mobile we need to leave a gap for the status bar-->
-                        <Setter Target="NoMusicPanel.Margin" Value="{StaticResource MobileStatusBarThickness}" />
-                        <Setter Target="AlbumsGridView.Padding" Value="{StaticResource MobileStatusBarThickness}" />
-                        <Setter Target="LayoutRoot.Padding" Value="{StaticResource PageMobileThickness}" />
+                        <Setter Target="NoMusicPanel.Margin" Value="{StaticResource PageMobileStatusBarThickness}" />
+                        <Setter Target="AlbumsGridView.Padding" Value="{StaticResource PageMobileStatusBarThickness}" />
                     </VisualState.Setters>
                 </VisualState>
             </VisualStateGroup>

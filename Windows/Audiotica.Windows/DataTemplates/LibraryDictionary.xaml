@@ -13,6 +13,17 @@
         <controls:TrackNarrowViewer Track="{x:Bind}" IsSelected="{Binding Tag, RelativeSource={RelativeSource Mode=TemplatedParent}}" />
     </DataTemplate>
 
+    <DataTemplate x:Key="AlbumTemplate" x:DataType="databaseModels:Album">
+        <StackPanel Margin="10" Width="150" Height="210">
+            <Grid Width="150" Height="150" Background="{ThemeResource SystemControlBackgroundAccentBrush}" Margin="0,0,0,5">
+                <Image Source="{x:Bind ArtworkUri, Converter={StaticResource ImageSourceConverter}}" Stretch="UniformToFill" />
+            </Grid>
+            <TextBlock Text="{x:Bind Title}" TextWrapping="Wrap" Margin="0,0,0,5" 
+                                   MaxHeight="40" LineHeight="20" LineStackingStrategy="BlockLineHeight" />
+            <TextBlock Text="{x:Bind Artist.Name}" Style="{StaticResource SubtleTextBlockStyle}" />
+        </StackPanel>
+    </DataTemplate>
+
     <DataTemplate x:Key="WebSongTemplate"  x:DataType="webModels:WebSong">
         <Grid Margin="0,15">
             <Grid>
