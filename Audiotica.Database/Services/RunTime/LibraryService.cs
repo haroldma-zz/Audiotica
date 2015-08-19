@@ -72,13 +72,15 @@ namespace Audiotica.Database.Services.RunTime
             var existing = Find(track) != null;
             if (existing) throw new LibraryException("Track already saved.");
 
-            // This should be set to zero
             track.Id = 0;
-
             _sqLiteConnection.Insert(track);
-            CreateRelatedObjects(track);
-            Tracks.Add(track);
-            _dispatcherUtility.RunAsync(() => track.IsFromLibrary = true);
+
+            _dispatcherUtility.RunAsync(() =>
+            {
+                CreateRelatedObjects(track);
+                track.IsFromLibrary = true;
+                Tracks.Add(track);
+            });
         }
 
         public void UpdateTrack(Track track)
