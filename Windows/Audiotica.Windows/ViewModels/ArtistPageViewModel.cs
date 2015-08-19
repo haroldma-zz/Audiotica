@@ -71,40 +71,16 @@ namespace Audiotica.Windows.ViewModels
 
         public override async void OnNavigatedTo(object parameter, NavigationMode mode, Dictionary<string, object> state)
         {
-            var id = parameter as long?;
+            var name = parameter as string;
 
-            if (id != null)
+            if (name != null)
             {
-                // TODO get the artist from the library
+                Artist = _libraryService.Artists.FirstOrDefault(p => p.Name == name);
             }
             else
             {
-                var detokenized = parameter.ToString().DeTokenize();
-                var provider = Type.GetType(detokenized[0]);
-                var webToken = detokenized[1];
-                var name = detokenized[2];
-
-                var metadataProvider = _metadataProviders.FirstOrDefault(p => p.GetType() == provider);
-                try
-                {
-                    // TODO: try to find the artist in the library
-
-                    // otherwise get it from the provider
-                    var webArtist = await metadataProvider.GetArtistAsync(webToken);
-                    if (webArtist == null)
-                    {
-                        _navigationService.GoBack();
-                        return;
-                    }
-                    Artist = await _webArtistConverter.ConvertAsync(webArtist);
-                }
-                catch (Exception e)
-                {
-                    if (e is ProviderException)
-                        CurtainPrompt.ShowError(e.Message);
-                    _navigationService.GoBack();
-                    return;
-                }
+                var webArtist = (WebArtist) parameter;
+                Artist = await _webArtistConverter.ConvertAsync(webArtist);
             }
             LoadWebData();
         }

@@ -12,9 +12,14 @@ namespace Audiotica.Windows.Services.RunTime
         public InsightsService()
         {
             Client = new TelemetryClient();
+#if !DEBUG
+            IsTrackingEnabled = true;
+#else
+            IsTrackingEnabled = false;
+#endif
         }
 
-        public bool IsTrackingEnabled { get; } = true;
+        public bool IsTrackingEnabled { get; }
         public TelemetryClient Client { get; }
 
         public InsightsStopwatchEvent TrackTimeEvent(string name, IDictionary<string, string> properties = null)

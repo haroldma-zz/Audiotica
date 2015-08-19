@@ -117,6 +117,10 @@ namespace Audiotica.Database.Services.RunTime
 
             foreach (var track in tracks)
             {
+                if (track.DisplayArtist == "Mac Miller")
+                {
+                    
+                }
                 track.IsFromLibrary = true;
                 CreateRelatedObjects(track);
                 Tracks.Add(track);
@@ -138,7 +142,7 @@ namespace Audiotica.Database.Services.RunTime
                 };
                 Artists.Add(albumArtist);
             }
-            else if (albumArtist.ArtworkUri == null && !displaySameAsAlbumArtist)
+            else if (albumArtist.ArtworkUri == null && displaySameAsAlbumArtist)
                 albumArtist.ArtworkUri = track.ArtistArtworkUri;
 
             albumArtist.Tracks.Add(track);

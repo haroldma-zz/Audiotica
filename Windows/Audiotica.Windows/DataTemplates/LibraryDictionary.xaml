@@ -45,6 +45,56 @@
         </Grid>
     </DataTemplate>
 
+    <DataTemplate x:Key="ArtistTemplate" x:DataType="databaseModels:Artist">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Ellipse Width="140" Height="140" Fill="#333" />
+            <Ellipse Grid.Row="0" Width="140" Height="140">
+                <Ellipse.Fill>
+                    <ImageBrush ImageSource="{x:Bind ArtworkUri, Converter={StaticResource ImageSourceConverter}}" Stretch="UniformToFill" />
+                </Ellipse.Fill>
+            </Ellipse>
+            <TextBlock Grid.Row="1" Text="{x:Bind Name}" TextAlignment="Center" Margin="0,10,0,0" />
+            <TextBlock Grid.Row="2" TextAlignment="Center" Style="{StaticResource SubtleTextBlockStyle}" >
+                            <Run Text="{x:Bind Albums.Count}" />
+                            <Run Text="album(s)" />
+            </TextBlock>
+        </Grid>
+    </DataTemplate>
+
+    <DataTemplate x:Key="ArtistNarrowTemplate" x:DataType="databaseModels:Artist">
+        <Grid Margin="0,4">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Grid Margin="0,0,5,0">
+                <Ellipse Width="100" Height="100" Fill="#333" />
+                <Ellipse Grid.Row="0" Width="100" Height="100">
+                    <Ellipse.Fill>
+                        <ImageBrush ImageSource="{x:Bind ArtworkUri, Converter={StaticResource ImageSourceConverter}}" Stretch="UniformToFill" />
+                    </Ellipse.Fill>
+                </Ellipse>
+            </Grid>
+            <Grid Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <TextBlock Text="{x:Bind Name}" TextWrapping="Wrap" Margin="0,0,0,5" 
+                                   MaxHeight="80" LineHeight="20" LineStackingStrategy="BlockLineHeight" />
+                <TextBlock Grid.Row="1" Style="{StaticResource SubtleTextBlockStyle}" >
+                            <Run Text="{x:Bind Albums.Count}" />
+                            <Run Text="album(s)" />
+                </TextBlock>
+            </Grid>
+        </Grid>
+    </DataTemplate>
+
     <DataTemplate x:Key="WebSongTemplate"  x:DataType="webModels:WebSong">
         <Grid Margin="0,15">
             <Grid>
