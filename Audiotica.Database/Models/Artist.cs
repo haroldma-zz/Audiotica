@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Audiotica.Core.Common;
 
 namespace Audiotica.Database.Models
 {
@@ -10,15 +9,15 @@ namespace Audiotica.Database.Models
     {
         public Artist()
         {
-            Albums = new List<Album>();
-            Tracks = new List<Track>();
-            TracksThatAppearsIn = new List<Track>();
+            Albums = new OptimizedObservableCollection<Album>();
+            Tracks = new OptimizedObservableCollection<Track>();
+            TracksThatAppearsIn = new OptimizedObservableCollection<Track>();
         }
 
         public string Name { get; set; }
-        public List<Track> Tracks { get; set; }
-        public List<Track> TracksThatAppearsIn { get; set; }
-        public List<Album> Albums { get; set; }
+        public OptimizedObservableCollection<Track> Tracks { get; set; }
+        public OptimizedObservableCollection<Track> TracksThatAppearsIn { get; set; }
+        public OptimizedObservableCollection<Album> Albums { get; set; }
         public string ArtworkUri { get; set; }
     }
 }

@@ -8,6 +8,11 @@ namespace Audiotica.Database.Services.DesignTime
 {
     public class DesignLibraryService : ILibraryService
     {
+        public DesignLibraryService()
+        {
+            Load();
+        }
+
         public bool IsLoaded { get; }
         public OptimizedObservableCollection<Track> Tracks { get; private set; }
         public OptimizedObservableCollection<Album> Albums { get; private set; }

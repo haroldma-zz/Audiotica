@@ -90,7 +90,7 @@ namespace Audiotica.Web.Metadata.Providers
                     throw new ProviderException(response.Data.ErrorResponse.Message);
 
                 var results = CreateResults(response.Data);
-                results.Albums = response.Data.Items.Select(CreateAlbum).ToList();
+                results.Albums = response.Data.Items.Select(CreateAlbum).Distinct(new WebAlbum.Comparer()).ToList();
                 return results;
             }
         }
@@ -158,8 +158,7 @@ namespace Audiotica.Web.Metadata.Providers
             int offset;
             int.TryParse(pageToken, out offset);
 
-            using (
-                var response =
+            using (var response =
                     await new SpotifySearchRequest(query)
                         .Type(searchType)
                         .Limit(limit)
@@ -185,7 +184,7 @@ namespace Audiotica.Web.Metadata.Providers
                         break;
                     default:
                         results = CreateResults(response.Data.Albums);
-                        results.Albums = response.Data.Albums?.Items?.Select(CreateAlbum).ToList();
+                        results.Albums = response.Data.Albums?.Items?.Select(CreateAlbum).Distinct(new WebAlbum.Comparer()).ToList();
                         break;
                 }
 

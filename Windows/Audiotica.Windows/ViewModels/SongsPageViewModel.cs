@@ -8,8 +8,6 @@ namespace Audiotica.Windows.ViewModels
         public SongsPageViewModel(ILibraryService libraryService)
         {
             LibraryService = libraryService;
-            if (IsInDesignMode)
-                LibraryService.Load();
         }
 
         public ILibraryService LibraryService { get; }

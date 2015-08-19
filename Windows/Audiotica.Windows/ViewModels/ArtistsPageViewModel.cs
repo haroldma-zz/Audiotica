@@ -17,9 +17,6 @@ namespace Audiotica.Windows.ViewModels
             LibraryService = libraryService;
 
             ArtistClickCommand = new Command<ItemClickEventArgs>(ArtistClickExecute);
-
-            if (IsInDesignMode)
-                LibraryService.Load();
         }
 
         public Command<ItemClickEventArgs> ArtistClickCommand { get; set; }

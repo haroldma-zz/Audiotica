@@ -17,6 +17,7 @@
             <converters:EmptyListToVisibilityConverter x:Key="EmptyListToVisibilityConverter" />
             <converters:EmptyListToVisibilityConverter x:Key="ReverseEmptyListToVisibilityConverter" Reverse="True" />
             <converters:ImageSourceConverter x:Key="ImageSourceConverter" />
+            <converters:UpperCaseConverter x:Key="UpperCaseConverter" />
             
             <SolidColorBrush x:Name="SubtleTextBrush" Color="{ThemeResource SystemBaseMediumColor}" />
             <SolidColorBrush x:Name="OddRowBackgroundBrush" Color="{ThemeResource SystemChromeLowColor}" />

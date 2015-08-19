@@ -1,16 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Audiotica.Core.Common;
 
 namespace Audiotica.Database.Models
 {
     /// <summary>
     ///     Album object, not used in the database.
     /// </summary>
-    public class Album
+    public class Album : ObservableObject
     {
+        private Artist _artist;
+
         public Album()
         {
-            Tracks = new List<Track>();
+            Tracks = new OptimizedObservableCollection<Track>();
         }
 
         public string Title { get; set; }
@@ -18,7 +19,12 @@ namespace Audiotica.Database.Models
         public string Copyright { get; set; }
         public int? Year { get; set; }
         public string ArtworkUri { get; set; }
-        public List<Track> Tracks { get; set; }
-        public Artist Artist { get; set; }
+        public OptimizedObservableCollection<Track> Tracks { get; set; }
+
+        public Artist Artist
+        {
+            get { return _artist; }
+            set { Set(ref _artist, value); }
+        }
     }
 }

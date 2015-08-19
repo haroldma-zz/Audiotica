@@ -1,8 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Audiotica.Core.Common;
+using Audiotica.Core.Extensions;
 using Audiotica.Database.Models;
 using Audiotica.Database.Services.Interfaces;
 using Audiotica.Web.Extensions;
@@ -23,7 +23,7 @@ namespace Audiotica.Converters
             _libraryService = libraryService;
         }
 
-        public async Task<Track> ConvertAsync(WebSong other, Action<WebSong> saveChanges = null)
+        public async Task<Track> ConvertAsync(WebSong other)
         {
             var conversion = other.PreviousConversion as Track;
             if (conversion != null) return conversion;
@@ -31,7 +31,11 @@ namespace Audiotica.Converters
             var provider = _providers.FirstOrDefault(p => p.GetType() == other.MetadataProvider);
 
             if (other.IsPartial)
-                other = await provider.GetSongAsync(other.Token);
+            {
+                var web = await provider.GetSongAsync(other.Token);
+                other.SetFrom(web);
+            }
+
             if (other.Album == null)
                 other.Album = new WebAlbum(typeof (ILocalMetadataProvider))
                 {
@@ -72,16 +76,16 @@ namespace Audiotica.Converters
             };
 
             track.DiscCount = track.DiscNumber;
-            other.PreviousConversion = track;
-            saveChanges?.Invoke(other);
 
             var libraryTrack = _libraryService.Find(track);
+            other.PreviousConversion = libraryTrack ?? track;
+
             return libraryTrack ?? track;
         }
 
         public async Task<List<Track>> ConvertAsync(IEnumerable<WebSong> others)
         {
-            var tasks = others.Select(p => ConvertAsync(p)).ToList();
+            var tasks = others.Select(ConvertAsync).ToList();
             return (await Task.WhenAll(tasks)).ToList();
         }
     }

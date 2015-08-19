@@ -1,9 +1,11 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Audiotica.Core.Common;
+using Audiotica.Core.Extensions;
 using Audiotica.Database.Models;
+using Audiotica.Database.Services.Interfaces;
+using Audiotica.Web.Extensions;
 using Audiotica.Web.Metadata.Interfaces;
 using Audiotica.Web.Models;
 
@@ -11,23 +13,24 @@ namespace Audiotica.Converters
 {
     public class WebToArtistConverter : IConverter<WebArtist, Artist>
     {
+        private readonly ILibraryService _libraryService;
         private readonly List<IBasicMetadataProvider> _providers;
 
-        public WebToArtistConverter(IEnumerable<IMetadataProvider> providers)
+        public WebToArtistConverter(IEnumerable<IMetadataProvider> providers, ILibraryService libraryService)
         {
-            _providers = providers.Where(p => p.IsEnabled)
-                .OrderByDescending(p => p.Priority)
-                .Where(p => p is IBasicMetadataProvider)
-                .Cast<IBasicMetadataProvider>()
-                .ToList();
+            _libraryService = libraryService;
+            _providers = providers.FilterAndSort<IBasicMetadataProvider>();
         }
 
-        public async Task<Artist> ConvertAsync(WebArtist other, Action<WebArtist> saveChanges = null)
+        public async Task<Artist> ConvertAsync(WebArtist other)
         {
             var provider = _providers.FirstOrDefault(p => p.GetType() == other.MetadataProvider);
 
             if (other.IsPartial)
-                other = await provider.GetArtistAsync(other.Token);
+            {
+                var web = await provider.GetArtistAsync(other.Token);
+                other.SetFrom(web);
+            }
 
             var artist = new Artist
             {
@@ -35,23 +38,16 @@ namespace Audiotica.Converters
                 ArtworkUri = other.Artwork.ToString()
             };
 
-            other.PreviousConversion = artist;
-            saveChanges?.Invoke(other);
+            var libraryArtist = _libraryService.Artists.FirstOrDefault(p => p.Name.EqualsIgnoreCase(artist.Name));
+            other.PreviousConversion = libraryArtist ?? artist;
 
-            return artist;
+            return libraryArtist ?? artist;
         }
 
         public async Task<List<Artist>> ConvertAsync(IEnumerable<WebArtist> others)
         {
-            var tasks = others.Select(LibraryConvert).ToList();
+            var tasks = others.Select(ConvertAsync).ToList();
             return (await Task.WhenAll(tasks)).ToList();
-        }
-
-        private async Task<Artist> LibraryConvert(WebArtist webArtist)
-        {
-            var artist = await ConvertAsync(webArtist);
-            var libraryArtist = artist; //TODO: _libraryService
-            return libraryArtist ?? artist;
         }
     }
 }

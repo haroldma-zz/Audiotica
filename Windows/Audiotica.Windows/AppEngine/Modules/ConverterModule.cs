@@ -12,6 +12,7 @@ namespace Audiotica.Windows.AppEngine.Modules
         {
             builder.RegisterType<WebToTrackConverter>().As<IConverter<WebSong, Track>>();
             builder.RegisterType<WebToArtistConverter>().As<IConverter<WebArtist, Artist>>();
+            builder.RegisterType<WebToAlbumConverter>().As<IConverter<WebAlbum, Album>>();
         }
     }
 }

@@ -27,7 +27,7 @@ namespace Audiotica.Windows.Services.RunTime
 
         public async Task<Track> SaveAsync(WebSong song)
         {
-            var track = await _webSongConverter.ConvertAsync(song, other => song.SetFrom(other));
+            var track = await _webSongConverter.ConvertAsync(song);
             await SaveAsync(track);
             return track;
         }

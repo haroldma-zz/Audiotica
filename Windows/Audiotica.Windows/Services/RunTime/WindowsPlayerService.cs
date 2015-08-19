@@ -30,7 +30,7 @@ namespace Audiotica.Windows.Services
                 using (var blocker = new UiBlocker())
                 {
                     blocker.UpdateProgress("Getting data...");
-                    track = await _webSongConverter.ConvertAsync(song, webSong => { song.SetFrom(webSong); });
+                    track = await _webSongConverter.ConvertAsync(song);
                 }
             Play(track);
         }

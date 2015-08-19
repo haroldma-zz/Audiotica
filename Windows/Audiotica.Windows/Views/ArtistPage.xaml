@@ -12,18 +12,39 @@
     DataContext="{Binding ArtistPage, Source={StaticResource ViewModelLocator}}">
 
     <Grid>
-        <Grid.Background>
-            <ImageBrush Stretch="UniformToFill" Opacity=".1" AlignmentY="Top" ImageSource="{Binding Artist.ArtworkUri}" />
-        </Grid.Background>
         <ScrollViewer x:Name="ContentScrollViewer" Padding="{StaticResource PageThickness}">
             <StackPanel>
-                <TextBlock Text="{x:Bind ViewModel.Artist.Name, Mode=OneWay}" />
+                <Grid>
+                    <Ellipse Width="100" Height="100" Fill="#333" />
+                    <Ellipse Grid.Row="0" Width="100" Height="100">
+                        <Ellipse.Fill>
+                            <ImageBrush ImageSource="{x:Bind ViewModel.Artist.ArtworkUri, Converter={StaticResource ImageSourceConverter}}" Stretch="UniformToFill" />
+                        </Ellipse.Fill>
+                    </Ellipse>
+                    <TextBlock Text="{x:Bind ViewModel.Artist.Name, Mode=OneWay}" />
+                </Grid>
+                <TextBlock Text="In Collection" Visibility="{x:Bind ViewModel.Artist.Albums, Converter={StaticResource EmptyListToVisibilityConverter}}" />
+                <ListView ItemsSource="{x:Bind ViewModel.Artist.Albums, Mode=OneWay}" ItemTemplate="{StaticResource AlbumTemplate}" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                    <ListView.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <VirtualizingStackPanel Orientation="Horizontal" />
+                        </ItemsPanelTemplate>
+                    </ListView.ItemsPanel>
+                </ListView>
+                <TextBlock Text="Albums" />
+                <ListView ItemsSource="{x:Bind ViewModel.TopAlbums, Mode=OneWay}" ItemTemplate="{StaticResource AlbumTemplate}" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                    <ListView.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <VirtualizingStackPanel Orientation="Horizontal" />
+                        </ItemsPanelTemplate>
+                    </ListView.ItemsPanel>
+                </ListView>
+                <TextBlock Text="Top Songs" />
                 <controls:AlternatingRowListView x:Name="TopTracksListView"
                                                  ItemsSource="{x:Bind ViewModel.TopSongs, Mode=OneWay}"
                                                  OddRowBackground="{StaticResource OddRowBackgroundBrush}"
                                                  ItemTemplate="{StaticResource TrackTemplate}"
                                                  ScrollViewer.VerticalScrollBarVisibility="Disabled" />
-                <ListView ItemsSource="{x:Bind ViewModel.TopAlbums, Mode=OneWay}" ScrollViewer.VerticalScrollBarVisibility="Disabled" />
             </StackPanel>
         </ScrollViewer>
 
