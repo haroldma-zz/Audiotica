@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Audiotica.Core.Common;
 using Audiotica.Database.Models;
 using Audiotica.Database.Services.Interfaces;
+using Audiotica.Web.Extensions;
 using Audiotica.Web.Metadata.Interfaces;
 using Audiotica.Web.Metadata.Providers;
 using Audiotica.Web.Models;
@@ -18,11 +19,7 @@ namespace Audiotica.Converters
 
         public WebToTrackConverter(IEnumerable<IMetadataProvider> providers, ILibraryService libraryService)
         {
-            _providers = providers.Where(p => p.IsEnabled)
-                .OrderByDescending(p => p.Priority)
-                .Where(p => p is IBasicMetadataProvider)
-                .Cast<IBasicMetadataProvider>()
-                .ToList();
+            _providers = providers.FilterAndSort<IBasicMetadataProvider>();
             _libraryService = libraryService;
         }
 

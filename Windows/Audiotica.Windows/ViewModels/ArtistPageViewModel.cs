@@ -7,6 +7,7 @@ using Audiotica.Core.Extensions;
 using Audiotica.Database.Models;
 using Audiotica.Database.Services.Interfaces;
 using Audiotica.Web.Exceptions;
+using Audiotica.Web.Extensions;
 using Audiotica.Web.Metadata.Interfaces;
 using Audiotica.Web.Models;
 using Audiotica.Windows.Common;
@@ -34,11 +35,8 @@ namespace Audiotica.Windows.ViewModels
         {
             _navigationService = navigationService;
             _libraryService = libraryService;
-            _metadataProviders = metadataProviders.Where(p => p.IsEnabled)
-                .OrderByDescending(p => p.Priority)
-                .Where(p => p is IExtendedMetadataProvider)
-                .Cast<IExtendedMetadataProvider>()
-                .ToList();
+            _metadataProviders = metadataProviders.FilterAndSort<IExtendedMetadataProvider>();
+
             _webArtistConverter = webArtistConverter;
             _webSongConverter = webSongConverter;
 

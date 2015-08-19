@@ -50,6 +50,7 @@
     <Compile Include="Enums\ProviderCollectionType.cs" />
     <Compile Include="Enums\ProviderResultsQuality.cs" />
     <Compile Include="Enums\ProviderSpeed.cs" />
+    <Compile Include="Extensions\MetadataExtensions.cs" />
     <Compile Include="Extensions\RestlessExtensions.cs" />
     <Compile Include="Extensions\RestRequestExtensions.cs" />
     <Compile Include="Extensions\UriExtensions.cs" />

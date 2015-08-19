@@ -54,13 +54,13 @@ namespace Audiotica.Windows.AppEngine
         public async Task OnLaunchedAsync()
         {
             var insightsService = Resolve<IInsightsService>();
-            using (insightsService.TrackTimeEvent("Launched bootstrappers"))
+            using (insightsService.TrackTimeEvent("BootstrappersLaunched"))
                 foreach (var bootstrapper in _bootStrappers)
                 {
                     var name = bootstrapper.GetType().Name;
                     using (var scope = BeginScope())
                     using (
-                        insightsService.TrackTimeEvent("Launched bootstrapper", new Dictionary<string, string> {{"Name", name}}))
+                        insightsService.TrackTimeEvent("BootstrapperLaunched", new Dictionary<string, string> {{"Name", name}}))
                         try
                         {
                             await bootstrapper.OnLaunchedAsync(scope);
@@ -76,14 +76,14 @@ namespace Audiotica.Windows.AppEngine
         {
             var settings = Resolve<ISettingsUtility>();
             var insightsService = Resolve<IInsightsService>();
-            using (insightsService.TrackTimeEvent("Relaunched bootstrappers"))
+            using (insightsService.TrackTimeEvent("BootstrappersRelaunched"))
                 foreach (var bootstrapper in _bootStrappers)
                 {
                     var name = bootstrapper.GetType().Name;
                     var key = $"bootstrapper-state-{name}";
                     using (var scope = BeginScope())
                     using (
-                        insightsService.TrackTimeEvent("Relaunched bootstrapper", new Dictionary<string, string> {{"Name", name}})
+                        insightsService.TrackTimeEvent("BootstrapperRelaunched", new Dictionary<string, string> {{"Name", name}})
                         )
                         try
                         {
@@ -103,13 +103,13 @@ namespace Audiotica.Windows.AppEngine
         public async Task OnResumingAsync()
         {
             var insightsService = Resolve<IInsightsService>();
-            using (insightsService.TrackTimeEvent("Resumed bootstrappers"))
+            using (insightsService.TrackTimeEvent("BootstrappersResumed"))
                 foreach (var bootstrapper in _bootStrappers)
                 {
                     var name = bootstrapper.GetType().Name;
                     using (var scope = BeginScope())
                     using (
-                        insightsService.TrackTimeEvent("Resumed bootstrapper", new Dictionary<string, string> {{"Name", name}}))
+                        insightsService.TrackTimeEvent("BootstrapperResumed", new Dictionary<string, string> {{"Name", name}}))
                         try
                         {
                             await bootstrapper.OnResumingAsync(scope);
@@ -125,7 +125,7 @@ namespace Audiotica.Windows.AppEngine
         {
             var settings = Resolve<ISettingsUtility>();
             var insightsService = Resolve<IInsightsService>();
-            using (insightsService.TrackTimeEvent("Suspended bootstrappers"))
+            using (insightsService.TrackTimeEvent("BootstrappersSuspended"))
                 foreach (var bootstrapper in _bootStrappers)
                 {
                     var name = bootstrapper.GetType().Name;
@@ -134,7 +134,7 @@ namespace Audiotica.Windows.AppEngine
 
                     using (var scope = BeginScope())
                     using (
-                        insightsService.TrackTimeEvent("Suspended bootstrapper", new Dictionary<string, string> {{"Name", name}})
+                        insightsService.TrackTimeEvent("BootstrapperSuspended", new Dictionary<string, string> {{"Name", name}})
                         )
                         try
                         {

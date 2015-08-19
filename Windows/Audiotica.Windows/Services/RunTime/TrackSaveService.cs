@@ -12,16 +12,16 @@ namespace Audiotica.Windows.Services.RunTime
     internal class TrackSaveService : ITrackSaveService
     {
         private readonly IInsightsService _insightsService;
-        private readonly ILibraryMatchingService _libraryMatchingService;
         private readonly ILibraryService _libraryService;
+        private readonly ILibraryMatchingService _matchingService;
         private readonly IConverter<WebSong, Track> _webSongConverter;
 
         public TrackSaveService(ILibraryService libraryService, IConverter<WebSong, Track> webSongConverter,
-            ILibraryMatchingService libraryMatchingService, IInsightsService insightsService)
+            ILibraryMatchingService matchingService, IInsightsService insightsService)
         {
             _libraryService = libraryService;
             _webSongConverter = webSongConverter;
-            _libraryMatchingService = libraryMatchingService;
+            _matchingService = matchingService;
             _insightsService = insightsService;
         }
 
@@ -34,7 +34,7 @@ namespace Audiotica.Windows.Services.RunTime
 
         public async Task SaveAsync(Track track)
         {
-            using (_insightsService.TrackTimeEvent("Saved song", new Dictionary<string, string>
+            using (_insightsService.TrackTimeEvent("SongSaved", new Dictionary<string, string>
             {
                 {"Track type", track.Type.ToString()},
                 {"Title", track.Title},
@@ -48,9 +48,9 @@ namespace Audiotica.Windows.Services.RunTime
 
                 await _libraryService.AddTrackAsync(track);
 
-                // queue it to be matched
+                // proccess it
                 if (isMatching)
-                    _libraryMatchingService.Queue(track);
+                    _matchingService.Queue(track);
             }
         }
     }

@@ -11,17 +11,17 @@ namespace Audiotica.Windows.AppEngine.Bootstrppers
         protected async Task StartAsync(IComponentContext context)
         {
             var service = context.Resolve<ILibraryService>();
-            var libraryMatching = context.Resolve<ILibraryMatchingService>();
             var insights = context.Resolve<IInsightsService>();
 
-            using (var timer = insights.TrackTimeEvent("Loaded library"))
+            using (var timer = insights.TrackTimeEvent("LibraryLoaded"))
             {
                 await service.LoadAsync();
                 timer.AddProperty("Track count", service.Tracks.Count.ToString());
             }
 
 
-            libraryMatching.OnStartup();
+            var matchingService = context.Resolve<ILibraryMatchingService>();
+            matchingService.OnStartup();
         }
 
         public override Task OnLaunchedAsync(IComponentContext context)

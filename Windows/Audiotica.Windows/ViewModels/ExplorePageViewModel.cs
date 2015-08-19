@@ -6,6 +6,7 @@ using Windows.UI.Xaml.Navigation;
 using Audiotica.Core.Extensions;
 using Audiotica.Core.Windows.Helpers;
 using Audiotica.Web.Exceptions;
+using Audiotica.Web.Extensions;
 using Audiotica.Web.Metadata.Interfaces;
 using Audiotica.Web.Models;
 using Audiotica.Windows.Services;
@@ -30,11 +31,7 @@ namespace Audiotica.Windows.ViewModels
         {
             _navigationService = navigationService;
             _windowsPlayerService = windowsPlayerService;
-            _metadataProviders = metadataProviders.Where(p => p.IsEnabled)
-                .OrderByDescending(p => p.Priority)
-                .Where(p => p is IChartMetadataProvider)
-                .Cast<IChartMetadataProvider>()
-                .ToList();
+            _metadataProviders = metadataProviders.FilterAndSort<IChartMetadataProvider>();
 
             SongClickCommand = new Command<ItemClickEventArgs>(SongClickExecute);
             ArtistClickCommand = new Command<ItemClickEventArgs>(ArtistClickExecute);

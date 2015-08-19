@@ -43,7 +43,7 @@ namespace Audiotica.Windows.Services.RunTime
 
         private async Task CreateTask(Track track)
         {
-            using (var timer = _insightsService.TrackTimeEvent("Matched song", new Dictionary<string, string>
+            using (var timer = _insightsService.TrackTimeEvent("MatchedSong", new Dictionary<string, string>
             {
                 {"Title", track.Title},
                 {"Artists", track.Artists},
