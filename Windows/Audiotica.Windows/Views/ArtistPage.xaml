@@ -20,19 +20,18 @@
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
                     <Grid HorizontalAlignment="Left">
-                        <Ellipse Width="140" Height="140" Fill="#333" />
                         <Ellipse Width="140" Height="140">
                             <Ellipse.Fill>
                                 <ImageBrush
-                                    ImageSource="{x:Bind ViewModel.Artist.ArtworkUri, Converter={StaticResource ImageSourceConverter}}"
+                                    ImageSource="{x:Bind ViewModel.Artist.ArtworkUri, Mode=OneWay, Converter={StaticResource ImageSourceConverter}}"
                                     Stretch="UniformToFill" />
                             </Ellipse.Fill>
                         </Ellipse>
                     </Grid>
                     <TextBlock Grid.Column="1" Text="{x:Bind ViewModel.Artist.Name, Mode=OneWay}" Style="{StaticResource HeaderTextBlockStyle}" />
                 </Grid>
-                <TextBlock Text="In Collection" Margin="0, 0, 0, 5" Visibility="{x:Bind ViewModel.Artist.Albums, Converter={StaticResource EmptyListToVisibilityConverter}}" />
-                <ListView ItemsSource="{x:Bind ViewModel.Artist.Albums, Mode=OneWay}" ItemTemplate="{StaticResource AlbumTemplate}" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                <TextBlock Text="In Collection" Margin="0, 0, 0, 5" Visibility="{x:Bind ViewModel.Artist.Albums, Mode=OneWay, Converter={StaticResource EmptyListToVisibilityConverter}}" />
+                <ListView ItemsSource="{x:Bind ViewModel.Artist.Albums, Mode=OneWay}" ItemTemplate="{StaticResource AlbumTemplate}">
                     <ListView.ItemsPanel>
                         <ItemsPanelTemplate>
                             <VirtualizingStackPanel Orientation="Horizontal" />
@@ -40,7 +39,7 @@
                     </ListView.ItemsPanel>
                 </ListView>
                 <TextBlock Text="Albums"  Margin="0, 0, 0, 5" />
-                <ListView ItemsSource="{x:Bind ViewModel.TopAlbums, Mode=OneWay}" ItemTemplate="{StaticResource AlbumTemplate}" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                <ListView ItemsSource="{x:Bind ViewModel.TopAlbums, Mode=OneWay}" ItemTemplate="{StaticResource AlbumTemplate}">
                     <ListView.ItemsPanel>
                         <ItemsPanelTemplate>
                             <VirtualizingStackPanel Orientation="Horizontal" />

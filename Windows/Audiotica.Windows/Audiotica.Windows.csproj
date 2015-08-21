@@ -119,8 +119,12 @@
     <Compile Include="AppEngine\Providers\ProviderHelper.cs" />
     <Compile Include="AppEngine\Providers\SQLiteConnectionProvider.cs" />
     <Compile Include="Common\BootStrapper.cs" />
+    <Compile Include="Common\ColorCutQuantizer.cs" />
+    <Compile Include="Common\Heap.cs" />
+    <Compile Include="Common\ColorHistogram.cs" />
     <Compile Include="Common\CurtainPrompt.cs" />
     <Compile Include="Common\UiBlocker.cs" />
+    <Compile Include="Common\Palette.cs" />
     <Compile Include="Controls\AlternatingRowListView.cs" />
     <Compile Include="DataTemplates\LibraryDictionary.xaml.cs">
       <DependentUpon>LibraryDictionary.xaml</DependentUpon>

@@ -1,9 +1,15 @@
 ﻿using System.ComponentModel;
+using System.Diagnostics;
+using System.Linq;
 using System.Runtime.CompilerServices;
+using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Media;
 using Audiotica.Core.Exceptions;
+using Audiotica.Core.Extensions;
 using Audiotica.Database.Models;
+using Audiotica.Web.Extensions;
 using Audiotica.Windows.Common;
 using Audiotica.Windows.Services;
 using Audiotica.Windows.Services.Interfaces;

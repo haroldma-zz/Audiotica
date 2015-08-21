@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Windows.UI;
+using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using Audiotica.Core.Common;
 using Audiotica.Core.Extensions;
@@ -10,6 +13,7 @@ using Audiotica.Web.Exceptions;
 using Audiotica.Web.Extensions;
 using Audiotica.Web.Metadata.Interfaces;
 using Audiotica.Web.Models;
+using Audiotica.Windows.Common;
 using Audiotica.Windows.Services.NavigationService;
 using Audiotica.Windows.Tools.Mvvm;
 
@@ -64,24 +68,34 @@ namespace Audiotica.Windows.ViewModels
             set { Set(ref _topSongs, value); }
         }
 
-        public override string SimplifiedParameter(object parameter)
-        {
-            var id = parameter as long?;
-
-            return id != null ? id.ToString() : parameter.ToString().DeTokenize().LastOrDefault();
-        }
-
         public override async void OnNavigatedTo(object parameter, NavigationMode mode, Dictionary<string, object> state)
         {
             var name = parameter as string;
 
-            if (name != null)
-                Artist = _libraryService.Artists.FirstOrDefault(p => p.Name == name);
-            else
+            Artist = _libraryService.Artists.FirstOrDefault(p => p.Name == name);
+            if (Artist == null)
             {
-                var webArtist = (WebArtist) parameter;
-                Artist = await _webArtistConverter.ConvertAsync(webArtist);
+                foreach (var provider in _metadataProviders)
+                {
+                    try
+                    {
+                        var webArtist = await provider.GetArtistByNameAsync(name);
+                        Artist = await _webArtistConverter.ConvertAsync(webArtist);
+                        if (Artist != null) break;
+                    }
+                    catch
+                    {
+                        // ignored
+                    }
+                }
+
+                if (Artist == null)
+                {
+                    _navigationService.GoBack();
+                    return;
+                }
             }
+            
             LoadWebData();
         }
 
@@ -95,10 +109,16 @@ namespace Audiotica.Windows.ViewModels
                     if (webArtist == null) continue;
 
                     if (TopSongs == null)
-                        TopSongs = await _webSongConverter.ConvertAsync((await metadataProvider.GetArtistTopSongsAsync(webArtist.Token, 5)).Songs);
+                        TopSongs =
+                            await
+                                _webSongConverter.ConvertAsync(
+                                    (await metadataProvider.GetArtistTopSongsAsync(webArtist.Token, 5)).Songs);
 
                     if (TopAlbums == null)
-                        TopAlbums = await _webAlbumConverter.ConvertAsync((await metadataProvider.GetArtistAlbumsAsync(webArtist.Token, 10)).Albums);
+                        TopAlbums =
+                            await
+                                _webAlbumConverter.ConvertAsync(
+                                    (await metadataProvider.GetArtistAlbumsAsync(webArtist.Token, 10)).Albums);
 
                     if (TopSongs != null && TopAlbums != null) break;
                 }

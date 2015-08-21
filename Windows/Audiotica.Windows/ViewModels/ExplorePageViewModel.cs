@@ -64,7 +64,7 @@ namespace Audiotica.Windows.ViewModels
         private void ArtistClickExecute(ItemClickEventArgs e)
         {
             var artist = (WebArtist) e.ClickedItem;
-            _navigationService.Navigate(typeof(ArtistPage), artist);
+            _navigationService.Navigate(typeof(ArtistPage), artist.Name);
         }
 
         private void SongClickExecute(ItemClickEventArgs e)
