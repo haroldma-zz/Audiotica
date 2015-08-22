@@ -14,7 +14,7 @@
     <Grid>
         <ScrollViewer x:Name="ContentScrollViewer" Padding="{StaticResource PageThickness}">
             <StackPanel>
-                <Grid>
+                <Grid Background="{x:Bind ViewModel.BackgroundBrush, Mode=OneWay}">
                     <Grid.ColumnDefinitions> 
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="*" />
@@ -28,7 +28,7 @@
                             </Ellipse.Fill>
                         </Ellipse>
                     </Grid>
-                    <TextBlock Grid.Column="1" Text="{x:Bind ViewModel.Artist.Name, Mode=OneWay}" Style="{StaticResource HeaderTextBlockStyle}" />
+                    <TextBlock Grid.Column="1" Text="{x:Bind ViewModel.Artist.Name, Mode=OneWay}" Style="{StaticResource HeaderTextBlockStyle}" Foreground="{x:Bind ViewModel.ForegroundBrush, Mode=OneWay}" />
                 </Grid>
                 <TextBlock Text="In Collection" Margin="0, 0, 0, 5" Visibility="{x:Bind ViewModel.Artist.Albums, Mode=OneWay, Converter={StaticResource EmptyListToVisibilityConverter}}" />
                 <ListView ItemsSource="{x:Bind ViewModel.Artist.Albums, Mode=OneWay}" ItemTemplate="{StaticResource AlbumTemplate}">

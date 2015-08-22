@@ -1,14 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Windows.UI;
+using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using Audiotica.Core.Common;
+using Audiotica.Core.Extensions;
+using Audiotica.Core.Windows.Extensions;
 using Audiotica.Database.Models;
 using Audiotica.Database.Services.Interfaces;
 using Audiotica.Web.Exceptions;
 using Audiotica.Web.Extensions;
 using Audiotica.Web.Metadata.Interfaces;
 using Audiotica.Web.Models;
+using Audiotica.Windows.Common;
 using Audiotica.Windows.Services.NavigationService;
 using Audiotica.Windows.Tools.Mvvm;
 
@@ -25,6 +31,8 @@ namespace Audiotica.Windows.ViewModels
         private Artist _artist;
         private List<Album> _topAlbums;
         private List<Track> _topSongs;
+        private SolidColorBrush _backgroundBrush;
+        private SolidColorBrush _foregroundBrush;
 
         public ArtistPageViewModel(INavigationService navigationService,
             ILibraryService libraryService,
@@ -43,6 +51,18 @@ namespace Audiotica.Windows.ViewModels
 
             if (IsInDesignMode)
                 OnNavigatedTo("Childish Gambino", NavigationMode.New, new Dictionary<string, object>());
+        }
+
+        public SolidColorBrush ForegroundBrush
+        {
+            get { return _foregroundBrush; }
+            set { Set(ref _foregroundBrush, value); }
+        }
+
+        public SolidColorBrush BackgroundBrush
+        {
+            get { return _backgroundBrush; }
+            set { Set(ref _backgroundBrush, value); }
         }
 
         public Artist Artist
@@ -91,7 +111,21 @@ namespace Audiotica.Windows.ViewModels
                 }
             }
 
+
+            DetectColorFromArtwork();
             LoadWebData();
+        }
+
+        private async void DetectColorFromArtwork()
+        {
+            var image = await Artist.ArtworkUri.ToUri().GetAsync();
+            var stream = await image.Content.ReadAsStreamAsync();
+            var palleteImage = await DominantColorCalculator.CreateAsync(stream);
+            var scheme = palleteImage.GetColorScheme();
+            var background = scheme.BackgroundColor.ToColor();
+            var foreground = scheme.ForegroundColor.ToColor();
+            BackgroundBrush = new SolidColorBrush(background);
+            ForegroundBrush = new SolidColorBrush(foreground);
         }
 
         private async void LoadWebData()
