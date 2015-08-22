@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using Windows.UI;
-using Windows.UI.Xaml.Controls;
+using Windows.Graphics.Imaging;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
 using Audiotica.Core.Common;
 using Audiotica.Core.Extensions;
@@ -29,10 +31,11 @@ namespace Audiotica.Windows.ViewModels
         private readonly IConverter<WebArtist, Artist> _webArtistConverter;
         private readonly IConverter<WebSong, Track> _webSongConverter;
         private Artist _artist;
-        private List<Album> _topAlbums;
-        private List<Track> _topSongs;
         private SolidColorBrush _backgroundBrush;
         private SolidColorBrush _foregroundBrush;
+        private ElementTheme _requestedTheme = ElementTheme.Light;
+        private List<Album> _topAlbums;
+        private List<Track> _topSongs;
 
         public ArtistPageViewModel(INavigationService navigationService,
             ILibraryService libraryService,
@@ -51,6 +54,12 @@ namespace Audiotica.Windows.ViewModels
 
             if (IsInDesignMode)
                 OnNavigatedTo("Childish Gambino", NavigationMode.New, new Dictionary<string, object>());
+        }
+
+        public ElementTheme RequestedTheme
+        {
+            get { return _requestedTheme; }
+            set { Set(ref _requestedTheme, value); }
         }
 
         public SolidColorBrush ForegroundBrush
@@ -118,14 +127,16 @@ namespace Audiotica.Windows.ViewModels
 
         private async void DetectColorFromArtwork()
         {
-            var image = await Artist.ArtworkUri.ToUri().GetAsync();
-            var stream = await image.Content.ReadAsStreamAsync();
-            var palleteImage = await DominantColorCalculator.CreateAsync(stream);
-            var scheme = palleteImage.GetColorScheme();
-            var background = scheme.BackgroundColor.ToColor();
-            var foreground = scheme.ForegroundColor.ToColor();
-            BackgroundBrush = new SolidColorBrush(background);
-            ForegroundBrush = new SolidColorBrush(foreground);
+            using (var response = await Artist.ArtworkUri.ToUri().GetAsync())
+            {
+                using (var stream = await response.Content.ReadAsStreamAsync())
+                {
+                    var main = ColorThief.GetColor(await stream.ToWriteableBitmapAsync());
+
+                    BackgroundBrush = new SolidColorBrush(main.Color);
+                    RequestedTheme = main.IsDark ? ElementTheme.Dark : ElementTheme.Light;
+                }
+            }
         }
 
         private async void LoadWebData()

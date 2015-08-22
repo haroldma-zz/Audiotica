@@ -17,6 +17,40 @@ namespace Audiotica.Core.Windows.Extensions
         private const int MinAlphaSearchMaxIterations = 10;
         private const int MinAlphaSearchPrecision = 10;
 
+        public static Color BlendColors(Color color1, Color color2, float ratio)
+        {
+            var inverseRatio = 1f - ratio;
+            var r = (color1.R*ratio) + (color2.R*inverseRatio);
+            var g = (color1.G*ratio) + (color2.G*inverseRatio);
+            var b = (color1.B*ratio) + (color2.B*inverseRatio);
+            return FromRgb((int) r, (int) g, (int) b);
+        }
+
+        public static Color Darken(Color color, float fraction)
+        {
+            return BlendColors(Colors.Black, color, fraction);
+        }
+
+        public static Color Lighten(Color color, float fraction)
+        {
+            return BlendColors(Colors.White, color, fraction);
+        }
+
+        public static int CalculateYiqLuma(Color color)
+        {
+            return
+                (int)
+                    Math.Round((299*color.R + 587*color.G +
+                                114*color.B)/1000f);
+        }
+
+        public static Color ChangeBrightness(Color color, float fraction)
+        {
+            return CalculateYiqLuma(color) >= 128
+                ? Darken(color, fraction)
+                : Lighten(color, fraction);
+        }
+
         #region FromStringUsingXamlReader()
 
         /// <summary>
@@ -35,35 +69,6 @@ namespace Audiotica.Core.Windows.Extensions
                 (Color)
                     XamlReader.Load(
                         $"<Color xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\">{c}</Color>");
-        }
-
-        #endregion
-
-        #region FromRgb()
-
-        /// <summary>
-        ///     Returns a Color based on 0..1 double RGB values.
-        /// </summary>
-        /// <param name="red">The red.</param>
-        /// <param name="green">The green.</param>
-        /// <param name="blue">The blue.</param>
-        /// <returns></returns>
-        public static Color FromRgb(double red, double green, double blue)
-        {
-            return Color.FromArgb(
-                255,
-                (byte) (255.0*red),
-                (byte) (255.0*green),
-                (byte) (255.0*blue));
-        }
-
-        public static Color FromRgb(int red, int green, int blue)
-        {
-            return Color.FromArgb(
-                255,
-                (byte)red,
-                (byte)green,
-                (byte)blue);
         }
 
         #endregion
@@ -414,7 +419,7 @@ namespace Audiotica.Core.Windows.Extensions
             return maxAlpha;
         }
 
-        public static int GetTextColorForBackground(int backgroundColor, float minContrastRatio)
+        public static int GetTextColorForBackground(int backgroundColor, double minContrastRatio)
         {
             // First we will check white as most colors will be dark
             var whiteMinAlpha = FindMinimumAlpha(unchecked((int) White), backgroundColor, minContrastRatio);
@@ -460,6 +465,35 @@ namespace Audiotica.Core.Windows.Extensions
             // Get defined colors
             return colorsProperties.Select(pi => pi.Name).ToList();
         }
+
+        #region FromRgb()
+
+        /// <summary>
+        ///     Returns a Color based on 0..1 double RGB values.
+        /// </summary>
+        /// <param name="red">The red.</param>
+        /// <param name="green">The green.</param>
+        /// <param name="blue">The blue.</param>
+        /// <returns></returns>
+        public static Color FromRgb(double red, double green, double blue)
+        {
+            return Color.FromArgb(
+                255,
+                (byte) (255.0*red),
+                (byte) (255.0*green),
+                (byte) (255.0*blue));
+        }
+
+        public static Color FromRgb(int red, int green, int blue)
+        {
+            return Color.FromArgb(
+                255,
+                (byte) red,
+                (byte) green,
+                (byte) blue);
+        }
+
+        #endregion
 
         #region AsInt()
 

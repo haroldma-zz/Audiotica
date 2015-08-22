@@ -9,12 +9,13 @@
     xmlns:controls="using:Audiotica.Windows.Controls"
     xmlns:customTriggers="using:Audiotica.Windows.CustomTriggers"
     mc:Ignorable="d"
+    RequestedTheme="{x:Bind ViewModel.RequestedTheme, Mode=OneWay}"
     DataContext="{Binding ArtistPage, Source={StaticResource ViewModelLocator}}">
 
-    <Grid>
+    <Grid Background="{x:Bind ViewModel.BackgroundBrush, Mode=OneWay}">
         <ScrollViewer x:Name="ContentScrollViewer" Padding="{StaticResource PageThickness}">
             <StackPanel>
-                <Grid Background="{x:Bind ViewModel.BackgroundBrush, Mode=OneWay}">
+                <Grid>
                     <Grid.ColumnDefinitions> 
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="*" />
@@ -28,7 +29,7 @@
                             </Ellipse.Fill>
                         </Ellipse>
                     </Grid>
-                    <TextBlock Grid.Column="1" Text="{x:Bind ViewModel.Artist.Name, Mode=OneWay}" Style="{StaticResource HeaderTextBlockStyle}" Foreground="{x:Bind ViewModel.ForegroundBrush, Mode=OneWay}" />
+                    <TextBlock Grid.Column="1" Text="{x:Bind ViewModel.Artist.Name, Mode=OneWay}" Style="{StaticResource HeaderTextBlockStyle}"/>
                 </Grid>
                 <TextBlock Text="In Collection" Margin="0, 0, 0, 5" Visibility="{x:Bind ViewModel.Artist.Albums, Mode=OneWay, Converter={StaticResource EmptyListToVisibilityConverter}}" />
                 <ListView ItemsSource="{x:Bind ViewModel.Artist.Albums, Mode=OneWay}" ItemTemplate="{StaticResource AlbumTemplate}">

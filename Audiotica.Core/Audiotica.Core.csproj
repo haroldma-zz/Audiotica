@@ -35,6 +35,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Exceptions\AppException.cs" />
+    <Compile Include="Extensions\CollectionExtensions.cs" />
     <Compile Include="Helpers\AsyncHelper.cs" />
     <Compile Include="Common\ApiKeys.cs" />
     <Compile Include="Common\IConverter.cs" />

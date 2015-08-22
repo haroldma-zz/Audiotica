@@ -117,6 +117,7 @@
     <Compile Include="Enums\BackgroundTaskState.cs" />
     <Compile Include="Extensions\ColorExtensions.cs" />
     <Compile Include="Extensions\MediaSourceExtension.cs" />
+    <Compile Include="Extensions\StreamExtensions.cs" />
     <Compile Include="Helpers\ApplicationSettingsConstants.cs" />
     <Compile Include="Helpers\DeviceHelper.cs" />
     <Compile Include="Helpers\MessageHelper.cs" />

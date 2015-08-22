@@ -119,9 +119,9 @@
     <Compile Include="AppEngine\Providers\ProviderHelper.cs" />
     <Compile Include="AppEngine\Providers\SQLiteConnectionProvider.cs" />
     <Compile Include="Common\BootStrapper.cs" />
-    <Compile Include="Common\Heap.cs" />
+    <Compile Include="Common\ColorThief.cs" />
     <Compile Include="Common\CurtainPrompt.cs" />
-    <Compile Include="Common\MedianCutQuantizer.cs" />
+    <Compile Include="Common\MMCQ.cs" />
     <Compile Include="Common\UiBlocker.cs" />
     <Compile Include="Controls\AlternatingRowListView.cs" />
     <Compile Include="DataTemplates\LibraryDictionary.xaml.cs">
