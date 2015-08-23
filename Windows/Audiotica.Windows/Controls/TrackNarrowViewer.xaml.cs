@@ -56,9 +56,9 @@ namespace Audiotica.Windows.Controls
             }
         }
 
-        private async void AddButton_Click(object sender, RoutedEventArgs e)
+        private async void AddCollection_Click(object sender, RoutedEventArgs e)
         {
-            var button = (Button) sender;
+            var button = (MenuFlyoutItem)sender;
             button.IsEnabled = false;
 
             using (var scope = App.Current.Kernel.BeginScope())
@@ -78,6 +78,40 @@ namespace Audiotica.Windows.Controls
                 finally
                 {
                     button.IsEnabled = true;
+                }
+            }
+        }
+
+        private async void AddQueue_Click(object sender, RoutedEventArgs e)
+        {
+            using (var scope = App.Current.Kernel.BeginScope())
+            {
+                var backgroundAudioService = scope.Resolve<IPlayerService>();
+                try
+                {
+                    await backgroundAudioService.AddAsync(Track);
+                    CurtainPrompt.Show("Added to queue");
+                }
+                catch (AppException ex)
+                {
+                    CurtainPrompt.ShowError(ex.Message ?? "Something happened.");
+                }
+            }
+        }
+
+        private async void AddUpNext_Click(object sender, RoutedEventArgs e)
+        {
+            using (var scope = App.Current.Kernel.BeginScope())
+            {
+                var backgroundAudioService = scope.Resolve<IPlayerService>();
+                try
+                {
+                    await backgroundAudioService.AddUpNextAsync(Track);
+                    CurtainPrompt.Show("Added up next");
+                }
+                catch (AppException ex)
+                {
+                    CurtainPrompt.ShowError(ex.Message ?? "Something happened.");
                 }
             }
         }
