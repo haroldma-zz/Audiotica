@@ -11,6 +11,10 @@
         <ResourceDictionary>
             <viewModels:ViewModelLocator x:Key="ViewModelLocator" />
 
+            <converters:TrackStatusConverter x:Name="MatchingVisibilityConverter" DesiredStatus="Matching" />
+            <converters:TrackStatusConverter x:Name="NoMatchVisibilityConverter" DesiredStatus="NoMatch" />
+            <converters:TrackTypeConverter x:Name="StreamingVisibilityConverter" DesiredStatus="Stream" />
+            
             <converters:VisibilityConverter x:Key="VisibilityConverter" />
             <converters:VisibilityConverter x:Key="ReverseVisibilityConverter" Reverse="True" />
             <converters:PercentageConverter x:Key="PercentageConverter" />

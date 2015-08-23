@@ -154,6 +154,12 @@ namespace Audiotica.Windows.ViewModels
             LoadWebData();
         }
 
+        public override void OnNavigatedFrom(bool suspending, Dictionary<string, object> state)
+        {
+            // Bug: if we don't reset the theme when we go out, it fucks with the TrackViewer control on other pages
+            RequestedTheme = App.Current.RequestedTheme == ApplicationTheme.Dark ? ElementTheme.Dark : ElementTheme.Light;
+        }
+
         private async void DetectColorFromArtwork()
         {
             using (var response = await Artist.ArtworkUri.ToUri().GetAsync())
@@ -233,6 +239,7 @@ namespace Audiotica.Windows.ViewModels
                     // ignored
                 }
             }
+
             IsNewAlbumsLoading = false;
             IsAlbumsLoading = false;
             IsTopSongsLoading = false;

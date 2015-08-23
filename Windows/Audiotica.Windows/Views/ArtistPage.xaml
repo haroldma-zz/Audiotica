@@ -43,7 +43,7 @@
                     </ListView.ItemsPanel>
                 </ListView>
                 <TextBlock Text="New Releases" Margin="0, 0, 0, 5" />
-                <ProgressBar IsIndeterminate="{x:Bind ViewModel.IsNewAlbumsLoading}" Visibility="{x:Bind ViewModel.IsNewAlbumsLoading, Converter={StaticResource VisibilityConverter}}" />
+                <ProgressBar IsIndeterminate="{x:Bind ViewModel.IsNewAlbumsLoading, Mode=OneWay}" Visibility="{x:Bind ViewModel.IsNewAlbumsLoading, Mode=OneWay, Converter={StaticResource VisibilityConverter}}" />
                 <ListView ItemsSource="{x:Bind ViewModel.NewAlbums, Mode=OneWay}"
                           ItemTemplate="{StaticResource AlbumTemplate}">
                     <ListView.ItemsPanel>
@@ -53,7 +53,7 @@
                     </ListView.ItemsPanel>
                 </ListView>
                 <TextBlock Text="Albums" Margin="0, 0, 0, 5" />
-                <ProgressBar IsIndeterminate="{x:Bind ViewModel.IsAlbumsLoading}" Visibility="{x:Bind ViewModel.IsAlbumsLoading, Converter={StaticResource VisibilityConverter}}" />
+                <ProgressBar IsIndeterminate="{x:Bind ViewModel.IsAlbumsLoading, Mode=OneWay}" Visibility="{x:Bind ViewModel.IsAlbumsLoading, Mode=OneWay, Converter={StaticResource VisibilityConverter}}" />
                 <ListView ItemsSource="{x:Bind ViewModel.TopAlbums, Mode=OneWay}"
                           ItemTemplate="{StaticResource AlbumTemplate}">
                     <ListView.ItemsPanel>
@@ -63,11 +63,11 @@
                     </ListView.ItemsPanel>
                 </ListView>
                 <TextBlock Text="Top Songs" Margin="0, 0, 0, 5" />
-                <ProgressBar IsIndeterminate="{x:Bind ViewModel.IsTopSongsLoading}" Visibility="{x:Bind ViewModel.IsTopSongsLoading, Converter={StaticResource VisibilityConverter}}" />
+                <ProgressBar IsIndeterminate="{x:Bind ViewModel.IsTopSongsLoading, Mode=OneWay}" Visibility="{x:Bind ViewModel.IsTopSongsLoading, Mode=OneWay, Converter={StaticResource VisibilityConverter}}" />
                 <controls:AlternatingRowListView x:Name="TopTracksListView"
                                                  ItemsSource="{x:Bind ViewModel.TopSongs, Mode=OneWay}"
                                                  OddRowBackground="{StaticResource OddRowBackgroundBrush}"
-                                                 ItemTemplate="{StaticResource TrackTemplate}"
+                                                 ItemTemplate="{StaticResource CatalogTrackTemplate}"
                                                  ScrollViewer.VerticalScrollBarVisibility="Disabled" />
             </StackPanel>
         </ScrollViewer>
@@ -89,7 +89,7 @@
                         <AdaptiveTrigger MinWindowWidth="0" />
                     </VisualState.StateTriggers>
                     <VisualState.Setters>
-                        <Setter Target="TopTracksListView.ItemTemplate" Value="{StaticResource TrackNarrowTemplate}" />
+                        <Setter Target="TopTracksListView.ItemTemplate" Value="{StaticResource CatalogTrackNarrowTemplate}" />
                     </VisualState.Setters>
                 </VisualState>
                 <VisualState x:Name="WideScreen">

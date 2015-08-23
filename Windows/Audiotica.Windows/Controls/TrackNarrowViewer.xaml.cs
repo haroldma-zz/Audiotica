@@ -14,6 +14,9 @@ namespace Audiotica.Windows.Controls
         public static readonly DependencyProperty IsSelectedProperty =
             DependencyProperty.Register("IsSelected", typeof (bool), typeof (TrackNarrowViewer), null);
 
+        public static readonly DependencyProperty IsCatalogProperty =
+           DependencyProperty.Register("IsCatalog", typeof(bool), typeof(TrackViewer), null);
+
         private Track _track;
 
         public TrackNarrowViewer()
@@ -27,6 +30,14 @@ namespace Audiotica.Windows.Controls
             get { return (bool) GetValue(IsSelectedProperty); }
 
             set { SetValue(IsSelectedProperty, value); }
+        }
+
+        public bool IsCatalog
+
+        {
+            get { return (bool)GetValue(IsCatalogProperty); }
+
+            set { SetValue(IsCatalogProperty, value); }
         }
 
         public Track Track

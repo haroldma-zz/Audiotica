@@ -2,6 +2,18 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
+
+    <x:String x:Key="StreamingIconText"></x:String>
+
+    <Style x:Key="MvrBaseTextBlockStyle" TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="{StaticResource MvrFontFamily}" />
+    </Style>
+
+    <Style x:Key="StreamingTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource MvrBaseTextBlockStyle}">
+        <Setter Property="Text" Value="{StaticResource StreamingIconText}" />
+    </Style>
+
+    
     <Style x:Key="BaseTextBlockStyle" TargetType="TextBlock">
         <Setter Property="TextLineBounds" Value="Tight" />
         <Setter Property="TextTrimming" Value="CharacterEllipsis" />

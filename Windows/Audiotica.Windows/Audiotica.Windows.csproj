@@ -174,7 +174,7 @@
     <Compile Include="Tools\Converters\PercentageConverter.cs" />
     <Compile Include="Tools\Converters\StringFormatConverter.cs" />
     <Compile Include="Tools\Converters\TimespanToStringConverter.cs" />
-    <Compile Include="Tools\Converters\TrackStatusToBoolConverter.cs" />
+    <Compile Include="Tools\Converters\TrackStatusConverter.cs" />
     <Compile Include="Tools\Converters\UpperCaseConverter.cs" />
     <Compile Include="Tools\Converters\VisibilityConverter.cs" />
     <Compile Include="Tools\Mvvm\Command.cs" />

@@ -1,4 +1,5 @@
-﻿using Audiotica.Windows.ViewModels;
+﻿using Windows.UI.Xaml.Navigation;
+using Audiotica.Windows.ViewModels;
 
 namespace Audiotica.Windows.Views
 {
@@ -7,6 +8,7 @@ namespace Audiotica.Windows.Views
         public AlbumsPage()
         {
             InitializeComponent();
+            NavigationCacheMode = NavigationCacheMode.Required;
             ViewModel = DataContext as AlbumsPageViewModel;
         }
 

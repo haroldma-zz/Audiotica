@@ -11,16 +11,32 @@
 
     <Grid Margin="0,15">
         <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="32" />
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="32" />
         </Grid.ColumnDefinitions>
-        <StackPanel>
+        <Grid HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,0,1,0">
+            <Grid Visibility="{x:Bind IsCatalog, Mode=OneWay, Converter={StaticResource VisibilityConverter}}">
+                <TextBlock Style="{StaticResource MusicInCollectionTextBlockStyle}"
+                           Foreground="{StaticResource SubtleTextBrush}"
+                           ToolTipService.ToolTip="In collection"
+                           Visibility="{x:Bind Track.IsFromLibrary, Mode=OneWay, Converter={StaticResource VisibilityConverter}}" />
+            </Grid>
+            <Grid Visibility="{x:Bind IsCatalog, Mode=OneWay, Converter={StaticResource ReverseVisibilityConverter}}">
+                <TextBlock Style="{StaticResource StreamingTextBlockStyle}"
+                           Foreground="{StaticResource SubtleTextBrush}"
+                           ToolTipService.ToolTip="Streaming"
+                           Visibility="{x:Bind Track.Type, Mode=OneWay, Converter={StaticResource StreamingVisibilityConverter}}" />
+            </Grid>
+        </Grid>
+        <StackPanel Grid.Column="1">
             <TextBlock Text="{x:Bind Track.Title, Mode=OneWay}"
                        Style="{StaticResource TitleTextBlockStyle}" />
             <TextBlock Text="{x:Bind Track.Artists, Mode=OneWay}"
                        Style="{StaticResource SubtleTextBlockStyle}" />
         </StackPanel>
-        <StackPanel Grid.Column="1" Margin="20,0,20,0" Orientation="Horizontal"
+        <StackPanel Grid.Column="2" Margin="20,0,20,0" Orientation="Horizontal"
                     Visibility="{x:Bind IsSelected, Mode=OneWay, Converter={StaticResource VisibilityConverter}}">
             <Button Style="{StaticResource PlainButtonStyle}" Padding="-5" Click="PlayButton_Click">
                 <SymbolIcon Symbol="Play" RenderTransformOrigin="0.5,0.5">

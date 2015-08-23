@@ -5,13 +5,25 @@
     xmlns:controls="using:Audiotica.Windows.Controls"
     xmlns:databaseModels="using:Audiotica.Database.Models"
     xmlns:webModels="using:Audiotica.Web.Models">
+    
     <DataTemplate x:Key="TrackTemplate" x:DataType="databaseModels:Track">
         <controls:TrackViewer Track="{x:Bind}"
                               IsSelected="{Binding Tag, RelativeSource={RelativeSource Mode=TemplatedParent}}" />
     </DataTemplate>
 
+    <DataTemplate x:Key="CatalogTrackTemplate" x:DataType="databaseModels:Track">
+        <controls:TrackViewer Track="{x:Bind}"
+                              IsCatalog="True"
+                              IsSelected="{Binding Tag, RelativeSource={RelativeSource Mode=TemplatedParent}}" />
+    </DataTemplate>
+
     <DataTemplate x:Key="TrackNarrowTemplate" x:DataType="databaseModels:Track">
         <controls:TrackNarrowViewer Track="{x:Bind}"
+                                    IsSelected="{Binding Tag, RelativeSource={RelativeSource Mode=TemplatedParent}}" />
+    </DataTemplate>
+    <DataTemplate x:Key="CatalogTrackNarrowTemplate" x:DataType="databaseModels:Track">
+        <controls:TrackNarrowViewer Track="{x:Bind}"
+                                    IsCatalog="True"
                                     IsSelected="{Binding Tag, RelativeSource={RelativeSource Mode=TemplatedParent}}" />
     </DataTemplate>
 
@@ -118,7 +130,7 @@
                            Style="{StaticResource SubtleTextBlockStyle}" Margin="0,0,10,0" />
                 <TextBlock Grid.Column="2" Text="{x:Bind Album.Title}"
                            Style="{StaticResource SubtleTextBlockStyle}" Margin="0,0,10,0" />
-                <TextBlock Grid.Column="3" Text="{x:Bind Album.ReleasedDate.Value.Year}"
+                <TextBlock Grid.Column="3" Text="{x:Bind Album.ReleaseDate.Value.Year}"
                            Style="{StaticResource SubtleTextBlockStyle}" />
             </Grid>
         </Grid>
