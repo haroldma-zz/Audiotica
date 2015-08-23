@@ -1,6 +1,5 @@
 ﻿using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Media;
 
 namespace Audiotica.Windows.Controls
@@ -41,8 +40,8 @@ namespace Audiotica.Windows.Controls
                 var index = IndexFromContainer(element);
                 listViewItem.HorizontalContentAlignment = HorizontalAlignment.Stretch;
                 listViewItem.Margin = new Thickness(10, 0, 10, 0);
-                listViewItem.Background = (index + 1)%2 == 1 
-                    ? OddRowBackground ?? App.Current.Resources["SystemChromeLowColor"] as Brush 
+                listViewItem.Background = (index + 1)%2 == 1
+                    ? OddRowBackground ?? App.Current.Resources["SystemChromeLowColor"] as Brush
                     : EvenRowBackground;
             }
         }

@@ -16,12 +16,12 @@
         </Grid.ColumnDefinitions>
         <StackPanel>
             <TextBlock Text="{x:Bind Track.Title, Mode=OneWay}"
-                                   Style="{StaticResource TitleTextBlockStyle}" />
+                       Style="{StaticResource TitleTextBlockStyle}" />
             <TextBlock Text="{x:Bind Track.Artists, Mode=OneWay}"
-                                   Style="{StaticResource SubtleTextBlockStyle}" />
+                       Style="{StaticResource SubtleTextBlockStyle}" />
         </StackPanel>
         <StackPanel Grid.Column="1" Margin="20,0,20,0" Orientation="Horizontal"
-                            Visibility="{x:Bind IsSelected, Mode=OneWay, Converter={StaticResource VisibilityConverter}}">
+                    Visibility="{x:Bind IsSelected, Mode=OneWay, Converter={StaticResource VisibilityConverter}}">
             <Button Style="{StaticResource PlainButtonStyle}" Padding="-5" Click="PlayButton_Click">
                 <SymbolIcon Symbol="Play" RenderTransformOrigin="0.5,0.5">
                     <SymbolIcon.RenderTransform>
@@ -30,7 +30,7 @@
                 </SymbolIcon>
             </Button>
             <Button Margin="40,0,0,0" Style="{StaticResource PlainButtonStyle}" Padding="-5" Click="AddButton_Click"
-                            Visibility="{x:Bind Track.IsFromLibrary, Mode=OneWay, Converter={StaticResource ReverseVisibilityConverter}}">
+                    Visibility="{x:Bind Track.IsFromLibrary, Mode=OneWay, Converter={StaticResource ReverseVisibilityConverter}}">
                 <SymbolIcon Symbol="Add" RenderTransformOrigin="0.5,0.5">
                     <SymbolIcon.RenderTransform>
                         <CompositeTransform ScaleX=".7" ScaleY=".7" />

@@ -1,6 +1,11 @@
 ﻿namespace Audiotica.Core.Utilities.Interfaces
 {
-    public enum SettingsStrategy { Local, Roam, Temp }
+    public enum SettingsStrategy
+    {
+        Local,
+        Roam,
+        Temp
+    }
 
     /// <summary>
     ///     Helper class to facilitate access to the application's settings

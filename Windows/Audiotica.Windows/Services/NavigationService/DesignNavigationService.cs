@@ -11,6 +11,7 @@ namespace Audiotica.Windows.Services.NavigationService
         public bool CanGoForward { get; }
         public Type CurrentPageType { get; }
         public string CurrentPageParam { get; }
+
         public void NavigatedTo(NavigationMode mode, string parameter)
         {
             throw new NotImplementedException();

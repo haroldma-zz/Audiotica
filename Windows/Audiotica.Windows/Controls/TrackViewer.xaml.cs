@@ -1,17 +1,9 @@
-﻿using System.ComponentModel;
-using System.Diagnostics;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using Windows.UI;
-using Windows.UI.Xaml;
+﻿using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Media;
 using Audiotica.Core.Exceptions;
-using Audiotica.Core.Extensions;
+using Audiotica.Core.Windows.Services;
 using Audiotica.Database.Models;
-using Audiotica.Web.Extensions;
 using Audiotica.Windows.Common;
-using Audiotica.Windows.Services;
 using Audiotica.Windows.Services.Interfaces;
 using Autofac;
 
@@ -47,18 +39,26 @@ namespace Audiotica.Windows.Controls
             }
         }
 
-        private void PlayButton_Click(object sender, RoutedEventArgs e)
+        private async void PlayButton_Click(object sender, RoutedEventArgs e)
         {
             using (var lifetimeScope = App.Current.Kernel.BeginScope())
             {
-                var playerService = lifetimeScope.Resolve<IWindowsPlayerService>();
-                playerService.Play(Track);
+                var playerService = lifetimeScope.Resolve<IPlayerService>();
+                try
+                {
+                    var queue = await playerService.AddAsync(Track);
+                    playerService.Play(queue);
+                }
+                catch (AppException ex)
+                {
+                    CurtainPrompt.ShowError(ex.Message ?? "Something happened.");
+                }
             }
         }
 
-        private async void AddButton_Click(object sender, RoutedEventArgs e)
+        private async void AddCollection_Click(object sender, RoutedEventArgs e)
         {
-            var button = (Button) sender;
+            var button = (MenuFlyoutItem) sender;
             button.IsEnabled = false;
 
             using (var scope = App.Current.Kernel.BeginScope())
@@ -78,6 +78,40 @@ namespace Audiotica.Windows.Controls
                 finally
                 {
                     button.IsEnabled = true;
+                }
+            }
+        }
+
+        private async void AddQueue_Click(object sender, RoutedEventArgs e)
+        {
+            using (var scope = App.Current.Kernel.BeginScope())
+            {
+                var backgroundAudioService = scope.Resolve<IPlayerService>();
+                try
+                {
+                    await backgroundAudioService.AddAsync(Track);
+                    CurtainPrompt.Show("Added to queue");
+                }
+                catch (AppException ex)
+                {
+                    CurtainPrompt.ShowError(ex.Message ?? "Something happened.");
+                }
+            }
+        }
+
+        private async void AddUpNext_Click(object sender, RoutedEventArgs e)
+        {
+            using (var scope = App.Current.Kernel.BeginScope())
+            {
+                var backgroundAudioService = scope.Resolve<IPlayerService>();
+                try
+                {
+                    await backgroundAudioService.AddUpNextAsync(Track);
+                    CurtainPrompt.Show("Added up next");
+                }
+                catch (AppException ex)
+                {
+                    CurtainPrompt.ShowError(ex.Message ?? "Something happened.");
                 }
             }
         }

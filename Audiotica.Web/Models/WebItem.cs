@@ -1,5 +1,4 @@
 using System;
-using Audiotica.Core.Common;
 
 namespace Audiotica.Web.Models
 {
@@ -7,8 +6,8 @@ namespace Audiotica.Web.Models
     {
         public WebItem()
         {
-            
         }
+
         public WebItem(Type provider)
         {
             MetadataProvider = provider;

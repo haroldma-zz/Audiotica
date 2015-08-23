@@ -7,7 +7,7 @@ namespace Audiotica.Windows.Tools.Converters
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {
-            return System.Convert.ToDouble(value) *
+            return System.Convert.ToDouble(value)*
                    System.Convert.ToDouble(parameter);
         }
 

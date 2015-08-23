@@ -28,7 +28,10 @@ namespace Audiotica.Web.MatchEngine.Providers
             {
                 if (!response.HasData) return null;
 
-                var songNodes = response.Data.DocumentNode.Descendants("li").Where(p => p.Attributes.Contains("data-sound-url")).Take(limit);
+                var songNodes =
+                    response.Data.DocumentNode.Descendants("li")
+                        .Where(p => p.Attributes.Contains("data-sound-url"))
+                        .Take(limit);
 
                 var songs = new List<MatchSong>();
 
@@ -37,7 +40,7 @@ namespace Audiotica.Web.MatchEngine.Providers
                     var song = new MatchSong
                     {
                         Id = songNode.Attributes["data-sound-id"]?.Value,
-                        AudioUrl = songNode.Attributes["data-sound-url"]?.Value,
+                        AudioUrl = songNode.Attributes["data-sound-url"]?.Value
                     };
 
                     if (string.IsNullOrEmpty(song.AudioUrl)) continue;

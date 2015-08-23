@@ -7,7 +7,11 @@ namespace Audiotica.Web.Http.Requets.MatchEngine.Mp3Truck
     {
         public Mp3TruckSearchRequest(string query)
         {
-            this.Url("https://mp3truck.net/search.php").Param("sort", "relevance").Param("p", 1).QParam("q", query).Post();
+            this.Url("https://mp3truck.net/search.php")
+                .Param("sort", "relevance")
+                .Param("p", 1)
+                .QParam("q", query)
+                .Post();
         }
 
         public Mp3TruckSearchRequest Page(int page)

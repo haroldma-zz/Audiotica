@@ -40,11 +40,11 @@ namespace Audiotica.Windows.Common
 {
     public class CurtainPrompt
     {
-        private readonly Color _color;
-        private readonly Action _action;
         private const int PaddingPopup = 150;
-        private double _millisecondsToHide = 1500;
         private static CurtainPrompt _current;
+        private readonly Action _action;
+        private readonly Color _color;
+        private double _millisecondsToHide = 1500;
         private Popup _popup;
         private DispatcherTimer _timer;
 
@@ -80,7 +80,6 @@ namespace Audiotica.Windows.Common
         {
             return InternalCreate(msg, action, duration?.TotalMilliseconds ?? 1500, Colors.DarkGreen);
         }
-
 
         public static CurtainPrompt ShowError(string msg, Action action = null, TimeSpan? duration = null)
         {
@@ -122,6 +121,7 @@ namespace Audiotica.Windows.Common
             grid.ManipulationDelta += grid_ManipulationDelta;
             grid.ManipulationCompleted += grid_ManipulationCompleted;
             grid.Tapped += GridOnTapped;
+
             #endregion
 
             #region stackpanel
@@ -129,9 +129,9 @@ namespace Audiotica.Windows.Common
             var panel = new Grid
             {
                 Margin = new Thickness(30, PaddingPopup, 20, 20),
-                VerticalAlignment = VerticalAlignment.Bottom,
+                VerticalAlignment = VerticalAlignment.Bottom
             };
-            panel.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+            panel.ColumnDefinitions.Add(new ColumnDefinition {Width = GridLength.Auto});
             panel.ColumnDefinitions.Add(new ColumnDefinition());
 
             #endregion
@@ -177,7 +177,7 @@ namespace Audiotica.Windows.Common
 
         private void grid_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
-            var transform = (TranslateTransform)_popup.RenderTransform;
+            var transform = (TranslateTransform) _popup.RenderTransform;
             transform.Y += e.Delta.Translation.Y;
 
             if (transform.Y >= 0)
@@ -234,7 +234,7 @@ namespace Audiotica.Windows.Common
 
         private void slideDownAnimation_Completed(object sender, object e)
         {
-            _timer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(_millisecondsToHide) };
+            _timer = new DispatcherTimer {Interval = TimeSpan.FromMilliseconds(_millisecondsToHide)};
             _timer.Tick += timer_Tick;
             _timer.Start();
         }
@@ -278,5 +278,4 @@ namespace Audiotica.Windows.Common
             sbHide.Begin();
         }
     }
-
 }

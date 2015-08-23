@@ -1,6 +1,4 @@
-﻿using Audiotica.Database.Models;
-
-namespace Audiotica.Core.Windows.Messages
+﻿namespace Audiotica.Core.Windows.Messages
 {
     public class TrackChangedMessage
     {

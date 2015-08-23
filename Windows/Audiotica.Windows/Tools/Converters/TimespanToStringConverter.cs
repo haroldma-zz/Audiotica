@@ -11,7 +11,7 @@ namespace Audiotica.Windows.Tools.Converters
     {
         public object Convert(object value, Type targetType, object parameter, string culture)
         {
-            return ((TimeSpan)value).ToString("mm\\:ss");
+            return ((TimeSpan) value).ToString("mm\\:ss");
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, string culture)

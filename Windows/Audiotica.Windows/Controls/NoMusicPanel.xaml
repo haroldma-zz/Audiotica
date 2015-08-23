@@ -10,10 +10,10 @@
     d:DesignWidth="400">
 
     <StackPanel>
-        <TextBlock Text="Get some music" 
-                       Style="{StaticResource HeaderTextBlockStyle}"/>
-        <TextBlock Text="There are a few ways you can add songs:" 
-                       Style="{StaticResource SubtleTextBlockStyle}" />
+        <TextBlock Text="Get some music"
+                   Style="{StaticResource HeaderTextBlockStyle}" />
+        <TextBlock Text="There are a few ways you can add songs:"
+                   Style="{StaticResource SubtleTextBlockStyle}" />
 
         <Grid Margin="0,30,0,10">
             <Grid.ColumnDefinitions>
@@ -21,12 +21,13 @@
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
             <TextBlock Text="A" AutomationProperties.Name="Audiotica Logo"
-                           FontSize="30" TextAlignment="Center" VerticalAlignment="Center" FontFamily="ms-appx:/Assets/Fonts/Glyphter.otf#Glyphter" />
+                       FontSize="30" TextAlignment="Center" VerticalAlignment="Center"
+                       FontFamily="ms-appx:/Assets/Fonts/Glyphter.otf#Glyphter" />
             <StackPanel Grid.Column="1" Margin="10,0,0,0">
-                <TextBlock Text="Use the Match Engine" 
-                       Style="{StaticResource SubHeaderTextBlockStyle}"/>
-                <TextBlock Text="Unlimited streaming and downloading." 
-                       Style="{StaticResource TaglineTextBlockStyle}" />
+                <TextBlock Text="Use the Match Engine"
+                           Style="{StaticResource SubHeaderTextBlockStyle}" />
+                <TextBlock Text="Unlimited streaming and downloading."
+                           Style="{StaticResource TaglineTextBlockStyle}" />
             </StackPanel>
         </Grid>
 
@@ -35,13 +36,13 @@
                 <ColumnDefinition Width="35" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
-            <TextBlock Text="&#xE211;" AutomationProperties.Name="PC" 
-                           FontSize="30" TextAlignment="Center" VerticalAlignment="Center" FontFamily="Segoe MDL2 Assets" />
+            <TextBlock Text="&#xE211;" AutomationProperties.Name="PC"
+                       FontSize="30" TextAlignment="Center" VerticalAlignment="Center" FontFamily="Segoe MDL2 Assets" />
             <StackPanel Grid.Column="1" Margin="10,0,0,0">
-                <TextBlock Text="Copy music from your PC" 
-                       Style="{StaticResource SubHeaderTextBlockStyle}"/>
-                <TextBlock Text="Show me how." 
-                       Style="{StaticResource TaglineTextBlockStyle}" />
+                <TextBlock Text="Copy music from your PC"
+                           Style="{StaticResource SubHeaderTextBlockStyle}" />
+                <TextBlock Text="Show me how."
+                           Style="{StaticResource TaglineTextBlockStyle}" />
             </StackPanel>
         </Grid>
     </StackPanel>

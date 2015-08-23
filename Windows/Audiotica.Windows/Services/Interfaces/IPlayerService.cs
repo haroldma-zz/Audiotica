@@ -1,13 +1,13 @@
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Windows.Media.Playback;
 using Audiotica.Core.Common;
 using Audiotica.Database.Models;
+using Audiotica.Web.Models;
 
 namespace Audiotica.Core.Windows.Services
 {
-    public interface IBackgroundAudioService
+    public interface IPlayerService
     {
         bool IsBackgroundTaskRunning { get; }
         MediaPlayerState CurrentState { get; set; }
@@ -30,14 +30,13 @@ namespace Audiotica.Core.Windows.Services
         ///     Adds the specified track to the queue.
         /// </summary>
         /// <param name="track">The track.</param>
+        /// <param name="position">The position.</param>
         /// <returns></returns>
-        QueueTrack Add(Track track);
+        Task<QueueTrack> AddAsync(Track track, int position = -1);
 
-        /// <summary>
-        ///     Swithces the current queue.
-        /// </summary>
-        /// <param name="tracks">The tracks.</param>
-        void Play(List<Track> tracks);
+        Task<QueueTrack> AddAsync(WebSong webSong, int position = -1);
+        Task<QueueTrack> AddUpNextAsync(Track track);
+        Task<QueueTrack> AddUpNextAsync(WebSong webSong);
 
         /// <summary>
         ///     Plays the specified queue.

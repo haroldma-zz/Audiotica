@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Windows.UI.Xaml.Navigation;
 using Audiotica.Database.Services.Interfaces;
 using Audiotica.Web.Extensions;
 using Audiotica.Web.Metadata.Interfaces;

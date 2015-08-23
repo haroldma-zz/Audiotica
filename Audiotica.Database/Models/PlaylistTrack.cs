@@ -3,7 +3,7 @@
 namespace Audiotica.Database.Models
 {
     /// <summary>
-    /// Not used in db.
+    ///     Not used in db.
     /// </summary>
     public class PlaylistTrack
     {

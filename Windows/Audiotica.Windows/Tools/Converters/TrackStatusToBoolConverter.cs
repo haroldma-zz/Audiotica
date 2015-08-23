@@ -7,7 +7,6 @@ namespace Audiotica.Windows.Tools.Converters
 {
     public class TrackStatusToBoolConverter : IValueConverter
     {
-
         public Track.TrackStatus DesiredStatus { get; set; }
         public bool NotDesired { get; set; }
 
@@ -16,7 +15,7 @@ namespace Audiotica.Windows.Tools.Converters
             if (!(value is Track.TrackStatus))
                 return Visibility.Collapsed;
 
-            var status = (Track.TrackStatus)value;
+            var status = (Track.TrackStatus) value;
             return (NotDesired && status != DesiredStatus) || (!NotDesired && status == DesiredStatus);
         }
 

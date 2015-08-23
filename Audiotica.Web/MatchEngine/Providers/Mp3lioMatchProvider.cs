@@ -1,12 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 using Audiotica.Core.Extensions;
 using Audiotica.Core.Utilities.Interfaces;
 using Audiotica.Web.Enums;
-using Audiotica.Web.Extensions;
 using Audiotica.Web.Http.Requets.MatchEngine.Mp3lio;
 using Audiotica.Web.MatchEngine.Interfaces.Validators;
 using Audiotica.Web.Models;
@@ -30,7 +28,7 @@ namespace Audiotica.Web.MatchEngine.Providers
                 )
             {
                 if (!response.HasData) return null;
-                
+
                 var songNodes =
                     response.Data.DocumentNode.Descendants("div")
                         .Where(p => p.Attributes["class"]?.Value.Contains("item") ?? false).Take(limit);
@@ -40,7 +38,7 @@ namespace Audiotica.Web.MatchEngine.Providers
                 foreach (var songNode in songNodes)
                 {
                     var song = new MatchSong();
-                    
+
                     var duration = songNode.Descendants("em").FirstOrDefault();
                     if (duration != null)
                     {

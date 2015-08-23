@@ -9,6 +9,7 @@ namespace Audiotica.Web.Serializer
         public string Namespace { get; set; }
         public string DateFormat { get; set; }
         public string ContentType { get; set; } = "application/json";
+
         public string Serialize(object obj, bool clrPropertyNameToLower = false)
         {
             if (clrPropertyNameToLower)

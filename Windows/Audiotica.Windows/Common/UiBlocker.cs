@@ -13,12 +13,20 @@ namespace Audiotica.Windows.Common
     {
         private static UiBlocker _current;
         private Popup _popup;
-        private TextBlock _subMsg;
         private bool _shown;
+        private TextBlock _subMsg;
 
         public UiBlocker()
         {
             CreatePopup();
+        }
+
+        public void Dispose()
+        {
+            if (_shown)
+                HideAnimation();
+            else
+                Dismiss();
         }
 
         public void Dismiss()
@@ -49,7 +57,7 @@ namespace Audiotica.Windows.Common
 
             var curtain = new UiBlocker();
             curtain.UpdateProgress(msg);
-            
+
             _current = curtain;
             return curtain;
         }
@@ -61,14 +69,14 @@ namespace Audiotica.Windows.Common
                 RenderTransform = new TranslateTransform(),
                 Opacity = 0
             };
-            
+
             var grid = new Grid
             {
                 Background = new SolidColorBrush(Colors.Gray),
                 Width = Window.Current.Bounds.Width,
                 Height = Window.Current.Bounds.Height
             };
-            
+
             var panel = new StackPanel
             {
                 VerticalAlignment = VerticalAlignment.Center,
@@ -166,14 +174,6 @@ namespace Audiotica.Windows.Common
         public void UpdateProgress(string message, int progress, int progressMax = 1)
         {
             UpdateProgress(message);
-        }
-
-        public void Dispose()
-        {
-            if (_shown)
-                HideAnimation();
-            else
-                Dismiss();
         }
     }
 }

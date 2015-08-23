@@ -10,10 +10,10 @@ namespace Audiotica.Core.Windows.Utilities
 {
     public class SettingsUtility : ISettingsUtility
     {
-        readonly Type[] _primitives = {
+        private readonly Type[] _primitives =
+        {
             typeof (string),
             typeof (char),
-
             typeof (bool),
             typeof (byte),
             typeof (short),
@@ -22,19 +22,11 @@ namespace Audiotica.Core.Windows.Utilities
             typeof (float),
             typeof (double),
             typeof (decimal),
-
             typeof (sbyte),
             typeof (ushort),
             typeof (uint),
-            typeof (ulong),
+            typeof (ulong)
         };
-
-        private IPropertySet Container(SettingsStrategy strategy)
-        {
-            return (strategy == SettingsStrategy.Local)
-                ? ApplicationData.Current.LocalSettings.Values
-                : ApplicationData.Current.RoamingSettings.Values;
-        }
 
         public bool Exists(string key, SettingsStrategy strategy = SettingsStrategy.Local)
         {
@@ -52,7 +44,7 @@ namespace Audiotica.Core.Windows.Utilities
         public void Write<T>(string key, T value, SettingsStrategy strategy = SettingsStrategy.Local)
         {
             var settings = Container(strategy);
-            if (IsPrimitive(typeof(T)))
+            if (IsPrimitive(typeof (T)))
             {
                 try
                 {
@@ -66,7 +58,10 @@ namespace Audiotica.Core.Windows.Utilities
             else
             {
                 var json = Serialize(value);
-                try { settings[key] = json; }
+                try
+                {
+                    settings[key] = json;
+                }
                 catch
                 {
                     // ignored
@@ -81,14 +76,24 @@ namespace Audiotica.Core.Windows.Utilities
                 return otherwise;
             try
             {
-                if (IsPrimitive(typeof(T)))
+                if (IsPrimitive(typeof (T)))
                 {
-                    return (T)settings[key];
+                    return (T) settings[key];
                 }
                 var json = settings[key].ToString();
                 return Deserialize<T>(json);
             }
-            catch { return otherwise; }
+            catch
+            {
+                return otherwise;
+            }
+        }
+
+        private IPropertySet Container(SettingsStrategy strategy)
+        {
+            return (strategy == SettingsStrategy.Local)
+                ? ApplicationData.Current.LocalSettings.Values
+                : ApplicationData.Current.RoamingSettings.Values;
         }
 
         private string Serialize<T>(T item)
@@ -104,8 +109,8 @@ namespace Audiotica.Core.Windows.Utilities
         private bool IsPrimitive(Type type)
         {
             var nulls = from t in _primitives
-                        where t.GetTypeInfo().IsValueType
-                        select typeof(Nullable<>).MakeGenericType(t);
+                where t.GetTypeInfo().IsValueType
+                select typeof (Nullable<>).MakeGenericType(t);
             var all = _primitives.Concat(nulls);
             if (all.Any(x => x.GetTypeInfo().IsAssignableFrom(type.GetTypeInfo())))
                 return true;

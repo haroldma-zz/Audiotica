@@ -3,7 +3,7 @@
 namespace Audiotica.Web.MatchEngine.Validators
 {
     /// <summary>
-    /// A base for implementing <see cref="ISongTypeValidator"/> that comes with a <see cref="IsNameValidType"/> helper.
+    ///     A base for implementing <see cref="ISongTypeValidator" /> that comes with a <see cref="IsNameValidType" /> helper.
     /// </summary>
     public abstract class SongTypeValidatorBase : ISongTypeValidator
     {

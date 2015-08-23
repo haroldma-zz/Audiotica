@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 
@@ -127,7 +126,9 @@ namespace Audiotica.Web.Extensions
         {
             var index = 0;
             var result = paramList.Aggregate("",
-                (s, p) => s + WebUtility.UrlEncode(p.Key) + "=" + WebUtility.UrlEncode(p.Value.ToString()) + (index++ < paramList.Count - 1 ? "&" : ""));
+                (s, p) =>
+                    s + WebUtility.UrlEncode(p.Key) + "=" + WebUtility.UrlEncode(p.Value.ToString()) +
+                    (index++ < paramList.Count - 1 ? "&" : ""));
             return result;
         }
 

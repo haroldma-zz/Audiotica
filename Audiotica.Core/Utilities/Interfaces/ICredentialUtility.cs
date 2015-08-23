@@ -3,9 +3,7 @@
     public interface ICredentialUtility
     {
         AppCredential GetCredentials(string resource);
-
         void SaveCredentials(string resource, string username, string password);
-
         void DeleteCredentials(string resource);
     }
 

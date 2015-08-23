@@ -9,5 +9,6 @@
         public const string AppState = "appstate"; // Suspended, Resumed
         public const string AppSuspendedTimestamp = "appsuspendedtimestamp";
         public const string AppResumedTimestamp = "appresumedtimestamp";
+        public const string IsArtistAdaptiveColorEnabled = "IsArtistColorArtworkEnabled";
     }
 }

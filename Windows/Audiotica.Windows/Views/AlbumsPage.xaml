@@ -10,7 +10,7 @@
     xmlns:controls="using:Audiotica.Windows.Controls"
     mc:Ignorable="d"
     DataContext="{Binding AlbumsPage, Source={StaticResource ViewModelLocator}}">
-    
+
     <Grid x:Name="LayoutRoot" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -24,13 +24,13 @@
 
         <GridView Grid.Row="1" x:Name="AlbumsGridView"
                   ItemsSource="{x:Bind ViewModel.LibraryService.Albums}"
-                  Padding="{StaticResource PageThickness}" 
-                  ItemTemplate="{StaticResource AlbumTemplate}"/>
-        
+                  Padding="{StaticResource PageThickness}"
+                  ItemTemplate="{StaticResource AlbumTemplate}" />
+
         <ListView Grid.Row="1" x:Name="AlbumsListView" Visibility="Collapsed"
                   ItemsSource="{x:Bind ViewModel.LibraryService.Albums}"
-                  Padding="{StaticResource PageMobileStatusBarThickness}" 
-                  ItemTemplate="{StaticResource AlbumNarrowTemplate}"/>
+                  Padding="{StaticResource PageMobileStatusBarThickness}"
+                  ItemTemplate="{StaticResource AlbumNarrowTemplate}" />
 
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroup x:Name="DeviceFamilyStates">

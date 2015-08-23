@@ -4,7 +4,6 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using Audiotica.Windows.Tools.Mvvm;
-using Audiotica.Windows.Views;
 
 namespace Audiotica.Windows
 {

@@ -21,11 +21,6 @@ namespace Audiotica.Web.Metadata.Providers
         {
         }
 
-        public override string DisplayName => "Spotify";
-        public override ProviderSpeed Speed => ProviderSpeed.Fast;
-        public override ProviderCollectionSize CollectionSize => ProviderCollectionSize.Large;
-        public override ProviderCollectionType CollectionType => ProviderCollectionType.Mainstream;
-
         public async Task<WebResults> GetTopSongsAsync(int limit = 20, string pageToken = null)
         {
             using (var response = await new SpotifyChartRequest().ToResponseAsync())
@@ -50,6 +45,11 @@ namespace Audiotica.Web.Metadata.Providers
         {
             throw new NotImplementedException();
         }
+
+        public override string DisplayName => "Spotify";
+        public override ProviderSpeed Speed => ProviderSpeed.Fast;
+        public override ProviderCollectionSize CollectionSize => ProviderCollectionSize.Large;
+        public override ProviderCollectionType CollectionType => ProviderCollectionType.Mainstream;
 
         public async Task<WebResults> GetArtistTopSongsAsync(string artistToken, int limit = 20,
             string pageToken = null)
@@ -159,12 +159,12 @@ namespace Audiotica.Web.Metadata.Providers
             int.TryParse(pageToken, out offset);
 
             using (var response =
-                    await new SpotifySearchRequest(query)
-                        .Type(searchType)
-                        .Limit(limit)
-                        .Offset(offset)
-                        .ToResponseAsync()
-                        .DontMarshall())
+                await new SpotifySearchRequest(query)
+                    .Type(searchType)
+                    .Limit(limit)
+                    .Offset(offset)
+                    .ToResponseAsync()
+                    .DontMarshall())
             {
                 if (!response.HasData) return null;
                 if (response.Data.HasError())
@@ -184,7 +184,8 @@ namespace Audiotica.Web.Metadata.Providers
                         break;
                     default:
                         results = CreateResults(response.Data.Albums);
-                        results.Albums = response.Data.Albums?.Items?.Select(CreateAlbum).Distinct(new WebAlbum.Comparer()).ToList();
+                        results.Albums =
+                            response.Data.Albums?.Items?.Select(CreateAlbum).Distinct(new WebAlbum.Comparer()).ToList();
                         break;
                 }
 

@@ -8,13 +8,13 @@ namespace Audiotica.Web.Models
     {
         public WebSong()
         {
-            
         }
 
         public WebSong(Type provider) : base(provider)
         {
         }
 
+        public string AudioUrl { get; set; }
         public string Title { get; set; }
         public List<string> Genres { get; set; }
         public List<WebArtist> Artists { get; set; }

@@ -1,19 +1,21 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Windows.Input;
 
 namespace Audiotica.Windows.Tools.Mvvm
 {
     // http://codepaste.net/jgxazh
-    
-    public class Command : System.Windows.Input.ICommand
+
+    public class Command : ICommand
     {
-        private readonly Action _execute;
         private readonly Func<bool> _canExecute;
-        public event EventHandler CanExecuteChanged;
+        private readonly Action _execute;
 
         public Command(Action execute)
             : this(execute, () => true)
-        { /* empty */ }
+        {
+            /* empty */
+        }
 
         public Command(Action execute, Func<bool> canexecute)
         {
@@ -22,6 +24,8 @@ namespace Audiotica.Windows.Tools.Mvvm
             _execute = execute;
             _canExecute = canexecute;
         }
+
+        public event EventHandler CanExecuteChanged;
 
         [DebuggerStepThrough]
         public bool CanExecute(object p)
@@ -44,7 +48,10 @@ namespace Audiotica.Windows.Tools.Mvvm
             {
                 _execute();
             }
-            catch { Debugger.Break(); }
+            catch
+            {
+                Debugger.Break();
+            }
         }
 
         public void RaiseCanExecuteChanged()
@@ -53,15 +60,16 @@ namespace Audiotica.Windows.Tools.Mvvm
         }
     }
 
-    public class Command<T> : System.Windows.Input.ICommand
+    public class Command<T> : ICommand
     {
-        private readonly Action<T> _execute;
         private readonly Func<T, bool> _canExecute;
-        public event EventHandler CanExecuteChanged;
+        private readonly Action<T> _execute;
 
         public Command(Action<T> execute)
-            : this(execute, (x) => true)
-        { /* empty */ }
+            : this(execute, x => true)
+        {
+            /* empty */
+        }
 
         public Command(Action<T> execute, Func<T, bool> canexecute)
         {
@@ -71,12 +79,14 @@ namespace Audiotica.Windows.Tools.Mvvm
             _canExecute = canexecute;
         }
 
+        public event EventHandler CanExecuteChanged;
+
         [DebuggerStepThrough]
         public bool CanExecute(object p)
         {
             try
             {
-                var value = (T)Convert.ChangeType(p, typeof(T));
+                var value = (T) Convert.ChangeType(p, typeof (T));
                 return _canExecute?.Invoke(value) ?? true;
             }
             catch
@@ -91,10 +101,13 @@ namespace Audiotica.Windows.Tools.Mvvm
             if (!CanExecute(p)) return;
             try
             {
-                var value = (T)Convert.ChangeType(p, typeof(T));
+                var value = (T) Convert.ChangeType(p, typeof (T));
                 _execute(value);
             }
-            catch { Debugger.Break(); }
+            catch
+            {
+                Debugger.Break();
+            }
         }
 
         public void RaiseCanExecuteChanged()

@@ -16,16 +16,12 @@ using IF.Lastfm.Core.Objects;
 
 namespace Audiotica.Web.Metadata.Providers
 {
-    public class LastFmMetadataProvider : MetadataProviderWithSearchBase, IExtendedMetadataProvider, IChartMetadataProvider
+    public class LastFmMetadataProvider : MetadataProviderWithSearchBase, IExtendedMetadataProvider,
+        IChartMetadataProvider
     {
         public LastFmMetadataProvider(ISettingsUtility settingsUtility) : base(settingsUtility)
         {
         }
-
-        public override string DisplayName => "Last.FM";
-        public override ProviderSpeed Speed => ProviderSpeed.Average;
-        public override ProviderCollectionSize CollectionSize => ProviderCollectionSize.Large;
-        public override ProviderCollectionType CollectionType => ProviderCollectionType.MainstreamAndRare;
 
         public async Task<WebResults> GetTopSongsAsync(int limit = 20, string pageToken = null)
         {
@@ -72,6 +68,11 @@ namespace Audiotica.Web.Metadata.Providers
             }
         }
 
+        public override string DisplayName => "Last.FM";
+        public override ProviderSpeed Speed => ProviderSpeed.Average;
+        public override ProviderCollectionSize CollectionSize => ProviderCollectionSize.Large;
+        public override ProviderCollectionType CollectionType => ProviderCollectionType.MainstreamAndRare;
+
         public async Task<WebResults> GetArtistTopSongsAsync(string artistToken, int limit = 20,
             string pageToken = null)
         {
@@ -117,47 +118,6 @@ namespace Audiotica.Web.Metadata.Providers
                     throw new ProviderNotFoundException();
 
                 throw new ProviderException(result.Status.ToString());
-            }
-        }
-
-        private LastfmClient CreateClient() => new LastfmClient(ApiKeys.LastFmId, ApiKeys.LastFmSecret);
-
-        public override async Task<WebResults> SearchAsync(string query,
-            WebResults.Type searchType = WebResults.Type.Song,
-            int limit = 20, string pageToken = null)
-        {
-            using (var client = CreateClient())
-            {
-                var page = string.IsNullOrEmpty(pageToken) ? 1 : int.Parse(pageToken);
-
-                WebResults results;
-
-                switch (searchType)
-                {
-                    case WebResults.Type.Song:
-                    {
-                        var response = await client.Track.SearchAsync(query, page, limit);
-                        results = CreateResults(response);
-                        results.Songs = response.Content.Select(CreateSong).ToList();
-                    }
-                        break;
-                    case WebResults.Type.Artist:
-                    {
-                        var response = await client.Artist.SearchAsync(query, page, limit);
-                        results = CreateResults(response);
-                        results.Artists = response.Content.Select(CreateArtist).ToList();
-                    }
-                        break;
-                    default:
-                    {
-                        var response = await client.Album.SearchAsync(query, page, limit);
-                        results = CreateResults(response);
-                        results.Albums = response.Content.Select(CreateAlbum).ToList();
-                    }
-                        break;
-                }
-
-                return results;
             }
         }
 
@@ -240,6 +200,47 @@ namespace Audiotica.Web.Metadata.Providers
         {
             // In this provider we use the artist name as token.
             return GetArtistAsync(artistName);
+        }
+
+        private LastfmClient CreateClient() => new LastfmClient(ApiKeys.LastFmId, ApiKeys.LastFmSecret);
+
+        public override async Task<WebResults> SearchAsync(string query,
+            WebResults.Type searchType = WebResults.Type.Song,
+            int limit = 20, string pageToken = null)
+        {
+            using (var client = CreateClient())
+            {
+                var page = string.IsNullOrEmpty(pageToken) ? 1 : int.Parse(pageToken);
+
+                WebResults results;
+
+                switch (searchType)
+                {
+                    case WebResults.Type.Song:
+                    {
+                        var response = await client.Track.SearchAsync(query, page, limit);
+                        results = CreateResults(response);
+                        results.Songs = response.Content.Select(CreateSong).ToList();
+                    }
+                        break;
+                    case WebResults.Type.Artist:
+                    {
+                        var response = await client.Artist.SearchAsync(query, page, limit);
+                        results = CreateResults(response);
+                        results.Artists = response.Content.Select(CreateArtist).ToList();
+                    }
+                        break;
+                    default:
+                    {
+                        var response = await client.Album.SearchAsync(query, page, limit);
+                        results = CreateResults(response);
+                        results.Albums = response.Content.Select(CreateAlbum).ToList();
+                    }
+                        break;
+                }
+
+                return results;
+            }
         }
 
         #region Helpers

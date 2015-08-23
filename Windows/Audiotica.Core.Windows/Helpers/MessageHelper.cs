@@ -43,8 +43,8 @@ namespace Audiotica.Core.Windows.Helpers
             object messageBodyValue;
 
             // Get message payload
-            return valueSet.TryGetValue(MessageBody, out messageBodyValue) 
-                ? messageBodyValue.ToString().TryDeserializeJsonWithTypeInfo() 
+            return valueSet.TryGetValue(MessageBody, out messageBodyValue)
+                ? messageBodyValue.ToString().TryDeserializeJsonWithTypeInfo()
                 : null;
         }
     }

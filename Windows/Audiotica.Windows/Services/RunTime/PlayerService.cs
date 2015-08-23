@@ -1,52 +1,43 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.Media.Playback;
 using Audiotica.Core.Common;
+using Audiotica.Core.Exceptions;
 using Audiotica.Core.Utilities.Interfaces;
 using Audiotica.Core.Windows.Enums;
 using Audiotica.Core.Windows.Extensions;
 using Audiotica.Core.Windows.Helpers;
 using Audiotica.Core.Windows.Messages;
 using Audiotica.Database.Models;
+using Audiotica.Web.MatchEngine.Interfaces.Providers;
+using Audiotica.Web.Models;
+using Audiotica.Windows.Common;
 
 namespace Audiotica.Core.Windows.Services
 {
-    public class BackgroundAudioService : IBackgroundAudioService
+    public class PlayerService : IPlayerService
     {
         private readonly AutoResetEvent _backgroundAudioTaskStarted;
         private readonly IDispatcherUtility _dispatcherUtility;
+        private readonly IMatchEngineService _matchEngineService;
         private readonly ISettingsUtility _settingsUtility;
+        private readonly IConverter<WebSong, Track> _webSongConverter;
         private bool _isMyBackgroundTaskRunning;
 
-        public BackgroundAudioService(ISettingsUtility settingsUtility, IDispatcherUtility dispatcherUtility)
+        public PlayerService(ISettingsUtility settingsUtility, IDispatcherUtility dispatcherUtility,
+            IMatchEngineService matchEngineService, IConverter<WebSong, Track> webSongConverter)
         {
             _settingsUtility = settingsUtility;
             _dispatcherUtility = dispatcherUtility;
+            _matchEngineService = matchEngineService;
+            _webSongConverter = webSongConverter;
             // Setup the initialization lock
             _backgroundAudioTaskStarted = new AutoResetEvent(false);
             _settingsUtility.Write(ApplicationSettingsConstants.AppState, AppState.Active);
             PlaybackQueue = new OptimizedObservableCollection<QueueTrack>();
-        }
-
-        private void UpdatePlaybackQueue()
-        {
-            try
-            {
-                var tracks = BackgroundMediaPlayer.Current.Source as MediaPlaybackList;
-                if (tracks != null)
-                {
-                    var queueTracks = tracks.Items.Select(p => p.Source.Queue()).ToList();
-                    PlaybackQueue = new OptimizedObservableCollection<QueueTrack>(queueTracks);
-                }
-            }
-            catch (InvalidCastException)
-            {
-                // source is not set (odd exception tho)
-            }
         }
 
         public bool IsBackgroundTaskRunning
@@ -88,19 +79,28 @@ namespace Audiotica.Core.Windows.Services
             return started;
         }
 
-        public QueueTrack Add(Track track)
+        public async Task<QueueTrack> AddAsync(Track track, int position = -1)
         {
-            var queue = new QueueTrack(track);
-            MessageHelper.SendMessageToBackground(new AddToPlaylistMessage(queue));
-            PlaybackQueue.Add(queue);
-            return queue;
+            await PrepareTrackAsync(track);
+            return Add(track, position);
         }
 
-        public void Play(List<Track> tracks)
+        public async Task<QueueTrack> AddAsync(WebSong webSong, int position = -1)
         {
-            var queue = tracks.Select(p => new QueueTrack(p)).ToList();
-            MessageHelper.SendMessageToBackground(new UpdatePlaylistMessage(queue));
-            PlaybackQueue = new OptimizedObservableCollection<QueueTrack>(queue);
+            var track = await ConvertToTrackAsync(webSong);
+            return await AddAsync(track, position);
+        }
+
+        public async Task<QueueTrack> AddUpNextAsync(Track track)
+        {
+            var currentPosition = PlaybackQueue.IndexOf(PlaybackQueue.FirstOrDefault(p => p.Id == CurrentQueueId));
+            return await AddAsync(track, currentPosition + 1);
+        }
+
+        public async Task<QueueTrack> AddUpNextAsync(WebSong webSong)
+        {
+            var track = await ConvertToTrackAsync(webSong);
+            return await AddUpNextAsync(track);
         }
 
         public void Play(QueueTrack queue)
@@ -200,6 +200,67 @@ namespace Audiotica.Core.Windows.Services
             {
                 await StartBackgroundTaskAsync();
             }
+        }
+
+        private async Task<Track> ConvertToTrackAsync(WebSong webSong)
+        {
+            var track = webSong.PreviousConversion as Track;
+            if (track == null)
+                using (var blocker = new UiBlocker())
+                {
+                    blocker.UpdateProgress("Getting data...");
+                    track = await _webSongConverter.ConvertAsync(webSong);
+                }
+            return track;
+        }
+
+        private void UpdatePlaybackQueue()
+        {
+            try
+            {
+                var tracks = BackgroundMediaPlayer.Current.Source as MediaPlaybackList;
+                if (tracks != null)
+                {
+                    var queueTracks = tracks.Items.Select(p => p.Source.Queue()).ToList();
+                    PlaybackQueue = new OptimizedObservableCollection<QueueTrack>(queueTracks);
+                }
+            }
+            catch (InvalidCastException)
+            {
+                // source is not set (odd exception tho)
+            }
+        }
+
+        private QueueTrack Add(Track track, int position = -1)
+        {
+            var queue = new QueueTrack(track);
+            MessageHelper.SendMessageToBackground(new AddToPlaylistMessage(queue, position));
+            if (position > -1 && position < PlaybackQueue.Count)
+                PlaybackQueue.Insert(position, queue);
+            else
+                PlaybackQueue.Add(queue);
+            return queue;
+        }
+
+        private async Task PrepareTrackAsync(Track track)
+        {
+            if (track.Status == Track.TrackStatus.Matching
+                || track.Status == Track.TrackStatus.NoMatch
+                || track.Status == Track.TrackStatus.NotAvailable)
+                throw new AppException("Track is still matching.");
+
+            if (track.AudioWebUri == null)
+                using (var blocker = new UiBlocker())
+                {
+                    blocker.UpdateProgress("Matching...");
+                    var uri = await _matchEngineService.GetLinkAsync(track.Title, track.DisplayArtist);
+
+                    if (uri == null)
+                    {
+                        throw new AppException("Problem matching the song, try saving and manual matching it.");
+                    }
+                    track.AudioWebUri = uri.ToString();
+                }
         }
 
         /// <summary>

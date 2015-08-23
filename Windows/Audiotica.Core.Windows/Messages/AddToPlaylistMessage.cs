@@ -4,11 +4,13 @@ namespace Audiotica.Core.Windows.Messages
 {
     public class AddToPlaylistMessage
     {
-        public QueueTrack Track { get; set; }
-
-        public AddToPlaylistMessage(QueueTrack track)
+        public AddToPlaylistMessage(QueueTrack track, int position)
         {
             Track = track;
+            Position = position;
         }
+
+        public QueueTrack Track { get; set; }
+        public int Position { get; set; }
     }
 }

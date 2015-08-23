@@ -9,8 +9,6 @@
 //
 //*********************************************************
 
-using System.Runtime.Serialization;
-
 namespace Audiotica.Core.Windows.Messages
 {
     public class BackgroundAudioTaskStartedMessage

@@ -32,14 +32,22 @@
                         </SymbolIcon.RenderTransform>
                     </SymbolIcon>
                 </Button>
-                <Button Margin="40,0,0,0" Style="{StaticResource PlainButtonStyle}" Padding="-5"
-                        Click="AddButton_Click"
-                        Visibility="{x:Bind Track.IsFromLibrary, Mode=OneWay, Converter={StaticResource ReverseVisibilityConverter}}">
+                <Button Margin="40,0,0,0" Style="{StaticResource PlainButtonStyle}" Padding="-5">
                     <SymbolIcon Symbol="Add" RenderTransformOrigin="0.5,0.5">
                         <SymbolIcon.RenderTransform>
                             <CompositeTransform ScaleX=".7" ScaleY=".7" />
                         </SymbolIcon.RenderTransform>
                     </SymbolIcon>
+                    <Button.Flyout>
+                        <MenuFlyout>
+                            <MenuFlyoutItem Text="Collection" Click="AddCollection_Click"
+                                            Visibility="{x:Bind Track.IsFromLibrary, Mode=OneWay, Converter={StaticResource ReverseVisibilityConverter}}" />
+                            <MenuFlyoutSeparator
+                                Visibility="{x:Bind Track.IsFromLibrary, Mode=OneWay, Converter={StaticResource ReverseVisibilityConverter}}" />
+                            <MenuFlyoutItem Text="Queue" Click="AddQueue_Click" />
+                            <MenuFlyoutItem Text="Up next" Click="AddUpNext_Click" />
+                        </MenuFlyout>
+                    </Button.Flyout>
                 </Button>
             </StackPanel>
         </Grid>

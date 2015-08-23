@@ -24,10 +24,10 @@
                                Padding="{StaticResource PageThickness}"
                                Visibility="{x:Bind ViewModel.LibraryService.Artists, Converter={StaticResource ReverseEmptyListToVisibilityConverter}}" />
 
-        <GridView Grid.Row="1" x:Name="ArtistsGridView" 
+        <GridView Grid.Row="1" x:Name="ArtistsGridView"
                   IsItemClickEnabled="True"
                   SelectionMode="None"
-                  ItemsSource="{x:Bind ViewModel.LibraryService.Artists}" 
+                  ItemsSource="{x:Bind ViewModel.LibraryService.Artists}"
                   ItemTemplate="{StaticResource ArtistTemplate}"
                   Padding="{StaticResource PageThickness}">
             <interactivity:Interaction.Behaviors>
@@ -39,8 +39,8 @@
 
         <ListView Grid.Row="1" x:Name="ArtistsListView" Visibility="Collapsed"
                   ItemsSource="{x:Bind ViewModel.LibraryService.Artists}"
-                  Padding="{StaticResource PageMobileStatusBarThickness}" 
-                  ItemTemplate="{StaticResource ArtistNarrowTemplate}"/>
+                  Padding="{StaticResource PageMobileStatusBarThickness}"
+                  ItemTemplate="{StaticResource ArtistNarrowTemplate}" />
 
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroup x:Name="DeviceFamilyStates">

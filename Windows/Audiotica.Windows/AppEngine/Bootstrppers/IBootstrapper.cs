@@ -7,16 +7,16 @@ namespace Audiotica.Windows.AppEngine.Bootstrppers
     public interface IBootStrapper
     {
         /// <summary>
-        /// Called when the app is [launched].
-        /// BootStrapper should initiate from scratch and disposed of any saved state.
+        ///     Called when the app is [launched].
+        ///     BootStrapper should initiate from scratch and disposed of any saved state.
         /// </summary>
         /// <param name="context">The context.</param>
         /// <returns></returns>
         Task OnLaunchedAsync(IComponentContext context);
 
         /// <summary>
-        /// Called when [relaunched].
-        /// BootStrapper should restore it's previous state, to create the illusion it was resumed.
+        ///     Called when [relaunched].
+        ///     BootStrapper should restore it's previous state, to create the illusion it was resumed.
         /// </summary>
         /// <param name="context">The context.</param>
         /// <param name="state">The previous state of the module.</param>
@@ -24,17 +24,17 @@ namespace Audiotica.Windows.AppEngine.Bootstrppers
         Task OnRelaunchedAsync(IComponentContext context, Dictionary<string, object> state);
 
         /// <summary>
-        /// Called when [resuming].
-        /// BootStrapper should refresh any stale data (network, etc).
+        ///     Called when [resuming].
+        ///     BootStrapper should refresh any stale data (network, etc).
         /// </summary>
         /// <param name="context">The context.</param>
         /// <returns></returns>
         Task OnResumingAsync(IComponentContext context);
 
         /// <summary>
-        /// Called when [suspending].
-        /// BootStrapper should disposed of any exclusive resource or file handled.
-        /// Along with saving the current state, in cased the app is terminated.
+        ///     Called when [suspending].
+        ///     BootStrapper should disposed of any exclusive resource or file handled.
+        ///     Along with saving the current state, in cased the app is terminated.
         /// </summary>
         /// <param name="context">The context.</param>
         /// <param name="state">The previous state of the module.</param>

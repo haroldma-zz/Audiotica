@@ -16,7 +16,7 @@
         <ScrollViewer x:Name="ContentScrollViewer" Padding="{StaticResource PageThickness}">
             <StackPanel>
                 <Grid>
-                    <Grid.ColumnDefinitions> 
+                    <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
@@ -29,18 +29,22 @@
                             </Ellipse.Fill>
                         </Ellipse>
                     </Grid>
-                    <TextBlock Grid.Column="1" Text="{x:Bind ViewModel.Artist.Name, Mode=OneWay}" Style="{StaticResource HeaderTextBlockStyle}"/>
+                    <TextBlock Grid.Column="1" Text="{x:Bind ViewModel.Artist.Name, Mode=OneWay}"
+                               Style="{StaticResource HeaderTextBlockStyle}" />
                 </Grid>
-                <TextBlock Text="In Collection" Margin="0, 0, 0, 5" Visibility="{x:Bind ViewModel.Artist.Albums, Mode=OneWay, Converter={StaticResource EmptyListToVisibilityConverter}}" />
-                <ListView ItemsSource="{x:Bind ViewModel.Artist.Albums, Mode=OneWay}" ItemTemplate="{StaticResource AlbumTemplate}">
+                <TextBlock Text="In Collection" Margin="0, 0, 0, 5"
+                           Visibility="{x:Bind ViewModel.Artist.Albums, Mode=OneWay, Converter={StaticResource EmptyListToVisibilityConverter}}" />
+                <ListView ItemsSource="{x:Bind ViewModel.Artist.Albums, Mode=OneWay}"
+                          ItemTemplate="{StaticResource AlbumTemplate}">
                     <ListView.ItemsPanel>
                         <ItemsPanelTemplate>
                             <VirtualizingStackPanel Orientation="Horizontal" />
                         </ItemsPanelTemplate>
                     </ListView.ItemsPanel>
                 </ListView>
-                <TextBlock Text="Albums"  Margin="0, 0, 0, 5" />
-                <ListView ItemsSource="{x:Bind ViewModel.TopAlbums, Mode=OneWay}" ItemTemplate="{StaticResource AlbumTemplate}">
+                <TextBlock Text="Albums" Margin="0, 0, 0, 5" />
+                <ListView ItemsSource="{x:Bind ViewModel.TopAlbums, Mode=OneWay}"
+                          ItemTemplate="{StaticResource AlbumTemplate}">
                     <ListView.ItemsPanel>
                         <ItemsPanelTemplate>
                             <VirtualizingStackPanel Orientation="Horizontal" />

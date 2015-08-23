@@ -19,6 +19,7 @@ namespace Audiotica.Web.Http.Requets.Metadata.Deezer.Models
 
         [JsonProperty("release_date")]
         public DateTime? ReleaseDate { get; set; }
+
         public class Genre
         {
             public string Name { get; set; }

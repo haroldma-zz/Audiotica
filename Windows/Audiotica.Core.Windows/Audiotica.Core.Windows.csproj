@@ -130,12 +130,9 @@
     <Compile Include="Messages\StartPlaybackMessage.cs" />
     <Compile Include="Messages\TrackChangedMessage.cs" />
     <Compile Include="Messages\UpdatePlaylistMessage.cs" />
-    <Compile Include="Services\BackgroundAudioService.cs" />
     <Compile Include="Helpers\EnumHelper.cs" />
     <Compile Include="Helpers\StorageHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Services\DesignBackgroundAudioService.cs" />
-    <Compile Include="Services\IBackgroundAudioService.cs" />
     <Compile Include="Utilities\CredentialUtility.cs" />
     <Compile Include="Utilities\DispatcherUtility.cs" />
     <Compile Include="Utilities\SettingsUtility.cs" />

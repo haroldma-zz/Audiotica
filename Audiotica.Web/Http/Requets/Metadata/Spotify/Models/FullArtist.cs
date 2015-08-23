@@ -7,8 +7,10 @@ namespace Audiotica.Web.Http.Requets.Metadata.Spotify.Models
     {
         [JsonProperty("genres")]
         public List<string> Genres { get; set; }
+
         [JsonProperty("images")]
         public List<Image> Images { get; set; }
+
         [JsonProperty("popularity")]
         public int Popularity { get; set; }
     }

@@ -6,7 +6,6 @@ namespace Audiotica.Windows.Tools.Converters
 {
     public class VisibilityConverter : IValueConverter
     {
-
         public bool Reverse { get; set; }
 
         public object Convert(object value, Type targetType, object parameter, string culture)

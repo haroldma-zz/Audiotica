@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Net.Http;
-using Audiotica.Web.Models;
 using Void = Audiotica.Web.Models.Void;
 
 namespace Audiotica.Web.Http

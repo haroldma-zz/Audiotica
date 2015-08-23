@@ -1,7 +1,6 @@
 ﻿using Audiotica.Web.Extensions;
 using Audiotica.Web.Http.Requets.Metadata.Deezer.Models;
 using Audiotica.Web.Models;
-using Newtonsoft.Json.Linq;
 
 namespace Audiotica.Web.Http.Requets.Metadata.Deezer
 {

@@ -28,7 +28,7 @@ namespace Audiotica.Windows.Tools
         /// <summary>
         ///     The Key of this group.
         /// </summary>
-        public string Key { get; private set; }
+        public string Key { get; }
 
         /// <summary>
         ///     The Order Key of this group.
@@ -42,7 +42,10 @@ namespace Audiotica.Windows.Tools
         /// <returns>Theitems source for a LongListSelector</returns>
         public static List<AlphaKeyGroup<T>> CreateGroups(CharacterGroupings slg)
         {
-            return (from key in slg where string.IsNullOrWhiteSpace(key.Label) == false select new AlphaKeyGroup<T>(key.Label)).ToList();
+            return
+                (from key in slg
+                    where string.IsNullOrWhiteSpace(key.Label) == false
+                    select new AlphaKeyGroup<T>(key.Label)).ToList();
         }
 
         /// <summary>
@@ -60,7 +63,7 @@ namespace Audiotica.Windows.Tools
             var slg = new CharacterGroupings();
             var list = CreateGroups(slg);
 
-            foreach (T item in items)
+            foreach (var item in items)
             {
                 string index;
 
@@ -78,11 +81,11 @@ namespace Audiotica.Windows.Tools
 
             if (sort)
             {
-                foreach (AlphaKeyGroup<T> group in list)
+                foreach (var group in list)
                 {
                     group.OrderKey = getKey;
                     var asList = group.ToList();
-                    asList.Sort((x, y) => String.Compare(getKey(x), getKey(y), StringComparison.Ordinal));
+                    asList.Sort((x, y) => string.Compare(getKey(x), getKey(y), StringComparison.Ordinal));
                     group.SwitchTo(asList);
                 }
             }

@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using Audiotica.Core.Extensions;
 using Audiotica.Web.Deserializer;
 using Audiotica.Web.Extensions;
-using Audiotica.Web.Models;
 using Void = Audiotica.Web.Models.Void;
 
 namespace Audiotica.Web.Http
@@ -69,6 +68,8 @@ namespace Audiotica.Web.Http
                 Client = httpClient;
             registerDefaultHandlers();
         }
+
+        public bool DeserializeOnError { get; set; }
 
         /// <summary>
         ///     Dispose the request.
@@ -157,8 +158,6 @@ namespace Audiotica.Web.Http
 
         #endregion
 
-        public bool DeserializeOnError { get; set; }
-
         #region Helper functions
 
         /// <summary>
@@ -192,7 +191,8 @@ namespace Audiotica.Web.Http
                         Url = Url.Replace("{" + item.Key + "}", WebUtility.UrlEncode(item.Value.ToString()));
                 }
 
-                Request.RequestUri = new Uri(Url.CreateRequestUri(QueryParams, Param, Request.Method.Method).ToUnaccentedText());
+                Request.RequestUri =
+                    new Uri(Url.CreateRequestUri(QueryParams, Param, Request.Method.Method).ToUnaccentedText());
 
                 result.HttpResponse = await Client.SendAsync(
                     Request, ExternalToken).DontMarshall();

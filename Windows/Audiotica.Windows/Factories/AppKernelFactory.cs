@@ -14,7 +14,7 @@ namespace Audiotica.Windows.Factories
                 new MatchEngineValidatorModule(),
                 new MatchEngineProviderModule(),
                 new MetadataProviderModule(),
-                new ConverterModule(), 
+                new ConverterModule(),
                 new ServiceModule(),
                 new ViewModelModule()
             };
@@ -22,7 +22,7 @@ namespace Audiotica.Windows.Factories
         public static IBootStrapper[] GetBootStrappers() =>
             new IBootStrapper[]
             {
-                new BackgroundAudioBootstrapper(), 
+                new BackgroundAudioBootstrapper(),
                 new LibraryBootstrapper()
             };
 

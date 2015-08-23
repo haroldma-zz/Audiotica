@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using Windows.Media;
-using Windows.Media.Playback;
 using Windows.Storage.Streams;
-using Audiotica.Core.Windows.Extensions;
 using Audiotica.Database.Models;
 
 namespace Audiotica.Windows.Player

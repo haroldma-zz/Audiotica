@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
-using Audiotica.Core.Extensions;
+using Audiotica.Core.Exceptions;
 using Audiotica.Core.Windows.Helpers;
+using Audiotica.Core.Windows.Services;
 using Audiotica.Web.Exceptions;
 using Audiotica.Web.Extensions;
 using Audiotica.Web.Metadata.Interfaces;
 using Audiotica.Web.Models;
-using Audiotica.Windows.Services;
+using Audiotica.Windows.Common;
 using Audiotica.Windows.Services.NavigationService;
 using Audiotica.Windows.Tools.Mvvm;
 using Audiotica.Windows.Views;
@@ -20,17 +20,17 @@ namespace Audiotica.Windows.ViewModels
     {
         private readonly List<IChartMetadataProvider> _metadataProviders;
         private readonly INavigationService _navigationService;
-        private readonly IWindowsPlayerService _windowsPlayerService;
+        private readonly IPlayerService _playerService;
         private List<WebAlbum> _topAlbums;
         private List<WebArtist> _topArtists;
         private List<WebSong> _topSongs;
 
         public ExplorePageViewModel(INavigationService navigationService,
             IEnumerable<IMetadataProvider> metadataProviders,
-            IWindowsPlayerService windowsPlayerService)
+            IPlayerService playerService)
         {
             _navigationService = navigationService;
-            _windowsPlayerService = windowsPlayerService;
+            _playerService = playerService;
             _metadataProviders = metadataProviders.FilterAndSort<IChartMetadataProvider>();
 
             SongClickCommand = new Command<ItemClickEventArgs>(SongClickExecute);
@@ -64,13 +64,21 @@ namespace Audiotica.Windows.ViewModels
         private void ArtistClickExecute(ItemClickEventArgs e)
         {
             var artist = (WebArtist) e.ClickedItem;
-            _navigationService.Navigate(typeof(ArtistPage), artist.Name);
+            _navigationService.Navigate(typeof (ArtistPage), artist.Name);
         }
 
-        private void SongClickExecute(ItemClickEventArgs e)
+        private async void SongClickExecute(ItemClickEventArgs e)
         {
             var song = (WebSong) e.ClickedItem;
-            _windowsPlayerService.Play(song);
+            try
+            {
+                var queue = await _playerService.AddAsync(song);
+                _playerService.Play(queue);
+            }
+            catch (AppException ex)
+            {
+                CurtainPrompt.ShowError(ex.Message ?? "Something happened.");
+            }
         }
 
         public override void OnNavigatedTo(object parameter, NavigationMode mode, Dictionary<string, object> state)

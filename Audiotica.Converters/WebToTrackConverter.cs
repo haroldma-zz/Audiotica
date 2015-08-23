@@ -72,6 +72,7 @@ namespace Audiotica.Converters
                 Year = other.Album.ReleasedDate?.Year,
                 TrackCount = other.Album.Tracks?.Count ?? 1,
                 Genres = string.Join("; ", genres.Distinct()),
+                AudioWebUri = other.AudioUrl,
                 Type = Track.TrackType.Stream
             };
 

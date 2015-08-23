@@ -22,7 +22,7 @@ namespace Audiotica.Windows.AppEngine.Modules
             var assembly = providerInterface.GetTypeInfo().Assembly;
 
             var types = assembly.ExportedTypes
-                .GetImplementations(providerInterface, excludeTypes: typeof(DesignMetadataProvider));
+                .GetImplementations(providerInterface, excludeTypes: typeof (DesignMetadataProvider));
             foreach (var type in types)
             {
                 builder.RegisterType(type).As(providerInterface);

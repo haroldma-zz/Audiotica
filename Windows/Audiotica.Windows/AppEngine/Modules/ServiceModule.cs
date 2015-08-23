@@ -1,11 +1,9 @@
 ﻿using Audiotica.Core.Windows.Services;
-using Audiotica.Database.Models;
 using Audiotica.Database.Services.DesignTime;
 using Audiotica.Database.Services.Interfaces;
 using Audiotica.Database.Services.RunTime;
 using Audiotica.Web.MatchEngine.Interfaces.Providers;
 using Audiotica.Web.MatchEngine.Services;
-using Audiotica.Windows.Services;
 using Audiotica.Windows.Services.DesignTime;
 using Audiotica.Windows.Services.Interfaces;
 using Audiotica.Windows.Services.NavigationService;
@@ -19,21 +17,19 @@ namespace Audiotica.Windows.AppEngine.Modules
         public override void LoadDesignTime(ContainerBuilder builder)
         {
             builder.RegisterType<DesignInsightsService>().As<IInsightsService>();
-            builder.RegisterType<DesignBackgroundAudioService>().As<IBackgroundAudioService>();
+            builder.RegisterType<DesignPlayerService>().As<IPlayerService>();
             builder.RegisterType<DesignNavigationService>().As<INavigationService>();
             builder.RegisterType<DesignLibraryService>().As<ILibraryService>();
             builder.RegisterType<DesignMatchEngineService>().As<IMatchEngineService>();
-            builder.RegisterType<WindowsPlayerService>().As<IWindowsPlayerService>();
         }
 
         public override void LoadRunTime(ContainerBuilder builder)
         {
             builder.RegisterType<InsightsService>().As<IInsightsService>();
-            builder.RegisterType<BackgroundAudioService>().As<IBackgroundAudioService>().SingleInstance();
+            builder.RegisterType<PlayerService>().As<IPlayerService>().SingleInstance();
             builder.RegisterType<NavigationService>().As<INavigationService>().SingleInstance();
             builder.RegisterType<LibraryService>().As<ILibraryService>().SingleInstance();
             builder.RegisterType<MatchEngineService>().As<IMatchEngineService>();
-            builder.RegisterType<WindowsPlayerService>().As<IWindowsPlayerService>();
             builder.RegisterType<TrackSaveService>().As<ITrackSaveService>();
             builder.RegisterType<LibraryMatchingService>().As<ILibraryMatchingService>().SingleInstance();
         }

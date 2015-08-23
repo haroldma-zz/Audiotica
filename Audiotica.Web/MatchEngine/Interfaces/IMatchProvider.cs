@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Audiotica.Web.Metadata.Interfaces;
 using Audiotica.Web.Models;
 
 namespace Audiotica.Web.MatchEngine.Interfaces

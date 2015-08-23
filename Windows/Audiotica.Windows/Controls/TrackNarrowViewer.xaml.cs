@@ -1,9 +1,9 @@
 ﻿using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Audiotica.Core.Exceptions;
+using Audiotica.Core.Windows.Services;
 using Audiotica.Database.Models;
 using Audiotica.Windows.Common;
-using Audiotica.Windows.Services;
 using Audiotica.Windows.Services.Interfaces;
 using Autofac;
 
@@ -40,12 +40,20 @@ namespace Audiotica.Windows.Controls
             }
         }
 
-        private void PlayButton_Click(object sender, RoutedEventArgs e)
+        private async void PlayButton_Click(object sender, RoutedEventArgs e)
         {
             using (var lifetimeScope = App.Current.Kernel.BeginScope())
             {
-                var playerService = lifetimeScope.Resolve<IWindowsPlayerService>();
-                playerService.Play(Track);
+                var playerService = lifetimeScope.Resolve<IPlayerService>();
+                try
+                {
+                    var queue = await playerService.AddAsync(Track);
+                    playerService.Play(queue);
+                }
+                catch (AppException ex)
+                {
+                    CurtainPrompt.ShowError(ex.Message ?? "Something happened.");
+                }
             }
         }
 

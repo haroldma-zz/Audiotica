@@ -37,6 +37,19 @@ namespace Audiotica.Core.Helpers
     // based on http://codepaste.net/gtu5mq
     public class PclStorageHelper
     {
+        #region Nested types
+
+        public enum StorageStrategy
+        {
+            /// <summary>Local, isolated folder</summary>
+            Local,
+
+            /// <summary>Cloud, isolated folder. 100k cumulative limit.</summary>
+            Roaming
+        }
+
+        #endregion
+
         #region Private Methods
 
         private static IFolder GetFolderFromStrategy(StorageStrategy location)
@@ -50,10 +63,12 @@ namespace Audiotica.Core.Helpers
             }
         }
 
-        public static async Task<IFile> GetIfFileExistsAsync(string path, StorageStrategy strategy = StorageStrategy.Local)
+        public static async Task<IFile> GetIfFileExistsAsync(string path,
+            StorageStrategy strategy = StorageStrategy.Local)
         {
             return await GetIfFileExistsAsync(path, GetFolderFromStrategy(strategy)).DontMarshall();
         }
+
         public static async Task<IFile> GetIfFileExistsAsync(string path, IFolder folder)
         {
             var parts = path.Split('/');
@@ -222,19 +237,6 @@ namespace Audiotica.Core.Helpers
             IFolder folder)
         {
             return await CreateFileAsync(path, folder);
-        }
-
-        #endregion
-
-        #region Nested types
-
-        public enum StorageStrategy
-        {
-            /// <summary>Local, isolated folder</summary>
-            Local,
-
-            /// <summary>Cloud, isolated folder. 100k cumulative limit.</summary>
-            Roaming,
         }
 
         #endregion

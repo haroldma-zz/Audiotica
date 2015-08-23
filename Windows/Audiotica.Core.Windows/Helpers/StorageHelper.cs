@@ -29,6 +29,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Windows.ApplicationModel;
 using Windows.Storage;
 using Audiotica.Core.Extensions;
 
@@ -37,6 +38,25 @@ namespace Audiotica.Core.Windows.Helpers
     // based on http://codepaste.net/gtu5mq
     public static class StorageHelper
     {
+        #region Nested types
+
+        public enum StorageStrategy
+        {
+            /// <summary>Local, isolated folder</summary>
+            Local,
+
+            /// <summary>Cloud, isolated folder. 100k cumulative limit.</summary>
+            Roaming,
+
+            /// <summary>Local, temporary folder (not for settings)</summary>
+            Temporary,
+
+            /// <summary>Local, app install folder (read-only)</summary>
+            Installation
+        }
+
+        #endregion
+
         #region Private Methods
 
         private static StorageFolder GetFolderFromStrategy(StorageStrategy location)
@@ -48,17 +68,19 @@ namespace Audiotica.Core.Windows.Helpers
                 case StorageStrategy.Temporary:
                     return ApplicationData.Current.TemporaryFolder;
                 case StorageStrategy.Installation:
-                    return global::Windows.ApplicationModel.Package.Current.InstalledLocation;
+                    return Package.Current.InstalledLocation;
 
                 default:
                     return ApplicationData.Current.LocalFolder;
             }
         }
 
-        public static async Task<StorageFile> GetIfFileExistsAsync(string path, StorageStrategy strategy = StorageStrategy.Local)
+        public static async Task<StorageFile> GetIfFileExistsAsync(string path,
+            StorageStrategy strategy = StorageStrategy.Local)
         {
             return await GetIfFileExistsAsync(path, GetFolderFromStrategy(strategy)).ConfigureAwait(false);
         }
+
         public static async Task<StorageFile> GetIfFileExistsAsync(string path, StorageFolder folder)
         {
             var parts = path.Split('/');
@@ -227,25 +249,6 @@ namespace Audiotica.Core.Windows.Helpers
             StorageFolder folder)
         {
             return await CreateFileAsync(path, folder);
-        }
-
-        #endregion
-
-        #region Nested types
-
-        public enum StorageStrategy
-        {
-            /// <summary>Local, isolated folder</summary>
-            Local,
-
-            /// <summary>Cloud, isolated folder. 100k cumulative limit.</summary>
-            Roaming,
-
-            /// <summary>Local, temporary folder (not for settings)</summary>
-            Temporary,
-
-            /// <summary>Local, app install folder (read-only)</summary>
-            Installation
         }
 
         #endregion

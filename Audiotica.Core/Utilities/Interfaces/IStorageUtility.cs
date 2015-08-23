@@ -19,7 +19,7 @@ namespace Audiotica.Core.Utilities.Interfaces
             PclStorageHelper.StorageStrategy location = PclStorageHelper.StorageStrategy.Local);
 
         Task WriteStringAsync(string path, string text,
-           PclStorageHelper.StorageStrategy location = PclStorageHelper.StorageStrategy.Local);
+            PclStorageHelper.StorageStrategy location = PclStorageHelper.StorageStrategy.Local);
 
         Task WriteStreamAsync(string path, Stream stream,
             PclStorageHelper.StorageStrategy location = PclStorageHelper.StorageStrategy.Local);

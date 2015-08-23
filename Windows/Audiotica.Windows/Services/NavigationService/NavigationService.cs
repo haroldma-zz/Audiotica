@@ -10,7 +10,6 @@ using Audiotica.Core.Extensions;
 using Audiotica.Core.Utilities.Interfaces;
 using Audiotica.Windows.Services.Interfaces;
 using Audiotica.Windows.Views;
-using Microsoft.ApplicationInsights.DataContracts;
 
 namespace Audiotica.Windows.Services.NavigationService
 {
@@ -22,8 +21,8 @@ namespace Audiotica.Windows.Services.NavigationService
         private const string SettingsSessions = SettingsPrefix + "NavigationSessions";
         private readonly SystemNavigationManager _currentView;
         private readonly NavigationFacade _frame;
-        private readonly ISettingsUtility _settingsUtility;
         private readonly IInsightsService _insightsService;
+        private readonly ISettingsUtility _settingsUtility;
 
         private Dictionary<string, Dictionary<string, object>> _sessions =
             new Dictionary<string, Dictionary<string, object>>();
@@ -52,14 +51,15 @@ namespace Audiotica.Windows.Services.NavigationService
 
             _frame.CurrentPageParam = parameter;
             _frame.CurrentPageType = _frame.Content.GetType();
-            
+
             var page = _frame.Content as FrameworkElement;
             var dataContext = page?.DataContext as INavigatable;
 
             if (dataContext != null)
             {
                 var deserializedParameter = parameter.TryDeserializeJsonWithTypeInfo();
-                _insightsService.TrackPageView(CurrentPageType.Name, dataContext.SimplifiedParameter(deserializedParameter));
+                _insightsService.TrackPageView(CurrentPageType.Name,
+                    dataContext.SimplifiedParameter(deserializedParameter));
 
                 dataContext.PageKey = CurrentPageType + parameter;
 

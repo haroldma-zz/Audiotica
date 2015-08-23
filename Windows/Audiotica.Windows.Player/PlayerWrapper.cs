@@ -148,9 +148,9 @@ namespace Audiotica.Windows.Player
             _mediaPlaybackList.CurrentItemChanged += MediaPlaybackListOnCurrentItemChanged;
         }
 
-        public void AddToPlaybackList(QueueTrack queue)
+        public void AddToPlaybackList(QueueTrack queue, int position)
         {
-            if (_mediaPlaybackList == null 
+            if (_mediaPlaybackList == null
                 || BackgroundMediaPlayer.Current.Source != _mediaPlaybackList)
                 CreatePlaybackList(new[] {queue});
 
@@ -158,7 +158,13 @@ namespace Audiotica.Windows.Player
             {
                 var source = MediaSource.CreateFromUri(new Uri(queue.Track.AudioWebUri));
                 source.Queue(queue);
-                _mediaPlaybackList.Items.Add(new MediaPlaybackItem(source));
+
+                if (position > -1 && position < _mediaPlaybackList.Items.Count)
+                {
+                    _mediaPlaybackList.Items.Insert(position, new MediaPlaybackItem(source));
+                }
+                else
+                    _mediaPlaybackList.Items.Add(new MediaPlaybackItem(source));
             }
         }
 
@@ -324,9 +330,9 @@ namespace Audiotica.Windows.Player
             _foregroundMessenger.UpdatePlaylist -= ForegroundMessengerOnUpdatePlaylist;
         }
 
-        private void ForegroundMessengerOnAddToPlaylist(object sender, QueueTrack queueTrack)
+        private void ForegroundMessengerOnAddToPlaylist(QueueTrack queueTrack, int position)
         {
-            AddToPlaybackList(queueTrack);
+            AddToPlaybackList(queueTrack, position);
         }
 
         private void ForegroundMessengerOnAppResumed(object sender, EventArgs eventArgs)

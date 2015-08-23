@@ -25,9 +25,9 @@ namespace Audiotica.Database.Models
             Download
         }
 
+        private bool _isFromLibrary;
         private TrackStatus _status;
         private TrackType _type;
-        private bool _isFromLibrary;
 
         /// <summary>
         ///     Gets or sets a value indicating whether this instance is from the music library.

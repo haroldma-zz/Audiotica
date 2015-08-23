@@ -7,6 +7,7 @@ namespace Audiotica.Web.Deserializer
         public string RootElement { get; set; }
         public string Namespace { get; set; }
         public string DateFormat { get; set; }
+
         public T Deserialize<T>(string content)
         {
             try

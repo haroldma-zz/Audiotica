@@ -31,7 +31,7 @@ namespace Audiotica.Core.Extensions
             return types.Where(p =>
                 desiredType.IsAssignableFrom(p) &&
                 (!excludeAbstracts || (!p.IsAbstract && !p.IsInterface)) &&
-                !p.Equals(desiredType) 
+                !p.Equals(desiredType)
                 && (excludeTypes.Length == 0 || excludeTypes.All(m => m != p.AsType()))).ToList();
         }
 

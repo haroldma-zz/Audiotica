@@ -3,7 +3,7 @@
 namespace Audiotica.Database.Models
 {
     /// <summary>
-    /// A wrapper for sending a Track to the background player, not used in db.
+    ///     A wrapper for sending a Track to the background player, not used in db.
     /// </summary>
     public class QueueTrack
     {

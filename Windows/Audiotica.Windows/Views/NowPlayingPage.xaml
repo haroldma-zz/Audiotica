@@ -9,7 +9,5 @@
     mc:Ignorable="d"
     DataContext="{Binding NowPlaying, Source={StaticResource ViewModelLocator}}">
 
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-
-    </Grid>
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" />
 </navigationService:NavigatablePage>

@@ -1,13 +1,13 @@
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Windows.Media.Playback;
 using Audiotica.Core.Common;
 using Audiotica.Database.Models;
+using Audiotica.Web.Models;
 
 namespace Audiotica.Core.Windows.Services
 {
-    public class DesignBackgroundAudioService : IBackgroundAudioService
+    public class DesignPlayerService : IPlayerService
     {
         public bool IsBackgroundTaskRunning { get; }
         public MediaPlayerState CurrentState { get; set; }
@@ -15,6 +15,7 @@ namespace Audiotica.Core.Windows.Services
         public OptimizedObservableCollection<QueueTrack> PlaybackQueue { get; }
         public event EventHandler<MediaPlayerState> MediaStateChanged;
         public event EventHandler<string> TrackChanged;
+
         public Task<bool> StartBackgroundTaskAsync()
         {
             throw new NotImplementedException();
@@ -25,12 +26,22 @@ namespace Audiotica.Core.Windows.Services
             throw new NotImplementedException();
         }
 
-        public QueueTrack Add(Track track)
+        public Task<QueueTrack> AddAsync(Track track, int position = -1)
         {
             throw new NotImplementedException();
         }
 
-        public void Play(List<Track> tracks)
+        public Task<QueueTrack> AddAsync(WebSong webSong, int position = -1)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<QueueTrack> AddUpNextAsync(Track track)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<QueueTrack> AddUpNextAsync(WebSong webSong)
         {
             throw new NotImplementedException();
         }

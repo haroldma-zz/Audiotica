@@ -18,14 +18,11 @@ namespace Audiotica.Core.Windows.Utilities
         {
             return _coreDispatcher.RunAsync(CoreDispatcherPriority.Normal, new DispatchedHandler(action)).AsTask();
         }
-        
+
         public async Task<T> RunAsync<T>(Func<T> func)
         {
             var obj = default(T);
-            await RunAsync(() =>
-            {
-                obj = func();
-            });
+            await RunAsync(() => { obj = func(); });
             return obj;
         }
 

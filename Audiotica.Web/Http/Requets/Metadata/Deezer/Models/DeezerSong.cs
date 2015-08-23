@@ -9,10 +9,13 @@ namespace Audiotica.Web.Http.Requets.Metadata.Deezer.Models
         public bool Readable { get; set; }
         public string Title { get; set; }
         public string Link { get; set; }
+
         [JsonProperty("disk_number")]
         public int? DiskNumber { get; set; }
+
         [JsonProperty("track_position")]
         public int? TrackPosition { get; set; }
+
         public int Duration { get; set; }
         public int Rank { get; set; }
 

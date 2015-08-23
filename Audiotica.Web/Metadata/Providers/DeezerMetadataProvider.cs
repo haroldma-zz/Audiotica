@@ -139,43 +139,6 @@ namespace Audiotica.Web.Metadata.Providers
             }
         }
 
-        public override async Task<WebResults> SearchAsync(string query,
-            WebResults.Type searchType = WebResults.Type.Song,
-            int limit = 20, string pageToken = null)
-        {
-            int offset;
-            int.TryParse(pageToken, out offset);
-
-            using (
-                var response =
-                    await new DeezerSearchRequest<JToken>(query)
-                        .Type(searchType)
-                        .Limit(limit)
-                        .Offset(offset)
-                        .ToResponseAsync()
-                        .DontMarshall())
-            {
-                if (!response.HasData) return null;
-
-                var results = CreateResults(response.Data, limit, offset);
-
-                switch (searchType)
-                {
-                    case WebResults.Type.Song:
-                        results.Songs = response.Data.Data?.Select(CreateSong).ToList();
-                        break;
-                    case WebResults.Type.Artist:
-                        results.Artists = response.Data.Data?.Select(CreateArtist).ToList();
-                        break;
-                    default:
-                        results.Albums = response.Data.Data?.Select(CreateAlbum).ToList();
-                        break;
-                }
-
-                return results;
-            }
-        }
-
         public override async Task<WebAlbum> GetAlbumAsync(string albumToken)
         {
             using (var response = await new DeezerAlbumRequest(albumToken)
@@ -229,6 +192,43 @@ namespace Audiotica.Web.Metadata.Providers
                 if (response.HttpResponse.StatusCode == HttpStatusCode.NotFound)
                     throw new ProviderNotFoundException();
                 throw new ProviderException();
+            }
+        }
+
+        public override async Task<WebResults> SearchAsync(string query,
+            WebResults.Type searchType = WebResults.Type.Song,
+            int limit = 20, string pageToken = null)
+        {
+            int offset;
+            int.TryParse(pageToken, out offset);
+
+            using (
+                var response =
+                    await new DeezerSearchRequest<JToken>(query)
+                        .Type(searchType)
+                        .Limit(limit)
+                        .Offset(offset)
+                        .ToResponseAsync()
+                        .DontMarshall())
+            {
+                if (!response.HasData) return null;
+
+                var results = CreateResults(response.Data, limit, offset);
+
+                switch (searchType)
+                {
+                    case WebResults.Type.Song:
+                        results.Songs = response.Data.Data?.Select(CreateSong).ToList();
+                        break;
+                    case WebResults.Type.Artist:
+                        results.Artists = response.Data.Data?.Select(CreateArtist).ToList();
+                        break;
+                    default:
+                        results.Albums = response.Data.Data?.Select(CreateAlbum).ToList();
+                        break;
+                }
+
+                return results;
             }
         }
 

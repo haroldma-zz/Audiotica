@@ -7,7 +7,8 @@ using Audiotica.Web.Models;
 
 namespace Audiotica.Web.Metadata.Providers
 {
-    public class DesignMetadataProvider : IExtendedMetadataProvider, ISearchMetadataProvider, IChartMetadataProvider, ILyricsMetadataProvider
+    public class DesignMetadataProvider : IExtendedMetadataProvider, ISearchMetadataProvider, IChartMetadataProvider,
+        ILyricsMetadataProvider
     {
         public Task<WebResults> GetTopSongsAsync(int limit = 50, string pageToken = null)
         {
@@ -71,13 +72,13 @@ namespace Audiotica.Web.Metadata.Providers
             throw new NotImplementedException();
         }
 
-        public Task<WebResults> SearchAsync(string query, WebResults.Type searchType = WebResults.Type.Song,
-            int limit = 10, string pageToken = null)
+        public Task<string> GetLyricAsync(string song, string artist)
         {
             throw new NotImplementedException();
         }
 
-        public Task<string> GetLyricAsync(string song, string artist)
+        public Task<WebResults> SearchAsync(string query, WebResults.Type searchType = WebResults.Type.Song,
+            int limit = 10, string pageToken = null)
         {
             throw new NotImplementedException();
         }

@@ -1,4 +1,3 @@
-using System;
 using Newtonsoft.Json;
 
 namespace Audiotica.Web.Http.Requets.Metadata.Spotify.Models
@@ -7,7 +6,8 @@ namespace Audiotica.Web.Http.Requets.Metadata.Spotify.Models
     {
         [JsonProperty("status")]
         public int Status { get; set; }
+
         [JsonProperty("message")]
-        public String Message { get; set; }
+        public string Message { get; set; }
     }
 }

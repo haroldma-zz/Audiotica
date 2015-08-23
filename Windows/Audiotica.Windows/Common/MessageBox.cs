@@ -42,7 +42,9 @@ namespace Audiotica.Windows.Common
             {
                 await md.ShowAsync();
             }
-            catch (UnauthorizedAccessException) { }
+            catch (UnauthorizedAccessException)
+            {
+            }
             return result;
         }
 
@@ -56,7 +58,8 @@ namespace Audiotica.Windows.Common
             await ShowAsync(messageBoxText, "");
         }
 
-        public static async void Show(string messageBoxText, string messageBoxTitle, MessageBoxButton button = MessageBoxButton.Ok)
+        public static async void Show(string messageBoxText, string messageBoxTitle,
+            MessageBoxButton button = MessageBoxButton.Ok)
         {
             await ShowAsync(messageBoxText, messageBoxTitle, button);
         }
@@ -86,7 +89,7 @@ namespace Audiotica.Windows.Common
         //
         // Summary:
         //     Displays both the OK and Cancel buttons.
-        YesNo = Yes | No,
+        YesNo = Yes | No
     }
 
     // Summary:
@@ -111,6 +114,6 @@ namespace Audiotica.Windows.Common
         //
         // Summary:
         //     This value is not currently used.
-        No = 7,
+        No = 7
     }
 }

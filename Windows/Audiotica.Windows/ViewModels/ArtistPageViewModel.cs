@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using Windows.Graphics.Imaging;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
 using Audiotica.Core.Common;
 using Audiotica.Core.Extensions;
+using Audiotica.Core.Utilities.Interfaces;
 using Audiotica.Core.Windows.Extensions;
+using Audiotica.Core.Windows.Helpers;
 using Audiotica.Database.Models;
 using Audiotica.Database.Services.Interfaces;
 using Audiotica.Web.Exceptions;
@@ -27,6 +26,7 @@ namespace Audiotica.Windows.ViewModels
         private readonly ILibraryService _libraryService;
         private readonly List<IExtendedMetadataProvider> _metadataProviders;
         private readonly INavigationService _navigationService;
+        private readonly ISettingsUtility _settingsUtility;
         private readonly IConverter<WebAlbum, Album> _webAlbumConverter;
         private readonly IConverter<WebArtist, Artist> _webArtistConverter;
         private readonly IConverter<WebSong, Track> _webSongConverter;
@@ -42,7 +42,8 @@ namespace Audiotica.Windows.ViewModels
             IEnumerable<IMetadataProvider> metadataProviders,
             IConverter<WebAlbum, Album> webAlbumConverter,
             IConverter<WebArtist, Artist> webArtistConverter,
-            IConverter<WebSong, Track> webSongConverter)
+            IConverter<WebSong, Track> webSongConverter,
+            ISettingsUtility settingsUtility)
         {
             _navigationService = navigationService;
             _libraryService = libraryService;
@@ -51,6 +52,7 @@ namespace Audiotica.Windows.ViewModels
 
             _webArtistConverter = webArtistConverter;
             _webSongConverter = webSongConverter;
+            _settingsUtility = settingsUtility;
 
             if (IsInDesignMode)
                 OnNavigatedTo("Childish Gambino", NavigationMode.New, new Dictionary<string, object>());
@@ -121,7 +123,8 @@ namespace Audiotica.Windows.ViewModels
             }
 
 
-            DetectColorFromArtwork();
+            if (_settingsUtility.Read(ApplicationSettingsConstants.IsArtistAdaptiveColorEnabled, true))
+                DetectColorFromArtwork();
             LoadWebData();
         }
 

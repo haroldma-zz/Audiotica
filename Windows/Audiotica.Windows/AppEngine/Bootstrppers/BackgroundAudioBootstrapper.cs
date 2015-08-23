@@ -9,7 +9,7 @@ namespace Audiotica.Windows.AppEngine.Bootstrppers
     {
         protected Task StartTaskAsync(IComponentContext context)
         {
-            var service = context.Resolve<IBackgroundAudioService>();
+            var service = context.Resolve<IPlayerService>();
             return service.StartBackgroundTaskAsync();
         }
 
@@ -25,7 +25,7 @@ namespace Audiotica.Windows.AppEngine.Bootstrppers
 
         public override Task OnResumingAsync(IComponentContext context)
         {
-            var service = context.Resolve<IBackgroundAudioService>();
+            var service = context.Resolve<IPlayerService>();
 
             // Tell the background audio that the app is being resumed
             service.Resuming();
@@ -35,7 +35,7 @@ namespace Audiotica.Windows.AppEngine.Bootstrppers
 
         public override Task OnSuspendingAsync(IComponentContext context, Dictionary<string, object> state)
         {
-            var service = context.Resolve<IBackgroundAudioService>();
+            var service = context.Resolve<IPlayerService>();
 
             // Tell the background audio that the app is being suspended
             service.Suspending();

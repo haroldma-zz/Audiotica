@@ -27,8 +27,8 @@ namespace Audiotica.Windows.Player
             _foregroundMessenger = new ForegroundMessenger();
             _smtcWrapper = new SmtcWrapper(BackgroundMediaPlayer.Current.SystemMediaTransportControls);
             _playerWrapper = new PlayerWrapper(_smtcWrapper, _foregroundMessenger, _settingsUtility);
-            
-            _settingsUtility.Write(ApplicationSettingsConstants.BackgroundTaskState, 
+
+            _settingsUtility.Write(ApplicationSettingsConstants.BackgroundTaskState,
                 BackgroundTaskState.Running);
 
             // Send information to foreground that background task has been started if app is active
@@ -46,7 +46,7 @@ namespace Audiotica.Windows.Player
             // event may raise immediately before continung thread excecution so must be at the end
             taskInstance.Canceled += OnCanceled;
         }
-        
+
         private void TaskCompleted(BackgroundTaskRegistration sender, BackgroundTaskCompletedEventArgs args)
         {
             Debug.WriteLine("MyBackgroundAudioTask " + sender.TaskId + " Completed...");

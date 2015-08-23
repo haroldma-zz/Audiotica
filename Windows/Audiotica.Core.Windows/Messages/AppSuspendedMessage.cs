@@ -10,22 +10,21 @@
 //*********************************************************
 
 using System;
-using System.Runtime.Serialization;
 
 namespace Audiotica.Core.Windows.Messages
 {
     public class AppSuspendedMessage
     {
+        public DateTime Timestamp;
+
         public AppSuspendedMessage()
         {
-            this.Timestamp = DateTime.Now;
+            Timestamp = DateTime.Now;
         }
 
         public AppSuspendedMessage(DateTime timestamp)
         {
-            this.Timestamp = timestamp;
+            Timestamp = timestamp;
         }
-        
-        public DateTime Timestamp;
     }
 }

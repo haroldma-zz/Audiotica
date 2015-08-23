@@ -10,7 +10,8 @@ namespace Audiotica.Windows.Tools.Converters
         public SolidColorBrush TrueBrush { get; set; } = new SolidColorBrush(Colors.Gold);
         public SolidColorBrush FalseBrush { get; set; } = new SolidColorBrush(Colors.Black);
 
-        public object Convert(object value, Type targetType, object parameter, string language) => value is bool && ((bool) value) ? TrueBrush : FalseBrush;
+        public object Convert(object value, Type targetType, object parameter, string language)
+            => value is bool && ((bool) value) ? TrueBrush : FalseBrush;
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)
         {

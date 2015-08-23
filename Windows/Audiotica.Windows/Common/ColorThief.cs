@@ -1,13 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
-using System.Threading.Tasks;
-using Windows.Graphics.Imaging;
-using Windows.UI;
 using Windows.UI.Xaml.Media.Imaging;
-using Audiotica.Core.Windows.Extensions;
 
 namespace Audiotica.Windows.Common
 {
@@ -38,7 +32,6 @@ namespace Audiotica.Windows.Common
             var dominantColor = palette?[0];
             return dominantColor;
         }
-        
 
         /// <summary>
         ///     Use the median cut algorithm to cluster similar colors.
@@ -157,6 +150,5 @@ namespace Audiotica.Windows.Common
             Array.Copy(pixelArray, copy, numUsedPixels);
             return copy;
         }
-
     }
 }

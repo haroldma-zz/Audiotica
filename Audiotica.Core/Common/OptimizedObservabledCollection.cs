@@ -22,7 +22,7 @@ using System.ComponentModel;
 namespace Audiotica.Core.Common
 {
     /// <summary>
-    /// Optimized version of the <see cref="ObservableCollection{T}"/> class.
+    ///     Optimized version of the <see cref="ObservableCollection{T}" /> class.
     /// </summary>
     /// <typeparam name="T">The type of items in the collection.</typeparam>
     public class OptimizedObservableCollection<T> : ObservableCollection<T>
@@ -30,15 +30,29 @@ namespace Audiotica.Core.Common
         private bool _suppressEvents;
 
         /// <summary>
-        /// Gets or sets a value indicating whether the <see cref="ObservableCollection{T}.CollectionChanged"/> events are raised.
+        ///     Initializes a new instance of the <see cref="OptimizedObservableCollection{T}" /> class.
         /// </summary>
-        /// <value>true if the <see cref="ObservableCollection{T}.CollectionChanged"/> events are raised; otherwise, false.</value>
+        public OptimizedObservableCollection()
+        {
+        }
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="OptimizedObservableCollection{T}" /> class.
+        /// </summary>
+        /// <param name="items">The collection from which the items are copied.</param>
+        public OptimizedObservableCollection(IEnumerable<T> items)
+            : base(items)
+        {
+        }
+
+        /// <summary>
+        ///     Gets or sets a value indicating whether the <see cref="ObservableCollection{T}.CollectionChanged" /> events are
+        ///     raised.
+        /// </summary>
+        /// <value>true if the <see cref="ObservableCollection{T}.CollectionChanged" /> events are raised; otherwise, false.</value>
         public bool SuppressEvents
         {
-            get
-            {
-                return _suppressEvents;
-            }
+            get { return _suppressEvents; }
             set
             {
                 if (_suppressEvents != value)
@@ -51,23 +65,8 @@ namespace Audiotica.Core.Common
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="OptimizedObservableCollection{T}"/> class.
-        /// </summary>
-        public OptimizedObservableCollection()
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="OptimizedObservableCollection{T}"/> class.
-        /// </summary>
-        /// <param name="items">The collection from which the items are copied.</param>
-        public OptimizedObservableCollection(IEnumerable<T> items)
-            : base(items)
-        {
-        }
-
-        /// <summary>
-        /// Raises the <see cref="E:System.Collections.ObjectModel.ObservableCollection`1.CollectionChanged"/> event with the provided event data.
+        ///     Raises the <see cref="E:System.Collections.ObjectModel.ObservableCollection`1.CollectionChanged" /> event with the
+        ///     provided event data.
         /// </summary>
         /// <param name="e">The event data to report in the event.</param>
         protected override void OnCollectionChanged(NotifyCollectionChangedEventArgs e)
@@ -79,7 +78,7 @@ namespace Audiotica.Core.Common
         }
 
         /// <summary>
-        /// Adds the specified items collection to the current <see cref="OptimizedObservableCollection{T}"/> instance.
+        ///     Adds the specified items collection to the current <see cref="OptimizedObservableCollection{T}" /> instance.
         /// </summary>
         /// <param name="items">The collection from which the items are copied.</param>
         /// <exception cref="ArgumentNullException">The items list is null.</exception>
@@ -114,7 +113,8 @@ namespace Audiotica.Core.Common
         }
 
         /// <summary>
-        /// Replaces the current <see cref="OptimizedObservableCollection{T}"/> instance items with the ones specified in the items collection, raising a single <see cref="NotifyCollectionChangedAction.Reset"/> event.
+        ///     Replaces the current <see cref="OptimizedObservableCollection{T}" /> instance items with the ones specified in the
+        ///     items collection, raising a single <see cref="NotifyCollectionChangedAction.Reset" /> event.
         /// </summary>
         /// <param name="items">The collection from which the items are copied.</param>
         /// <exception cref="ArgumentNullException">The items list is null.</exception>
@@ -133,7 +133,8 @@ namespace Audiotica.Core.Common
         }
 
         /// <summary>
-        /// Switches the current <see cref="OptimizedObservableCollection{T}"/> instance items with the ones specified in the items collection, raising the minimum required change events.
+        ///     Switches the current <see cref="OptimizedObservableCollection{T}" /> instance items with the ones specified in the
+        ///     items collection, raising the minimum required change events.
         /// </summary>
         /// <param name="items">The collection from which the items are copied.</param>
         /// <exception cref="ArgumentNullException">The items list is null.</exception>
@@ -163,7 +164,7 @@ namespace Audiotica.Core.Common
 
             while (count > itemIndex)
             {
-                this.RemoveAt(--count);
+                RemoveAt(--count);
             }
         }
     }

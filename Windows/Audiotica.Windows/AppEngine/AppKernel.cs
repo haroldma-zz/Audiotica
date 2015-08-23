@@ -60,7 +60,8 @@ namespace Audiotica.Windows.AppEngine
                     var name = bootstrapper.GetType().Name;
                     using (var scope = BeginScope())
                     using (
-                        insightsService.TrackTimeEvent("BootstrapperLaunched", new Dictionary<string, string> {{"Name", name}}))
+                        insightsService.TrackTimeEvent("BootstrapperLaunched",
+                            new Dictionary<string, string> {{"Name", name}}))
                         try
                         {
                             await bootstrapper.OnLaunchedAsync(scope);
@@ -83,7 +84,8 @@ namespace Audiotica.Windows.AppEngine
                     var key = $"bootstrapper-state-{name}";
                     using (var scope = BeginScope())
                     using (
-                        insightsService.TrackTimeEvent("BootstrapperRelaunched", new Dictionary<string, string> {{"Name", name}})
+                        insightsService.TrackTimeEvent("BootstrapperRelaunched",
+                            new Dictionary<string, string> {{"Name", name}})
                         )
                         try
                         {
@@ -109,7 +111,8 @@ namespace Audiotica.Windows.AppEngine
                     var name = bootstrapper.GetType().Name;
                     using (var scope = BeginScope())
                     using (
-                        insightsService.TrackTimeEvent("BootstrapperResumed", new Dictionary<string, string> {{"Name", name}}))
+                        insightsService.TrackTimeEvent("BootstrapperResumed",
+                            new Dictionary<string, string> {{"Name", name}}))
                         try
                         {
                             await bootstrapper.OnResumingAsync(scope);
@@ -134,7 +137,8 @@ namespace Audiotica.Windows.AppEngine
 
                     using (var scope = BeginScope())
                     using (
-                        insightsService.TrackTimeEvent("BootstrapperSuspended", new Dictionary<string, string> {{"Name", name}})
+                        insightsService.TrackTimeEvent("BootstrapperSuspended",
+                            new Dictionary<string, string> {{"Name", name}})
                         )
                         try
                         {
