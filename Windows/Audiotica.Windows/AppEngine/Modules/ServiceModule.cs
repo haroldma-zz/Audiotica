@@ -1,5 +1,4 @@
-﻿using Audiotica.Core.Windows.Services;
-using Audiotica.Database.Services.DesignTime;
+﻿using Audiotica.Database.Services.DesignTime;
 using Audiotica.Database.Services.Interfaces;
 using Audiotica.Database.Services.RunTime;
 using Audiotica.Web.MatchEngine.Interfaces.Providers;

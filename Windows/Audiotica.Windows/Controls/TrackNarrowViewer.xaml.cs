@@ -1,7 +1,6 @@
 ﻿using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Audiotica.Core.Exceptions;
-using Audiotica.Core.Windows.Services;
 using Audiotica.Database.Models;
 using Audiotica.Windows.Common;
 using Audiotica.Windows.Services.Interfaces;

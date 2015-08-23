@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Audiotica.Core.Windows.Services;
+using Audiotica.Windows.Services.Interfaces;
 using Autofac;
 
 namespace Audiotica.Windows.AppEngine.Bootstrppers

@@ -5,7 +5,7 @@ using Audiotica.Core.Common;
 using Audiotica.Database.Models;
 using Audiotica.Web.Models;
 
-namespace Audiotica.Core.Windows.Services
+namespace Audiotica.Windows.Services.Interfaces
 {
     public interface IPlayerService
     {

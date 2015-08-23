@@ -4,8 +4,9 @@ using Windows.Media.Playback;
 using Audiotica.Core.Common;
 using Audiotica.Database.Models;
 using Audiotica.Web.Models;
+using Audiotica.Windows.Services.Interfaces;
 
-namespace Audiotica.Core.Windows.Services
+namespace Audiotica.Windows.Services.DesignTime
 {
     public class DesignPlayerService : IPlayerService
     {

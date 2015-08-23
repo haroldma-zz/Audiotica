@@ -15,8 +15,9 @@ using Audiotica.Database.Models;
 using Audiotica.Web.MatchEngine.Interfaces.Providers;
 using Audiotica.Web.Models;
 using Audiotica.Windows.Common;
+using Audiotica.Windows.Services.Interfaces;
 
-namespace Audiotica.Core.Windows.Services
+namespace Audiotica.Windows.Services.RunTime
 {
     public class PlayerService : IPlayerService
     {
