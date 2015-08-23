@@ -12,7 +12,7 @@ namespace Audiotica.Web.Models
 
         public string Title { get; set; }
         public WebArtist Artist { get; set; }
-        public DateTime? ReleasedDate { get; set; }
+        public DateTime? ReleaseDate { get; set; }
         public Uri Artwork { get; set; }
         public List<string> Genres { get; set; }
         public object PreviousConversion { get; set; }
@@ -26,7 +26,7 @@ namespace Audiotica.Web.Models
 
             public int GetHashCode(WebAlbum obj)
             {
-                return (obj.Title + obj.Artist?.Name + obj.ReleasedDate).GetHashCode();
+                return (obj.Title + obj.Artist?.Name + obj.ReleaseDate).GetHashCode();
             }
         }
     }

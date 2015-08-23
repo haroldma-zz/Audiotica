@@ -82,7 +82,7 @@
                     <!-- now playing -->
                     <RadioButton Command="{Binding NavCommand}" Content="Now playing" GroupName="Nav">
                         <RadioButton.CommandParameter>
-                            <local:NavType Type="views:NowPlayingPage" />
+                            <local:NavType Type="views:SearchPage" />
                         </RadioButton.CommandParameter>
                         <RadioButton.Tag>
                             <TextBlock Style="{StaticResource NowPlayingTextBlockStyle}" />

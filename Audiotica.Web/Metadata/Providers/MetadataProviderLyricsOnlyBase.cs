@@ -15,7 +15,7 @@ namespace Audiotica.Web.Metadata.Providers
         }
 
         public override ProviderCollectionSize CollectionSize => ProviderCollectionSize.None;
-        public override ProviderCollectionType CollectionType => ProviderCollectionType.None;
+        public override ProviderCollectionType CollectionQuality => ProviderCollectionType.None;
         public abstract Task<string> GetLyricAsync(string song, string artist);
     }
 }

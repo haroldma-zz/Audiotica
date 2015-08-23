@@ -4,6 +4,7 @@
     "Microsoft.ApplicationInsights": "1.0.0",
     "Microsoft.ApplicationInsights.PersistenceChannel": "1.0.0",
     "Microsoft.ApplicationInsights.WindowsApps": "1.0.0",
+    "Microsoft.Net.Http": "2.2.29",
     "Microsoft.NETCore.UniversalWindowsPlatform": "5.0.0",
     "PCLStorage": "1.0.2",
     "SQLite.Net-PCL": "3.0.5",

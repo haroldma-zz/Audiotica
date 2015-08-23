@@ -15,9 +15,9 @@ namespace Audiotica.Web.Metadata.Providers
 
         public abstract ProviderSpeed Speed { get; }
         public abstract ProviderCollectionSize CollectionSize { get; }
-        public abstract ProviderCollectionType CollectionType { get; }
+        public abstract ProviderCollectionType CollectionQuality { get; }
         public abstract string DisplayName { get; }
-        public int Priority => (int) CollectionSize + (int) Speed + (int) CollectionType;
+        public int Priority => (int) CollectionSize + (int) Speed + (int) CollectionQuality;
 
         public bool IsEnabled
         {

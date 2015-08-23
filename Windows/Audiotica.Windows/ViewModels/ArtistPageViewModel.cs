@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Media;
@@ -11,7 +10,6 @@ using Audiotica.Core.Windows.Extensions;
 using Audiotica.Core.Windows.Helpers;
 using Audiotica.Database.Models;
 using Audiotica.Database.Services.Interfaces;
-using Audiotica.Web.Exceptions;
 using Audiotica.Web.Extensions;
 using Audiotica.Web.Metadata.Interfaces;
 using Audiotica.Web.Models;
@@ -33,6 +31,10 @@ namespace Audiotica.Windows.ViewModels
         private Artist _artist;
         private SolidColorBrush _backgroundBrush;
         private SolidColorBrush _foregroundBrush;
+        private bool _isAlbumsLoading;
+        private bool _isNewAlbumsLoading;
+        private bool _isTopSongsLoading;
+        private List<Album> _newAlbums;
         private ElementTheme _requestedTheme = ElementTheme.Light;
         private List<Album> _topAlbums;
         private List<Track> _topSongs;
@@ -58,6 +60,24 @@ namespace Audiotica.Windows.ViewModels
                 OnNavigatedTo("Childish Gambino", NavigationMode.New, new Dictionary<string, object>());
         }
 
+        public bool IsNewAlbumsLoading
+        {
+            get { return _isNewAlbumsLoading; }
+            set { Set(ref _isNewAlbumsLoading, value); }
+        }
+
+        public bool IsAlbumsLoading
+        {
+            get { return _isAlbumsLoading; }
+            set { Set(ref _isAlbumsLoading, value); }
+        }
+
+        public bool IsTopSongsLoading
+        {
+            get { return _isTopSongsLoading; }
+            set { Set(ref _isTopSongsLoading, value); }
+        }
+
         public ElementTheme RequestedTheme
         {
             get { return _requestedTheme; }
@@ -80,6 +100,12 @@ namespace Audiotica.Windows.ViewModels
         {
             get { return _artist; }
             set { Set(ref _artist, value); }
+        }
+
+        public List<Album> NewAlbums
+        {
+            get { return _newAlbums; }
+            set { Set(ref _newAlbums, value); }
         }
 
         public List<Album> TopAlbums
@@ -144,6 +170,10 @@ namespace Audiotica.Windows.ViewModels
 
         private async void LoadWebData()
         {
+            IsNewAlbumsLoading = true;
+            IsAlbumsLoading = true;
+            IsTopSongsLoading = true;
+
             foreach (var metadataProvider in _metadataProviders)
             {
                 try
@@ -151,31 +181,61 @@ namespace Audiotica.Windows.ViewModels
                     var webArtist = await metadataProvider.GetArtistByNameAsync(Artist.Name);
                     if (webArtist == null) continue;
 
-                    if (TopSongs == null)
-                        TopSongs =
-                            await
-                                _webSongConverter.ConvertAsync(
-                                    (await metadataProvider.GetArtistTopSongsAsync(webArtist.Token, 5)).Songs);
+                    try
+                    {
+                        // since it will remove duplicates request 4
+                        if (NewAlbums == null)
+                        {
+                            NewAlbums = await _webAlbumConverter.ConvertAsync(
+                                (await metadataProvider.GetArtistNewAlbumsAsync(webArtist.Token, 4)).Albums.Take(2));
+                            IsNewAlbumsLoading = false;
+                        }
+                    }
+                    catch
+                    {
+                        // ignored
+                    }
 
-                    if (TopAlbums == null)
-                        TopAlbums =
-                            await
+                    try
+                    {
+                        if (TopAlbums == null)
+                        {
+                            TopAlbums = await
                                 _webAlbumConverter.ConvertAsync(
                                     (await metadataProvider.GetArtistAlbumsAsync(webArtist.Token, 10)).Albums);
+                            IsAlbumsLoading = false;
+                        }
+                    }
+                    catch
+                    {
+                        // ignored
+                    }
 
-                    if (TopSongs != null && TopAlbums != null) break;
-                }
-                catch (NotImplementedException)
-                {
-                }
-                catch (ProviderException)
-                {
+                    try
+                    {
+                        if (TopSongs == null)
+                        {
+                            TopSongs = await _webSongConverter.ConvertAsync(
+                                (await metadataProvider.GetArtistTopSongsAsync(webArtist.Token, 5)).Songs);
+                            IsTopSongsLoading = false;
+                        }
+                    }
+                    catch
+                    {
+                        // ignored
+                    }
+
+
+                    if (TopSongs != null && TopAlbums != null && NewAlbums != null) break;
                 }
                 catch
                 {
                     // ignored
                 }
             }
+            IsNewAlbumsLoading = false;
+            IsAlbumsLoading = false;
+            IsTopSongsLoading = false;
         }
     }
 }

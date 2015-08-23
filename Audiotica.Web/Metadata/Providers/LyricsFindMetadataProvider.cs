@@ -21,7 +21,7 @@ namespace Audiotica.Web.Metadata.Providers
             using (var response = await new LyricsFindRequest(song, artist).ToResponseAsync().DontMarshall())
             {
                 if (response.HasData) return response.Data.Track?.Lyrics;
-                throw new ProviderNotFoundException();
+                throw new ProviderException("Not found.");
             }
         }
     }

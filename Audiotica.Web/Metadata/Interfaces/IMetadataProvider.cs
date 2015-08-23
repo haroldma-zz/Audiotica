@@ -9,7 +9,7 @@ namespace Audiotica.Web.Metadata.Interfaces
     {
         ProviderSpeed Speed { get; }
         ProviderCollectionSize CollectionSize { get; }
-        ProviderCollectionType CollectionType { get; }
+        ProviderCollectionType CollectionQuality { get; }
     }
 
     public interface IBasicMetadataProvider : IMetadataProvider
@@ -24,8 +24,10 @@ namespace Audiotica.Web.Metadata.Interfaces
 
     public interface IExtendedMetadataProvider : IBasicMetadataProvider
     {
+        Task<WebResults> GetRelatedArtistsAsync(string artistToken, int limit = 50, string pageToken = null);
         Task<WebResults> GetArtistTopSongsAsync(string artistToken, int limit = 50, string pageToken = null);
         Task<WebResults> GetArtistAlbumsAsync(string artistToken, int limit = 50, string pageToken = null);
+        Task<WebResults> GetArtistNewAlbumsAsync(string artistToken, int limit = 50, string pageToken = null);
     }
 
     public interface IChartMetadataProvider : IBasicMetadataProvider

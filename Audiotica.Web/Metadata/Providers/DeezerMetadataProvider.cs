@@ -91,7 +91,12 @@ namespace Audiotica.Web.Metadata.Providers
         public override string DisplayName => "Deezer";
         public override ProviderSpeed Speed => ProviderSpeed.Fast;
         public override ProviderCollectionSize CollectionSize => ProviderCollectionSize.Large;
-        public override ProviderCollectionType CollectionType => ProviderCollectionType.MainstreamAndRare;
+        public override ProviderCollectionType CollectionQuality => ProviderCollectionType.GoodStuff;
+
+        public Task<WebResults> GetRelatedArtistsAsync(string artistToken, int limit = 50, string pageToken = null)
+        {
+            throw new NotImplementedException();
+        }
 
         public async Task<WebResults> GetArtistTopSongsAsync(string artistToken, int limit = 20,
             string pageToken = null)
@@ -133,10 +138,15 @@ namespace Audiotica.Web.Metadata.Providers
                 if (!response.HasData) return null;
 
                 var results = CreateResults(response.Data, limit, offset);
-                results.Albums = response.Data.Data?.Select(CreateAlbum).ToList();
+                results.Albums = response.Data.Data?.Select(CreateAlbum).Distinct(new WebAlbum.Comparer()).ToList();
 
                 return results;
             }
+        }
+
+        public Task<WebResults> GetArtistNewAlbumsAsync(string artistToken, int limit = 50, string pageToken = null)
+        {
+            throw new NotImplementedException();
         }
 
         public override async Task<WebAlbum> GetAlbumAsync(string albumToken)
@@ -147,8 +157,6 @@ namespace Audiotica.Web.Metadata.Providers
                 if (response.HasData)
                     return CreateAlbum(response.Data);
 
-                if (response.HttpResponse.StatusCode == HttpStatusCode.NotFound)
-                    throw new ProviderNotFoundException();
                 throw new ProviderException();
             }
         }
@@ -160,9 +168,7 @@ namespace Audiotica.Web.Metadata.Providers
             {
                 if (response.HasData)
                     return CreateSong(response.Data);
-
-                if (response.HttpResponse.StatusCode == HttpStatusCode.NotFound)
-                    throw new ProviderNotFoundException();
+                
                 throw new ProviderException();
             }
         }
@@ -174,9 +180,7 @@ namespace Audiotica.Web.Metadata.Providers
             {
                 if (response.HasData)
                     return CreateArtist(response.Data);
-
-                if (response.HttpResponse.StatusCode == HttpStatusCode.NotFound)
-                    throw new ProviderNotFoundException();
+                
                 throw new ProviderException();
             }
         }
@@ -189,8 +193,6 @@ namespace Audiotica.Web.Metadata.Providers
                 if (response.HasData)
                     return CreateArtist(response.Data);
 
-                if (response.HttpResponse.StatusCode == HttpStatusCode.NotFound)
-                    throw new ProviderNotFoundException();
                 throw new ProviderException();
             }
         }
@@ -224,7 +226,7 @@ namespace Audiotica.Web.Metadata.Providers
                         results.Artists = response.Data.Data?.Select(CreateArtist).ToList();
                         break;
                     default:
-                        results.Albums = response.Data.Data?.Select(CreateAlbum).ToList();
+                        results.Albums = response.Data.Data?.Select(CreateAlbum).Distinct(new WebAlbum.Comparer()).ToList();
                         break;
                 }
 
@@ -293,7 +295,7 @@ namespace Audiotica.Web.Metadata.Providers
                 webAlbum.IsPartial = true;
 
             if (album.ReleaseDate != null)
-                webAlbum.ReleasedDate = album.ReleaseDate;
+                webAlbum.ReleaseDate = album.ReleaseDate;
             else
                 webAlbum.IsPartial = true;
 

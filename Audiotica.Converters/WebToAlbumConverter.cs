@@ -40,7 +40,7 @@ namespace Audiotica.Converters
                 Title = other.Title,
                 ArtworkUri = other.Artwork.ToString(),
                 Artist = await _webArtistConverter.ConvertAsync(other.Artist),
-                Year = other.ReleasedDate?.Year
+                Year = other.ReleaseDate?.Year
             };
 
             var libraryAlbum = _libraryService.Albums.FirstOrDefault(p => p.Title.EqualsIgnoreCase(album.Title));

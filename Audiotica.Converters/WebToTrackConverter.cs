@@ -69,7 +69,7 @@ namespace Audiotica.Converters
                 DisplayArtist = other.Artists[0].Name,
                 TrackNumber = other.TrackNumber != 0 ? other.TrackNumber : 1,
                 DiscNumber = other.DiskNumber != 0 ? other.DiskNumber : 1,
-                Year = other.Album.ReleasedDate?.Year,
+                Year = other.Album.ReleaseDate?.Year,
                 TrackCount = other.Album.Tracks?.Count ?? 1,
                 Genres = string.Join("; ", genres.Distinct()),
                 AudioWebUri = other.AudioUrl,

@@ -49,7 +49,12 @@ namespace Audiotica.Web.Metadata.Providers
         public override string DisplayName => "Spotify";
         public override ProviderSpeed Speed => ProviderSpeed.Fast;
         public override ProviderCollectionSize CollectionSize => ProviderCollectionSize.Large;
-        public override ProviderCollectionType CollectionType => ProviderCollectionType.Mainstream;
+        public override ProviderCollectionType CollectionQuality => ProviderCollectionType.GoodStuff;
+
+        public Task<WebResults> GetRelatedArtistsAsync(string artistToken, int limit = 50, string pageToken = null)
+        {
+            throw new NotImplementedException();
+        }
 
         public async Task<WebResults> GetArtistTopSongsAsync(string artistToken, int limit = 20,
             string pageToken = null)
@@ -59,8 +64,6 @@ namespace Audiotica.Web.Metadata.Providers
             {
                 if (!response.HasData)
                 {
-                    if (response.HttpResponse.StatusCode == HttpStatusCode.NotFound)
-                        throw new ProviderNotFoundException();
                     throw new ProviderException();
                 }
                 if (response.Data.HasError())
@@ -82,8 +85,6 @@ namespace Audiotica.Web.Metadata.Providers
             {
                 if (!response.HasData)
                 {
-                    if (response.HttpResponse.StatusCode == HttpStatusCode.NotFound)
-                        throw new ProviderNotFoundException();
                     throw new ProviderException();
                 }
                 if (response.Data.HasError())
@@ -93,6 +94,11 @@ namespace Audiotica.Web.Metadata.Providers
                 results.Albums = response.Data.Items.Select(CreateAlbum).Distinct(new WebAlbum.Comparer()).ToList();
                 return results;
             }
+        }
+
+        public Task<WebResults> GetArtistNewAlbumsAsync(string artistToken, int limit = 50, string pageToken = null)
+        {
+            throw new NotImplementedException();
         }
 
         public override async Task<WebAlbum> GetAlbumAsync(string albumToken)
@@ -106,8 +112,6 @@ namespace Audiotica.Web.Metadata.Providers
                         throw new ProviderException(response.Data.ErrorResponse.Message);
                     return CreateAlbum(response.Data);
                 }
-                if (response.HttpResponse.StatusCode == HttpStatusCode.NotFound)
-                    throw new ProviderNotFoundException();
                 throw new ProviderException();
             }
         }
@@ -122,8 +126,6 @@ namespace Audiotica.Web.Metadata.Providers
                         throw new ProviderException(response.Data.ErrorResponse.Message);
                     return CreateSong(response.Data);
                 }
-                if (response.HttpResponse.StatusCode == HttpStatusCode.NotFound)
-                    throw new ProviderNotFoundException();
                 throw new ProviderException();
             }
         }
@@ -138,8 +140,6 @@ namespace Audiotica.Web.Metadata.Providers
                         throw new ProviderException(response.Data.ErrorResponse.Message);
                     return CreateArtist(response.Data);
                 }
-                if (response.HttpResponse.StatusCode == HttpStatusCode.NotFound)
-                    throw new ProviderNotFoundException();
                 throw new ProviderException();
             }
         }
@@ -148,8 +148,11 @@ namespace Audiotica.Web.Metadata.Providers
         {
             // No api for getting by artist name, so do a search to find the id.
             var results = await SearchAsync(artistName, WebResults.Type.Artist, 1);
-            return results.Artists.FirstOrDefault(p => string.Equals(p.Name, artistName,
+            var artist = results.Artists?.FirstOrDefault(p => string.Equals(p.Name, artistName,
                 StringComparison.CurrentCultureIgnoreCase));
+            if (artist == null)
+                throw new ProviderException("Not found.");
+            return artist;
         }
 
         public override async Task<WebResults> SearchAsync(string query,
@@ -271,7 +274,7 @@ namespace Audiotica.Web.Metadata.Providers
             {
                 song.IsPartial = false;
 
-                if (full.Artist != null)
+                if (full.Artists != null)
                     song.Artists = full.Artists.Select(CreateArtist).ToList();
                 else
                     song.IsPartial = true;
@@ -323,7 +326,7 @@ namespace Audiotica.Web.Metadata.Providers
 
             DateTime released;
             if (DateTime.TryParse(album.ReleaseDate, out released))
-                webAlbum.ReleasedDate = released;
+                webAlbum.ReleaseDate = released;
 
             return webAlbum;
         }

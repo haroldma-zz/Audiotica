@@ -30,7 +30,7 @@ namespace Audiotica.Web.Metadata.Providers
         public bool IsEnabled { get; set; } = true;
         public ProviderSpeed Speed { get; }
         public ProviderCollectionSize CollectionSize { get; }
-        public ProviderCollectionType CollectionType { get; }
+        public ProviderCollectionType CollectionQuality { get; }
 
         public Task<WebAlbum> GetAlbumAsync(string albumToken)
         {
@@ -52,12 +52,22 @@ namespace Audiotica.Web.Metadata.Providers
             return Task.FromResult(CreateDummyArtists()[0]);
         }
 
+        public Task<WebResults> GetRelatedArtistsAsync(string artistToken, int limit = 50, string pageToken = null)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<WebResults> GetArtistTopSongsAsync(string artistToken, int limit = 50, string pageToken = null)
         {
             return Task.FromResult(CreateSongsResult(CreateDummySongs()));
         }
 
         public Task<WebResults> GetArtistAlbumsAsync(string artistToken, int limit = 50, string pageToken = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<WebResults> GetArtistNewAlbumsAsync(string artistToken, int limit = 50, string pageToken = null)
         {
             throw new NotImplementedException();
         }

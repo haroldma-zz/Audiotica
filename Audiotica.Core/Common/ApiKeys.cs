@@ -7,7 +7,7 @@
         public const string LastFmSecret = "e0e3c3faa0b4db23e07a65864d0cf9c7";
         public const string VkClientId = "4413977";
         public const string XboxClientId = "audiotica-wp";
-        public const string XboxClientSecret = "CFmAiAjdSTL7TY0j9I5tMlkUqBz";
+        public const string XboxClientSecret = "CFmAiAjdSTL7TY0j9I5tMlkUqBz+3DzrVOlaa2KAvzE=";
         public const string YoutubeId = "AIzaSyCpFX2-KR0w71WZRVls-sPB3Zc3uymFjmk";
     }
 }

@@ -1,10 +1,12 @@
 ﻿namespace Audiotica.Web.Enums
 {
+    // Still experimenting with this
     public enum ProviderCollectionType
     {
         None = -1,
-        Rare,
-        MainstreamAndRare,
-        Mainstream
+        Meh,
+        PrettyMuchEveything,
+        GoodStuffMixedWithShit,
+        GoodStuff
     }
 }

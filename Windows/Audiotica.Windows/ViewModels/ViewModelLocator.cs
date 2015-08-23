@@ -15,5 +15,6 @@ namespace Audiotica.Windows.ViewModels
         public NowPlayingPageViewModel NowPlaying => Kernel.Resolve<NowPlayingPageViewModel>();
         public AboutPageViewModel AboutPage => Kernel.Resolve<AboutPageViewModel>();
         public SettingsPageViewModel SettingsPage => Kernel.Resolve<SettingsPageViewModel>();
+        public SearchPageViewModel SearchPage => Kernel.Resolve<SearchPageViewModel>();
     }
 }

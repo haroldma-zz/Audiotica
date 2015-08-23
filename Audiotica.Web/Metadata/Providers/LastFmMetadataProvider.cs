@@ -10,7 +10,6 @@ using Audiotica.Web.Exceptions;
 using Audiotica.Web.Metadata.Interfaces;
 using Audiotica.Web.Models;
 using IF.Lastfm.Core.Api;
-using IF.Lastfm.Core.Api.Enums;
 using IF.Lastfm.Core.Api.Helpers;
 using IF.Lastfm.Core.Objects;
 
@@ -71,7 +70,24 @@ namespace Audiotica.Web.Metadata.Providers
         public override string DisplayName => "Last.FM";
         public override ProviderSpeed Speed => ProviderSpeed.Average;
         public override ProviderCollectionSize CollectionSize => ProviderCollectionSize.Large;
-        public override ProviderCollectionType CollectionType => ProviderCollectionType.MainstreamAndRare;
+        public override ProviderCollectionType CollectionQuality => ProviderCollectionType.PrettyMuchEveything;
+
+        public async Task<WebResults> GetRelatedArtistsAsync(string artistToken, int limit = 50, string pageToken = null)
+        {
+            using (var client = CreateClient())
+            {
+                var result = await client.Artist.GetSimilarAsync(artistToken, limit: limit);
+
+                if (result.Success)
+                {
+                    var webResults = CreateResults(result);
+                    webResults.Artists = result.Content.Select(CreateArtist).ToList();
+                    return webResults;
+                }
+
+                throw new ProviderException(result.Status.ToString());
+            }
+        }
 
         public async Task<WebResults> GetArtistTopSongsAsync(string artistToken, int limit = 20,
             string pageToken = null)
@@ -89,9 +105,6 @@ namespace Audiotica.Web.Metadata.Providers
                     webResults.Songs = result.Content.Select(CreateSong).ToList();
                     return webResults;
                 }
-
-                if (result.Status == LastResponseStatus.MissingParameters)
-                    throw new ProviderNotFoundException();
 
                 throw new ProviderException(result.Status.ToString());
             }
@@ -114,11 +127,13 @@ namespace Audiotica.Web.Metadata.Providers
                     return webResults;
                 }
 
-                if (result.Status == LastResponseStatus.MissingParameters)
-                    throw new ProviderNotFoundException();
-
                 throw new ProviderException(result.Status.ToString());
             }
+        }
+
+        public Task<WebResults> GetArtistNewAlbumsAsync(string artistToken, int limit = 50, string pageToken = null)
+        {
+            throw new NotImplementedException();
         }
 
         public override async Task<WebAlbum> GetAlbumAsync(string albumToken)
@@ -133,10 +148,6 @@ namespace Audiotica.Web.Metadata.Providers
 
                 if (result.Success)
                     return CreateAlbum(result.Content);
-
-                // Album not found
-                if (result.Status == LastResponseStatus.MissingParameters)
-                    throw new ProviderNotFoundException();
 
                 // Something happened, throw exception
                 throw new ProviderException(result.Status.ToString());
@@ -171,9 +182,6 @@ namespace Audiotica.Web.Metadata.Providers
                     return song;
                 }
 
-                if (result.Status == LastResponseStatus.MissingParameters)
-                    throw new ProviderNotFoundException();
-
                 // Something happened, throw exception
                 throw new ProviderException(result.Status.ToString());
             }
@@ -187,9 +195,6 @@ namespace Audiotica.Web.Metadata.Providers
 
                 if (result.Success)
                     return CreateArtist(result.Content);
-
-                if (result.Status == LastResponseStatus.MissingParameters)
-                    throw new ProviderNotFoundException();
 
                 // Something happened, throw exception
                 throw new ProviderException(result.Status.ToString());
@@ -313,7 +318,7 @@ namespace Audiotica.Web.Metadata.Providers
 
             if (album.ReleaseDateUtc != null)
             {
-                webAlbum.ReleasedDate = album.ReleaseDateUtc.Value.DateTime;
+                webAlbum.ReleaseDate = album.ReleaseDateUtc.Value.DateTime;
                 webAlbum.IsPartial = false;
             }
             else
