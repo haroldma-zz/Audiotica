@@ -73,13 +73,13 @@
             <Ellipse Width="140" Height="140" Fill="#333" />
             <Ellipse Grid.Row="0" Width="140" Height="140">
                 <Ellipse.Fill>
-                    <ImageBrush ImageSource="{x:Bind ArtworkUri, Converter={StaticResource ImageSourceConverter}}"
+                    <ImageBrush ImageSource="{x:Bind ArtworkUri, Mode=OneWay, Converter={StaticResource ImageSourceConverter}}"
                                 Stretch="UniformToFill" />
                 </Ellipse.Fill>
             </Ellipse>
             <TextBlock Grid.Row="1" Text="{x:Bind Name}" TextAlignment="Center" Margin="0,10,0,0" />
             <TextBlock Grid.Row="2" TextAlignment="Center" Style="{StaticResource SubtleTextBlockStyle}">
-                <Run Text="{x:Bind Albums.Count}" />
+                <Run Text="{x:Bind Albums.Count, Mode=OneWay}" />
                 <Run Text="album(s)" />
             </TextBlock>
         </Grid>
