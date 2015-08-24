@@ -23,8 +23,9 @@
                     <Grid HorizontalAlignment="Left">
                         <Ellipse Width="140" Height="140">
                             <Ellipse.Fill>
+                                <!--Compile binding seems to not update, even with Mode=OneWay-->
                                 <ImageBrush
-                                    ImageSource="{x:Bind ViewModel.Artist.ArtworkUri, Mode=OneWay, Converter={StaticResource ImageSourceConverter}}"
+                                    ImageSource="{Binding Artist.ArtworkUri}"
                                     Stretch="UniformToFill" />
                             </Ellipse.Fill>
                         </Ellipse>

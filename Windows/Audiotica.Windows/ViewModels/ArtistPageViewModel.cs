@@ -35,7 +35,7 @@ namespace Audiotica.Windows.ViewModels
         private bool _isNewAlbumsLoading;
         private bool _isTopSongsLoading;
         private List<Album> _newAlbums;
-        private ElementTheme _requestedTheme = ElementTheme.Light;
+        private ElementTheme _requestedTheme = ElementTheme.Default;
         private List<Album> _topAlbums;
         private List<Track> _topSongs;
 
@@ -124,15 +124,19 @@ namespace Audiotica.Windows.ViewModels
         {
             var name = parameter as string;
 
-            Artist = _libraryService.Artists.FirstOrDefault(p => p.Name == name);
-            if (Artist == null)
+            Artist = _libraryService.Artists.FirstOrDefault(p => p.Name.EqualsIgnoreCase(name));
+            if (Artist?.ArtworkUri == null)
             {
                 foreach (var provider in _metadataProviders)
                 {
                     try
                     {
                         var webArtist = await provider.GetArtistByNameAsync(name);
-                        Artist = await _webArtistConverter.ConvertAsync(webArtist);
+
+                        if (Artist != null && Artist.ArtworkUri == null)
+                            Artist.ArtworkUri = webArtist.Artwork.ToString();
+                        else
+                            Artist = await _webArtistConverter.ConvertAsync(webArtist);
                         if (Artist != null) break;
                     }
                     catch
@@ -162,6 +166,8 @@ namespace Audiotica.Windows.ViewModels
 
         private async void DetectColorFromArtwork()
         {
+            if (string.IsNullOrWhiteSpace(Artist.ArtworkUri)) return;
+
             using (var response = await Artist.ArtworkUri.ToUri().GetAsync())
             {
                 using (var stream = await response.Content.ReadAsStreamAsync())
