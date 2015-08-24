@@ -1,46 +1,41 @@
 ﻿using System.Collections.Generic;
-using System.Threading.Tasks;
 using Audiotica.Windows.Services.Interfaces;
 using Autofac;
 
 namespace Audiotica.Windows.AppEngine.Bootstrppers
 {
-    public class BackgroundAudioBootstrapper : AppBootStrapper
+    public class BackgroundAudioBootstrapper : IBootStrapper
     {
-        protected Task StartTaskAsync(IComponentContext context)
+        public void OnLaunched(IComponentContext context)
         {
-            var service = context.Resolve<IPlayerService>();
-            return service.StartBackgroundTaskAsync();
+            StartTask(context);
         }
 
-        public override Task OnLaunchedAsync(IComponentContext context)
+        public void OnRelaunched(IComponentContext context, Dictionary<string, object> state)
         {
-            return StartTaskAsync(context);
+            StartTask(context);
         }
 
-        public override Task OnRelaunchedAsync(IComponentContext context, Dictionary<string, object> state)
-        {
-            return StartTaskAsync(context);
-        }
-
-        public override Task OnResumingAsync(IComponentContext context)
+        public void OnResuming(IComponentContext context)
         {
             var service = context.Resolve<IPlayerService>();
 
             // Tell the background audio that the app is being resumed
             service.Resuming();
-
-            return base.OnResumingAsync(context);
         }
 
-        public override Task OnSuspendingAsync(IComponentContext context, Dictionary<string, object> state)
+        public void OnSuspending(IComponentContext context, Dictionary<string, object> state)
         {
             var service = context.Resolve<IPlayerService>();
 
             // Tell the background audio that the app is being suspended
             service.Suspending();
+        }
 
-            return base.OnSuspendingAsync(context, state);
+        protected void StartTask(IComponentContext context)
+        {
+            var service = context.Resolve<IPlayerService>();
+            service.StartBackgroundTask();
         }
     }
 }

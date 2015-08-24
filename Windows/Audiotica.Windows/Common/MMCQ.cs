@@ -532,19 +532,15 @@ namespace Audiotica.Windows.Common
             }
         }
 
-        public class Swatch
+        public class QuantizedColor
         {
-            public Swatch(Color color, int population)
+            public QuantizedColor(Color color, int population)
             {
                 Color = color;
                 Population = population;
-                TitleColor = ColorExtensions.ChangeBrightness(color, 0.45f);
-                BodyColor = ColorExtensions.GetTextColorForBackground(color.AsInt(), 4.5).ToColor();
                 IsDark = ColorExtensions.CalculateYiqLuma(color) < 128;
             }
-
-            public Color TitleColor { get; }
-            public Color BodyColor { get; }
+            
             public Color Color { get; }
             public int Population { get; }
             public bool IsDark { get; }
@@ -556,7 +552,7 @@ namespace Audiotica.Windows.Common
         public class CMap
         {
             private readonly List<VBox> _vboxes = new List<VBox>();
-            private List<Swatch> _palette;
+            private List<QuantizedColor> _palette;
 
             public void Push(VBox box)
             {
@@ -564,12 +560,12 @@ namespace Audiotica.Windows.Common
                 _vboxes.Add(box);
             }
 
-            public List<Swatch> GeneratePalette()
+            public List<QuantizedColor> GeneratePalette()
             {
                 return _palette ?? (_palette = (from vBox in _vboxes
                     let rgb = vBox.Avg(false)
                     let color = ColorExtensions.FromRgb(rgb[0], rgb[1], rgb[2])
-                    select new Swatch(color, vBox.Count(false))).ToList());
+                    select new QuantizedColor(color, vBox.Count(false))).ToList());
             }
 
             public int Size()

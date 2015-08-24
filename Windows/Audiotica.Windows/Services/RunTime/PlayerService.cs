@@ -66,15 +66,11 @@ namespace Audiotica.Windows.Services.RunTime
         /// <summary>
         ///     Initialize Background Media Player Handlers and starts playback
         /// </summary>
-        public async Task<bool> StartBackgroundTaskAsync()
+        public bool StartBackgroundTask()
         {
             AddMediaPlayerEventHandlers();
 
-            var started = await _dispatcherUtility.RunAsync(() =>
-            {
-                var result = _backgroundAudioTaskStarted.WaitOne(10000);
-                return result;
-            });
+            var started = _backgroundAudioTaskStarted.WaitOne(250);
             if (started)
                 UpdatePlaybackQueue();
             return started;
@@ -179,7 +175,7 @@ namespace Audiotica.Windows.Services.RunTime
         ///     Otherwise, initializes MediaPlayer Handlers and starts playback
         ///     track or to pause if we're already playing.
         /// </summary>
-        public async void PlayOrPause()
+        public void PlayOrPause()
         {
             Debug.WriteLine("Play button pressed from App");
             if (IsBackgroundTaskRunning)
@@ -193,13 +189,13 @@ namespace Audiotica.Windows.Services.RunTime
                         BackgroundMediaPlayer.Current.Play();
                         break;
                     case MediaPlayerState.Closed:
-                        await StartBackgroundTaskAsync();
+                        StartBackgroundTask();
                         break;
                 }
             }
             else
             {
-                await StartBackgroundTaskAsync();
+                StartBackgroundTask();
             }
         }
 
@@ -307,8 +303,7 @@ namespace Audiotica.Windows.Services.RunTime
             {
                 var trackChangedMessage = message as TrackChangedMessage;
                 // When foreground app is active change track based on background message
-                await
-                    _dispatcherUtility.RunAsync(
+                await _dispatcherUtility.RunAsync(
                         () => { TrackChanged?.Invoke(sender, trackChangedMessage.QueueId); });
                 return;
             }

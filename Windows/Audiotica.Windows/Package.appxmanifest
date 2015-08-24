@@ -3,8 +3,8 @@
   <Identity Name="f1c50415-69ae-4a31-8e64-fecae1ddb07d" Publisher="CN=Harold" Version="1.0.0.0" />
   <mp:PhoneIdentity PhoneProductId="f1c50415-69ae-4a31-8e64-fecae1ddb07d" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
-    <DisplayName>Audiotica.Windows</DisplayName>
-    <PublisherDisplayName>Harold</PublisherDisplayName>
+    <DisplayName>Audiotica</DisplayName>
+    <PublisherDisplayName>Zumicts</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
   <Dependencies>
@@ -15,7 +15,7 @@
   </Resources>
   <Applications>
     <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="Audiotica.Windows.App">
-      <uap:VisualElements DisplayName="Audiotica" Square150x150Logo="Assets\Square150x150Logo.png" Square44x44Logo="Assets\Square44x44Logo.png" Description="Audiotica" BackgroundColor="transparent">
+      <uap:VisualElements DisplayName="Audiotica" Square150x150Logo="Assets\Square150x150Logo.png" Square44x44Logo="Assets\Square44x44Logo.png" Description="Audiotica" BackgroundColor="#642C90">
         <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png">
         </uap:DefaultTile>
         <uap:SplashScreen Image="Assets\SplashScreen.png" />

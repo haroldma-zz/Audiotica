@@ -10,6 +10,7 @@ using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Markup;
+using Audiotica.Core.Helpers;
 using Audiotica.Windows.AppEngine;
 using Audiotica.Windows.Factories;
 using Audiotica.Windows.Services.NavigationService;
@@ -25,17 +26,17 @@ namespace Audiotica.Windows.Common
     {
         protected BootStrapper()
         {
-            Resuming += async (s, e) =>
+            Resuming += (s, e) =>
             {
-                await Kernel.OnResumingAsync();
+                Kernel.OnResuming();
                 OnResuming(s, e);
             };
-            Suspending += async (s, e) =>
+            Suspending += (s, e) =>
             {
                 var deferral = e.SuspendingOperation.GetDeferral();
                 NavigationService.Suspending();
-                await Kernel.OnSuspendingAsync();
-                await OnSuspendingAsync(s, e);
+                Kernel.OnSuspending();
+                OnSuspending(s, e);
                 deferral.Complete();
             };
             UnhandledException += App_UnhandledException;
@@ -49,15 +50,15 @@ namespace Audiotica.Windows.Common
         /// </summary>
         public event EventHandler<BackRequestedEventArgs> BackRequested;
 
-        protected override void OnLaunched(LaunchActivatedEventArgs e)
+        protected sealed override void OnLaunched(LaunchActivatedEventArgs e)
         {
             if (Kernel == null)
                 Kernel = AppKernelFactory.Create();
-
-            InternalLaunchAsync(e);
+            
+            InternalLaunch(e);
         }
 
-        private async void InternalLaunchAsync(ILaunchActivatedEventArgs e)
+        private void InternalLaunch(ILaunchActivatedEventArgs e)
         {
             var splashScreen = default(UIElement);
             if (SplashFactory != null)
@@ -71,7 +72,7 @@ namespace Audiotica.Windows.Common
             NavigationService = Kernel.Resolve<INavigationService>();
 
             // the user may override to set custom content
-            await OnInitializeAsync();
+            OnInitialize();
 
             if (e.PreviousExecutionState == ApplicationExecutionState.Terminated)
             {
@@ -81,22 +82,18 @@ namespace Audiotica.Windows.Common
                 }
                 finally
                 {
-                    await Kernel.OnRelaunchedAsync();
-                    await OnRelaunchedAsync(e);
+                    Kernel.OnRelaunched();
+                    OnRelaunched(e);
                 }
             }
             else
             {
-                await Kernel.OnLaunchedAsync();
-                await OnLaunchedAsync(e);
+                Kernel.OnLaunched();
+                OnLaunched(e);
             }
 
             // if the user didn't already set custom content use rootframe
-            if (Window.Current.Content == splashScreen)
-            {
-                Window.Current.Content = RootFrame;
-            }
-            if (Window.Current.Content == null)
+            if (Window.Current.Content == splashScreen || Window.Current.Content == null)
             {
                 Window.Current.Content = RootFrame;
             }
@@ -182,44 +179,44 @@ namespace Audiotica.Windows.Common
 
         #region activated
 
-        protected override async void OnActivated(IActivatedEventArgs e)
+        protected override void OnActivated(IActivatedEventArgs e)
         {
-            await InternalActivatedAsync(e);
+            InternalActivated(e);
         }
 
-        protected override async void OnCachedFileUpdaterActivated(CachedFileUpdaterActivatedEventArgs args)
+        protected override void OnCachedFileUpdaterActivated(CachedFileUpdaterActivatedEventArgs args)
         {
-            await InternalActivatedAsync(args);
+            InternalActivated(args);
         }
 
-        protected override async void OnFileActivated(FileActivatedEventArgs args)
+        protected override void OnFileActivated(FileActivatedEventArgs args)
         {
-            await InternalActivatedAsync(args);
+            InternalActivated(args);
         }
 
-        protected override async void OnFileOpenPickerActivated(FileOpenPickerActivatedEventArgs args)
+        protected override void OnFileOpenPickerActivated(FileOpenPickerActivatedEventArgs args)
         {
-            await InternalActivatedAsync(args);
+            InternalActivated(args);
         }
 
-        protected override async void OnFileSavePickerActivated(FileSavePickerActivatedEventArgs args)
+        protected override void OnFileSavePickerActivated(FileSavePickerActivatedEventArgs args)
         {
-            await InternalActivatedAsync(args);
+            InternalActivated(args);
         }
 
-        protected override async void OnSearchActivated(SearchActivatedEventArgs args)
+        protected override void OnSearchActivated(SearchActivatedEventArgs args)
         {
-            await InternalActivatedAsync(args);
+            InternalActivated(args);
         }
 
-        protected override async void OnShareTargetActivated(ShareTargetActivatedEventArgs args)
+        protected override void OnShareTargetActivated(ShareTargetActivatedEventArgs args)
         {
-            await InternalActivatedAsync(args);
+            InternalActivated(args);
         }
 
-        private async Task InternalActivatedAsync(IActivatedEventArgs e)
+        private void InternalActivated(IActivatedEventArgs e)
         {
-            await OnActivatedAsync(e);
+            OnActivated(e);
             Window.Current.Activate();
         }
 
@@ -227,30 +224,22 @@ namespace Audiotica.Windows.Common
 
         #region overrides
 
-        public virtual Task OnInitializeAsync()
+        public virtual void OnInitialize()
         {
-            return Task.FromResult<object>(null);
         }
 
-        public virtual Task OnActivatedAsync(IActivatedEventArgs e)
-        {
-            return Task.FromResult<object>(null);
-        }
+        public abstract void OnLaunched(ILaunchActivatedEventArgs e);
 
-        public abstract Task OnLaunchedAsync(ILaunchActivatedEventArgs e);
-
-        public virtual Task OnRelaunchedAsync(ILaunchActivatedEventArgs e)
+        public virtual void OnRelaunched(ILaunchActivatedEventArgs e)
         {
-            return Task.FromResult(0);
         }
 
         protected virtual void OnResuming(object s, object e)
         {
         }
 
-        protected virtual Task OnSuspendingAsync(object s, SuspendingEventArgs e)
+        protected virtual void OnSuspending(object s, SuspendingEventArgs e)
         {
-            return Task.FromResult<object>(null);
         }
 
         protected virtual bool OnUnhandledException(Exception ex)

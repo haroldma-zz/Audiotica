@@ -20,7 +20,7 @@
         <!--No Music-->
         <controls:NoMusicPanel Grid.Row="1" x:Name="NoMusicPanel"
                                Padding="{StaticResource PageThickness}"
-                               Visibility="{x:Bind ViewModel.LibraryService.Albums, Converter={StaticResource ReverseEmptyListToVisibilityConverter}}" />
+                               Visibility="{x:Bind ViewModel.LibraryService.Albums.Count, Mode=OneWay, Converter={StaticResource ReverseEmptyListToVisibilityConverter}}" />
 
         <GridView Grid.Row="1" x:Name="AlbumsGridView"
                   ItemsSource="{x:Bind ViewModel.LibraryService.Albums}"

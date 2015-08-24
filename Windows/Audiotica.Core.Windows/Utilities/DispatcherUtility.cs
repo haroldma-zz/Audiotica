@@ -14,8 +14,21 @@ namespace Audiotica.Core.Windows.Utilities
             _coreDispatcher = coreDispatcher;
         }
 
+        public void Run(Action action)
+        {
+            if (_coreDispatcher.HasThreadAccess)
+                action();
+            else
+                _coreDispatcher.RunAsync(CoreDispatcherPriority.Normal, new DispatchedHandler(action)).AsTask().Wait();
+        }
+
         public Task RunAsync(Action action)
         {
+            if (_coreDispatcher.HasThreadAccess)
+            {
+                action();
+                return Task.FromResult(0);
+            }
             return _coreDispatcher.RunAsync(CoreDispatcherPriority.Normal, new DispatchedHandler(action)).AsTask();
         }
 

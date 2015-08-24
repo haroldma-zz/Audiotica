@@ -12,8 +12,9 @@ namespace Audiotica.Database.Services.DesignTime
         {
             Load();
         }
-
+        
         public bool IsLoaded { get; }
+
         public OptimizedObservableCollection<Track> Tracks { get; private set; }
         public OptimizedObservableCollection<Album> Albums { get; private set; }
         public OptimizedObservableCollection<Artist> Artists { get; private set; }

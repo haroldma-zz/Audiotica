@@ -17,7 +17,8 @@ namespace Audiotica.Windows.Services.DesignTime
         public event EventHandler<MediaPlayerState> MediaStateChanged;
         public event EventHandler<string> TrackChanged;
 
-        public Task<bool> StartBackgroundTaskAsync()
+
+        public bool StartBackgroundTask()
         {
             throw new NotImplementedException();
         }

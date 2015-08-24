@@ -12,7 +12,7 @@ namespace Audiotica.Windows.AppEngine.Bootstrppers
         /// </summary>
         /// <param name="context">The context.</param>
         /// <returns></returns>
-        Task OnLaunchedAsync(IComponentContext context);
+        void OnLaunched(IComponentContext context);
 
         /// <summary>
         ///     Called when [relaunched].
@@ -21,7 +21,7 @@ namespace Audiotica.Windows.AppEngine.Bootstrppers
         /// <param name="context">The context.</param>
         /// <param name="state">The previous state of the module.</param>
         /// <returns></returns>
-        Task OnRelaunchedAsync(IComponentContext context, Dictionary<string, object> state);
+        void OnRelaunched(IComponentContext context, Dictionary<string, object> state);
 
         /// <summary>
         ///     Called when [resuming].
@@ -29,7 +29,7 @@ namespace Audiotica.Windows.AppEngine.Bootstrppers
         /// </summary>
         /// <param name="context">The context.</param>
         /// <returns></returns>
-        Task OnResumingAsync(IComponentContext context);
+        void OnResuming(IComponentContext context);
 
         /// <summary>
         ///     Called when [suspending].
@@ -39,29 +39,25 @@ namespace Audiotica.Windows.AppEngine.Bootstrppers
         /// <param name="context">The context.</param>
         /// <param name="state">The previous state of the module.</param>
         /// <returns></returns>
-        Task OnSuspendingAsync(IComponentContext context, Dictionary<string, object> state);
+        void OnSuspending(IComponentContext context, Dictionary<string, object> state);
     }
 
     public class AppBootStrapper : IBootStrapper
     {
-        public virtual Task OnLaunchedAsync(IComponentContext context)
+        public virtual void OnLaunched(IComponentContext context)
         {
-            return Task.FromResult(0);
         }
 
-        public virtual Task OnRelaunchedAsync(IComponentContext context, Dictionary<string, object> state)
+        public virtual void OnRelaunched(IComponentContext context, Dictionary<string, object> state)
         {
-            return Task.FromResult(0);
         }
 
-        public virtual Task OnResumingAsync(IComponentContext context)
+        public virtual void OnResuming(IComponentContext context)
         {
-            return Task.FromResult(0);
         }
 
-        public virtual Task OnSuspendingAsync(IComponentContext context, Dictionary<string, object> state)
+        public virtual void OnSuspending(IComponentContext context, Dictionary<string, object> state)
         {
-            return Task.FromResult(0);
         }
     }
 }

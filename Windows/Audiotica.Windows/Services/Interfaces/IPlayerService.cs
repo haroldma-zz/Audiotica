@@ -19,7 +19,7 @@ namespace Audiotica.Windows.Services.Interfaces
         /// <summary>
         ///     Initialize Background Media Player Handlers and starts playback
         /// </summary>
-        Task<bool> StartBackgroundTaskAsync();
+        bool StartBackgroundTask();
 
         /// <summary>
         ///     Toggles between playing and pausing.

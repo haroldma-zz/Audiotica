@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Audiotica.Core.Common;
 using Audiotica.Core.Exceptions;
 using Audiotica.Core.Extensions;
+using Audiotica.Core.Helpers;
 using Audiotica.Core.Utilities.Interfaces;
 using Audiotica.Database.Models;
 using Audiotica.Database.Services.Interfaces;
@@ -15,13 +16,11 @@ namespace Audiotica.Database.Services.RunTime
     {
         private readonly IDispatcherUtility _dispatcherUtility;
         private readonly SQLiteConnection _sqLiteConnection;
-        private readonly IStorageUtility _storageUtility;
 
-        public LibraryService(SQLiteConnection sqLiteConnection, IStorageUtility storageUtility,
+        public LibraryService(SQLiteConnection sqLiteConnection,
             IDispatcherUtility dispatcherUtility)
         {
             _sqLiteConnection = sqLiteConnection;
-            _storageUtility = storageUtility;
             _dispatcherUtility = dispatcherUtility;
         }
 
@@ -29,7 +28,7 @@ namespace Audiotica.Database.Services.RunTime
         {
             _sqLiteConnection.Dispose();
         }
-
+        
         public bool IsLoaded { get; private set; }
 
         public OptimizedObservableCollection<Track> Tracks { get; } =
@@ -75,7 +74,7 @@ namespace Audiotica.Database.Services.RunTime
             track.Id = 0;
             _sqLiteConnection.Insert(track);
 
-            _dispatcherUtility.RunAsync(() =>
+            _dispatcherUtility.Run(() =>
             {
                 CreateRelatedObjects(track);
                 track.IsFromLibrary = true;
@@ -119,9 +118,6 @@ namespace Audiotica.Database.Services.RunTime
 
             foreach (var track in tracks)
             {
-                if (track.DisplayArtist == "Mac Miller")
-                {
-                }
                 track.IsFromLibrary = true;
                 CreateRelatedObjects(track);
                 Tracks.Add(track);

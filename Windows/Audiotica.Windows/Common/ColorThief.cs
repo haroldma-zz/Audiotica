@@ -23,7 +23,7 @@ namespace Audiotica.Windows.Common
         /// </param>
         /// <param name="ignoreWhite">if set to <c>true</c> [ignore white].</param>
         /// <returns></returns>
-        public static MMCQ.Swatch GetColor(
+        public static MMCQ.QuantizedColor GetColor(
             WriteableBitmap sourceImage,
             int quality = DefaultQuality,
             bool ignoreWhite = DefaultIgnoreWhite)
@@ -47,7 +47,7 @@ namespace Audiotica.Windows.Common
         /// <param name="ignoreWhite">if set to <c>true</c> [ignore white].</param>
         /// <returns></returns>
         /// <code>true</code>
-        public static List<MMCQ.Swatch> GetPalette(
+        public static List<MMCQ.QuantizedColor> GetPalette(
             WriteableBitmap sourceImage,
             int colorCount = DefaultColorCount,
             int quality = DefaultQuality,

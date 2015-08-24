@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Threading.Tasks;
 using Audiotica.Database.Services.Interfaces;
 using Audiotica.Windows.Services.Interfaces;
 using Autofac;
@@ -8,14 +7,14 @@ namespace Audiotica.Windows.AppEngine.Bootstrppers
 {
     public class LibraryBootstrapper : AppBootStrapper
     {
-        protected async Task StartAsync(IComponentContext context)
+        protected void Start(IComponentContext context)
         {
             var service = context.Resolve<ILibraryService>();
             var insights = context.Resolve<IInsightsService>();
 
             using (var timer = insights.TrackTimeEvent("LibraryLoaded"))
             {
-                await service.LoadAsync();
+                service.Load();
                 timer.AddProperty("Track count", service.Tracks.Count.ToString());
             }
 
@@ -24,14 +23,14 @@ namespace Audiotica.Windows.AppEngine.Bootstrppers
             matchingService.OnStartup();
         }
 
-        public override Task OnLaunchedAsync(IComponentContext context)
+        public override void OnLaunched(IComponentContext context)
         {
-            return StartAsync(context);
+            Start(context);
         }
 
-        public override Task OnRelaunchedAsync(IComponentContext context, Dictionary<string, object> state)
+        public override void OnRelaunched(IComponentContext context, Dictionary<string, object> state)
         {
-            return StartAsync(context);
+            Start(context);
         }
     }
 }

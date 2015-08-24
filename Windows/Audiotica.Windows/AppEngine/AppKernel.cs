@@ -51,7 +51,7 @@ namespace Audiotica.Windows.AppEngine
             return Container.Resolve<T>();
         }
 
-        public async Task OnLaunchedAsync()
+        public void OnLaunched()
         {
             var insightsService = Resolve<IInsightsService>();
             using (insightsService.TrackTimeEvent("BootstrappersLaunched"))
@@ -64,7 +64,7 @@ namespace Audiotica.Windows.AppEngine
                             new Dictionary<string, string> {{"Name", name}}))
                         try
                         {
-                            await bootstrapper.OnLaunchedAsync(scope);
+                            bootstrapper.OnLaunched(scope);
                         }
                         catch
                         {
@@ -73,7 +73,7 @@ namespace Audiotica.Windows.AppEngine
                 }
         }
 
-        public async Task OnRelaunchedAsync()
+        public void OnRelaunched()
         {
             var settings = Resolve<ISettingsUtility>();
             var insightsService = Resolve<IInsightsService>();
@@ -89,8 +89,8 @@ namespace Audiotica.Windows.AppEngine
                         )
                         try
                         {
-                            await bootstrapper
-                                .OnRelaunchedAsync(scope, settings.Read(key, new Dictionary<string, object>()));
+                            bootstrapper.OnRelaunched(scope, 
+                                settings.Read(key, new Dictionary<string, object>()));
                         }
                         catch
                         {
@@ -102,7 +102,7 @@ namespace Audiotica.Windows.AppEngine
                 }
         }
 
-        public async Task OnResumingAsync()
+        public void OnResuming()
         {
             var insightsService = Resolve<IInsightsService>();
             using (insightsService.TrackTimeEvent("BootstrappersResumed"))
@@ -115,7 +115,7 @@ namespace Audiotica.Windows.AppEngine
                             new Dictionary<string, string> {{"Name", name}}))
                         try
                         {
-                            await bootstrapper.OnResumingAsync(scope);
+                            bootstrapper.OnResuming(scope);
                         }
                         catch
                         {
@@ -124,7 +124,7 @@ namespace Audiotica.Windows.AppEngine
                 }
         }
 
-        public async Task OnSuspendingAsync()
+        public void OnSuspending()
         {
             var settings = Resolve<ISettingsUtility>();
             var insightsService = Resolve<IInsightsService>();
@@ -142,7 +142,7 @@ namespace Audiotica.Windows.AppEngine
                         )
                         try
                         {
-                            await bootstrapper.OnSuspendingAsync(scope, dict);
+                            bootstrapper.OnSuspending(scope, dict);
                         }
                         catch
                         {

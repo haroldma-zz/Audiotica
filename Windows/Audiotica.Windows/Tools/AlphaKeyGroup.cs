@@ -58,7 +58,7 @@ namespace Audiotica.Windows.Tools
         /// <returns>An items source for a LongListSelector</returns>
         public static OptimizedObservableCollection<AlphaKeyGroup<T>> CreateGroups(IEnumerable<T> items, CultureInfo ci,
             GetKeyDelegate getKey,
-            bool sort)
+            bool sort = true)
         {
             var slg = new CharacterGroupings();
             var list = CreateGroups(slg);

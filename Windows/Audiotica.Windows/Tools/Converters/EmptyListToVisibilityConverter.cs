@@ -12,9 +12,14 @@ namespace Audiotica.Windows.Tools.Converters
 
         public object Convert(object value, Type targetType, object parameter, string language)
         {
-            if (!(value is IEnumerable<object>))
-                return Visibility.Collapsed;
-            var any = ((IEnumerable<object>) value).Any();
+            bool any;
+
+            if (value is int)
+                any = ((int) value) > 0;
+            else if (!(value is IEnumerable<object>))
+                return Reverse ? Visibility.Collapsed : Visibility.Visible;
+            else
+                any = ((IEnumerable<object>) value).Any();
 
             return Reverse && any || !Reverse && !any
                 ? Visibility.Collapsed

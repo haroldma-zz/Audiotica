@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Audiotica.Core.Common;
 using Audiotica.Database.Models;
 
@@ -7,7 +8,7 @@ namespace Audiotica.Database.Services.Interfaces
     public interface ILibraryService
     {
         #region Properties
-
+        
         bool IsLoaded { get; }
 
         /// <summary>

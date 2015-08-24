@@ -6,6 +6,11 @@ namespace Audiotica.Core.Utilities.DesignTime
 {
     public class DesignDispatcherUtility : IDispatcherUtility
     {
+        public void Run(Action action)
+        {
+            
+        }
+
         public Task RunAsync(Action action)
         {
             return Task.FromResult(0);
