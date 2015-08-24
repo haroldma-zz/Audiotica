@@ -130,19 +130,23 @@ namespace Audiotica.Database.Services.RunTime
 
             var albumArtist = Artists.FirstOrDefault(p =>
                 p.Name.EqualsIgnoreCase(track.AlbumArtist));
-            if (albumArtist == null)
+            var newRelation = albumArtist == null;
+
+            if (newRelation)
             {
                 albumArtist = new Artist
                 {
                     Name = track.AlbumArtist,
                     ArtworkUri = track.AlbumArtist == track.DisplayArtist ? track.ArtistArtworkUri : null
                 };
-                Artists.Add(albumArtist);
             }
             else if (albumArtist.ArtworkUri == null && displaySameAsAlbumArtist)
                 albumArtist.ArtworkUri = track.ArtistArtworkUri;
 
             albumArtist.Tracks.Add(track);
+            if (newRelation)
+                Artists.Add(albumArtist);
+
             CreateAlbum(track, albumArtist);
 
             if (!displaySameAsAlbumArtist)
@@ -155,19 +159,22 @@ namespace Audiotica.Database.Services.RunTime
         {
             var displayArtist = Artists.FirstOrDefault(p =>
                 p.Name.EqualsIgnoreCase(track.DisplayArtist));
-            if (displayArtist == null)
+            var newRelation = displayArtist == null;
+
+            if (newRelation)
             {
                 displayArtist = new Artist
                 {
                     Name = track.DisplayArtist,
                     ArtworkUri = track.ArtistArtworkUri
                 };
-                Artists.Add(displayArtist);
             }
             else if (displayArtist.ArtworkUri == null)
                 displayArtist.ArtworkUri = track.ArtistArtworkUri;
 
             displayArtist.Tracks.Add(track);
+            if (newRelation)
+                Artists.Add(displayArtist);
         }
 
         private void CreateSecondaryArtists(Track track)

@@ -38,9 +38,6 @@ namespace Audiotica.Windows.Controls
 
             {
                 var index = IndexFromContainer(element);
-                listViewItem.Margin = new Thickness(0);
-                listViewItem.Padding = new Thickness(0);
-                listViewItem.HorizontalContentAlignment = HorizontalAlignment.Stretch;
                 listViewItem.Background = (index + 1)%2 == 1
                     ? OddRowBackground ?? App.Current.Resources["SystemChromeLowColor"] as Brush
                     : EvenRowBackground;

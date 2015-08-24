@@ -31,7 +31,7 @@
         <StackPanel Width="140" Height="210" Margin="4">
             <Grid Width="140" Height="140" Background="{ThemeResource SystemControlBackgroundAccentBrush}"
                   Margin="0,0,0,5">
-                <Image Source="{x:Bind ArtworkUri, Converter={StaticResource ImageSourceConverter}}"
+                <Image Source="{x:Bind ArtworkUri, Converter={StaticResource ImageSourceConverter}, ConverterParameter=140}"
                        Stretch="UniformToFill" />
             </Grid>
             <TextBlock Text="{x:Bind Title}" TextWrapping="Wrap" Margin="0,0,0,5"
@@ -48,7 +48,7 @@
             </Grid.ColumnDefinitions>
             <Grid Width="100" Height="100" Background="{ThemeResource SystemControlBackgroundAccentBrush}"
                   Margin="0,0,5,0">
-                <Image Source="{x:Bind ArtworkUri, Converter={StaticResource ImageSourceConverter}}"
+                <Image Source="{x:Bind ArtworkUri, Converter={StaticResource ImageSourceConverter}, ConverterParameter=100}"
                        Stretch="UniformToFill" />
             </Grid>
             <Grid Grid.Column="1">
@@ -73,7 +73,7 @@
             <Ellipse Width="140" Height="140" Fill="#333" />
             <Ellipse Grid.Row="0" Width="140" Height="140">
                 <Ellipse.Fill>
-                    <ImageBrush ImageSource="{x:Bind ArtworkUri, Mode=OneWay, Converter={StaticResource ImageSourceConverter}}"
+                    <ImageBrush ImageSource="{x:Bind ArtworkUri, Mode=OneWay, Converter={StaticResource ImageSourceConverter}, ConverterParameter=140}"
                                 Stretch="UniformToFill" />
                 </Ellipse.Fill>
             </Ellipse>
@@ -95,7 +95,7 @@
                 <Ellipse Width="100" Height="100" Fill="#333" />
                 <Ellipse Grid.Row="0" Width="100" Height="100">
                     <Ellipse.Fill>
-                        <ImageBrush ImageSource="{x:Bind ArtworkUri, Converter={StaticResource ImageSourceConverter}}"
+                        <ImageBrush ImageSource="{x:Bind ArtworkUri, Converter={StaticResource ImageSourceConverter}, ConverterParameter=140}"
                                     Stretch="UniformToFill" />
                     </Ellipse.Fill>
                 </Ellipse>

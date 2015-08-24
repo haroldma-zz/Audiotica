@@ -147,6 +147,8 @@
     <Compile Include="Services\DesignTime\DesignInsightsService.cs" />
     <Compile Include="Services\Interfaces\IPlayerService.cs" />
     <Compile Include="Services\Interfaces\IInsightsService.cs" />
+    <Compile Include="Services\DesignTime\DesignLibraryCollectionService.cs" />
+    <Compile Include="Services\Interfaces\ILibraryCollectionService.cs" />
     <Compile Include="Services\RunTime\LibraryCollectionService.cs" />
     <Compile Include="Services\RunTime\PlayerService.cs" />
     <Compile Include="Services\RunTime\InsightsService.cs" />

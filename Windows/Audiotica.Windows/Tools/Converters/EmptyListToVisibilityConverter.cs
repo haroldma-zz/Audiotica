@@ -1,7 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Data;
 
 namespace Audiotica.Windows.Tools.Converters
@@ -21,7 +24,12 @@ namespace Audiotica.Windows.Tools.Converters
             else
                 any = ((IEnumerable<object>) value).Any();
 
-            return Reverse && any || !Reverse && !any
+            var result = Reverse && any || !Reverse && !any;
+
+            if (parameter as string == "float")
+                return result ? 1 : 0.2;
+
+            return result
                 ? Visibility.Collapsed
                 : Visibility.Visible;
         }

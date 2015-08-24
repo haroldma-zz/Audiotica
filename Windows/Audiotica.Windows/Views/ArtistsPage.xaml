@@ -10,8 +10,31 @@
     xmlns:customTriggers="using:Audiotica.Windows.CustomTriggers"
     xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
     xmlns:core="using:Microsoft.Xaml.Interactions.Core"
+    xmlns:tools="using:Audiotica.Windows.Tools"
+    xmlns:converters="using:Audiotica.Windows.Tools.Converters"
     mc:Ignorable="d"
     DataContext="{Binding ArtistsPage, Source={StaticResource ViewModelLocator}}">
+
+    <Page.Resources>
+        <CollectionViewSource x:Name="ArtistsSource" Source="{x:Bind ViewModel.ArtistsCollection, Mode=OneWay}"
+                              IsSourceGrouped="True" />
+        <DataTemplate x:Key="JumpTemplate">
+            <Grid Margin="0, 2"
+                  Opacity="{Binding Group.Count, Converter={StaticResource ReverseEmptyListToVisibilityConverter}, ConverterParameter=float}"
+                  Background="{ThemeResource SystemControlPageBackgroundChromeLowBrush}">
+                <Grid Margin="10">
+                    <StackPanel>
+                        <TextBlock Text="{Binding Group.Key}"
+                                   Style="{ThemeResource TitleTextBlockStyle}" />
+                        <TextBlock Style="{StaticResource TaglineTextBlockStyle}">
+                            <Run Text="{Binding Group.Count}" />
+                            <Run Text=" artist(s)" />
+                        </TextBlock>
+                    </StackPanel>
+                </Grid>
+            </Grid>
+        </DataTemplate>
+    </Page.Resources>
 
     <Grid x:Name="LayoutRoot" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Grid.RowDefinitions>
@@ -22,25 +45,66 @@
         <!--No Music-->
         <controls:NoMusicPanel Grid.Row="1" x:Name="NoMusicPanel"
                                Padding="{StaticResource PageThickness}"
-                               Visibility="{x:Bind ViewModel.LibraryService.Artists.Count, Mode=OneWay, Converter={StaticResource ReverseEmptyListToVisibilityConverter}}" />
+                               Visibility="{x:Bind ViewModel.ArtistsCollection.Count, Mode=OneWay, Converter={StaticResource ReverseEmptyListToVisibilityConverter}}" />
 
-        <GridView Grid.Row="1" x:Name="ArtistsGridView"
-                  IsItemClickEnabled="True"
-                  SelectionMode="None"
-                  ItemsSource="{x:Bind ViewModel.LibraryService.Artists}"
-                  ItemTemplate="{StaticResource ArtistTemplate}"
-                  Padding="{StaticResource PageThickness}">
-            <interactivity:Interaction.Behaviors>
-                <core:EventTriggerBehavior EventName="ItemClick">
-                    <core:InvokeCommandAction Command="{x:Bind ViewModel.ArtistClickCommand}" />
-                </core:EventTriggerBehavior>
-            </interactivity:Interaction.Behaviors>
-        </GridView>
+        <SemanticZoom x:Name="ArtistsGridView" Grid.Row="1">
+            <SemanticZoom.ZoomedInView>
+                <GridView Grid.Row="1"
+                          IsItemClickEnabled="True"
+                          SelectionMode="None"
+                          ItemsSource="{x:Bind ArtistsSource.View, Mode=OneWay}"
+                          ItemTemplate="{StaticResource ArtistTemplate}"
+                          Padding="{StaticResource PageThickness}">
+                    <interactivity:Interaction.Behaviors>
+                        <core:EventTriggerBehavior EventName="ItemClick">
+                            <core:InvokeCommandAction Command="{x:Bind ViewModel.ArtistClickCommand}" />
+                        </core:EventTriggerBehavior>
+                    </interactivity:Interaction.Behaviors>
+                    <GridView.GroupStyle>
+                        <GroupStyle HidesIfEmpty="True">
+                            <GroupStyle.HeaderTemplate>
+                                <DataTemplate x:DataType="tools:AlphaKeyGroup">
+                                    <TextBlock Text="{x:Bind Key}"
+                                               Style="{ThemeResource TitleTextBlockStyle}" />
+                                </DataTemplate>
+                            </GroupStyle.HeaderTemplate>
+                        </GroupStyle>
+                    </GridView.GroupStyle>
+                </GridView>
+            </SemanticZoom.ZoomedInView>
+            <SemanticZoom.ZoomedOutView>
+                <ListView Background="#BF000000" Padding="{StaticResource PageThickness}"
+                          ItemsSource="{x:Bind ArtistsSource.View.CollectionGroups, Mode=OneWay}"
+                          ItemTemplate="{StaticResource JumpTemplate}" />
+            </SemanticZoom.ZoomedOutView>
+        </SemanticZoom>
 
-        <ListView Grid.Row="1" x:Name="ArtistsListView" Visibility="Collapsed"
-                  ItemsSource="{x:Bind ViewModel.LibraryService.Artists}"
-                  Padding="{StaticResource PageMobileStatusBarThickness}"
-                  ItemTemplate="{StaticResource ArtistNarrowTemplate}" />
+        <SemanticZoom x:Name="ArtistsListView" Visibility="Collapsed" Grid.Row="1">
+            <SemanticZoom.ZoomedInView>
+                <ListView
+                    IsItemClickEnabled="True"
+                    SelectionMode="None"
+                    ItemsSource="{x:Bind ArtistsSource.View, Mode=OneWay}"
+                    Padding="{StaticResource PageMobileStatusBarThickness}"
+                    ItemTemplate="{StaticResource ArtistNarrowTemplate}">
+                    <ListView.GroupStyle>
+                        <GroupStyle HidesIfEmpty="True">
+                            <GroupStyle.HeaderTemplate>
+                                <DataTemplate x:DataType="tools:AlphaKeyGroup">
+                                    <TextBlock Text="{x:Bind Key}"
+                                               Style="{ThemeResource TitleTextBlockStyle}" />
+                                </DataTemplate>
+                            </GroupStyle.HeaderTemplate>
+                        </GroupStyle>
+                    </ListView.GroupStyle>
+                </ListView>
+            </SemanticZoom.ZoomedInView>
+            <SemanticZoom.ZoomedOutView>
+                <ListView Background="#BF000000" Padding="{StaticResource PageThickness}"
+                          ItemsSource="{x:Bind ArtistsSource.View.CollectionGroups, Mode=OneWay}"
+                          ItemTemplate="{StaticResource JumpTemplate}" />
+            </SemanticZoom.ZoomedOutView>
+        </SemanticZoom>
 
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroup x:Name="DeviceFamilyStates">

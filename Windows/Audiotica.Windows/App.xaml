@@ -6,7 +6,8 @@
     xmlns:viewModels="using:Audiotica.Windows.ViewModels"
     xmlns:converters="using:Audiotica.Windows.Tools.Converters"
     xmlns:controls="using:Audiotica.Windows.Controls"
-    xmlns:dataTemplates="using:Audiotica.Windows.DataTemplates">
+    xmlns:dataTemplates="using:Audiotica.Windows.DataTemplates"
+    xmlns:tools="using:Audiotica.Windows.Tools">
     <common:BootStrapper.Resources>
         <ResourceDictionary>
             <viewModels:ViewModelLocator x:Key="ViewModelLocator" />

@@ -20,6 +20,7 @@ namespace Audiotica.Windows.AppEngine.Modules
             builder.RegisterType<DesignNavigationService>().As<INavigationService>();
             builder.RegisterType<DesignLibraryService>().As<ILibraryService>();
             builder.RegisterType<DesignMatchEngineService>().As<IMatchEngineService>();
+            builder.RegisterType<DesignLibraryCollectionService>().As<ILibraryCollectionService>();
         }
 
         public override void LoadRunTime(ContainerBuilder builder)
@@ -31,6 +32,7 @@ namespace Audiotica.Windows.AppEngine.Modules
             builder.RegisterType<MatchEngineService>().As<IMatchEngineService>().SingleInstance();
             builder.RegisterType<TrackSaveService>().As<ITrackSaveService>();
             builder.RegisterType<LibraryMatchingService>().As<ILibraryMatchingService>().SingleInstance();
+            builder.RegisterType<LibraryCollectionService>().As<ILibraryCollectionService>().SingleInstance();
         }
     }
 }
