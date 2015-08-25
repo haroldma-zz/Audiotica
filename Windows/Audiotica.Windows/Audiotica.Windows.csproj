@@ -124,6 +124,9 @@
     <Compile Include="Common\MMCQ.cs" />
     <Compile Include="Common\UiBlocker.cs" />
     <Compile Include="Controls\AlternatingRowListView.cs" />
+    <Compile Include="Controls\LibraryHeader.xaml.cs">
+      <DependentUpon>LibraryHeader.xaml</DependentUpon>
+    </Compile>
     <Compile Include="DataTemplates\LibraryDictionary.xaml.cs">
       <DependentUpon>LibraryDictionary.xaml</DependentUpon>
     </Compile>
@@ -142,6 +145,7 @@
     <Compile Include="CustomTriggers\OrientationTrigger.cs" />
     <Compile Include="Common\WeakEvent.cs" />
     <Compile Include="Enums\AlbumSort.cs" />
+    <Compile Include="Enums\ArtistSort.cs" />
     <Compile Include="Enums\TrackSort.cs" />
     <Compile Include="Factories\AppKernelFactory.cs" />
     <Compile Include="Common\MessageBox.cs" />
@@ -253,6 +257,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="Controls\LibraryHeader.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="DataTemplates\LibraryDictionary.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

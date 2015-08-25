@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Windows.UI.Xaml.Controls;
+using Audiotica.Core.Extensions;
 using Audiotica.Database.Services.Interfaces;
 using Audiotica.Windows.Enums;
 using Audiotica.Windows.Services.Interfaces;
@@ -13,30 +14,27 @@ namespace Audiotica.Windows.ViewModels
     {
         private readonly ILibraryCollectionService _libraryCollectionService;
 
-        private bool _isGrouped;
-        private object _tracksCollection;
-
         public SongsPageViewModel(ILibraryCollectionService libraryCollectionService, ILibraryService libraryService)
         {
             _libraryCollectionService = libraryCollectionService;
             LibraryService = libraryService;
 
+            SortItems =
+                Enum.GetValues(typeof (TrackSort))
+                    .Cast<TrackSort>()
+                    .Select(sort => new ListBoxItem {Content = sort.GetEnumText(), Tag = sort})
+                    .ToList();
+
             ChangeSort(TrackSort.DateAdded);
         }
 
+        public List<ListBoxItem> SortItems { get; }
+
         public ILibraryService LibraryService { get; set; }
 
-        public bool IsGrouped
-        {
-            get { return _isGrouped; }
-            set { Set(ref _isGrouped, value); }
-        }
+        public bool IsGrouped { get; private set; }
 
-        public object TracksCollection
-        {
-            get { return _tracksCollection; }
-            set { Set(ref _tracksCollection, value); }
-        }
+        public object TracksCollection { get; private set; }
 
         public void ChangeSort(TrackSort sort)
         {

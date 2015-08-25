@@ -26,35 +26,7 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <StackPanel x:Name="Header" Padding="{StaticResource PageThickness}">
-            <TextBlock Text="Songs" Style="{ThemeResource TitleTextBlockStyle}" FontSize="34" />
-            <StackPanel Orientation="Horizontal" Margin="0, 20, 0, 15">
-                <TextBlock Text="Sort by:" />
-                <HyperlinkButton Content="{Binding SelectedItem.Content, ElementName=ListBox}" Padding="0"
-                                 ContentTemplate="{StaticResource HyperlinkTemplate}" Margin="5,0,0,0">
-                    <interactivity:Interaction.Behaviors>
-                        <core:EventTriggerBehavior EventName="Click">
-                            <interactions:OpenFlyoutAction />
-                        </core:EventTriggerBehavior>
-                    </interactivity:Interaction.Behaviors>
-                    <FlyoutBase.AttachedFlyout>
-                        <Flyout FlyoutPresenterStyle="{StaticResource FlyoutPresenterStyle1}">
-                            <ListBox x:Name="ListBox" SelectedIndex="0" SelectionChanged="ListBox_OnSelectionChanged">
-                                <ListBoxItem Content="Date Added" />
-                                <ListBoxItem Content="A to Z" />
-                                <ListBoxItem Content="Artist" />
-                                <ListBoxItem Content="Album" />
-                                <interactivity:Interaction.Behaviors>
-                                    <core:EventTriggerBehavior EventName="SelectionChanged">
-                                        <interactions:CloseFlyoutAction />
-                                    </core:EventTriggerBehavior>
-                                </interactivity:Interaction.Behaviors>
-                            </ListBox>
-                        </Flyout>
-                    </FlyoutBase.AttachedFlyout>
-                </HyperlinkButton>
-            </StackPanel>
-        </StackPanel>
+        <controls:LibraryHeader Title="Songs" SortItems="{x:Bind ViewModel.SortItems}" CurrentSortChanged="LibraryHeader_OnCurrentSortChanged" Margin="{StaticResource PageThickness}" />
 
         <!--No Music-->
         <controls:NoMusicPanel Grid.Row="1" x:Name="NoMusicPanel"

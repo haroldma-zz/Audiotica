@@ -1,9 +1,11 @@
 using System;
 using System.Linq;
 using System.Net;
+using System.Reflection;
 using System.Runtime.Serialization.Formatters;
 using System.Text.RegularExpressions;
 using Audiotica.Core.Helpers;
+using Audiotica.Windows.Enums;
 using Newtonsoft.Json;
 
 namespace Audiotica.Core.Extensions
@@ -12,6 +14,18 @@ namespace Audiotica.Core.Extensions
     {
         public static bool EqualsIgnoreCase(this string text, string other) =>
             text.Equals(other, StringComparison.CurrentCultureIgnoreCase);
+
+        public static string GetEnumText(this Enum value)
+        {
+            var fi = value.GetType().GetRuntimeField(value.ToString());
+
+            var attributes =
+                (TextAttribute[]) fi.GetCustomAttributes(typeof (TextAttribute), false);
+
+            if (attributes != null && attributes.Length > 0)
+                return attributes[0].Text;
+            return value.ToString();
+        }
 
         /// <summary>
         ///     Slugifies the text using the Audiotica algorith.

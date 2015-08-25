@@ -17,12 +17,11 @@ namespace Audiotica.Windows.Views
         }
 
         public SongsPageViewModel ViewModel { get; set; }
-
-        private void ListBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        
+        private void LibraryHeader_OnCurrentSortChanged(object sender, ListBoxItem item)
         {
-            var item = e.AddedItems.FirstOrDefault() as ListBoxItem;
-            if (item?.Content == null || ViewModel == null) return;
-            var sort = (TrackSort) Enum.Parse(typeof(TrackSort), item?.Content?.ToString().Replace(" ", ""));
+            if (!(item?.Tag is TrackSort) || ViewModel == null) return;
+            var sort = (TrackSort)item.Tag;
             ViewModel.ChangeSort(sort);
             Bindings.Update();
         }

@@ -48,6 +48,8 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
+        <controls:LibraryHeader Title="Artists" SortItems="{x:Bind ViewModel.SortItems}" CurrentSortChanged="LibraryHeader_OnCurrentSortChanged" Margin="{StaticResource PageThickness}" />
+        
         <!--No Music-->
         <controls:NoMusicPanel Grid.Row="1" x:Name="NoMusicPanel"
                                Padding="{StaticResource PageThickness}"

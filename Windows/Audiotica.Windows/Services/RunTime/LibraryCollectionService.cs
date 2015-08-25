@@ -33,12 +33,6 @@ namespace Audiotica.Windows.Services.RunTime
 
         #endregion
 
-        #region Albums
-
-        public OptimizedObservableCollection<AlphaKeyGroup> AlbumsByTitle { get; private set; }
-
-        #endregion
-
         private void Configure()
         {
             TracksByDateAdded = new OptimizedObservableCollection<Track>(
@@ -54,8 +48,12 @@ namespace Audiotica.Windows.Services.RunTime
                 _libraryService.Artists.Where(p => !p.IsSecondaryArtist), CultureInfo.CurrentCulture,
                 item => ((Artist) item).Name);
 
+            AlbumsByDateAdded = new OptimizedObservableCollection<Album>(
+                _libraryService.Albums.OrderByDescending(p => p.Tracks.Min(track => track.CreatedAt)));
             AlbumsByTitle = AlphaKeyGroup.CreateGroups(_libraryService.Albums, CultureInfo.CurrentCulture,
                 item => ((Album) item).Title);
+            AlbumsByArtist = AlphaKeyGroup.CreateGroups(_libraryService.Albums, CultureInfo.CurrentCulture,
+                item => ((Album) item).Artist.Name);
 
             _libraryService.Tracks.CollectionChanged += OnCollectionChanged;
             _libraryService.Artists.CollectionChanged += OnCollectionChanged;
@@ -111,7 +109,14 @@ namespace Audiotica.Windows.Services.RunTime
                 else if (item is Album)
                 {
                     var album = item as Album;
+
+                    if (removed)
+                        AlbumsByDateAdded.Remove(album);
+                    else
+                        AlbumsByDateAdded.Insert(0, album);
+
                     UpdateSortedCollection(album, removed, album.Title, () => AlbumsByTitle);
+                    UpdateSortedCollection(album, removed, album.Artist.Name, () => AlbumsByArtist);
                 }
             });
         }
@@ -156,9 +161,17 @@ namespace Audiotica.Windows.Services.RunTime
                 item => ((Artist) item).Name);
             ArtistsByName = artistsByName;
 
+            var albumsByDateAdded = new OptimizedObservableCollection<Album>(
+                _libraryService.Albums.OrderByDescending(p => p.Tracks.Min(track => track.CreatedAt)));
+            AlbumsByDateAdded = albumsByDateAdded;
+
             var albumsByTitle = AlphaKeyGroup.CreateGroups(_libraryService.Albums, CultureInfo.CurrentCulture,
                 item => ((Album) item).Title);
             AlbumsByTitle = albumsByTitle;
+
+            var albumsByArtist = AlphaKeyGroup.CreateGroups(_libraryService.Albums, CultureInfo.CurrentCulture,
+                item => ((Album) item).Artist.Name);
+            AlbumsByArtist = albumsByArtist;
         }
 
         private void UpdateSortedCollection<T>(T item, bool removed, string key,
@@ -214,6 +227,14 @@ namespace Audiotica.Windows.Services.RunTime
                 // ignored
             }
         }
+
+        #region Albums
+
+        public OptimizedObservableCollection<Album> AlbumsByDateAdded { get; private set; }
+        public OptimizedObservableCollection<AlphaKeyGroup> AlbumsByTitle { get; private set; }
+        public OptimizedObservableCollection<AlphaKeyGroup> AlbumsByArtist { get; private set; }
+
+        #endregion
 
         #region Tracks
 

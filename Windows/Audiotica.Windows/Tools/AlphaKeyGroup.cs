@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using Windows.Globalization.Collation;
@@ -11,6 +12,9 @@ namespace Audiotica.Windows.Tools
 {
     public class AlphaKeyGroup : OptimizedObservableCollection<object>
     {
+        private GridLength _gridLeftLength;
+        private GridLength _gridRightLength;
+
         /// <summary>
         ///     The delegate that is used to get the key information.
         /// </summary>
@@ -32,8 +36,25 @@ namespace Audiotica.Windows.Tools
         /// </summary>
         public string Key { get; }
 
-        public GridLength GridLeftLength { get; set; }
-        public GridLength GridRightLength { get; set; }
+        public GridLength GridLeftLength
+        {
+            get { return _gridLeftLength; }
+            set
+            {
+                _gridLeftLength = value;
+                OnPropertyChanged(new PropertyChangedEventArgs("GridLeftLength"));
+            }
+        }
+
+        public GridLength GridRightLength
+        {
+            get { return _gridRightLength; }
+            set
+            {
+                _gridRightLength = value;
+                OnPropertyChanged(new PropertyChangedEventArgs("GridRightLength"));
+            }
+        }
 
         /// <summary>
         ///     The Order Key of this group.
@@ -89,11 +110,10 @@ namespace Audiotica.Windows.Tools
                 foreach (var group in list)
                 {
                     group.OrderKey = getKey;
-                    var percent = group.Count/(double)max;
-                    if (double.IsNaN(percent))
+                    var percent = group.Count > 1 ? Math.Log(group.Count, max) : Math.Log(2, max) / 2;
+                    percent = Math.Max(.1, percent);
+                    if (group.Count == 0)
                         percent = 0;
-                    if (percent != 0)
-                        percent = Math.Max(percent, 0.2);
 
                     group.GridLeftLength = new GridLength(percent, GridUnitType.Star);
                     group.GridRightLength = new GridLength(1 - percent, GridUnitType.Star);
@@ -105,11 +125,13 @@ namespace Audiotica.Windows.Tools
                     group.CollectionChanged += (sender, args) =>
                     {
                         max = list.Select(p => p.Count).Max();
-                        percent = group.Count / (double)max;
-                        if (percent == double.NaN)
+                        percent = group.Count > 1 ? Math.Log(group.Count, max) : Math.Log(2, max) / 2;
+                        percent = Math.Max(.1, percent);
+                        if (group.Count == 0)
                             percent = 0;
-                        if (percent != 0)
-                            percent = Math.Max(percent, 0.2);
+
+                        group.GridLeftLength = new GridLength(percent, GridUnitType.Star);
+                        group.GridRightLength = new GridLength(1 - percent, GridUnitType.Star);
                     };
                 }
             }

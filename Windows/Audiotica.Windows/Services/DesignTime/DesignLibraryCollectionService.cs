@@ -30,7 +30,9 @@ namespace Audiotica.Windows.Services.DesignTime
         }
 
         public OptimizedObservableCollection<AlphaKeyGroup> ArtistsByName { get; }
+        public OptimizedObservableCollection<Album> AlbumsByDateAdded { get; }
         public OptimizedObservableCollection<AlphaKeyGroup> AlbumsByTitle { get; }
+        public OptimizedObservableCollection<AlphaKeyGroup> AlbumsByArtist { get; }
         public OptimizedObservableCollection<Track> TracksByDateAdded { get; }
         public OptimizedObservableCollection<AlphaKeyGroup> TracksByTitle { get; }
         public OptimizedObservableCollection<AlphaKeyGroup> TracksByArtist { get; }
