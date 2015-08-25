@@ -64,7 +64,7 @@ namespace Audiotica.Windows.Services.RunTime
 
         private void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs arg)
         {
-            _dispatcherUtility.RunAsync(() =>
+            _dispatcherUtility.Run(() =>
             {
                 object item;
                 var removed = false;

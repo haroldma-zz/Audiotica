@@ -89,13 +89,28 @@ namespace Audiotica.Windows.Tools
                 foreach (var group in list)
                 {
                     group.OrderKey = getKey;
-                    var percent = group.Count/(float)max;
+                    var percent = group.Count/(double)max;
+                    if (double.IsNaN(percent))
+                        percent = 0;
+                    if (percent != 0)
+                        percent = Math.Max(percent, 0.2);
+
                     group.GridLeftLength = new GridLength(percent, GridUnitType.Star);
                     group.GridRightLength = new GridLength(1 - percent, GridUnitType.Star);
 
                     var asList = group.ToList();
                     asList.Sort((x, y) => string.Compare(getKey(x), getKey(y), StringComparison.Ordinal));
                     group.SwitchTo(asList);
+
+                    group.CollectionChanged += (sender, args) =>
+                    {
+                        max = list.Select(p => p.Count).Max();
+                        percent = group.Count / (double)max;
+                        if (percent == double.NaN)
+                            percent = 0;
+                        if (percent != 0)
+                            percent = Math.Max(percent, 0.2);
+                    };
                 }
             }
 

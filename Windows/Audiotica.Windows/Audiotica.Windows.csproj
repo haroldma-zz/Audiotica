@@ -141,6 +141,7 @@
     <Compile Include="CustomTriggers\InputTypeTrigger.cs" />
     <Compile Include="CustomTriggers\OrientationTrigger.cs" />
     <Compile Include="Common\WeakEvent.cs" />
+    <Compile Include="Enums\AlbumSort.cs" />
     <Compile Include="Enums\TrackSort.cs" />
     <Compile Include="Factories\AppKernelFactory.cs" />
     <Compile Include="Common\MessageBox.cs" />
