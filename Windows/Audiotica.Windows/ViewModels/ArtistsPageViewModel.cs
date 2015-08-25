@@ -1,6 +1,7 @@
 ﻿using Windows.UI.Xaml.Controls;
 using Audiotica.Core.Common;
 using Audiotica.Database.Models;
+using Audiotica.Database.Services.Interfaces;
 using Audiotica.Windows.Services.Interfaces;
 using Audiotica.Windows.Services.NavigationService;
 using Audiotica.Windows.Tools;
@@ -11,12 +12,15 @@ namespace Audiotica.Windows.ViewModels
 {
     public class ArtistsPageViewModel : ViewModelBase
     {
+        public ILibraryService LibraryService { get; set; }
         private readonly INavigationService _navigationService;
         private OptimizedObservableCollection<AlphaKeyGroup> _artistsCollection;
 
         public ArtistsPageViewModel(ILibraryCollectionService libraryCollectionService,
+            ILibraryService libraryService,
             INavigationService navigationService)
         {
+            LibraryService = libraryService;
             _navigationService = navigationService;
 
             ArtistClickCommand = new Command<ItemClickEventArgs>(ArtistClickExecute);

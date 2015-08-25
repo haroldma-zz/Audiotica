@@ -1,6 +1,13 @@
-﻿using Windows.UI.Xaml;
+﻿using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Reflection;
+using Windows.UI;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Media;
+using Audiotica.Windows.Tools;
 
 namespace Audiotica.Windows.Controls
 {
@@ -38,8 +45,24 @@ namespace Audiotica.Windows.Controls
 
             {
                 var index = IndexFromContainer(element);
-                listViewItem.Background = (index + 1)%2 == 1
-                    ? OddRowBackground ?? App.Current.Resources["SystemChromeLowColor"] as Brush
+                var isOdd = (index + 1)%2 == 1;
+
+                // support for adjusting to groups (each group should be threated individually)
+                var collectionViewSource = Tag as CollectionViewSource;
+                var groups = collectionViewSource?.Source as IEnumerable<AlphaKeyGroup>;
+                if (groups != null)
+                {
+                    var o = Items?[index];
+                    if (o != null)
+                    {
+                        var currentGroup = groups.FirstOrDefault(p => p.Contains(o));
+                        index = currentGroup.IndexOf(o);
+                        isOdd = (index + 1)%2 == 1;
+                    }
+                }
+
+                listViewItem.Background = isOdd
+                    ? OddRowBackground ?? new SolidColorBrush((Color) App.Current.Resources["SystemChromeLowColor"])
                     : EvenRowBackground;
             }
         }

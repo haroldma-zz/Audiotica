@@ -8,8 +8,15 @@
     xmlns:navigationService="using:Audiotica.Windows.Services.NavigationService"
     xmlns:controls="using:Audiotica.Windows.Controls"
     xmlns:customTriggers="using:Audiotica.Windows.CustomTriggers"
+    xmlns:tools="using:Audiotica.Windows.Tools"
     mc:Ignorable="d"
     DataContext="{Binding SongsPage, Source={StaticResource ViewModelLocator}}">
+
+    <Page.Resources>
+
+        <CollectionViewSource x:Name="SongsSource" Source="{x:Bind ViewModel.TracksCollection, Mode=OneWay}"
+                              IsSourceGrouped="True" />
+    </Page.Resources>
 
     <Grid x:Name="LayoutRoot" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Grid.RowDefinitions>
@@ -22,11 +29,51 @@
                                Padding="{StaticResource PageThickness}"
                                Visibility="{x:Bind ViewModel.LibraryService.Tracks.Count, Mode=OneWay, Converter={StaticResource ReverseEmptyListToVisibilityConverter}}" />
 
-        <controls:AlternatingRowListView Grid.Row="1" x:Name="SongsListView"
-                                         ItemsSource="{x:Bind ViewModel.LibraryService.Tracks}"
-                                         Padding="{StaticResource PageThickness}"
-                                         OddRowBackground="{StaticResource OddRowBackgroundBrush}"
-                                         ItemTemplate="{StaticResource TrackTemplate}" />
+        <SemanticZoom Grid.Row="1">
+            <SemanticZoom.ZoomedInView>
+                <controls:AlternatingRowListView Grid.Row="1" x:Name="SongsListView"
+                                                 ItemsSource="{x:Bind SongsSource.View}"
+                                                 Tag="{x:Bind SongsSource}"
+                                                 Padding="{StaticResource PageThickness}"
+                                                 OddRowBackground="{StaticResource OddRowBackgroundBrush}"
+                                                 ItemTemplate="{StaticResource TrackTemplate}">
+                    <ListView.GroupStyle>
+                        <GroupStyle HidesIfEmpty="True">
+                            <GroupStyle.HeaderTemplate>
+                                <DataTemplate x:DataType="tools:AlphaKeyGroup">
+                                    <TextBlock Text="{x:Bind Key}" FontSize="14.5"
+                                               Foreground="{StaticResource SystemControlForegroundAccentBrush}" />
+                                </DataTemplate>
+                            </GroupStyle.HeaderTemplate>
+                        </GroupStyle>
+                    </ListView.GroupStyle>
+                </controls:AlternatingRowListView>
+            </SemanticZoom.ZoomedInView>
+            <SemanticZoom.ZoomedOutView>
+                <ListView Background="#BF000000" Padding="{StaticResource PageThickness}"
+                          ItemsSource="{x:Bind SongsSource.View.CollectionGroups, Mode=OneWay}">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Margin="0, 2"
+                                  Opacity="{Binding Group.Count, Converter={StaticResource ReverseEmptyListToVisibilityConverter}, ConverterParameter=float}"
+                                  Background="{ThemeResource SystemControlPageBackgroundChromeLowBrush}">
+                                <Grid Margin="10">
+                                    <StackPanel>
+                                        <TextBlock Text="{Binding Group.Key}"
+                                                   Style="{ThemeResource TitleTextBlockStyle}" />
+                                        <TextBlock Style="{StaticResource TaglineTextBlockStyle}">
+                                            <Run Text="{Binding Group.Count}" />
+                                            <Run Text="tracks(s)" />
+                                        </TextBlock>
+                                    </StackPanel>
+                                </Grid>
+                            </Grid>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </SemanticZoom.ZoomedOutView>
+        </SemanticZoom>
+
 
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroup x:Name="DeviceFamilyStates">

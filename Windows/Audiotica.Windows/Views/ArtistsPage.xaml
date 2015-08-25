@@ -28,7 +28,7 @@
                                    Style="{ThemeResource TitleTextBlockStyle}" />
                         <TextBlock Style="{StaticResource TaglineTextBlockStyle}">
                             <Run Text="{Binding Group.Count}" />
-                            <Run Text=" artist(s)" />
+                            <Run Text="artist(s)" />
                         </TextBlock>
                     </StackPanel>
                 </Grid>
@@ -45,7 +45,7 @@
         <!--No Music-->
         <controls:NoMusicPanel Grid.Row="1" x:Name="NoMusicPanel"
                                Padding="{StaticResource PageThickness}"
-                               Visibility="{x:Bind ViewModel.ArtistsCollection.Count, Mode=OneWay, Converter={StaticResource ReverseEmptyListToVisibilityConverter}}" />
+                               Visibility="{x:Bind ViewModel.LibraryService.Artists.Count, Mode=OneWay, Converter={StaticResource ReverseEmptyListToVisibilityConverter}}" />
 
         <SemanticZoom x:Name="ArtistsGridView" Grid.Row="1">
             <SemanticZoom.ZoomedInView>
@@ -64,8 +64,8 @@
                         <GroupStyle HidesIfEmpty="True">
                             <GroupStyle.HeaderTemplate>
                                 <DataTemplate x:DataType="tools:AlphaKeyGroup">
-                                    <TextBlock Text="{x:Bind Key}"
-                                               Style="{ThemeResource TitleTextBlockStyle}" />
+                                    <TextBlock Text="{x:Bind Key}" FontSize="14.5"
+                                       Foreground="{StaticResource SystemControlForegroundAccentBrush}"/>
                                 </DataTemplate>
                             </GroupStyle.HeaderTemplate>
                         </GroupStyle>
@@ -91,8 +91,8 @@
                         <GroupStyle HidesIfEmpty="True">
                             <GroupStyle.HeaderTemplate>
                                 <DataTemplate x:DataType="tools:AlphaKeyGroup">
-                                    <TextBlock Text="{x:Bind Key}"
-                                               Style="{ThemeResource TitleTextBlockStyle}" />
+                                    <TextBlock Text="{x:Bind Key}" FontSize="14.5"
+                                       Foreground="{StaticResource SystemControlForegroundAccentBrush}"/>
                                 </DataTemplate>
                             </GroupStyle.HeaderTemplate>
                         </GroupStyle>

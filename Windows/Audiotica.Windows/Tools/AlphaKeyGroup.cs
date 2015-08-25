@@ -23,7 +23,7 @@ namespace Audiotica.Windows.Tools
         /// <param name="key">The key for this group.</param>
         public AlphaKeyGroup(string key)
         {
-            Key = key.ToLower();
+            Key = key.ToUpper();
         }
 
         /// <summary>
@@ -46,7 +46,7 @@ namespace Audiotica.Windows.Tools
             return
                 (from key in slg
                     where string.IsNullOrWhiteSpace(key.Label) == false
-                    select new AlphaKeyGroup(key.Label.ToUpper())).ToList();
+                    select new AlphaKeyGroup(key.Label)).ToList();
         }
 
         /// <summary>
