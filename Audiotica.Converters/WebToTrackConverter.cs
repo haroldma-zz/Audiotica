@@ -23,11 +23,8 @@ namespace Audiotica.Converters
             _libraryService = libraryService;
         }
 
-        public async Task<Track> ConvertAsync(WebSong other)
+        public async Task<WebSong> FillPartialAsync(WebSong other)
         {
-            var conversion = other.PreviousConversion as Track;
-            if (conversion != null) return conversion;
-
             var provider = _providers.FirstOrDefault(p => p.GetType() == other.MetadataProvider);
 
             if (other.IsPartial)
@@ -50,6 +47,22 @@ namespace Audiotica.Converters
                 other.Artists[0] = other.Album.Artist;
             else if (other.Artists[0].IsPartial)
                 other.Artists[0] = await provider.GetArtistAsync(other.Artists[0].Token);
+
+            return other;
+        }
+
+        public async Task<List<WebSong>> FillPartialAsync(IEnumerable<WebSong> others)
+        {
+            var tasks = others.Select(FillPartialAsync).ToList();
+            return (await Task.WhenAll(tasks)).ToList();
+        }
+
+        public async Task<Track> ConvertAsync(WebSong other, bool ignoreLibrary = false)
+        {
+            var conversion = other.PreviousConversion as Track;
+            if (conversion != null) return conversion;
+
+            await FillPartialAsync(other);
 
             // some providers only have genres in the album object, others on the song
             var genres = new List<string>();
@@ -81,12 +94,12 @@ namespace Audiotica.Converters
             var libraryTrack = _libraryService.Find(track);
             other.PreviousConversion = libraryTrack ?? track;
 
-            return libraryTrack ?? track;
+            return ignoreLibrary ? track : libraryTrack ?? track;
         }
 
-        public async Task<List<Track>> ConvertAsync(IEnumerable<WebSong> others)
+        public async Task<List<Track>> ConvertAsync(IEnumerable<WebSong> others, bool ignoreLibrary = false)
         {
-            var tasks = others.Select(ConvertAsync).ToList();
+            var tasks = others.Select(song => ConvertAsync(song, ignoreLibrary)).ToList();
             return (await Task.WhenAll(tasks)).ToList();
         }
     }

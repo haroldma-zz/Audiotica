@@ -39,7 +39,6 @@
                                                  ItemsSource="{x:Bind SongsSource.View}"
                                                  Tag="{x:Bind SongsSource}"
                                                  Padding="{StaticResource PageThickness}"
-                                                 OddRowBackground="{StaticResource OddRowBackgroundBrush}"
                                                  ItemTemplate="{StaticResource TrackTemplate}">
                     <ListView.GroupStyle>
                         <GroupStyle HidesIfEmpty="True">

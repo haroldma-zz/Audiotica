@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Audiotica.Core.Extensions;
 using SQLite.Net.Attributes;
 
 namespace Audiotica.Database.Models
@@ -289,9 +290,9 @@ namespace Audiotica.Database.Models
 
         public int GetHashCode(Track obj)
         {
-            return (obj.Title + obj.Artists + obj.DisplayArtist
+            return (obj.Title + obj.DisplayArtist
                     + obj.AlbumArtist
-                    + obj.AlbumTitle).GetHashCode();
+                    + obj.AlbumTitle).ToAudioticaSlug().GetHashCode();
         }
 
         public static bool AreEqual(Track x, Track y)

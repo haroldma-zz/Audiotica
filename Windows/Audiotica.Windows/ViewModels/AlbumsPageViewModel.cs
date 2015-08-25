@@ -5,24 +5,31 @@ using Windows.UI.Xaml.Controls;
 using Audiotica.Core.Extensions;
 using Audiotica.Core.Utilities.Interfaces;
 using Audiotica.Core.Windows.Helpers;
+using Audiotica.Database.Models;
 using Audiotica.Database.Services.Interfaces;
 using Audiotica.Windows.Enums;
 using Audiotica.Windows.Services.Interfaces;
+using Audiotica.Windows.Services.NavigationService;
 using Audiotica.Windows.Tools.Mvvm;
+using Audiotica.Windows.Views;
 
 namespace Audiotica.Windows.ViewModels
 {
     public class AlbumsPageViewModel : ViewModelBase
     {
         private readonly ILibraryCollectionService _libraryCollectionService;
+        private readonly INavigationService _navigationService;
         private readonly ISettingsUtility _settingsUtility;
 
         public AlbumsPageViewModel(ILibraryService libraryService, ILibraryCollectionService libraryCollectionService,
-            ISettingsUtility settingsUtility)
+            ISettingsUtility settingsUtility, INavigationService navigationService)
         {
             _libraryCollectionService = libraryCollectionService;
             _settingsUtility = settingsUtility;
+            _navigationService = navigationService;
             LibraryService = libraryService;
+
+            AlbumClickCommand = new Command<ItemClickEventArgs>(AlbumClickExecute);
 
             SortItems =
                 Enum.GetValues(typeof (AlbumSort))
@@ -36,6 +43,8 @@ namespace Audiotica.Windows.ViewModels
             ChangeSort(defaultSort);
         }
 
+        public Command<ItemClickEventArgs> AlbumClickCommand { get; }
+
         public int DefaultSort { get; }
 
         public List<ListBoxItem> SortItems { get; set; }
@@ -45,6 +54,13 @@ namespace Audiotica.Windows.ViewModels
         public object AlbumsCollection { get; private set; }
 
         public bool IsGrouped { get; private set; }
+
+        private void AlbumClickExecute(ItemClickEventArgs e)
+        {
+            var album = (Album) e.ClickedItem;
+            _navigationService.Navigate(typeof (AlbumPage),
+                new AlbumPageViewModel.AlbumPageParameter(album.Title, album.Artist.Name));
+        }
 
         public void ChangeSort(AlbumSort sort)
         {

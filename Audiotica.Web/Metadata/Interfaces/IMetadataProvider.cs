@@ -15,6 +15,7 @@ namespace Audiotica.Web.Metadata.Interfaces
     public interface IBasicMetadataProvider : IMetadataProvider
     {
         Task<WebAlbum> GetAlbumAsync(string albumToken);
+        Task<WebAlbum> GetAlbumByTitleAsync(string title, string artist);
         Task<WebSong> GetSongAsync(string songToken);
         Task<WebArtist> GetArtistAsync(string artistToken);
         Task<WebArtist> GetArtistByNameAsync(string artistName);

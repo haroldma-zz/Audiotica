@@ -19,7 +19,7 @@ namespace Audiotica.Core.Utilities.DesignTime
 
         public T Read<T>(string key, T otherwise, SettingsStrategy strategy = SettingsStrategy.Local)
         {
-            return default(T);
+            return otherwise;
         }
     }
 }

@@ -144,17 +144,6 @@ namespace Audiotica.Web.Metadata.Providers
             }
         }
 
-        public override async Task<WebArtist> GetArtistByNameAsync(string artistName)
-        {
-            // No api for getting by artist name, so do a search to find the id.
-            var results = await SearchAsync(artistName, WebResults.Type.Artist, 1);
-            var artist = results.Artists?.FirstOrDefault(p => string.Equals(p.Name, artistName,
-                StringComparison.CurrentCultureIgnoreCase));
-            if (artist == null)
-                throw new ProviderException("Not found.");
-            return artist;
-        }
-
         public override async Task<WebResults> SearchAsync(string query,
             WebResults.Type searchType = WebResults.Type.Song, int limit = 20, string pageToken = null)
         {

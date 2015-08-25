@@ -22,7 +22,7 @@ namespace Audiotica.Converters
             _providers = providers.FilterAndSort<IBasicMetadataProvider>();
         }
 
-        public async Task<Artist> ConvertAsync(WebArtist other)
+        public async Task<WebArtist> FillPartialAsync(WebArtist other)
         {
             var provider = _providers.FirstOrDefault(p => p.GetType() == other.MetadataProvider);
 
@@ -31,6 +31,18 @@ namespace Audiotica.Converters
                 var web = await provider.GetArtistAsync(other.Token);
                 other.SetFrom(web);
             }
+            return other;
+        }
+
+        public async Task<List<WebArtist>> FillPartialAsync(IEnumerable<WebArtist> others)
+        {
+            var tasks = others.Select(FillPartialAsync).ToList();
+            return (await Task.WhenAll(tasks)).ToList();
+        }
+
+        public async Task<Artist> ConvertAsync(WebArtist other, bool ignoreLibrary = false)
+        {
+            await FillPartialAsync(other);
 
             var artist = new Artist
             {
@@ -41,12 +53,12 @@ namespace Audiotica.Converters
             var libraryArtist = _libraryService.Artists.FirstOrDefault(p => p.Name.EqualsIgnoreCase(artist.Name));
             other.PreviousConversion = libraryArtist ?? artist;
 
-            return libraryArtist ?? artist;
+            return ignoreLibrary ? artist : libraryArtist ?? artist;
         }
 
-        public async Task<List<Artist>> ConvertAsync(IEnumerable<WebArtist> others)
+        public async Task<List<Artist>> ConvertAsync(IEnumerable<WebArtist> others, bool ignoreLibrary = false)
         {
-            var tasks = others.Select(ConvertAsync).ToList();
+            var tasks = others.Select(p => ConvertAsync(p, ignoreLibrary)).ToList();
             return (await Task.WhenAll(tasks)).ToList();
         }
     }

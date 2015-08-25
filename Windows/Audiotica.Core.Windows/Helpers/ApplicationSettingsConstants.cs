@@ -10,6 +10,7 @@
         public const string AppSuspendedTimestamp = "appsuspendedtimestamp";
         public const string AppResumedTimestamp = "appresumedtimestamp";
         public const string IsArtistAdaptiveColorEnabled = "IsArtistColorArtworkEnabled";
+        public const string IsAlbumAdaptiveColorEnabled = "IsAlbumAdaptiveColorEnabled";
         public const string SongSort = "SongSort";
         public const string AlbumSort = "AlbumSort";
     }

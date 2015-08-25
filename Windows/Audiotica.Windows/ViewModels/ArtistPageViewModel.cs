@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using Audiotica.Core.Common;
@@ -16,6 +17,7 @@ using Audiotica.Web.Models;
 using Audiotica.Windows.Common;
 using Audiotica.Windows.Services.NavigationService;
 using Audiotica.Windows.Tools.Mvvm;
+using Audiotica.Windows.Views;
 
 namespace Audiotica.Windows.ViewModels
 {
@@ -34,9 +36,9 @@ namespace Audiotica.Windows.ViewModels
         private bool _isAlbumsLoading;
         private bool _isNewAlbumsLoading;
         private bool _isTopSongsLoading;
-        private List<Album> _newAlbums;
+        private List<WebAlbum> _newAlbums;
         private ElementTheme _requestedTheme = ElementTheme.Default;
-        private List<Album> _topAlbums;
+        private List<WebAlbum> _topAlbums;
         private List<Track> _topSongs;
 
         public ArtistPageViewModel(INavigationService navigationService,
@@ -56,9 +58,16 @@ namespace Audiotica.Windows.ViewModels
             _webSongConverter = webSongConverter;
             _settingsUtility = settingsUtility;
 
+            AlbumClickCommand = new Command<ItemClickEventArgs>(AlbumClickExecute);
+            WebAlbumClickCommand = new Command<ItemClickEventArgs>(WebAlbumClickExecute);
+
             if (IsInDesignMode)
                 OnNavigatedTo("Childish Gambino", NavigationMode.New, new Dictionary<string, object>());
         }
+
+        public Command<ItemClickEventArgs> AlbumClickCommand { get; set; }
+
+        public Command<ItemClickEventArgs> WebAlbumClickCommand { get; }
 
         public bool IsNewAlbumsLoading
         {
@@ -102,13 +111,13 @@ namespace Audiotica.Windows.ViewModels
             set { Set(ref _artist, value); }
         }
 
-        public List<Album> NewAlbums
+        public List<WebAlbum> NewAlbums
         {
             get { return _newAlbums; }
             set { Set(ref _newAlbums, value); }
         }
 
-        public List<Album> TopAlbums
+        public List<WebAlbum> TopAlbums
         {
             get { return _topAlbums; }
             set { Set(ref _topAlbums, value); }
@@ -118,6 +127,20 @@ namespace Audiotica.Windows.ViewModels
         {
             get { return _topSongs; }
             set { Set(ref _topSongs, value); }
+        }
+
+        private void AlbumClickExecute(ItemClickEventArgs e)
+        {
+            var album = (Album)e.ClickedItem;
+            _navigationService.Navigate(typeof(AlbumPage),
+                new AlbumPageViewModel.AlbumPageParameter(album.Title, album.Artist.Name));
+        }
+
+        private void WebAlbumClickExecute(ItemClickEventArgs e)
+        {
+            var album = (WebAlbum) e.ClickedItem;
+            _navigationService.Navigate(typeof (AlbumPage),
+                new AlbumPageViewModel.AlbumPageParameter(album.Title, album.Artist.Name, album) {IsCatalogMode = true});
         }
 
         public override async void OnNavigatedTo(object parameter, NavigationMode mode, Dictionary<string, object> state)
@@ -160,7 +183,7 @@ namespace Audiotica.Windows.ViewModels
 
         public override void OnNavigatedFrom(bool suspending, Dictionary<string, object> state)
         {
-            // Bug: if we don't reset the theme when we go out, it fucks with the TrackViewer control on other pages
+            // Bug: if we don't reset the theme when we go out it fucks with the TrackViewer control on other pages
             RequestedTheme = ElementTheme.Default;
         }
 
@@ -198,8 +221,9 @@ namespace Audiotica.Windows.ViewModels
                         // since it will remove duplicates request 4
                         if (NewAlbums == null)
                         {
-                            NewAlbums = await _webAlbumConverter.ConvertAsync(
-                                (await metadataProvider.GetArtistNewAlbumsAsync(webArtist.Token, 4)).Albums.Take(2));
+                            NewAlbums =
+                                await _webAlbumConverter.FillPartialAsync(
+                                    (await metadataProvider.GetArtistNewAlbumsAsync(webArtist.Token, 4)).Albums.Take(2));
                             IsNewAlbumsLoading = false;
                         }
                     }
@@ -212,9 +236,7 @@ namespace Audiotica.Windows.ViewModels
                     {
                         if (TopAlbums == null)
                         {
-                            TopAlbums = await
-                                _webAlbumConverter.ConvertAsync(
-                                    (await metadataProvider.GetArtistAlbumsAsync(webArtist.Token, 10)).Albums);
+                            TopAlbums = await _webAlbumConverter.FillPartialAsync((await metadataProvider.GetArtistAlbumsAsync(webArtist.Token, 10)).Albums);
                             IsAlbumsLoading = false;
                         }
                     }

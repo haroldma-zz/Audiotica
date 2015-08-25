@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Audiotica.Core.Extensions;
 using Audiotica.Core.Utilities.Interfaces;
+using Audiotica.Web.Exceptions;
 using Audiotica.Web.Metadata.Interfaces;
 using Audiotica.Web.Models;
 
@@ -15,9 +16,37 @@ namespace Audiotica.Web.Metadata.Providers
         }
 
         public abstract Task<WebAlbum> GetAlbumAsync(string albumToken);
+
+        public async virtual Task<WebAlbum> GetAlbumByTitleAsync(string title, string artist)
+        {
+            // No api for getting by artist name, so do a search to find the id.
+            var results = await SearchAsync(title.Append(artist), WebResults.Type.Album, 1);
+            var album = results.Albums?.FirstOrDefault();
+            if (album == null || !album.Title.EqualsIgnoreCase(title) || album.IsPartial || !album.Artist.Name.EqualsIgnoreCase(artist))
+            {
+                if (album != null && album.IsPartial)
+                    album = await GetAlbumAsync(album.Token);
+                if (album == null || !album.Title.EqualsIgnoreCase(title) || !album.Artist.Name.EqualsIgnoreCase(artist))
+                    throw new ProviderException("Not found.");
+            }
+            return album;
+        }
+
         public abstract Task<WebSong> GetSongAsync(string songToken);
         public abstract Task<WebArtist> GetArtistAsync(string artistToken);
-        public abstract Task<WebArtist> GetArtistByNameAsync(string artistName);
+
+        public virtual async Task<WebArtist> GetArtistByNameAsync(string artistName)
+        {
+            // No api for getting by artist name, so do a search to find the id.
+            var results = await SearchAsync(artistName, WebResults.Type.Artist, 1);
+            var artist = results.Artists?.FirstOrDefault(p => string.Equals(p.Name, artistName,
+                StringComparison.CurrentCultureIgnoreCase));
+            if (artist == null)
+                throw new ProviderException("Not found.");
+            if (artist.IsPartial)
+                artist = await GetArtistAsync(artist.Token);
+            return artist;
+        }
 
         public abstract Task<WebResults> SearchAsync(string query, WebResults.Type searchType = WebResults.Type.Song,
             int limit = 20, string pageToken = null);

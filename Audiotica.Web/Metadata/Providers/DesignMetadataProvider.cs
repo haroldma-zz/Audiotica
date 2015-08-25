@@ -37,6 +37,11 @@ namespace Audiotica.Web.Metadata.Providers
             throw new NotImplementedException();
         }
 
+        public Task<WebAlbum> GetAlbumByTitleAsync(string title, string artist)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<WebSong> GetSongAsync(string songToken)
         {
             throw new NotImplementedException();

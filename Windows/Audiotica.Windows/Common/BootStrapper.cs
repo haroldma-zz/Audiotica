@@ -76,13 +76,13 @@ namespace Audiotica.Windows.Common
 
             if (e.PreviousExecutionState == ApplicationExecutionState.Terminated)
             {
+                Kernel.OnRelaunched();
                 try
                 {
                     NavigationService.RestoreSavedNavigation();
                 }
                 finally
                 {
-                    Kernel.OnRelaunched();
                     OnRelaunched(e);
                 }
             }

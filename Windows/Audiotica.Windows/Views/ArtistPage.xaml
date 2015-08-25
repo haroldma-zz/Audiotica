@@ -8,6 +8,8 @@
     xmlns:navigationService="using:Audiotica.Windows.Services.NavigationService"
     xmlns:controls="using:Audiotica.Windows.Controls"
     xmlns:customTriggers="using:Audiotica.Windows.CustomTriggers"
+    xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
+    xmlns:core="using:Microsoft.Xaml.Interactions.Core"
     mc:Ignorable="d"
     RequestedTheme="{x:Bind ViewModel.RequestedTheme, Mode=OneWay}"
     DataContext="{Binding ArtistPage, Source={StaticResource ViewModelLocator}}">
@@ -36,7 +38,14 @@
                 <TextBlock Text="In Collection" Margin="0, 0, 0, 5"
                            Visibility="{x:Bind ViewModel.Artist.Albums.Count, Mode=OneWay, Converter={StaticResource EmptyListToVisibilityConverter}}" />
                 <ListView ItemsSource="{x:Bind ViewModel.Artist.Albums, Mode=OneWay}"
+                          IsItemClickEnabled="True"
+                          SelectionMode="None"
                           ItemTemplate="{StaticResource AlbumTemplate}">
+                    <interactivity:Interaction.Behaviors>
+                        <core:EventTriggerBehavior EventName="ItemClick">
+                            <core:InvokeCommandAction Command="{x:Bind ViewModel.AlbumClickCommand}" />
+                        </core:EventTriggerBehavior>
+                    </interactivity:Interaction.Behaviors>
                     <ListView.ItemsPanel>
                         <ItemsPanelTemplate>
                             <VirtualizingStackPanel Orientation="Horizontal" />
@@ -46,7 +55,14 @@
                 <TextBlock Text="New Releases" Margin="0, 0, 0, 5" />
                 <ProgressBar IsIndeterminate="{x:Bind ViewModel.IsNewAlbumsLoading, Mode=OneWay}" Visibility="{x:Bind ViewModel.IsNewAlbumsLoading, Mode=OneWay, Converter={StaticResource VisibilityConverter}}" />
                 <ListView ItemsSource="{x:Bind ViewModel.NewAlbums, Mode=OneWay}"
-                          ItemTemplate="{StaticResource AlbumTemplate}">
+                          IsItemClickEnabled="True"
+                          SelectionMode="None"
+                          ItemTemplate="{StaticResource WebAlbumTemplate}">
+                    <interactivity:Interaction.Behaviors>
+                        <core:EventTriggerBehavior EventName="ItemClick">
+                            <core:InvokeCommandAction Command="{x:Bind ViewModel.WebAlbumClickCommand}" />
+                        </core:EventTriggerBehavior>
+                    </interactivity:Interaction.Behaviors>
                     <ListView.ItemsPanel>
                         <ItemsPanelTemplate>
                             <VirtualizingStackPanel Orientation="Horizontal" />
@@ -56,7 +72,14 @@
                 <TextBlock Text="Albums" Margin="0, 0, 0, 5" />
                 <ProgressBar IsIndeterminate="{x:Bind ViewModel.IsAlbumsLoading, Mode=OneWay}" Visibility="{x:Bind ViewModel.IsAlbumsLoading, Mode=OneWay, Converter={StaticResource VisibilityConverter}}" />
                 <ListView ItemsSource="{x:Bind ViewModel.TopAlbums, Mode=OneWay}"
-                          ItemTemplate="{StaticResource AlbumTemplate}">
+                          SelectionMode="None"
+                          IsItemClickEnabled="True"
+                          ItemTemplate="{StaticResource WebAlbumTemplate}">
+                    <interactivity:Interaction.Behaviors>
+                        <core:EventTriggerBehavior EventName="ItemClick">
+                            <core:InvokeCommandAction Command="{x:Bind ViewModel.WebAlbumClickCommand}" />
+                        </core:EventTriggerBehavior>
+                    </interactivity:Interaction.Behaviors>
                     <ListView.ItemsPanel>
                         <ItemsPanelTemplate>
                             <VirtualizingStackPanel Orientation="Horizontal" />
@@ -67,7 +90,6 @@
                 <ProgressBar IsIndeterminate="{x:Bind ViewModel.IsTopSongsLoading, Mode=OneWay}" Visibility="{x:Bind ViewModel.IsTopSongsLoading, Mode=OneWay, Converter={StaticResource VisibilityConverter}}" />
                 <controls:AlternatingRowListView x:Name="TopTracksListView"
                                                  ItemsSource="{x:Bind ViewModel.TopSongs, Mode=OneWay}"
-                                                 OddRowBackground="{StaticResource OddRowBackgroundBrush}"
                                                  ItemTemplate="{StaticResource CatalogTrackTemplate}"
                                                  ScrollViewer.VerticalScrollBarVisibility="Disabled" />
             </StackPanel>

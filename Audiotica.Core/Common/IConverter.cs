@@ -3,10 +3,12 @@ using System.Threading.Tasks;
 
 namespace Audiotica.Core.Common
 {
-    public interface IConverter<in T, TT> where T : IConvertibleObject
+    public interface IConverter<T, TT> where T : IConvertibleObject
     {
-        Task<TT> ConvertAsync(T other);
-        Task<List<TT>> ConvertAsync(IEnumerable<T> others);
+        Task<T> FillPartialAsync(T other);
+        Task<List<T>> FillPartialAsync(IEnumerable<T> others);
+        Task<TT> ConvertAsync(T other, bool ignoreLibrary = false);
+        Task<List<TT>> ConvertAsync(IEnumerable<T> others, bool ignoreLibrary = false);
     }
 
     public interface IConvertibleObject

@@ -38,13 +38,14 @@ namespace Audiotica.Windows.Controls
         protected override void PrepareContainerForItemOverride(DependencyObject element, object item)
         {
             base.PrepareContainerForItemOverride(element, item);
-
+            
             var listViewItem = element as ListViewItem;
 
             if (listViewItem != null)
 
             {
                 var index = IndexFromContainer(element);
+
                 var isOdd = (index + 1)%2 == 1;
 
                 // support for adjusting to groups (each group should be threated individually)

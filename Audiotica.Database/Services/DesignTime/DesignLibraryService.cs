@@ -59,7 +59,8 @@ namespace Audiotica.Database.Services.DesignTime
                         Name = "Childish Gambino",
                         ArtworkUri = gambinoArtwork
                     },
-                    ArtworkUri = kauaiArtwork
+                    ArtworkUri = kauaiArtwork,
+                    Tracks = Tracks
                 }
             };
 

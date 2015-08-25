@@ -148,4 +148,17 @@
             </StackPanel>
         </Grid>
     </DataTemplate>
+
+    <DataTemplate x:Key="WebAlbumTemplate" x:DataType="webModels:WebAlbum">
+        <StackPanel Width="140" Height="210" Margin="4">
+            <Grid Width="140" Height="140" Background="{ThemeResource SystemControlBackgroundAccentBrush}"
+                  Margin="0,0,0,5">
+                <Image Source="{x:Bind Artwork, Converter={StaticResource ImageSourceConverter}, ConverterParameter=140}"
+                       Stretch="UniformToFill" />
+            </Grid>
+            <TextBlock Text="{x:Bind Title}" TextWrapping="Wrap" Margin="0,0,0,5"
+                       MaxHeight="40" LineHeight="20" LineStackingStrategy="BlockLineHeight" />
+            <TextBlock Text="{x:Bind Artist.Name}" Style="{StaticResource SubtleTextBlockStyle}" />
+        </StackPanel>
+    </DataTemplate>
 </ResourceDictionary>

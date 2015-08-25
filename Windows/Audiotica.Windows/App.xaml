@@ -27,7 +27,6 @@
             <converters:UpperCaseConverter x:Key="UpperCaseConverter" />
 
             <SolidColorBrush x:Name="SubtleTextBrush" Color="{ThemeResource SystemBaseMediumColor}" />
-            <SolidColorBrush x:Name="OddRowBackgroundBrush" Color="{ThemeResource SystemChromeLowColor}" />
 
             <Thickness x:Key="MobileStatusBarThickness">0, 26, 0, 0</Thickness>
             <Thickness x:Key="PageThickness">30, 20, 30, 0</Thickness>

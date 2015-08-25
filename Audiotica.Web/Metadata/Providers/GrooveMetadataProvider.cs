@@ -33,7 +33,7 @@ namespace Audiotica.Web.Metadata.Providers
 
         public override async Task<WebAlbum> GetAlbumAsync(string albumToken)
         {
-            var response = await _client.LookupAsync(albumToken);
+            var response = await _client.LookupAsync(albumToken, extras:ExtraDetails.Tracks);
             var xboxAlbum = response.Albums.Items.FirstOrDefault();
 
             if (response.Error == null)
@@ -65,18 +65,6 @@ namespace Audiotica.Web.Metadata.Providers
 
             // Something happened, throw exception
             throw new ProviderException(response.Error.Message);
-        }
-
-        public override async Task<WebArtist> GetArtistByNameAsync(string artistName)
-        {
-            var response = await SearchAsync(artistName, WebResults.Type.Artist, 1);
-            var artist = response.Artists?.FirstOrDefault(p => string.Equals(p.Name, artistName,
-                StringComparison.CurrentCultureIgnoreCase));
-            if (artist == null)
-                throw new ProviderException("Not found.");
-            if (artist.IsPartial)
-                artist = await GetArtistAsync(artist.Token);
-            return artist;
         }
 
        

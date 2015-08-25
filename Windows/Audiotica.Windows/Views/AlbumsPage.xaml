@@ -9,6 +9,8 @@
     xmlns:customTriggers="using:Audiotica.Windows.CustomTriggers"
     xmlns:controls="using:Audiotica.Windows.Controls"
     xmlns:tools="using:Audiotica.Windows.Tools"
+    xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
+    xmlns:core="using:Microsoft.Xaml.Interactions.Core"
     mc:Ignorable="d"
     DataContext="{Binding AlbumsPage, Source={StaticResource ViewModelLocator}}">
 
@@ -60,6 +62,11 @@
                     ItemsSource="{x:Bind AlbumsSource.View, Mode=OneWay}"
                     Padding="{StaticResource PageThickness}"
                     ItemTemplate="{StaticResource AlbumTemplate}">
+                    <interactivity:Interaction.Behaviors>
+                        <core:EventTriggerBehavior EventName="ItemClick">
+                            <core:InvokeCommandAction Command="{x:Bind ViewModel.AlbumClickCommand}" />
+                        </core:EventTriggerBehavior>
+                    </interactivity:Interaction.Behaviors> 
                     <GridView.GroupStyle>
                         <GroupStyle HidesIfEmpty="True">
                             <GroupStyle.HeaderTemplate>
@@ -88,6 +95,11 @@
                     ItemsSource="{x:Bind AlbumsSource.View, Mode=OneWay}"
                     Padding="{StaticResource PageMobileStatusBarThickness}"
                     ItemTemplate="{StaticResource AlbumNarrowTemplate}">
+                    <interactivity:Interaction.Behaviors>
+                        <core:EventTriggerBehavior EventName="ItemClick">
+                            <core:InvokeCommandAction Command="{x:Bind ViewModel.AlbumClickCommand}" />
+                        </core:EventTriggerBehavior>
+                    </interactivity:Interaction.Behaviors>
                     <ListView.GroupStyle>
                         <GroupStyle HidesIfEmpty="True">
                             <GroupStyle.HeaderTemplate>
