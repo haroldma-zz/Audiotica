@@ -26,7 +26,7 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <controls:LibraryHeader Title="Songs" SortItems="{x:Bind ViewModel.SortItems}" CurrentSortChanged="LibraryHeader_OnCurrentSortChanged" Margin="{StaticResource PageThickness}" />
+        <controls:LibraryHeader Title="Songs" DefaultSortIndex="{x:Bind ViewModel.DefaultSort}" SortItems="{x:Bind ViewModel.SortItems}"  CurrentSortChanged="LibraryHeader_OnCurrentSortChanged" Margin="{StaticResource PageThickness}" />
 
         <!--No Music-->
         <controls:NoMusicPanel Grid.Row="1" x:Name="NoMusicPanel"

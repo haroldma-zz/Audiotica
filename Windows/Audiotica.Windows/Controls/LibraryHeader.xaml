@@ -25,7 +25,7 @@
                 </interactivity:Interaction.Behaviors>
                 <FlyoutBase.AttachedFlyout>
                     <Flyout FlyoutPresenterStyle="{StaticResource FlyoutPresenterStyle1}">
-                        <ListBox x:Name="ListBox" ItemsSource="{x:Bind SortItems, Mode=OneWay}" SelectionChanged="ListBox_OnSelectionChanged">
+                        <ListBox x:Name="ListBox" ItemsSource="{x:Bind SortItems, Mode=OneWay}" SelectedIndex="{x:Bind DefaultSortIndex}" SelectionChanged="ListBox_OnSelectionChanged">
                             <interactivity:Interaction.Behaviors>
                                 <core:EventTriggerBehavior EventName="SelectionChanged">
                                     <interactions:CloseFlyoutAction />

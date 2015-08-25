@@ -14,17 +14,12 @@ namespace Audiotica.Windows.Controls
             DependencyProperty.Register("SortItems", typeof (IList<ListBoxItem>), typeof (LibraryHeader),
                 new PropertyMetadata(null, SortItemsPropertyChangedCallback));
 
+        public static readonly DependencyProperty DefaultSortIndexProperty =
+            DependencyProperty.Register("DefaultSortIndex", typeof (int), typeof (LibraryHeader), new PropertyMetadata(0));
+
         public LibraryHeader()
         {
             InitializeComponent();
-            Loaded += OnLoaded;
-        }
-
-        private void OnLoaded(object sender, RoutedEventArgs args)
-        {
-            Loaded -= OnLoaded;
-            if (ListBox.Items?.Count > 0)
-                ListBox.SelectedIndex = 0;
         }
 
         public string Title
@@ -39,6 +34,12 @@ namespace Audiotica.Windows.Controls
             set { SetValue(SortItemsProperty, value); }
         }
 
+        public int DefaultSortIndex
+        {
+            get { return (int) GetValue(DefaultSortIndexProperty); }
+            set { SetValue(DefaultSortIndexProperty, value); }
+        }
+
         public event EventHandler<ListBoxItem> CurrentSortChanged;
 
         private static void SortItemsPropertyChangedCallback(DependencyObject o, DependencyPropertyChangedEventArgs e)
@@ -47,9 +48,6 @@ namespace Audiotica.Windows.Controls
             var sortItems = e.NewValue as IList<ListBoxItem>;
 
             header.SortHyperlinkButton.IsEnabled = sortItems?.Count > 1;
-
-            if (header.ListBox.Items?.Count > 0)
-                header.ListBox.SelectedIndex = 0;
         }
 
         private void ListBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)

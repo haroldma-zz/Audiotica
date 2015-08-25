@@ -125,13 +125,16 @@ namespace Audiotica.Windows.Tools
                     group.CollectionChanged += (sender, args) =>
                     {
                         max = list.Select(p => p.Count).Max();
-                        percent = group.Count > 1 ? Math.Log(group.Count, max) : Math.Log(2, max) / 2;
-                        percent = Math.Max(.1, percent);
-                        if (group.Count == 0)
-                            percent = 0;
+                        foreach (var other in list)
+                        {
+                            percent = other.Count > 1 ? Math.Log(other.Count, max) : Math.Log(2, max) / 2;
+                            percent = Math.Max(.1, percent);
+                            if (other.Count == 0)
+                                percent = 0;
 
-                        group.GridLeftLength = new GridLength(percent, GridUnitType.Star);
-                        group.GridRightLength = new GridLength(1 - percent, GridUnitType.Star);
+                            other.GridLeftLength = new GridLength(percent, GridUnitType.Star);
+                            other.GridRightLength = new GridLength(1 - percent, GridUnitType.Star);
+                        }
                     };
                 }
             }
