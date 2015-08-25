@@ -5,7 +5,7 @@
 
     <x:String x:Key="StreamingIconText"></x:String>
 
-    <Style x:Key="MvrBaseTextBlockStyle" TargetType="TextBlock">
+    <Style x:Key="MvrBaseTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource BaseTextBlockStyle}">
         <Setter Property="FontFamily" Value="{StaticResource MvrFontFamily}" />
     </Style>
 
@@ -13,9 +13,7 @@
         <Setter Property="Text" Value="{StaticResource StreamingIconText}" />
     </Style>
 
-    
     <Style x:Key="BaseTextBlockStyle" TargetType="TextBlock">
-        <Setter Property="TextLineBounds" Value="Tight" />
         <Setter Property="TextTrimming" Value="CharacterEllipsis" />
     </Style>
 

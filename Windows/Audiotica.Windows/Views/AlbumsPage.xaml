@@ -16,10 +16,16 @@
         <CollectionViewSource x:Name="AlbumsSource" Source="{x:Bind ViewModel.AlbumsCollection, Mode=OneWay}"
                               IsSourceGrouped="True" />
         <DataTemplate x:Key="JumpTemplate">
-            <Grid Margin="0, 2"
-                  Opacity="{Binding Group.Count, Converter={StaticResource ReverseEmptyListToVisibilityConverter}, ConverterParameter=float}"
-                  Background="{ThemeResource SystemControlPageBackgroundChromeLowBrush}">
-                <Grid Margin="10">
+            <Grid>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="{Binding Group.GridLeftLength}" />
+                        <ColumnDefinition Width="{Binding Group.GridRightLength}" />
+                    </Grid.ColumnDefinitions>
+                    <Grid />
+                    <Grid Grid.Column="1" VerticalAlignment="Stretch" Background="Black" />
+                </Grid>
+                <Grid Margin="10" Opacity="{Binding Group.Count, Converter={StaticResource ReverseEmptyListToVisibilityConverter}, ConverterParameter=float}">
                     <StackPanel>
                         <TextBlock Text="{Binding Group.Key}"
                                    Style="{ThemeResource TitleTextBlockStyle}" />
@@ -66,6 +72,7 @@
             </SemanticZoom.ZoomedInView>
             <SemanticZoom.ZoomedOutView>
                 <ListView Background="#BF000000" Padding="{StaticResource PageThickness}"
+                          ItemContainerStyle="{StaticResource GroupListViewItemStyle}"
                           ItemsSource="{x:Bind AlbumsSource.View.CollectionGroups, Mode=OneWay}"
                           ItemTemplate="{StaticResource JumpTemplate}" />
             </SemanticZoom.ZoomedOutView>
@@ -74,6 +81,8 @@
         <SemanticZoom Grid.Row="1" x:Name="AlbumsListView" Visibility="Collapsed">
             <SemanticZoom.ZoomedInView>
                 <ListView
+                    SelectionMode="None"
+                    IsItemClickEnabled="True"
                     ItemsSource="{x:Bind AlbumsSource.View, Mode=OneWay}"
                     Padding="{StaticResource PageMobileStatusBarThickness}"
                     ItemTemplate="{StaticResource AlbumNarrowTemplate}">
@@ -91,6 +100,7 @@
             </SemanticZoom.ZoomedInView>
             <SemanticZoom.ZoomedOutView>
                 <ListView Background="#BF000000" Padding="{StaticResource PageThickness}"
+                          ItemContainerStyle="{StaticResource GroupListViewItemStyle}"
                           ItemsSource="{x:Bind AlbumsSource.View.CollectionGroups, Mode=OneWay}"
                           ItemTemplate="{StaticResource JumpTemplate}" />
             </SemanticZoom.ZoomedOutView>

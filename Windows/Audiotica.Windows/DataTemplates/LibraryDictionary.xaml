@@ -119,10 +119,12 @@
         <Grid Margin="0,15">
             <Grid>
                 <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="32" />
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width=".2*" />
+                    <ColumnDefinition Width="32" />
                 </Grid.ColumnDefinitions>
                 <TextBlock Text="{x:Bind Title}"
                            Style="{StaticResource BaseTextBlockStyle}" Margin="0,0,10,0" />
@@ -137,10 +139,10 @@
     </DataTemplate>
 
     <DataTemplate x:Key="WebSongNarrowTemplate" x:DataType="webModels:WebSong">
-        <Grid Margin="0,15">
+        <Grid Margin="32,15">
             <StackPanel>
                 <TextBlock Text="{x:Bind Title}"
-                           Style="{StaticResource TitleTextBlockStyle}" />
+                           Style="{StaticResource BaseTextBlockStyle}" />
                 <TextBlock Text="{x:Bind Artists[0].Name}"
                            Style="{StaticResource SubtleTextBlockStyle}" />
             </StackPanel>

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using Windows.Globalization.Collation;
+using Windows.UI.Xaml;
 using Audiotica.Core.Common;
 using Audiotica.Core.Extensions;
 
@@ -30,6 +31,9 @@ namespace Audiotica.Windows.Tools
         ///     The Key of this group.
         /// </summary>
         public string Key { get; }
+
+        public GridLength GridLeftLength { get; set; }
+        public GridLength GridRightLength { get; set; }
 
         /// <summary>
         ///     The Order Key of this group.
@@ -78,11 +82,17 @@ namespace Audiotica.Windows.Tools
                 }
             }
 
+            var max = list.Select(p => p.Count).Max();
+
             if (sort)
             {
                 foreach (var group in list)
                 {
                     group.OrderKey = getKey;
+                    var percent = group.Count/(float)max;
+                    group.GridLeftLength = new GridLength(percent, GridUnitType.Star);
+                    group.GridRightLength = new GridLength(1 - percent, GridUnitType.Star);
+
                     var asList = group.ToList();
                     asList.Sort((x, y) => string.Compare(getKey(x), getKey(y), StringComparison.Ordinal));
                     group.SwitchTo(asList);

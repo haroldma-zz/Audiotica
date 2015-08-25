@@ -12,6 +12,8 @@
         <ResourceDictionary>
             <viewModels:ViewModelLocator x:Key="ViewModelLocator" />
 
+            <SolidColorBrush x:Key="SystemChromeLowBrush" Color="{ThemeResource SystemChromeLowColor}" />
+
             <converters:TrackStatusConverter x:Name="MatchingVisibilityConverter" DesiredStatus="Matching" />
             <converters:TrackStatusConverter x:Name="NoMatchVisibilityConverter" DesiredStatus="NoMatch" />
             <converters:TrackTypeConverter x:Name="StreamingVisibilityConverter" DesiredStatus="Stream" />

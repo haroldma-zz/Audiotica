@@ -16,7 +16,7 @@
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="32" />
         </Grid.ColumnDefinitions>
-        <Grid HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,0,1,0">
+        <Grid HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,3,1,0">
             <Grid Visibility="{x:Bind IsCatalog, Mode=OneWay, Converter={StaticResource VisibilityConverter}}">
                 <TextBlock Style="{StaticResource MusicInCollectionTextBlockStyle}"
                            Foreground="{StaticResource SubtleTextBrush}"
@@ -32,7 +32,7 @@
         </Grid>
         <StackPanel Grid.Column="1">
             <TextBlock Text="{x:Bind Track.Title, Mode=OneWay}"
-                       Style="{StaticResource TitleTextBlockStyle}" />
+                       Style="{StaticResource BaseTextBlockStyle}" />
             <TextBlock Text="{x:Bind Track.Artists, Mode=OneWay}"
                        Style="{StaticResource SubtleTextBlockStyle}" />
         </StackPanel>

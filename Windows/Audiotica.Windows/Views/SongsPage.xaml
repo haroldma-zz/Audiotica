@@ -9,13 +9,16 @@
     xmlns:controls="using:Audiotica.Windows.Controls"
     xmlns:customTriggers="using:Audiotica.Windows.CustomTriggers"
     xmlns:tools="using:Audiotica.Windows.Tools"
+    xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
+    xmlns:core="using:Microsoft.Xaml.Interactions.Core"
+    xmlns:interactions="using:Audiotica.Windows.Interactions"
     mc:Ignorable="d"
     DataContext="{Binding SongsPage, Source={StaticResource ViewModelLocator}}">
 
     <Page.Resources>
 
         <CollectionViewSource x:Name="SongsSource" Source="{x:Bind ViewModel.TracksCollection, Mode=OneWay}"
-                              IsSourceGrouped="True" />
+                              IsSourceGrouped="{x:Bind ViewModel.IsGrouped, Mode=OneWay}" />
     </Page.Resources>
 
     <Grid x:Name="LayoutRoot" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
@@ -23,6 +26,35 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
+
+        <Grid x:Name="Header" Padding="{StaticResource PageThickness}">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Sort by:" />
+                <HyperlinkButton Content="{Binding SelectedItem.Content, ElementName=ListBox}" Padding="0"
+                                 ContentTemplate="{StaticResource HyperlinkTemplate}" Margin="5,0,0,0">
+                    <interactivity:Interaction.Behaviors>
+                        <core:EventTriggerBehavior EventName="Click">
+                            <interactions:OpenFlyoutAction />
+                        </core:EventTriggerBehavior>
+                    </interactivity:Interaction.Behaviors>
+                    <FlyoutBase.AttachedFlyout>
+                        <Flyout FlyoutPresenterStyle="{StaticResource FlyoutPresenterStyle1}">
+                            <ListBox x:Name="ListBox" SelectedIndex="0" SelectionChanged="ListBox_OnSelectionChanged">
+                                <ListBoxItem Content="Date Added" />
+                                <ListBoxItem Content="A to Z" />
+                                <ListBoxItem Content="Artist" />
+                                <ListBoxItem Content="Album" />
+                                <interactivity:Interaction.Behaviors>
+                                    <core:EventTriggerBehavior EventName="SelectionChanged">
+                                        <interactions:CloseFlyoutAction />
+                                    </core:EventTriggerBehavior>
+                                </interactivity:Interaction.Behaviors>
+                            </ListBox>
+                        </Flyout>
+                    </FlyoutBase.AttachedFlyout>
+                </HyperlinkButton>
+            </StackPanel>
+        </Grid>
 
         <!--No Music-->
         <controls:NoMusicPanel Grid.Row="1" x:Name="NoMusicPanel"
@@ -51,19 +83,27 @@
             </SemanticZoom.ZoomedInView>
             <SemanticZoom.ZoomedOutView>
                 <ListView Background="#BF000000" Padding="{StaticResource PageThickness}"
+                          ItemContainerStyle="{StaticResource GroupListViewItemStyle}"
                           ItemsSource="{x:Bind SongsSource.View.CollectionGroups, Mode=OneWay}">
                     <ListView.ItemTemplate>
                         <DataTemplate>
-                            <Grid Margin="0, 2"
-                                  Opacity="{Binding Group.Count, Converter={StaticResource ReverseEmptyListToVisibilityConverter}, ConverterParameter=float}"
-                                  Background="{ThemeResource SystemControlPageBackgroundChromeLowBrush}">
-                                <Grid Margin="10">
+                            <Grid>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="{Binding Group.GridLeftLength}" />
+                                        <ColumnDefinition Width="{Binding Group.GridRightLength}" />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid />
+                                    <Grid Grid.Column="1" VerticalAlignment="Stretch" Background="Black" />
+                                </Grid>
+                                <Grid Margin="10"
+                                      Opacity="{Binding Group.Count, Converter={StaticResource ReverseEmptyListToVisibilityConverter}, ConverterParameter=float}">
                                     <StackPanel>
                                         <TextBlock Text="{Binding Group.Key}"
                                                    Style="{ThemeResource TitleTextBlockStyle}" />
                                         <TextBlock Style="{StaticResource TaglineTextBlockStyle}">
                                             <Run Text="{Binding Group.Count}" />
-                                            <Run Text="tracks(s)" />
+                                            <Run Text="track(s)" />
                                         </TextBlock>
                                     </StackPanel>
                                 </Grid>

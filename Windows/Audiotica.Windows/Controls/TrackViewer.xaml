@@ -18,7 +18,7 @@
             <ColumnDefinition Width=".2*" />
             <ColumnDefinition Width="32" />
         </Grid.ColumnDefinitions>
-        <Grid HorizontalAlignment="Center" Margin="0,0,1,0">
+        <Grid HorizontalAlignment="Center" Margin="0,3,1,0">
             <Grid Visibility="{x:Bind IsCatalog, Mode=OneWay, Converter={StaticResource VisibilityConverter}}">
                 <TextBlock Style="{StaticResource MusicInCollectionTextBlockStyle}"
                            Foreground="{StaticResource SubtleTextBrush}"
