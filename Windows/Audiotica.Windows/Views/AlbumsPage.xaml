@@ -8,8 +8,30 @@
     xmlns:navigationService="using:Audiotica.Windows.Services.NavigationService"
     xmlns:customTriggers="using:Audiotica.Windows.CustomTriggers"
     xmlns:controls="using:Audiotica.Windows.Controls"
+    xmlns:tools="using:Audiotica.Windows.Tools"
     mc:Ignorable="d"
     DataContext="{Binding AlbumsPage, Source={StaticResource ViewModelLocator}}">
+
+    <Page.Resources>
+        <CollectionViewSource x:Name="AlbumsSource" Source="{x:Bind ViewModel.AlbumsCollection, Mode=OneWay}"
+                              IsSourceGrouped="True" />
+        <DataTemplate x:Key="JumpTemplate">
+            <Grid Margin="0, 2"
+                  Opacity="{Binding Group.Count, Converter={StaticResource ReverseEmptyListToVisibilityConverter}, ConverterParameter=float}"
+                  Background="{ThemeResource SystemControlPageBackgroundChromeLowBrush}">
+                <Grid Margin="10">
+                    <StackPanel>
+                        <TextBlock Text="{Binding Group.Key}"
+                                   Style="{ThemeResource TitleTextBlockStyle}" />
+                        <TextBlock Style="{StaticResource TaglineTextBlockStyle}">
+                            <Run Text="{Binding Group.Count}" />
+                            <Run Text="album(s)" />
+                        </TextBlock>
+                    </StackPanel>
+                </Grid>
+            </Grid>
+        </DataTemplate>
+    </Page.Resources>
 
     <Grid x:Name="LayoutRoot" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Grid.RowDefinitions>
@@ -22,15 +44,57 @@
                                Padding="{StaticResource PageThickness}"
                                Visibility="{x:Bind ViewModel.LibraryService.Albums.Count, Mode=OneWay, Converter={StaticResource ReverseEmptyListToVisibilityConverter}}" />
 
-        <GridView Grid.Row="1" x:Name="AlbumsGridView"
-                  ItemsSource="{x:Bind ViewModel.LibraryService.Albums}"
-                  Padding="{StaticResource PageThickness}"
-                  ItemTemplate="{StaticResource AlbumTemplate}" />
+        <SemanticZoom Grid.Row="1" x:Name="AlbumsGridView">
+            <SemanticZoom.ZoomedInView>
+                <GridView
+                    SelectionMode="None"
+                    IsItemClickEnabled="True"
+                    ItemsSource="{x:Bind AlbumsSource.View, Mode=OneWay}"
+                    Padding="{StaticResource PageThickness}"
+                    ItemTemplate="{StaticResource AlbumTemplate}">
+                    <GridView.GroupStyle>
+                        <GroupStyle HidesIfEmpty="True">
+                            <GroupStyle.HeaderTemplate>
+                                <DataTemplate x:DataType="tools:AlphaKeyGroup">
+                                    <TextBlock Text="{x:Bind Key}" FontSize="14.5"
+                                               Foreground="{StaticResource SystemControlForegroundAccentBrush}" />
+                                </DataTemplate>
+                            </GroupStyle.HeaderTemplate>
+                        </GroupStyle>
+                    </GridView.GroupStyle>
+                </GridView>
+            </SemanticZoom.ZoomedInView>
+            <SemanticZoom.ZoomedOutView>
+                <ListView Background="#BF000000" Padding="{StaticResource PageThickness}"
+                          ItemsSource="{x:Bind AlbumsSource.View.CollectionGroups, Mode=OneWay}"
+                          ItemTemplate="{StaticResource JumpTemplate}" />
+            </SemanticZoom.ZoomedOutView>
+        </SemanticZoom>
 
-        <ListView Grid.Row="1" x:Name="AlbumsListView" Visibility="Collapsed"
-                  ItemsSource="{x:Bind ViewModel.LibraryService.Albums}"
-                  Padding="{StaticResource PageMobileStatusBarThickness}"
-                  ItemTemplate="{StaticResource AlbumNarrowTemplate}" />
+        <SemanticZoom Grid.Row="1" x:Name="AlbumsListView" Visibility="Collapsed">
+            <SemanticZoom.ZoomedInView>
+                <ListView
+                    ItemsSource="{x:Bind AlbumsSource.View, Mode=OneWay}"
+                    Padding="{StaticResource PageMobileStatusBarThickness}"
+                    ItemTemplate="{StaticResource AlbumNarrowTemplate}">
+                    <ListView.GroupStyle>
+                        <GroupStyle HidesIfEmpty="True">
+                            <GroupStyle.HeaderTemplate>
+                                <DataTemplate x:DataType="tools:AlphaKeyGroup">
+                                    <TextBlock Text="{x:Bind Key}" FontSize="14.5"
+                                               Foreground="{StaticResource SystemControlForegroundAccentBrush}" />
+                                </DataTemplate>
+                            </GroupStyle.HeaderTemplate>
+                        </GroupStyle>
+                    </ListView.GroupStyle>
+                </ListView>
+            </SemanticZoom.ZoomedInView>
+            <SemanticZoom.ZoomedOutView>
+                <ListView Background="#BF000000" Padding="{StaticResource PageThickness}"
+                          ItemsSource="{x:Bind AlbumsSource.View.CollectionGroups, Mode=OneWay}"
+                          ItemTemplate="{StaticResource JumpTemplate}" />
+            </SemanticZoom.ZoomedOutView>
+        </SemanticZoom>
 
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroup x:Name="DeviceFamilyStates">
