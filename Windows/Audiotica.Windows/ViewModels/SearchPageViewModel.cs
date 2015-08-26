@@ -5,6 +5,7 @@ using Audiotica.Database.Models;
 using Audiotica.Web.Extensions;
 using Audiotica.Web.Metadata.Interfaces;
 using Audiotica.Web.Models;
+using Audiotica.Windows.Common;
 using Audiotica.Windows.Services.NavigationService;
 using Audiotica.Windows.Tools.Mvvm;
 using Audiotica.Windows.Views;
@@ -99,23 +100,44 @@ namespace Audiotica.Windows.ViewModels
 
         private async void SearchArtists(string query, ISearchMetadataProvider provider)
         {
-            ArtistsResults = null;
-            var result = await provider.SearchAsync(query, WebResults.Type.Artist);
-            ArtistsResults = result?.Artists;
+            try
+            {
+                ArtistsResults = null;
+                var result = await provider.SearchAsync(query, WebResults.Type.Artist);
+                ArtistsResults = result?.Artists;
+            }
+            catch
+            {
+                CurtainPrompt.ShowError("Something happened while searching for artists!");
+            }
         }
 
         private async void SearchAlbums(string query, ISearchMetadataProvider provider)
         {
-            ArtistsResults = null;
-            var result = await provider.SearchAsync(query, WebResults.Type.Album);
-            AlbumsResults = await _webToAlbumConverter.FillPartialAsync(result?.Albums);
+            try
+            {
+                AlbumsResults = null;
+                var result = await provider.SearchAsync(query, WebResults.Type.Album);
+                AlbumsResults = await _webToAlbumConverter.FillPartialAsync(result?.Albums);
+            }
+            catch
+            {
+                CurtainPrompt.ShowError("Something happened while searching for albums!");
+            }
         }
 
         private async void SearchTracks(string query, ISearchMetadataProvider provider)
         {
-            ArtistsResults = null;
-            var result = await provider.SearchAsync(query);
-            TracksResults = await _webToTrackConverter.ConvertAsync(result?.Songs);
+            try
+            {
+                TracksResults = null;
+                var result = await provider.SearchAsync(query);
+                TracksResults = await _webToTrackConverter.ConvertAsync(result?.Songs);
+            }
+            catch
+            {
+                CurtainPrompt.ShowError("Something happened while searching for tracks!");
+            }
         }
     }
 }

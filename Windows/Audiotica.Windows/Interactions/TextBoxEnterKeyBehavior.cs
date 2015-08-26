@@ -45,7 +45,7 @@ namespace Audiotica.Windows.Interactions
 
         private void AssociatedTextBox_KeyDown(object sender, KeyRoutedEventArgs e)
         {
-            if (e.Key == VirtualKey.Enter)
+            if (e.Key == VirtualKey.Enter && e.KeyStatus.RepeatCount == 0)
             {
                 Interaction.ExecuteActions(AssociatedObject, Actions, AssociatedTextBox.Text);
             }

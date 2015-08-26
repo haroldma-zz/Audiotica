@@ -75,6 +75,16 @@
                             </RadioButton.Tag>
                         </RadioButton>
 
+                        <!-- search -->
+                        <RadioButton Command="{Binding NavCommand}" Content="Search" GroupName="Nav">
+                            <RadioButton.CommandParameter>
+                                <local:NavType Type="views:SearchPage" />
+                            </RadioButton.CommandParameter>
+                            <RadioButton.Tag>
+                                <TextBlock Style="{StaticResource SearchTextBlockStyle}" />
+                            </RadioButton.Tag>
+                        </RadioButton>
+
                         <!-- albums -->
                         <RadioButton Command="{Binding NavCommand}" Content="Albums" GroupName="Nav">
                             <RadioButton.CommandParameter>

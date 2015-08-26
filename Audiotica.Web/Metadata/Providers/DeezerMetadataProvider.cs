@@ -154,6 +154,15 @@ namespace Audiotica.Web.Metadata.Providers
             using (var response = await new DeezerAlbumRequest(albumToken)
                 .ToResponseAsync().DontMarshall())
             {
+                if (string.IsNullOrEmpty(response.Data.Title))
+                {
+                    var text = await response.HttpResponse.Content.ReadAsStringAsync();
+                    if (text != null)
+                    {
+                        if (JToken.Parse(text)["error"] != null)
+                            throw new ProviderException("Quota limit exceeded.");
+                    }
+                }
                 if (response.HasData)
                     return CreateAlbum(response.Data);
 

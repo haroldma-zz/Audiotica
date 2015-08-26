@@ -15,6 +15,7 @@
 
     <ScrollViewer Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <StackPanel Padding="{StaticResource PageThickness}">
+            <TextBlock Text="Search needs a lot of refining, this is just for testing." />
             <!--<TextBlock Text="Results for &quot;Gambino&quot;" Style="{StaticResource LargeHeaderTextBlockStyle}" />-->
             <TextBox PlaceholderText="Search the catalog" Width="300" HorizontalAlignment="Left" Margin="0,0,0,10">
                 <interactivity:Interaction.Behaviors>

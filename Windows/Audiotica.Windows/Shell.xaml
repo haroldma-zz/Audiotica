@@ -69,6 +69,17 @@
                         </RadioButton.Tag>
                     </RadioButton>
 
+                    <!-- search -->
+                    <RadioButton Command="{Binding NavCommand}" Content="Search" GroupName="Nav">
+                        <RadioButton.CommandParameter>
+                            <local:NavType Type="views:SearchPage" />
+                        </RadioButton.CommandParameter>
+                        <RadioButton.Tag>
+                            <TextBlock Style="{StaticResource SearchTextBlockStyle}" />
+                        </RadioButton.Tag>
+                    </RadioButton>
+
+
                     <!-- explore -->
                     <RadioButton Command="{Binding NavCommand}" Content="Explore" GroupName="Nav">
                         <RadioButton.CommandParameter>
@@ -82,7 +93,7 @@
                     <!-- now playing -->
                     <RadioButton Command="{Binding NavCommand}" Content="Now playing" GroupName="Nav">
                         <RadioButton.CommandParameter>
-                            <local:NavType Type="views:SearchPage" />
+                            <local:NavType Type="views:NowPlayingPage" />
                         </RadioButton.CommandParameter>
                         <RadioButton.Tag>
                             <TextBlock Style="{StaticResource NowPlayingTextBlockStyle}" />

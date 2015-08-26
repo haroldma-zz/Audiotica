@@ -71,6 +71,10 @@
         <Setter Property="Text" Value="{StaticResource NowPlayingIconText}" />
     </Style>
 
+    <Style x:Key="SearchTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource MvrTextBlockStyle}">
+        <Setter Property="Text" Value="{StaticResource SearchIconText}" />
+    </Style>
+
     <Style x:Key="RadioTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource MvrTextBlockStyle}">
         <Setter Property="Text" Value="{StaticResource RadioIconText}" />
     </Style>
