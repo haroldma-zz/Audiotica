@@ -35,6 +35,7 @@ namespace Audiotica.Windows.Interactions
         public void Attach(DependencyObject associatedObject)
         {
             AssociatedObject = associatedObject;
+            AssociatedTextBox.KeyDown -= AssociatedTextBox_KeyDown;
             AssociatedTextBox.KeyDown += AssociatedTextBox_KeyDown;
         }
 
@@ -45,6 +46,7 @@ namespace Audiotica.Windows.Interactions
 
         private void AssociatedTextBox_KeyDown(object sender, KeyRoutedEventArgs e)
         {
+            // winrt has a weird issue with the enter key, it is called twice in debug, hence the repeat count check
             if (e.Key == VirtualKey.Enter && e.KeyStatus.RepeatCount == 0)
             {
                 Interaction.ExecuteActions(AssociatedObject, Actions, AssociatedTextBox.Text);

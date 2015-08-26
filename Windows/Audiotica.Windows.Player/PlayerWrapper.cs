@@ -140,6 +140,7 @@ namespace Audiotica.Windows.Player
 
             // auto start
             BackgroundMediaPlayer.Current.AutoPlay = true;
+            _playbackStartedPreviously = true;
 
             // Assign the list to the player
             BackgroundMediaPlayer.Current.Source = _mediaPlaybackList;
@@ -362,10 +363,18 @@ namespace Audiotica.Windows.Player
             var index = _mediaPlaybackList.Items.ToList().FindIndex(i => i.Source.Queue().Id == queueId);
             Debug.WriteLine("Skipping to track " + index);
             _smtcWrapper.PlaybackStatus = MediaPlaybackStatus.Changing;
-            _mediaPlaybackList.MoveTo((uint) index);
 
-            // TODO: Work around playlist bug that doesn't continue playing after a switch; remove later
-            BackgroundMediaPlayer.Current.Play();
+            try
+            {
+                _mediaPlaybackList.MoveTo((uint) index);
+
+                // TODO: Work around playlist bug that doesn't continue playing after a switch; remove later
+                BackgroundMediaPlayer.Current.Play();
+            }
+            catch
+            {
+                // ignored
+            }
         }
 
         private void ForegroundMessengerOnStartPlayback(object sender, EventArgs eventArgs)
