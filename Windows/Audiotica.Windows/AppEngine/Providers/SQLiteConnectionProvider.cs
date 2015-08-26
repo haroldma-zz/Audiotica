@@ -11,7 +11,7 @@ namespace Audiotica.Windows.AppEngine.Providers
     // ReSharper disable once InconsistentNaming
     internal class SQLiteConnectionProvider : IProvider<SQLiteConnection>
     {
-        private const string DatabaseFilename = @"Library\audiotica.sqlite";
+        private const string DatabaseFilename = @"Library\audiotica.library";
 
         public SQLiteConnection CreateInstance(IComponentContext context)
         {

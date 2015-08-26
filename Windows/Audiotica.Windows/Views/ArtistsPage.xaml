@@ -12,12 +12,11 @@
     xmlns:core="using:Microsoft.Xaml.Interactions.Core"
     xmlns:tools="using:Audiotica.Windows.Tools"
     xmlns:converters="using:Audiotica.Windows.Tools.Converters"
+    xmlns:common="using:Audiotica.Windows.Common"
     mc:Ignorable="d"
     DataContext="{Binding ArtistsPage, Source={StaticResource ViewModelLocator}}">
 
     <Page.Resources>
-        <CollectionViewSource x:Name="ArtistsSource" Source="{x:Bind ViewModel.ArtistsCollection, Mode=OneWay}"
-                              IsSourceGrouped="True" />
         <DataTemplate x:Key="JumpTemplate">
             <Grid>
                 <Grid>
@@ -28,7 +27,8 @@
                     <Grid />
                     <Grid Grid.Column="1" VerticalAlignment="Stretch" Background="Black" />
                 </Grid>
-                <Grid Margin="10" Opacity="{Binding Group.Count, Converter={StaticResource ReverseEmptyListToVisibilityConverter}, ConverterParameter=float}">
+                <Grid Margin="10"
+                      Opacity="{Binding Group.Count, Converter={StaticResource ReverseEmptyListToVisibilityConverter}, ConverterParameter=float}">
                     <StackPanel>
                         <TextBlock Text="{Binding Group.Key}"
                                    Style="{ThemeResource TitleTextBlockStyle}" />
@@ -48,8 +48,10 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <controls:LibraryHeader Title="Artists" SortItems="{x:Bind ViewModel.SortItems}" CurrentSortChanged="LibraryHeader_OnCurrentSortChanged" Margin="{StaticResource PageThickness}" />
-        
+        <controls:LibraryHeader Title="Artists" SortItems="{x:Bind ViewModel.SortItems}"
+                                CurrentSortChangedCommand="{x:Bind ViewModel.SortChangedCommand}"
+                                Margin="{StaticResource PageThickness}" />
+
         <!--No Music-->
         <controls:NoMusicPanel Grid.Row="1" x:Name="NoMusicPanel"
                                Padding="{StaticResource PageThickness}"
@@ -57,12 +59,13 @@
 
         <SemanticZoom x:Name="ArtistsGridView" Grid.Row="1">
             <SemanticZoom.ZoomedInView>
-                <GridView Grid.Row="1"
-                          IsItemClickEnabled="True"
-                          SelectionMode="None"
-                          ItemsSource="{x:Bind ArtistsSource.View, Mode=OneWay}"
-                          ItemTemplate="{StaticResource ArtistTemplate}"
-                          Padding="{StaticResource PageThickness}">
+                <common:ScrollGridView Grid.Row="1"
+                                       VerticalOffset="{x:Bind ViewModel.GridViewVerticalOffset, Mode=TwoWay}"
+                                       IsItemClickEnabled="True"
+                                       SelectionMode="None"
+                                       ItemsSource="{x:Bind ViewModel.ViewSource.View, Mode=OneWay}"
+                                       ItemTemplate="{StaticResource ArtistTemplate}"
+                                       Padding="{StaticResource PageThickness}">
                     <interactivity:Interaction.Behaviors>
                         <core:EventTriggerBehavior EventName="ItemClick">
                             <core:InvokeCommandAction Command="{x:Bind ViewModel.ArtistClickCommand}" />
@@ -73,27 +76,28 @@
                             <GroupStyle.HeaderTemplate>
                                 <DataTemplate x:DataType="tools:AlphaKeyGroup">
                                     <TextBlock Text="{x:Bind Key}" FontSize="14.5"
-                                       Foreground="{StaticResource SystemControlForegroundAccentBrush}"/>
+                                               Foreground="{StaticResource SystemControlForegroundAccentBrush}" />
                                 </DataTemplate>
                             </GroupStyle.HeaderTemplate>
                         </GroupStyle>
                     </GridView.GroupStyle>
-                </GridView>
+                </common:ScrollGridView>
             </SemanticZoom.ZoomedInView>
             <SemanticZoom.ZoomedOutView>
                 <ListView Background="#BF000000" Padding="{StaticResource PageThickness}"
                           ItemContainerStyle="{StaticResource GroupListViewItemStyle}"
-                          ItemsSource="{x:Bind ArtistsSource.View.CollectionGroups, Mode=OneWay}"
+                          ItemsSource="{x:Bind ViewModel.ViewSource.View.CollectionGroups, Mode=OneWay}"
                           ItemTemplate="{StaticResource JumpTemplate}" />
             </SemanticZoom.ZoomedOutView>
         </SemanticZoom>
 
         <SemanticZoom x:Name="ArtistsListView" Visibility="Collapsed" Grid.Row="1">
             <SemanticZoom.ZoomedInView>
-                <ListView
+                <common:ScrollListView
+                    VerticalOffset="{x:Bind ViewModel.ListViewVerticalOffset, Mode=TwoWay}"
                     IsItemClickEnabled="True"
                     SelectionMode="None"
-                    ItemsSource="{x:Bind ArtistsSource.View, Mode=OneWay}"
+                    ItemsSource="{x:Bind ViewModel.ViewSource.View, Mode=OneWay}"
                     Padding="{StaticResource PageMobileStatusBarThickness}"
                     ItemTemplate="{StaticResource ArtistNarrowTemplate}">
                     <ListView.GroupStyle>
@@ -101,17 +105,17 @@
                             <GroupStyle.HeaderTemplate>
                                 <DataTemplate x:DataType="tools:AlphaKeyGroup">
                                     <TextBlock Text="{x:Bind Key}" FontSize="14.5"
-                                       Foreground="{StaticResource SystemControlForegroundAccentBrush}"/>
+                                               Foreground="{StaticResource SystemControlForegroundAccentBrush}" />
                                 </DataTemplate>
                             </GroupStyle.HeaderTemplate>
                         </GroupStyle>
                     </ListView.GroupStyle>
-                </ListView>
+                </common:ScrollListView>
             </SemanticZoom.ZoomedInView>
             <SemanticZoom.ZoomedOutView>
                 <ListView Background="#BF000000" Padding="{StaticResource PageThickness}"
                           ItemContainerStyle="{StaticResource GroupListViewItemStyle}"
-                          ItemsSource="{x:Bind ArtistsSource.View.CollectionGroups, Mode=OneWay}"
+                          ItemsSource="{x:Bind ViewModel.ViewSource.View.CollectionGroups, Mode=OneWay}"
                           ItemTemplate="{StaticResource JumpTemplate}" />
             </SemanticZoom.ZoomedOutView>
         </SemanticZoom>

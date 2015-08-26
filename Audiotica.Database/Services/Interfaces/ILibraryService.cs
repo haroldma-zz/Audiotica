@@ -8,7 +8,8 @@ namespace Audiotica.Database.Services.Interfaces
     public interface ILibraryService
     {
         #region Properties
-        
+
+        event EventHandler Loaded;
         bool IsLoaded { get; }
 
         /// <summary>

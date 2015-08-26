@@ -112,6 +112,8 @@ namespace Audiotica.Windows.Tools
                     group.OrderKey = getKey;
                     var percent = group.Count > 1 ? Math.Log(group.Count, max) : Math.Log(2, max) / 2;
                     percent = Math.Max(.1, percent);
+                    if (double.IsNaN(percent))
+                        percent = 0.1;
                     if (group.Count == 0)
                         percent = 0;
 
@@ -129,6 +131,8 @@ namespace Audiotica.Windows.Tools
                         {
                             percent = other.Count > 1 ? Math.Log(other.Count, max) : Math.Log(2, max) / 2;
                             percent = Math.Max(.1, percent);
+                            if (double.IsNaN(percent))
+                                percent = 0.1;
                             if (other.Count == 0)
                                 percent = 0;
 

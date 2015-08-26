@@ -11,12 +11,11 @@
     xmlns:tools="using:Audiotica.Windows.Tools"
     xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
     xmlns:core="using:Microsoft.Xaml.Interactions.Core"
+    xmlns:common="using:Audiotica.Windows.Common"
     mc:Ignorable="d"
     DataContext="{Binding AlbumsPage, Source={StaticResource ViewModelLocator}}">
 
     <Page.Resources>
-        <CollectionViewSource x:Name="AlbumsSource" Source="{x:Bind ViewModel.AlbumsCollection, Mode=OneWay}"
-                              IsSourceGrouped="{x:Bind ViewModel.IsGrouped, Mode=OneWay}" />
         <DataTemplate x:Key="JumpTemplate">
             <Grid>
                 <Grid>
@@ -47,7 +46,7 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <controls:LibraryHeader Title="Albums" DefaultSortIndex="{x:Bind ViewModel.DefaultSort}" SortItems="{x:Bind ViewModel.SortItems}" CurrentSortChanged="LibraryHeader_OnCurrentSortChanged" Margin="{StaticResource PageThickness}" />
+        <controls:LibraryHeader Title="Albums" DefaultSortIndex="{x:Bind ViewModel.DefaultSort}" SortItems="{x:Bind ViewModel.SortItems}" CurrentSortChangedCommand="{x:Bind ViewModel.SortChangedCommand}" Margin="{StaticResource PageThickness}" />
         
         <!--No Music-->
         <controls:NoMusicPanel Grid.Row="1" x:Name="NoMusicPanel"
@@ -56,17 +55,18 @@
 
         <SemanticZoom Grid.Row="1" x:Name="AlbumsGridView">
             <SemanticZoom.ZoomedInView>
-                <GridView
+                <common:ScrollGridView
+                    VerticalOffset="{x:Bind ViewModel.GridViewVerticalOffset, Mode=TwoWay}"
                     SelectionMode="None"
                     IsItemClickEnabled="True"
-                    ItemsSource="{x:Bind AlbumsSource.View, Mode=OneWay}"
+                    ItemsSource="{x:Bind ViewModel.ViewSource.View, Mode=OneWay}"
                     Padding="{StaticResource PageThickness}"
                     ItemTemplate="{StaticResource AlbumTemplate}">
                     <interactivity:Interaction.Behaviors>
                         <core:EventTriggerBehavior EventName="ItemClick">
                             <core:InvokeCommandAction Command="{x:Bind ViewModel.AlbumClickCommand}" />
                         </core:EventTriggerBehavior>
-                    </interactivity:Interaction.Behaviors> 
+                    </interactivity:Interaction.Behaviors>
                     <GridView.GroupStyle>
                         <GroupStyle HidesIfEmpty="True">
                             <GroupStyle.HeaderTemplate>
@@ -77,22 +77,23 @@
                             </GroupStyle.HeaderTemplate>
                         </GroupStyle>
                     </GridView.GroupStyle>
-                </GridView>
+                </common:ScrollGridView>
             </SemanticZoom.ZoomedInView>
             <SemanticZoom.ZoomedOutView>
                 <ListView Background="#BF000000" Padding="{StaticResource PageThickness}"
                           ItemContainerStyle="{StaticResource GroupListViewItemStyle}"
-                          ItemsSource="{x:Bind AlbumsSource.View.CollectionGroups, Mode=OneWay}"
+                          ItemsSource="{x:Bind ViewModel.ViewSource.View.CollectionGroups, Mode=OneWay}"
                           ItemTemplate="{StaticResource JumpTemplate}" />
             </SemanticZoom.ZoomedOutView>
         </SemanticZoom>
 
         <SemanticZoom Grid.Row="1" x:Name="AlbumsListView" Visibility="Collapsed">
             <SemanticZoom.ZoomedInView>
-                <ListView
+                <common:ScrollListView
+                    VerticalOffset="{x:Bind ViewModel.ListViewVerticalOffset, Mode=TwoWay}"
                     SelectionMode="None"
                     IsItemClickEnabled="True"
-                    ItemsSource="{x:Bind AlbumsSource.View, Mode=OneWay}"
+                    ItemsSource="{x:Bind ViewModel.ViewSource.View, Mode=OneWay}"
                     Padding="{StaticResource PageMobileStatusBarThickness}"
                     ItemTemplate="{StaticResource AlbumNarrowTemplate}">
                     <interactivity:Interaction.Behaviors>
@@ -110,12 +111,12 @@
                             </GroupStyle.HeaderTemplate>
                         </GroupStyle>
                     </ListView.GroupStyle>
-                </ListView>
+                </common:ScrollListView>
             </SemanticZoom.ZoomedInView>
             <SemanticZoom.ZoomedOutView>
                 <ListView Background="#BF000000" Padding="{StaticResource PageThickness}"
                           ItemContainerStyle="{StaticResource GroupListViewItemStyle}"
-                          ItemsSource="{x:Bind AlbumsSource.View.CollectionGroups, Mode=OneWay}"
+                          ItemsSource="{x:Bind ViewModel.ViewSource.View.CollectionGroups, Mode=OneWay}"
                           ItemTemplate="{StaticResource JumpTemplate}" />
             </SemanticZoom.ZoomedOutView>
         </SemanticZoom>

@@ -24,7 +24,10 @@ namespace Audiotica.Windows.Services.RunTime
             _libraryService = libraryService;
             _dispatcherUtility = dispatcherUtility;
 
-            Configure();
+            if (_libraryService.IsLoaded)
+                Configure();
+            else
+                _libraryService.Loaded += LibraryServiceOnLoaded;
         }
 
         #region Artists
@@ -32,6 +35,12 @@ namespace Audiotica.Windows.Services.RunTime
         public OptimizedObservableCollection<AlphaKeyGroup> ArtistsByName { get; private set; }
 
         #endregion
+
+        private void LibraryServiceOnLoaded(object sender, EventArgs eventArgs)
+        {
+            _libraryService.Loaded -= LibraryServiceOnLoaded;
+            Configure();
+        }
 
         private void Configure()
         {

@@ -9,7 +9,6 @@ namespace Audiotica.Windows.Views
         {
             InitializeComponent();
             ViewModel = DataContext as ExplorePageViewModel;
-            NavigationCacheMode = NavigationCacheMode.Required;
         }
 
         public ExplorePageViewModel ViewModel { get; set; }

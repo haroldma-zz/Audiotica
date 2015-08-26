@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Windows.Input;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
@@ -15,7 +16,12 @@ namespace Audiotica.Windows.Controls
                 new PropertyMetadata(null, SortItemsPropertyChangedCallback));
 
         public static readonly DependencyProperty DefaultSortIndexProperty =
-            DependencyProperty.Register("DefaultSortIndex", typeof (int), typeof (LibraryHeader), new PropertyMetadata(0));
+            DependencyProperty.Register("DefaultSortIndex", typeof (int), typeof (LibraryHeader),
+                new PropertyMetadata(0));
+
+        public static readonly DependencyProperty CurrentSortChangedCommandProperty =
+            DependencyProperty.Register("CurrentSortChangedCommand", typeof (ICommand), typeof (LibraryHeader),
+                new PropertyMetadata(0));
 
         public LibraryHeader()
         {
@@ -40,6 +46,12 @@ namespace Audiotica.Windows.Controls
             set { SetValue(DefaultSortIndexProperty, value); }
         }
 
+        public ICommand CurrentSortChangedCommand
+        {
+            get { return (ICommand) GetValue(CurrentSortChangedCommandProperty); }
+            set { SetValue(CurrentSortChangedCommandProperty, value); }
+        }
+
         public event EventHandler<ListBoxItem> CurrentSortChanged;
 
         private static void SortItemsPropertyChangedCallback(DependencyObject o, DependencyPropertyChangedEventArgs e)
@@ -53,7 +65,11 @@ namespace Audiotica.Windows.Controls
         private void ListBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (e.AddedItems?.Count > 0)
-                CurrentSortChanged?.Invoke(this, e.AddedItems[0] as ListBoxItem);
+            {
+                var item = e.AddedItems[0] as ListBoxItem;
+                CurrentSortChanged?.Invoke(this, item);
+                CurrentSortChangedCommand?.Execute(item);
+            }
         }
     }
 }

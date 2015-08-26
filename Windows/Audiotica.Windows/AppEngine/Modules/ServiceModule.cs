@@ -32,7 +32,7 @@ namespace Audiotica.Windows.AppEngine.Modules
             builder.RegisterType<MatchEngineService>().As<IMatchEngineService>().SingleInstance();
             builder.RegisterType<TrackSaveService>().As<ITrackSaveService>();
             builder.RegisterType<LibraryMatchingService>().As<ILibraryMatchingService>().SingleInstance();
-            builder.RegisterType<LibraryCollectionService>().As<ILibraryCollectionService>().SingleInstance();
+            builder.RegisterType<LibraryCollectionService>().As<ILibraryCollectionService>().SingleInstance().AutoActivate();
         }
     }
 }

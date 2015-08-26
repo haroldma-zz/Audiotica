@@ -12,7 +12,8 @@ namespace Audiotica.Database.Services.DesignTime
         {
             Load();
         }
-        
+
+        public event EventHandler Loaded;
         public bool IsLoaded { get; }
 
         public OptimizedObservableCollection<Track> Tracks { get; private set; }

@@ -143,8 +143,9 @@ namespace Audiotica.Windows.Services.NavigationService
             var page = _frame.Content as FrameworkElement;
             if (page == null) return;
             var dataContext = page.DataContext as INavigatable;
-            dataContext?.OnNavigatedFrom(suspending,
-                _sessions.ContainsKey(dataContext.PageKey) ? _sessions[dataContext.PageKey] : null);
+
+            if (_sessions.ContainsKey(dataContext?.PageKey) )
+                dataContext?.OnNavigatedFrom(suspending, _sessions[dataContext.PageKey]);
         }
     }
 

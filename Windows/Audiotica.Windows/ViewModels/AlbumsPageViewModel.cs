@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Data;
+using Windows.UI.Xaml.Navigation;
 using Audiotica.Core.Extensions;
 using Audiotica.Core.Utilities.Interfaces;
 using Audiotica.Core.Windows.Helpers;
@@ -20,6 +22,9 @@ namespace Audiotica.Windows.ViewModels
         private readonly ILibraryCollectionService _libraryCollectionService;
         private readonly INavigationService _navigationService;
         private readonly ISettingsUtility _settingsUtility;
+        private double _gridViewVerticalOffset;
+        private double _listViewVerticalOffset;
+        private CollectionViewSource _viewSource;
 
         public AlbumsPageViewModel(ILibraryService libraryService, ILibraryCollectionService libraryCollectionService,
             ISettingsUtility settingsUtility, INavigationService navigationService)
@@ -30,6 +35,7 @@ namespace Audiotica.Windows.ViewModels
             LibraryService = libraryService;
 
             AlbumClickCommand = new Command<ItemClickEventArgs>(AlbumClickExecute);
+            SortChangedCommand = new Command<ListBoxItem>(SortChangedExecute);
 
             SortItems =
                 Enum.GetValues(typeof (AlbumSort))
@@ -43,6 +49,26 @@ namespace Audiotica.Windows.ViewModels
             ChangeSort(defaultSort);
         }
 
+        public Command<ListBoxItem> SortChangedCommand { get; }
+
+        public double GridViewVerticalOffset
+        {
+            get { return _gridViewVerticalOffset; }
+            set { Set(ref _gridViewVerticalOffset, value); }
+        }
+
+        public double ListViewVerticalOffset
+        {
+            get { return _listViewVerticalOffset; }
+            set { Set(ref _listViewVerticalOffset, value); }
+        }
+
+        public CollectionViewSource ViewSource
+        {
+            get { return _viewSource; }
+            set { Set(ref _viewSource, value); }
+        }
+
         public Command<ItemClickEventArgs> AlbumClickCommand { get; }
 
         public int DefaultSort { get; }
@@ -51,9 +77,12 @@ namespace Audiotica.Windows.ViewModels
 
         public ILibraryService LibraryService { get; }
 
-        public object AlbumsCollection { get; private set; }
-
-        public bool IsGrouped { get; private set; }
+        private void SortChangedExecute(ListBoxItem item)
+        {
+            if (!(item?.Tag is AlbumSort)) return;
+            var sort = (AlbumSort) item.Tag;
+            ChangeSort(sort);
+        }
 
         private void AlbumClickExecute(ItemClickEventArgs e)
         {
@@ -64,23 +93,40 @@ namespace Audiotica.Windows.ViewModels
 
         public void ChangeSort(AlbumSort sort)
         {
+            ViewSource = new CollectionViewSource {IsSourceGrouped = sort != AlbumSort.DateAdded};
             _settingsUtility.Write(ApplicationSettingsConstants.AlbumSort, sort, SettingsStrategy.Roam);
-            IsGrouped = sort != AlbumSort.DateAdded;
 
             switch (sort)
             {
                 case AlbumSort.AtoZ:
-                    AlbumsCollection = _libraryCollectionService.AlbumsByTitle;
+                    ViewSource.Source = _libraryCollectionService.AlbumsByTitle;
                     break;
                 case AlbumSort.DateAdded:
-                    AlbumsCollection = _libraryCollectionService.AlbumsByDateAdded;
+                    ViewSource.Source = _libraryCollectionService.AlbumsByDateAdded;
                     break;
                 case AlbumSort.Artist:
-                    AlbumsCollection = _libraryCollectionService.AlbumsByArtist;
+                    ViewSource.Source = _libraryCollectionService.AlbumsByArtist;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(sort), sort, null);
             }
+        }
+
+        public override void OnNavigatedTo(object parameter, NavigationMode mode, Dictionary<string, object> state)
+        {
+            if (state.ContainsKey("GridViewVerticalOffset"))
+            {
+                var gridOffset = (double) state["GridViewVerticalOffset"];
+                var listOffset = (double) state["ListViewVerticalOffset"];
+                GridViewVerticalOffset = gridOffset;
+                ListViewVerticalOffset = listOffset;
+            }
+        }
+
+        public override void OnNavigatedFrom(bool suspending, Dictionary<string, object> state)
+        {
+            state["GridViewVerticalOffset"] = GridViewVerticalOffset;
+            state["ListViewVerticalOffset"] = ListViewVerticalOffset;
         }
     }
 }

@@ -122,6 +122,8 @@
     <Compile Include="Common\ColorThief.cs" />
     <Compile Include="Common\CurtainPrompt.cs" />
     <Compile Include="Common\MMCQ.cs" />
+    <Compile Include="Common\ScrollGridView.cs" />
+    <Compile Include="Common\ScrollListView.cs" />
     <Compile Include="Common\UiBlocker.cs" />
     <Compile Include="Controls\AlternatingRowListView.cs" />
     <Compile Include="Controls\LibraryHeader.xaml.cs">
@@ -147,6 +149,8 @@
     <Compile Include="Enums\AlbumSort.cs" />
     <Compile Include="Enums\ArtistSort.cs" />
     <Compile Include="Enums\TrackSort.cs" />
+    <Compile Include="Extensions\ItemsControlExtensions.cs" />
+    <Compile Include="Extensions\VisualTreeHelperExtensions.cs" />
     <Compile Include="Factories\AppKernelFactory.cs" />
     <Compile Include="Common\MessageBox.cs" />
     <Compile Include="Interactions\CloseFlyoutAction.cs" />
@@ -190,6 +194,7 @@
     <Compile Include="Tools\Converters\VisibilityConverter.cs" />
     <Compile Include="Tools\Mvvm\Command.cs" />
     <Compile Include="Tools\Mvvm\ViewModelBase.cs" />
+    <Compile Include="Extensions\UriExtensions.cs" />
     <Compile Include="ViewModels\AboutPageViewModel.cs" />
     <Compile Include="ViewModels\AlbumPageViewModel.cs" />
     <Compile Include="ViewModels\AlbumsPageViewModel.cs" />

@@ -1,17 +1,16 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Reflection;
 using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Media;
+using Audiotica.Windows.Common;
 using Audiotica.Windows.Tools;
 
 namespace Audiotica.Windows.Controls
 {
-    public class AlternatingRowListView : ListView
+    public class AlternatingRowListView : ScrollListView
     {
         public static readonly DependencyProperty OddRowBackgroundProperty =
             DependencyProperty.Register("OddRowBackground", typeof (Brush), typeof (AlternatingRowListView), null);
@@ -38,7 +37,7 @@ namespace Audiotica.Windows.Controls
         protected override void PrepareContainerForItemOverride(DependencyObject element, object item)
         {
             base.PrepareContainerForItemOverride(element, item);
-            
+
             var listViewItem = element as ListViewItem;
 
             if (listViewItem != null)

@@ -15,18 +15,16 @@
     mc:Ignorable="d"
     DataContext="{Binding SongsPage, Source={StaticResource ViewModelLocator}}">
 
-    <Page.Resources>
-        <CollectionViewSource x:Name="SongsSource" Source="{x:Bind ViewModel.TracksCollection, Mode=OneWay}"
-                              IsSourceGrouped="{x:Bind ViewModel.IsGrouped, Mode=OneWay}" />
-    </Page.Resources>
-
     <Grid x:Name="LayoutRoot" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <controls:LibraryHeader Title="Songs" DefaultSortIndex="{x:Bind ViewModel.DefaultSort}" SortItems="{x:Bind ViewModel.SortItems}"  CurrentSortChanged="LibraryHeader_OnCurrentSortChanged" Margin="{StaticResource PageThickness}" />
+        <controls:LibraryHeader Title="Songs" DefaultSortIndex="{x:Bind ViewModel.DefaultSort}"
+                                SortItems="{x:Bind ViewModel.SortItems}"
+                                CurrentSortChangedCommand="{x:Bind ViewModel.SortChangedCommand}"
+                                Margin="{StaticResource PageThickness}" />
 
         <!--No Music-->
         <controls:NoMusicPanel Grid.Row="1" x:Name="NoMusicPanel"
@@ -36,8 +34,10 @@
         <SemanticZoom Grid.Row="1">
             <SemanticZoom.ZoomedInView>
                 <controls:AlternatingRowListView Grid.Row="1" x:Name="SongsListView"
-                                                 ItemsSource="{x:Bind SongsSource.View}"
-                                                 Tag="{x:Bind SongsSource}"
+                                                 ItemsSource="{x:Bind ViewModel.ViewSource.View, Mode=OneWay}"
+                                                 Tag="{x:Bind ViewModel.ViewSource}"
+                                                 VerticalOffset="{x:Bind ViewModel.VerticalOffset, Mode=TwoWay}"
+                                                 BetterSelectedIndex="{x:Bind ViewModel.SelectedIndex, Mode=TwoWay}"
                                                  Padding="{StaticResource PageThickness}"
                                                  ItemTemplate="{StaticResource TrackTemplate}">
                     <ListView.GroupStyle>
@@ -55,7 +55,7 @@
             <SemanticZoom.ZoomedOutView>
                 <ListView Background="#BF000000" Padding="{StaticResource PageThickness}"
                           ItemContainerStyle="{StaticResource GroupListViewItemStyle}"
-                          ItemsSource="{x:Bind SongsSource.View.CollectionGroups, Mode=OneWay}">
+                          ItemsSource="{x:Bind ViewModel.ViewSource.View.CollectionGroups, Mode=OneWay}">
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <Grid>

@@ -28,7 +28,8 @@ namespace Audiotica.Database.Services.RunTime
         {
             _sqLiteConnection.Dispose();
         }
-        
+
+        public event EventHandler Loaded;
         public bool IsLoaded { get; private set; }
 
         public OptimizedObservableCollection<Track> Tracks { get; } =
@@ -64,6 +65,7 @@ namespace Audiotica.Database.Services.RunTime
             LoadPlaylists();
 
             IsLoaded = true;
+            Loaded?.Invoke(this, EventArgs.Empty);
         }
 
         public void AddTrack(Track track)

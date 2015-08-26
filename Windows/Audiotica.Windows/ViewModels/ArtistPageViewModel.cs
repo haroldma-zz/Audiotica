@@ -15,6 +15,7 @@ using Audiotica.Web.Extensions;
 using Audiotica.Web.Metadata.Interfaces;
 using Audiotica.Web.Models;
 using Audiotica.Windows.Common;
+using Audiotica.Windows.Extensions;
 using Audiotica.Windows.Services.NavigationService;
 using Audiotica.Windows.Tools.Mvvm;
 using Audiotica.Windows.Views;
@@ -191,15 +192,19 @@ namespace Audiotica.Windows.ViewModels
         {
             if (string.IsNullOrWhiteSpace(Artist.ArtworkUri)) return;
 
-            using (var response = await Artist.ArtworkUri.ToUri().GetAsync())
+            try
             {
-                using (var stream = await response.Content.ReadAsStreamAsync())
+                using (var stream = await Artist.ArtworkUri.ToUri().GetStreamAsync())
                 {
                     var main = ColorThief.GetColor(await stream.ToWriteableBitmapAsync());
 
                     BackgroundBrush = new SolidColorBrush(main.Color);
                     RequestedTheme = main.IsDark ? ElementTheme.Dark : ElementTheme.Light;
                 }
+            }
+            catch
+            {
+                // ignored
             }
         }
 
