@@ -1,10 +1,9 @@
-﻿using Windows.ApplicationModel.Activation;
-using Windows.UI;
+﻿using System;
+using Windows.ApplicationModel.Activation;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Media;
 using Audiotica.Core.Windows.Helpers;
+using Audiotica.Windows.Common;
 using Microsoft.ApplicationInsights;
 
 namespace Audiotica.Windows
@@ -36,6 +35,18 @@ namespace Audiotica.Windows
         public override void OnLaunched(ILaunchActivatedEventArgs e)
         {
             NavigationService.Navigate(NavigationService.DefaultPage);
+        }
+
+        protected override bool OnUnhandledException(Exception ex)
+        {
+            CurtainPrompt.ShowError("Crash prevented",
+                () =>
+                {
+                    MessageBox.Show(
+                        "The problem has been reported.  If you continue to experience this bug, email support.",
+                        "Crash prevented");
+                });
+            return true;
         }
     }
 }
