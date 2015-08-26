@@ -53,7 +53,8 @@
                     </ListView.ItemsPanel>
                 </ListView>
                 <TextBlock Text="New Releases" Margin="0, 0, 0, 5" />
-                <ProgressBar IsIndeterminate="{x:Bind ViewModel.IsNewAlbumsLoading, Mode=OneWay}" Visibility="{x:Bind ViewModel.IsNewAlbumsLoading, Mode=OneWay, Converter={StaticResource VisibilityConverter}}" />
+                <ProgressBar IsIndeterminate="{x:Bind ViewModel.IsNewAlbumsLoading, Mode=OneWay}"
+                             Visibility="{x:Bind ViewModel.IsNewAlbumsLoading, Mode=OneWay, Converter={StaticResource VisibilityConverter}}" />
                 <ListView ItemsSource="{x:Bind ViewModel.NewAlbums, Mode=OneWay}"
                           IsItemClickEnabled="True"
                           SelectionMode="None"
@@ -70,7 +71,8 @@
                     </ListView.ItemsPanel>
                 </ListView>
                 <TextBlock Text="Albums" Margin="0, 0, 0, 5" />
-                <ProgressBar IsIndeterminate="{x:Bind ViewModel.IsAlbumsLoading, Mode=OneWay}" Visibility="{x:Bind ViewModel.IsAlbumsLoading, Mode=OneWay, Converter={StaticResource VisibilityConverter}}" />
+                <ProgressBar IsIndeterminate="{x:Bind ViewModel.IsAlbumsLoading, Mode=OneWay}"
+                             Visibility="{x:Bind ViewModel.IsAlbumsLoading, Mode=OneWay, Converter={StaticResource VisibilityConverter}}" />
                 <ListView ItemsSource="{x:Bind ViewModel.TopAlbums, Mode=OneWay}"
                           SelectionMode="None"
                           IsItemClickEnabled="True"
@@ -87,10 +89,12 @@
                     </ListView.ItemsPanel>
                 </ListView>
                 <TextBlock Text="Top Songs" Margin="0, 0, 0, 5" />
-                <ProgressBar IsIndeterminate="{x:Bind ViewModel.IsTopSongsLoading, Mode=OneWay}" Visibility="{x:Bind ViewModel.IsTopSongsLoading, Mode=OneWay, Converter={StaticResource VisibilityConverter}}" />
+                <ProgressBar IsIndeterminate="{x:Bind ViewModel.IsTopSongsLoading, Mode=OneWay}"
+                             Visibility="{x:Bind ViewModel.IsTopSongsLoading, Mode=OneWay, Converter={StaticResource VisibilityConverter}}" />
                 <controls:AlternatingRowListView x:Name="TopTracksListView"
                                                  ItemsSource="{x:Bind ViewModel.TopSongs, Mode=OneWay}"
                                                  ItemTemplate="{StaticResource CatalogTrackTemplate}"
+                                                 OddRowBackground="{StaticResource SystemChromeLowBrush}"
                                                  ScrollViewer.VerticalScrollBarVisibility="Disabled" />
             </StackPanel>
         </ScrollViewer>
@@ -112,7 +116,8 @@
                         <AdaptiveTrigger MinWindowWidth="0" />
                     </VisualState.StateTriggers>
                     <VisualState.Setters>
-                        <Setter Target="TopTracksListView.ItemTemplate" Value="{StaticResource CatalogTrackNarrowTemplate}" />
+                        <Setter Target="TopTracksListView.ItemTemplate"
+                                Value="{StaticResource CatalogTrackNarrowTemplate}" />
                     </VisualState.Setters>
                 </VisualState>
                 <VisualState x:Name="WideScreen">

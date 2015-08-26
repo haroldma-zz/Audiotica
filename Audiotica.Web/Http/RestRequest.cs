@@ -251,7 +251,7 @@ namespace Audiotica.Web.Http
             if (!(typeof (T).GetTypeInfo().IsAssignableFrom(typeof (Void).GetTypeInfo())))
             {
                 // TODO: Check media type for json and xml?
-                var deserializer = GetHandler(response.Content.Headers.ContentType.MediaType);
+                var deserializer = GetHandler(response.Content.Headers.ContentType?.MediaType ?? "application/json");
                 result = deserializer.Deserialize<T>(await response.Content.ReadAsStringAsync().DontMarshall());
             }
             return result;

@@ -12,18 +12,28 @@
     DataContext="{Binding AlbumPage, Source={StaticResource ViewModelLocator}}">
 
     <Grid Background="{Binding BackgroundBrush}">
-        <controls:AlternatingRowListView x:Name="AlbumTracksListView" Padding="{StaticResource PageThickness}" OddRowBackground="{StaticResource SystemChromeLowBrush}" ItemsSource="{x:Bind ViewModel.Album.Tracks, Mode=OneWay}" ItemTemplate="{StaticResource TrackTemplate}">
+        <controls:AlternatingRowListView x:Name="AlbumTracksListView" Padding="{StaticResource PageThickness}"
+                                         OddRowBackground="{StaticResource SystemChromeLowBrush}"
+                                         ItemsSource="{x:Bind ViewModel.Album.Tracks, Mode=OneWay}"
+                                         ItemTemplate="{StaticResource TrackTemplate}">
             <ListView.Header>
                 <Grid Margin="0,0,0,20">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width=".5*" MaxWidth="250" />
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
-                    <Image Source="{x:Bind ViewModel.Album.ArtworkUri, Mode=OneWay, Converter={StaticResource ImageSourceConverter}}" />
+                    <Image
+                        Source="{x:Bind ViewModel.Album.ArtworkUri, Mode=OneWay, Converter={StaticResource ImageSourceConverter}}" />
                     <StackPanel Margin="10" Grid.Column="1">
-                        <TextBlock Text="{x:Bind ViewModel.Album.Title, Mode=OneWay}" TextWrapping="Wrap" Style="{ThemeResource TitleTextBlockStyle}" />
-                        <TextBlock Text="{x:Bind ViewModel.Album.Artist.Name, Mode=OneWay}" Style="{StaticResource SubtleTextBlockStyle}" />
-                        <HyperlinkButton Command="{x:Bind ViewModel.ViewInCatalogCommand, Mode=OneWay}" Visibility="{x:Bind ViewModel.IsCatalogMode, Mode=OneWay, Converter={StaticResource ReverseVisibilityConverter}}" Content="View in catalog" Foreground="{ThemeResource SystemControlForegroundBaseHighBrush}" ContentTemplate="{StaticResource HyperlinkTemplate}" />
+                        <TextBlock Text="{x:Bind ViewModel.Album.Title, Mode=OneWay}" TextWrapping="Wrap"
+                                   Style="{ThemeResource TitleTextBlockStyle}" />
+                        <TextBlock Text="{x:Bind ViewModel.Album.Artist.Name, Mode=OneWay}"
+                                   Style="{StaticResource SubtleTextBlockStyle}" />
+                        <HyperlinkButton Command="{x:Bind ViewModel.ViewInCatalogCommand, Mode=OneWay}"
+                                         Visibility="{x:Bind ViewModel.IsCatalogMode, Mode=OneWay, Converter={StaticResource ReverseVisibilityConverter}}"
+                                         Content="View in catalog"
+                                         Foreground="{ThemeResource SystemControlForegroundBaseHighBrush}"
+                                         ContentTemplate="{StaticResource HyperlinkTemplate}" />
                     </StackPanel>
                 </Grid>
             </ListView.Header>

@@ -35,10 +35,20 @@ namespace Audiotica.Windows.ViewModels
 
             SongClickCommand = new Command<ItemClickEventArgs>(SongClickExecute);
             ArtistClickCommand = new Command<ItemClickEventArgs>(ArtistClickExecute);
+            AlbumClickCommand = new Command<ItemClickEventArgs>(AlbumClickExecute);
 
             if (IsInDesignMode)
                 OnNavigatedTo(null, NavigationMode.New, new Dictionary<string, object>());
         }
+
+        private void AlbumClickExecute(ItemClickEventArgs e)
+        {
+            var album = (WebAlbum)e.ClickedItem;
+            _navigationService.Navigate(typeof(AlbumPage),
+                new AlbumPageViewModel.AlbumPageParameter(album.Title, album.Artist.Name, album) { IsCatalogMode = true });
+        }
+
+        public Command<ItemClickEventArgs> AlbumClickCommand { get; set; }
 
         public Command<ItemClickEventArgs> ArtistClickCommand { get; set; }
         public Command<ItemClickEventArgs> SongClickCommand { get; }

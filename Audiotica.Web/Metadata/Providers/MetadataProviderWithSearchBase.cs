@@ -39,8 +39,7 @@ namespace Audiotica.Web.Metadata.Providers
         {
             // No api for getting by artist name, so do a search to find the id.
             var results = await SearchAsync(artistName, WebResults.Type.Artist, 1);
-            var artist = results.Artists?.FirstOrDefault(p => string.Equals(p.Name, artistName,
-                StringComparison.CurrentCultureIgnoreCase));
+            var artist = results.Artists?.FirstOrDefault(p => p.Name.EqualsIgnoreCase(artistName));
             if (artist == null)
                 throw new ProviderException("Not found.");
             if (artist.IsPartial)

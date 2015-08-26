@@ -221,7 +221,11 @@ namespace Audiotica.Database.Services.RunTime
             else if (album.ArtworkUri == null)
                 album.ArtworkUri = track.ArtworkUri;
 
-            album.Tracks.Add(track);
+            var sort = album.Tracks.ToList();
+            sort.Add(track);
+            sort.Sort((track1, track2) => track1.TrackNumber + track1.DiscCount - (track2.TrackNumber + track2.DiscCount));
+            var index = sort.IndexOf(track);
+            album.Tracks.Insert(index, track);
         }
     }
 

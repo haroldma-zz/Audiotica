@@ -35,7 +35,6 @@
                 <StackPanel x:Name="TopSongsPanel">
                     <TextBlock Text="Top Songs" Style="{StaticResource HeaderTextBlockStyle}" />
                     <controls:AlternatingRowListView ItemsSource="{x:Bind ViewModel.TopSongs, Mode=OneWay}"
-                                                     OddRowBackground="{StaticResource OddRowBackgroundBrush}"
                                                      ItemTemplate="{StaticResource WebSongNarrowTemplate}"
                                                      IsItemClickEnabled="True">
                         <interactivity:Interaction.Behaviors>
@@ -48,11 +47,11 @@
 
                 <StackPanel x:Name="TopAlbumsPanel" Grid.Row="0" Grid.Column="1">
                     <TextBlock Text="Top Albums" Style="{StaticResource HeaderTextBlockStyle}" />
-                    <GridView ItemsSource="{x:Bind ViewModel.TopAlbums, Mode=OneWay}" IsItemClickEnabled="True"
+                    <GridView ItemsSource="{x:Bind ViewModel.TopAlbums, Mode=OneWay}" IsItemClickEnabled="True" SelectionMode="None"
                               ScrollViewer.VerticalScrollBarVisibility="Disabled">
                         <interactivity:Interaction.Behaviors>
                             <core:EventTriggerBehavior EventName="ItemClick">
-                                <core:InvokeCommandAction Command="{x:Bind ViewModel.ArtistClickCommand}" />
+                                <core:InvokeCommandAction Command="{x:Bind ViewModel.AlbumClickCommand}" />
                             </core:EventTriggerBehavior>
                         </interactivity:Interaction.Behaviors>
                         <GridView.ItemTemplate>
