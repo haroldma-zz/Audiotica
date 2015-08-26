@@ -79,7 +79,6 @@ namespace Audiotica.Windows.Controls
                 try
                 {
                     await trackSaveService.SaveAsync(Track);
-                    CurtainPrompt.Show("Song saved.");
                 }
                 catch (AppException ex)
                 {

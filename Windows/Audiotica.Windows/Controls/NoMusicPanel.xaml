@@ -24,7 +24,7 @@
                        FontSize="30" TextAlignment="Center" VerticalAlignment="Center"
                        FontFamily="ms-appx:/Assets/Fonts/Glyphter.otf#Glyphter" />
             <StackPanel Grid.Column="1" Margin="10,0,0,0">
-                <TextBlock Text="Use the Match Engine"
+                <TextBlock Text="Use the Audiotica Engine"
                            Style="{StaticResource SubHeaderTextBlockStyle}" />
                 <TextBlock Text="Unlimited streaming and downloading."
                            Style="{StaticResource TaglineTextBlockStyle}" />
@@ -39,7 +39,7 @@
             <TextBlock Text="&#xE211;" AutomationProperties.Name="PC"
                        FontSize="30" TextAlignment="Center" VerticalAlignment="Center" FontFamily="Segoe MDL2 Assets" />
             <StackPanel Grid.Column="1" Margin="10,0,0,0">
-                <TextBlock Text="Copy music from your PC"
+                <TextBlock Text="Import music from your PC"
                            Style="{StaticResource SubHeaderTextBlockStyle}" />
                 <TextBlock Text="Show me how."
                            Style="{StaticResource TaglineTextBlockStyle}" />
