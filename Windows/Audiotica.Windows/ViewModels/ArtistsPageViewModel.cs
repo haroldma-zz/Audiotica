@@ -21,7 +21,6 @@ namespace Audiotica.Windows.ViewModels
     {
         private readonly ILibraryCollectionService _libraryCollectionService;
         private readonly INavigationService _navigationService;
-        private OptimizedObservableCollection<AlphaKeyGroup> _artistsCollection;
         private double _gridViewVerticalOffset;
         private double _listViewVerticalOffset;
         private CollectionViewSource _viewSource;
@@ -109,7 +108,7 @@ namespace Audiotica.Windows.ViewModels
             }
         }
 
-        public override void OnNavigatedFrom(bool suspending, Dictionary<string, object> state)
+        public override void OnSaveState(bool suspending, Dictionary<string, object> state)
         {
             state["GridViewVerticalOffset"] = GridViewVerticalOffset;
             state["ListViewVerticalOffset"] = ListViewVerticalOffset;

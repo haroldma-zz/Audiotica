@@ -43,7 +43,7 @@ namespace Audiotica.Windows
                 () =>
                 {
                     MessageBox.Show(
-                        "The problem has been reported.  If you continue to experience this bug, email support.",
+                        "The problem has been reported.  If you continue to experience this bug, email support.  Details: " + ex.Message,
                         "Crash prevented");
                 });
             return true;

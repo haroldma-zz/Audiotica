@@ -47,7 +47,7 @@ namespace Audiotica.Windows.Interactions
         {
             if (e.Key == VirtualKey.Enter)
             {
-                Interaction.ExecuteActions(AssociatedObject, Actions, null);
+                Interaction.ExecuteActions(AssociatedObject, Actions, AssociatedTextBox.Text);
             }
         }
     }

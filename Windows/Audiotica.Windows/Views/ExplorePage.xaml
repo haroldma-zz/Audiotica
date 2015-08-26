@@ -73,28 +73,13 @@
             </Grid>
             <StackPanel Grid.Row="1" x:Name="TopArtistsPanel">
                 <TextBlock Text="Top Artists" Style="{StaticResource HeaderTextBlockStyle}" />
-                <GridView ItemsSource="{x:Bind ViewModel.TopArtists, Mode=OneWay}" IsItemClickEnabled="True"
+                <GridView ItemsSource="{x:Bind ViewModel.TopArtists, Mode=OneWay}" IsItemClickEnabled="True" ItemTemplate="{StaticResource WebArtistTemplate}"
                           ScrollViewer.VerticalScrollBarVisibility="Disabled">
                     <interactivity:Interaction.Behaviors>
                         <core:EventTriggerBehavior EventName="ItemClick">
                             <core:InvokeCommandAction Command="{x:Bind ViewModel.ArtistClickCommand}" />
                         </core:EventTriggerBehavior>
                     </interactivity:Interaction.Behaviors>
-                    <GridView.ItemTemplate>
-                        <DataTemplate x:DataType="webModels:WebArtist">
-                            <Grid>
-                                <Ellipse Margin="5" Width="150" Height="150">
-                                    <Ellipse.Fill>
-                                        <ImageBrush Stretch="UniformToFill" Opacity=".5"
-                                                    ImageSource="{x:Bind Artwork, Converter={StaticResource ImageSourceConverter}}" />
-                                    </Ellipse.Fill>
-                                </Ellipse>
-                                <TextBlock Text="{x:Bind Name}" Margin="2"
-                                           VerticalAlignment="Center" TextAlignment="Center"
-                                           TextTrimming="CharacterEllipsis" />
-                            </Grid>
-                        </DataTemplate>
-                    </GridView.ItemTemplate>
                 </GridView>
             </StackPanel>
         </Grid>

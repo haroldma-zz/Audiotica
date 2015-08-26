@@ -3,6 +3,7 @@
   "version": 1,
   "targets": {
     "UAP,Version=v10.0": {
+      "microsoft.bcl.build/1.0.21": {},
       "Microsoft.CSharp/4.0.0": {
         "dependencies": {
           "System.Runtime": "[4.0.20, )",
@@ -1556,6 +1557,7 @@
       }
     },
     "UAP,Version=v10.0/win10-arm": {
+      "microsoft.bcl.build/1.0.21": {},
       "Microsoft.CSharp/4.0.0": {
         "dependencies": {
           "System.Runtime": "[4.0.20, )",
@@ -3199,6 +3201,7 @@
       }
     },
     "UAP,Version=v10.0/win10-arm-aot": {
+      "microsoft.bcl.build/1.0.21": {},
       "Microsoft.CSharp/4.0.0": {
         "dependencies": {
           "System.Runtime": "[4.0.20, )",
@@ -4814,6 +4817,7 @@
       }
     },
     "UAP,Version=v10.0/win10-x86": {
+      "microsoft.bcl.build/1.0.21": {},
       "Microsoft.CSharp/4.0.0": {
         "dependencies": {
           "System.Runtime": "[4.0.20, )",
@@ -6462,6 +6466,7 @@
       }
     },
     "UAP,Version=v10.0/win10-x86-aot": {
+      "microsoft.bcl.build/1.0.21": {},
       "Microsoft.CSharp/4.0.0": {
         "dependencies": {
           "System.Runtime": "[4.0.20, )",
@@ -8077,6 +8082,7 @@
       }
     },
     "UAP,Version=v10.0/win10-x64": {
+      "microsoft.bcl.build/1.0.21": {},
       "Microsoft.CSharp/4.0.0": {
         "dependencies": {
           "System.Runtime": "[4.0.20, )",
@@ -9725,6 +9731,7 @@
       }
     },
     "UAP,Version=v10.0/win10-x64-aot": {
+      "microsoft.bcl.build/1.0.21": {},
       "Microsoft.CSharp/4.0.0": {
         "dependencies": {
           "System.Runtime": "[4.0.20, )",
@@ -11341,6 +11348,19 @@
     }
   },
   "libraries": {
+    "microsoft.bcl.build/1.0.21": {
+      "sha512": "sgHu4mIt0+NVGyI12Bj4hLPypNK55UOH+ologj2LqDCjxq3EbIxe/uAtHjY+fEwbE1dtsAHG8SXHf+V/EYbKTg==",
+      "type": "Package",
+      "files": [
+        "_rels/.rels",
+        "Microsoft.Bcl.Build.nuspec",
+        "License-Stable.rtf",
+        "build/Microsoft.Bcl.Build.targets",
+        "build/Microsoft.Bcl.Build.Tasks.dll",
+        "package/services/metadata/core-properties/642092c96f444452801a3d9f187d628b.psmdcp",
+        "[Content_Types].xml"
+      ]
+    },
     "Microsoft.CSharp/4.0.0": {
       "sha512": "oWqeKUxHXdK6dL2CFjgMcaBISbkk+AqEg+yvJHE4DElNzS4QaTsCflgkkqZwVlWby1Dg9zo9n+iCAMFefFdJ/A==",
       "type": "Package",
@@ -14761,6 +14781,7 @@
   },
   "projectFileDependencyGroups": {
     "": [
+      "microsoft.bcl.build >= 1.0.21",
       "Microsoft.NETCore.UniversalWindowsPlatform >= 5.0.0",
       "Newtonsoft.Json >= 7.0.1",
       "PCLStorage >= 1.0.2"

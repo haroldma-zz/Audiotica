@@ -10,6 +10,11 @@ namespace Audiotica.Windows.Services.DesignTime
 {
     public class DesignPlayerService : IPlayerService
     {
+        public DesignPlayerService()
+        {
+            MediaStateChanged?.Invoke(this, MediaPlayerState.Playing);
+            TrackChanged?.Invoke(this, "test");
+        }
         public bool IsBackgroundTaskRunning { get; }
         public MediaPlayerState CurrentState { get; set; }
         public string CurrentQueueId { get; }

@@ -73,6 +73,8 @@ namespace Audiotica.Database.Services.DesignTime
                     ArtworkUri = gambinoArtwork
                 }
             };
+
+            Loaded?.Invoke(this, EventArgs.Empty);
         }
 
         public void AddTrack(Track track)

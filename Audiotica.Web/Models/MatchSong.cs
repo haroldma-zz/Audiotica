@@ -5,7 +5,6 @@ using Audiotica.Core.Extensions;
 using Audiotica.Web.Http.Requets.MatchEngine.Meile.Models;
 using Audiotica.Web.Http.Requets.MatchEngine.Netease.Models;
 using Audiotica.Web.Http.Requets.MatchEngine.SoundCloud.Models;
-using Google.Apis.YouTube.v3.Data;
 
 namespace Audiotica.Web.Models
 {
@@ -13,14 +12,6 @@ namespace Audiotica.Web.Models
     {
         public MatchSong()
         {
-        }
-
-        public MatchSong(SearchResult youtubeVideo)
-        {
-            Id = youtubeVideo.Id.VideoId;
-            Title = youtubeVideo.Snippet.Title;
-            FileAuthor = youtubeVideo.Snippet.ChannelTitle;
-            ArtworkImage = new Uri(youtubeVideo.Snippet.Thumbnails.High.Url);
         }
 
         public MatchSong(SoundCloudSong soundCloudSong)

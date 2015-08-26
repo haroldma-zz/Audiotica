@@ -182,7 +182,7 @@ namespace Audiotica.Windows.ViewModels
             LoadWebData();
         }
 
-        public override void OnNavigatedFrom(bool suspending, Dictionary<string, object> state)
+        public override void OnNavigatedFrom()
         {
             // Bug: if we don't reset the theme when we go out it fucks with the TrackViewer control on other pages
             RequestedTheme = ElementTheme.Default;

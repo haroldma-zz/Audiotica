@@ -123,7 +123,7 @@ namespace Audiotica.Windows.ViewModels
             }
         }
 
-        public override void OnNavigatedFrom(bool suspending, Dictionary<string, object> state)
+        public override void OnSaveState(bool suspending, Dictionary<string, object> state)
         {
             state["GridViewVerticalOffset"] = GridViewVerticalOffset;
             state["ListViewVerticalOffset"] = ListViewVerticalOffset;

@@ -50,7 +50,7 @@
         
         <!--No Music-->
         <controls:NoMusicPanel Grid.Row="1" x:Name="NoMusicPanel"
-                               Padding="{StaticResource PageThickness}"
+                               Margin="{StaticResource PageThickness}"
                                Visibility="{x:Bind ViewModel.LibraryService.Albums.Count, Mode=OneWay, Converter={StaticResource ReverseEmptyListToVisibilityConverter}}" />
 
         <SemanticZoom Grid.Row="1" x:Name="AlbumsGridView">

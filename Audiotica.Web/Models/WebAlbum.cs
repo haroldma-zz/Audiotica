@@ -26,7 +26,7 @@ namespace Audiotica.Web.Models
 
             public int GetHashCode(WebAlbum obj)
             {
-                return (obj.Title + obj.Artist?.Name + obj.ReleaseDate).GetHashCode();
+                return (obj.Title + obj.Artist?.Name + obj.ReleaseDate).ToLower().GetHashCode();
             }
         }
     }

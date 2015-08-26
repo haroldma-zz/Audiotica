@@ -28,7 +28,7 @@
 
         <!--No Music-->
         <controls:NoMusicPanel Grid.Row="1" x:Name="NoMusicPanel"
-                               Padding="{StaticResource PageThickness}"
+                               Margin="{StaticResource PageThickness}"
                                Visibility="{x:Bind ViewModel.LibraryService.Tracks.Count, Mode=OneWay, Converter={StaticResource ReverseEmptyListToVisibilityConverter}}" />
 
         <SemanticZoom Grid.Row="1">
@@ -39,6 +39,7 @@
                                                  VerticalOffset="{x:Bind ViewModel.VerticalOffset, Mode=TwoWay}"
                                                  BetterSelectedIndex="{x:Bind ViewModel.SelectedIndex, Mode=TwoWay}"
                                                  Padding="{StaticResource PageThickness}"
+                                                 OddRowBackground="{StaticResource SystemChromeLowBrush}"
                                                  ItemTemplate="{StaticResource TrackTemplate}">
                     <ListView.GroupStyle>
                         <GroupStyle HidesIfEmpty="True">

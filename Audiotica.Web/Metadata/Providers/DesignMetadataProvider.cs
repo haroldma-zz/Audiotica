@@ -95,7 +95,12 @@ namespace Audiotica.Web.Metadata.Providers
         public Task<WebResults> SearchAsync(string query, WebResults.Type searchType = WebResults.Type.Song,
             int limit = 10, string pageToken = null)
         {
-            throw new NotImplementedException();
+            return Task.FromResult(new WebResults
+            {
+                Albums = CreateDummyAlbums(),
+                Artists = CreateDummyArtists(),
+                Songs = CreateDummySongs()
+            });
         }
 
         private WebArtist CreateArtist(string name, string artwork)

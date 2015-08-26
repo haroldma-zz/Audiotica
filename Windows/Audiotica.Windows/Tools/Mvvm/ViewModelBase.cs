@@ -15,8 +15,13 @@ namespace Audiotica.Windows.Tools.Mvvm
         {
         }
 
-        public virtual void OnNavigatedFrom(bool suspending, Dictionary<string, object> state)
+        public virtual void OnSaveState(bool suspending, Dictionary<string, object> state)
         {
+        }
+
+        public virtual void OnNavigatedFrom()
+        {
+            
         }
 
         public virtual string SimplifiedParameter(object parameter)
