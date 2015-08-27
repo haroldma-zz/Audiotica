@@ -35,7 +35,7 @@
             <SemanticZoom.ZoomedInView>
                 <controls:AlternatingRowListView Grid.Row="1" x:Name="SongsListView"
                                                  ItemsSource="{x:Bind ViewModel.ViewSource.View, Mode=OneWay}"
-                                                 Tag="{x:Bind ViewModel.ViewSource}"
+                                                 Tag="{x:Bind ViewModel.ViewSource, Mode=OneWay}"
                                                  VerticalOffset="{x:Bind ViewModel.VerticalOffset, Mode=TwoWay}"
                                                  BetterSelectedIndex="{x:Bind ViewModel.SelectedIndex, Mode=TwoWay}"
                                                  Padding="{StaticResource PageThickness}"
