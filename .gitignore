@@ -177,3 +177,7 @@ arm.txt
 [Rr]elease_*/
 [Dd]ebug_*/
 project.lock.json
+BundleArtifacts/
+Windows/Audiotica.Windows/_pkginfo.txt
+Windows/Audiotica.Windows/_scale-400.appx
+Windows/Audiotica.Windows/_scale-100.appx
