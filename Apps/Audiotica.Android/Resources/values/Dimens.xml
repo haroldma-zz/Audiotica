@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="Hello">Hello World, Click Me!</string>
-    <string name="ApplicationName">Audiotica</string>
-    <string name="no_songs_found_info">It seems you have not saved any music, yet.</string>
-    <string name="close_other_audio_apps">Close any other apps that may be playing audio.</string>
-</resources>

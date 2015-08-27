@@ -176,3 +176,4 @@ FakesAssemblies/
 arm.txt
 [Rr]elease_*/
 [Dd]ebug_*/
+project.lock.json

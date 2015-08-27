@@ -1,0 +1,178 @@
+﻿<ResourceDictionary
+    x:Class="Audiotica.Windows.DataTemplates.LibraryDictionary"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="using:Audiotica.Windows.Controls"
+    xmlns:databaseModels="using:Audiotica.Database.Models"
+    xmlns:webModels="using:Audiotica.Web.Models">
+    
+    <DataTemplate x:Key="TrackTemplate" x:DataType="databaseModels:Track">
+        <controls:TrackViewer Track="{x:Bind}"
+                              IsSelected="{Binding Tag, RelativeSource={RelativeSource Mode=TemplatedParent}}" />
+    </DataTemplate>
+
+    <DataTemplate x:Key="CatalogTrackTemplate" x:DataType="databaseModels:Track">
+        <controls:TrackViewer Track="{x:Bind}"
+                              IsCatalog="True"
+                              IsSelected="{Binding Tag, RelativeSource={RelativeSource Mode=TemplatedParent}}" />
+    </DataTemplate>
+
+    <DataTemplate x:Key="TrackNarrowTemplate" x:DataType="databaseModels:Track">
+        <controls:TrackNarrowViewer Track="{x:Bind}"
+                                    IsSelected="{Binding Tag, RelativeSource={RelativeSource Mode=TemplatedParent}}" />
+    </DataTemplate>
+    <DataTemplate x:Key="CatalogTrackNarrowTemplate" x:DataType="databaseModels:Track">
+        <controls:TrackNarrowViewer Track="{x:Bind}"
+                                    IsCatalog="True"
+                                    IsSelected="{Binding Tag, RelativeSource={RelativeSource Mode=TemplatedParent}}" />
+    </DataTemplate>
+
+    <DataTemplate x:Key="AlbumTemplate" x:DataType="databaseModels:Album">
+        <StackPanel Width="140" Height="210" Margin="4">
+            <Grid Width="140" Height="140" Background="{ThemeResource SystemControlBackgroundAccentBrush}"
+                  Margin="0,0,0,5">
+                <Image Source="{x:Bind ArtworkUri, Converter={StaticResource ImageSourceConverter}, ConverterParameter=140}"
+                       Stretch="UniformToFill" />
+            </Grid>
+            <TextBlock Text="{x:Bind Title}" TextWrapping="Wrap" Margin="0,0,0,5"
+                       MaxHeight="40" LineHeight="20" LineStackingStrategy="BlockLineHeight" />
+            <TextBlock Text="{x:Bind Artist.Name}" Style="{StaticResource SubtleTextBlockStyle}" />
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate x:Key="AlbumNarrowTemplate" x:DataType="databaseModels:Album">
+        <Grid Margin="0,4">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Grid Width="100" Height="100" Background="{ThemeResource SystemControlBackgroundAccentBrush}"
+                  Margin="0,0,5,0">
+                <Image Source="{x:Bind ArtworkUri, Converter={StaticResource ImageSourceConverter}, ConverterParameter=100}"
+                       Stretch="UniformToFill" />
+            </Grid>
+            <Grid Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <TextBlock Text="{x:Bind Title}" TextWrapping="Wrap" Margin="0,0,0,5"
+                           MaxHeight="80" LineHeight="20" LineStackingStrategy="BlockLineHeight" />
+                <TextBlock Grid.Row="1" Text="{x:Bind Artist.Name}" Style="{StaticResource SubtleTextBlockStyle}" />
+            </Grid>
+        </Grid>
+    </DataTemplate>
+
+    <DataTemplate x:Key="ArtistTemplate" x:DataType="databaseModels:Artist">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Ellipse Width="140" Height="140" Fill="#333" />
+            <Ellipse Grid.Row="0" Width="140" Height="140">
+                <Ellipse.Fill>
+                    <ImageBrush ImageSource="{x:Bind ArtworkUri, Mode=OneWay, Converter={StaticResource ImageSourceConverter}, ConverterParameter=140}"
+                                Stretch="UniformToFill" />
+                </Ellipse.Fill>
+            </Ellipse>
+            <TextBlock Grid.Row="1" Text="{x:Bind Name}" TextAlignment="Center" Margin="0,10,0,0" />
+            <TextBlock Grid.Row="2" TextAlignment="Center" Style="{StaticResource SubtleTextBlockStyle}">
+                <Run Text="{x:Bind Albums.Count, Mode=OneWay}" />
+                <Run Text="album(s)" />
+            </TextBlock>
+        </Grid>
+    </DataTemplate>
+
+    <DataTemplate x:Key="ArtistNarrowTemplate" x:DataType="databaseModels:Artist">
+        <Grid Margin="0,4">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Grid Margin="0,0,5,0">
+                <Ellipse Width="100" Height="100" Fill="#333" />
+                <Ellipse Grid.Row="0" Width="100" Height="100">
+                    <Ellipse.Fill>
+                        <ImageBrush ImageSource="{x:Bind ArtworkUri, Converter={StaticResource ImageSourceConverter}, ConverterParameter=140}"
+                                    Stretch="UniformToFill" />
+                    </Ellipse.Fill>
+                </Ellipse>
+            </Grid>
+            <Grid Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <TextBlock Text="{x:Bind Name}" TextWrapping="Wrap" Margin="0,0,0,5"
+                           MaxHeight="80" LineHeight="20" LineStackingStrategy="BlockLineHeight" />
+                <TextBlock Grid.Row="1" Style="{StaticResource SubtleTextBlockStyle}">
+                    <Run Text="{x:Bind Albums.Count}" />
+                    <Run Text="album(s)" />
+                </TextBlock>
+            </Grid>
+        </Grid>
+    </DataTemplate>
+
+    <DataTemplate x:Key="WebSongTemplate" x:DataType="webModels:WebSong">
+        <Grid Margin="0,15">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="32" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width=".2*" />
+                    <ColumnDefinition Width="32" />
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="{x:Bind Title}"
+                           Style="{StaticResource BaseTextBlockStyle}" Margin="0,0,10,0" />
+                <TextBlock Grid.Column="1" Text="{x:Bind Artists[0].Name}"
+                           Style="{StaticResource SubtleTextBlockStyle}" Margin="0,0,10,0" />
+                <TextBlock Grid.Column="2" Text="{x:Bind Album.Title}"
+                           Style="{StaticResource SubtleTextBlockStyle}" Margin="0,0,10,0" />
+                <TextBlock Grid.Column="3" Text="{x:Bind Album.ReleaseDate.Value.Year}"
+                           Style="{StaticResource SubtleTextBlockStyle}" />
+            </Grid>
+        </Grid>
+    </DataTemplate>
+
+    <DataTemplate x:Key="WebSongNarrowTemplate" x:DataType="webModels:WebSong">
+        <Grid Margin="32,15">
+            <StackPanel>
+                <TextBlock Text="{x:Bind Title}"
+                           Style="{StaticResource BaseTextBlockStyle}" />
+                <TextBlock Text="{x:Bind Artists[0].Name}"
+                           Style="{StaticResource SubtleTextBlockStyle}" />
+            </StackPanel>
+        </Grid>
+    </DataTemplate>
+
+    <DataTemplate x:Key="WebAlbumTemplate" x:DataType="webModels:WebAlbum">
+        <StackPanel Width="140" Height="210" Margin="4">
+            <Grid Width="140" Height="140" Background="{ThemeResource SystemControlBackgroundAccentBrush}"
+                  Margin="0,0,0,5">
+                <Image Source="{x:Bind Artwork, Converter={StaticResource ImageSourceConverter}, ConverterParameter=140}"
+                       Stretch="UniformToFill" />
+            </Grid>
+            <TextBlock Text="{x:Bind Title}" TextWrapping="Wrap" Margin="0,0,0,5"
+                       MaxHeight="40" LineHeight="20" LineStackingStrategy="BlockLineHeight" />
+            <TextBlock Text="{x:Bind Artist.Name}" Style="{StaticResource SubtleTextBlockStyle}" />
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate x:Key="WebArtistTemplate" x:DataType="webModels:WebArtist">
+        <Grid>
+            <Ellipse Margin="5" Width="150" Height="150">
+                <Ellipse.Fill>
+                    <ImageBrush Stretch="UniformToFill" Opacity=".5"
+                                                    ImageSource="{x:Bind Artwork, Converter={StaticResource ImageSourceConverter}}" />
+                </Ellipse.Fill>
+            </Ellipse>
+            <TextBlock Text="{x:Bind Name}" Margin="2"
+                                           VerticalAlignment="Center" TextAlignment="Center"
+                                           TextTrimming="CharacterEllipsis" />
+        </Grid>
+    </DataTemplate>
+</ResourceDictionary>

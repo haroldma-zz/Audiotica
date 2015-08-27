@@ -1,0 +1,263 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <MinimumVisualStudioVersion>10.0</MinimumVisualStudioVersion>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{0B8C5A00-8C9C-4663-A741-1B494C0E9E46}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Audiotica.Web</RootNamespace>
+    <AssemblyName>Audiotica.Web</AssemblyName>
+    <DefaultLanguage>en-US</DefaultLanguage>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <TargetFrameworkProfile>Profile259</TargetFrameworkProfile>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- A reference to the entire .NET Framework is automatically included -->
+    <None Include="app.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Deserializer\DeserializerExtensions.cs" />
+    <Compile Include="Deserializer\DotNetXmlDeserializer.cs" />
+    <Compile Include="Deserializer\HtmlDeserializer.cs" />
+    <Compile Include="Deserializer\IDeserializer.cs" />
+    <Compile Include="Deserializer\JsonDeserializer.cs" />
+    <Compile Include="Enums\ProviderCollectionSize.cs" />
+    <Compile Include="Enums\ProviderCollectionType.cs" />
+    <Compile Include="Enums\ProviderResultsQuality.cs" />
+    <Compile Include="Enums\ProviderSpeed.cs" />
+    <Compile Include="Extensions\MetadataExtensions.cs" />
+    <Compile Include="Extensions\RestlessExtensions.cs" />
+    <Compile Include="Extensions\RestRequestExtensions.cs" />
+    <Compile Include="Extensions\UriExtensions.cs" />
+    <Compile Include="Extensions\WebSongExtensions.cs" />
+    <Compile Include="Http\Requets\MatchEngine\Meile\MeileDetailsRequest.cs" />
+    <Compile Include="Http\Requets\MatchEngine\Meile\MeileSearchRequest.cs" />
+    <Compile Include="Http\Requets\MatchEngine\Mp3Freex\Mp3FreexSearchRequest.cs" />
+    <Compile Include="Http\Requets\MatchEngine\Mp3Pm\Mp3PmSearchRequest.cs" />
+    <Compile Include="Http\Requets\MatchEngine\Mp3Skull\Mp3SkullRequest.cs" />
+    <Compile Include="Http\Requets\MatchEngine\Mp3lio\Mp3lioSearchRequest.cs" />
+    <Compile Include="Http\Requets\MatchEngine\Mp3Truck\Mp3TruckSearchRequest.cs" />
+    <Compile Include="Http\Requets\MatchEngine\Netease\NeteaseDetailsRequest.cs" />
+    <Compile Include="Http\Requets\MatchEngine\Netease\NeteaseSearchRequest.cs" />
+    <Compile Include="Http\Requets\MatchEngine\Pleer\PleerDetailsRequest.cs" />
+    <Compile Include="Http\Requets\MatchEngine\Pleer\PleerSearchRequest.cs" />
+    <Compile Include="Http\Requets\Metadata\Deezer\DeezerAlbumRequest.cs" />
+    <Compile Include="Http\Requets\Metadata\Deezer\DeezerArtistAlbumsRequest.cs" />
+    <Compile Include="Http\Requets\Metadata\Deezer\DeezerArtistRequest.cs" />
+    <Compile Include="Http\Requets\Metadata\Deezer\DeezerArtistTopTracksRequest.cs" />
+    <Compile Include="Http\Requets\Metadata\Deezer\DeezerChartRequest.cs" />
+    <Compile Include="Http\Requets\Metadata\Deezer\DeezerSearchRequest.cs" />
+    <Compile Include="Http\Requets\Metadata\Deezer\DeezerTrackRequest.cs" />
+    <Compile Include="Http\Requets\Metadata\Deezer\Models\DataResponse.cs" />
+    <Compile Include="Http\Requets\Metadata\LyricsFind\LyricsFindRequest.cs" />
+    <Compile Include="Http\Requets\Metadata\LyricsFind\Models\LyricsFindArtist.cs" />
+    <Compile Include="Http\Requets\Metadata\LyricsFind\Models\LyricsFindResponse.cs" />
+    <Compile Include="Http\Requets\Metadata\LyricsFind\Models\LyricsTrack.cs" />
+    <Compile Include="Http\Requets\Metadata\Spotify\Models\BasicModel.cs" />
+    <Compile Include="Http\Requets\Metadata\Spotify\Models\ChartTrack.cs" />
+    <Compile Include="Http\Requets\Metadata\Spotify\Models\Error.cs" />
+    <Compile Include="Http\Requets\Metadata\Spotify\Models\FullAlbum.cs" />
+    <Compile Include="Http\Requets\Metadata\Spotify\Models\FullArtist.cs" />
+    <Compile Include="Http\Requets\Metadata\Spotify\Models\FullTrack.cs" />
+    <Compile Include="Http\Requets\Metadata\Spotify\Models\Image.cs" />
+    <Compile Include="Http\Requets\Metadata\Spotify\Models\Paging.cs" />
+    <Compile Include="Http\Requets\Metadata\Spotify\Models\PlainTrackResponse.cs" />
+    <Compile Include="Http\Requets\Metadata\Spotify\Models\SearchItem.cs" />
+    <Compile Include="Http\Requets\Metadata\Spotify\Models\SimpleAlbum.cs" />
+    <Compile Include="Http\Requets\Metadata\Spotify\Models\SimpleArtist.cs" />
+    <Compile Include="Http\Requets\Metadata\Spotify\Models\SimpleTrack.cs" />
+    <Compile Include="Http\Requets\Metadata\Spotify\Models\SpotifyChartsResponse.cs" />
+    <Compile Include="Http\Requets\Metadata\Spotify\SpotifyAlbumRequest.cs" />
+    <Compile Include="Http\Requets\Metadata\Spotify\SpotifyArtistAlbumsRequest.cs" />
+    <Compile Include="Http\Requets\Metadata\Spotify\SpotifyArtistRequest.cs" />
+    <Compile Include="Http\Requets\Metadata\Spotify\SpotifyArtistTopTracksRequest.cs" />
+    <Compile Include="Http\Requets\Metadata\Spotify\SpotifyChartRequest.cs" />
+    <Compile Include="Http\Requets\Metadata\Spotify\SpotifyRequestHelper.cs" />
+    <Compile Include="Http\Requets\Metadata\Spotify\SpotifySearchRequest.cs" />
+    <Compile Include="Http\Requets\Metadata\Spotify\SpotifyTrackRequest.cs" />
+    <Compile Include="Http\Requets\RestObjectRequest.cs" />
+    <Compile Include="Http\Requets\MatchEngine\SoundCloud\SoundCloudSearchRequest.cs" />
+    <Compile Include="IConfigurableProvider.cs" />
+    <Compile Include="MatchEngine\Providers\Mp3FreexMatchProvider.cs" />
+    <Compile Include="MatchEngine\Providers\Mp3lioMatchProvider.cs" />
+    <Compile Include="MatchEngine\Providers\Mp3PmProvider.cs" />
+    <Compile Include="MatchEngine\Services\DesignMatchEngineService.cs" />
+    <Compile Include="MatchEngine\Validators\SongSlowedTypeValidator.cs" />
+    <Compile Include="Metadata\Interfaces\IMetadataProvider.cs" />
+    <Compile Include="MatchEngine\Interfaces\IMatchProvider.cs" />
+    <Compile Include="MatchEngine\Interfaces\Validators\ISongTypeValidator.cs" />
+    <Compile Include="MatchEngine\Providers\MeileMatchProvider.cs" />
+    <Compile Include="MatchEngine\Providers\Mp3SkullMatchProvider.cs" />
+    <Compile Include="MatchEngine\Providers\Mp3TruckMatchProvider.cs" />
+    <Compile Include="MatchEngine\Providers\NeteaseMatchProvider.cs" />
+    <Compile Include="MatchEngine\Providers\PleerMatchProvider.cs" />
+    <Compile Include="MatchEngine\Providers\MatchProviderBase.cs" />
+    <Compile Include="MatchEngine\Providers\SoundCloudMatchProvider.cs" />
+    <Compile Include="MatchEngine\Validators\SongInstrumentalTypeValidator.cs" />
+    <Compile Include="Metadata\Providers\MetadataProviderWithSearchBase.cs" />
+    <Compile Include="Metadata\Providers\DeezerMetadataProvider.cs" />
+    <Compile Include="Metadata\Providers\DesignMetadataProvider.cs" />
+    <Compile Include="Metadata\Providers\ILocalMetadataProvider.cs" />
+    <Compile Include="Metadata\Providers\LastFmMetadataProvider.cs" />
+    <Compile Include="Metadata\Providers\LyricsFindMetadataProvider.cs" />
+    <Compile Include="Metadata\Providers\MetadataProviderBase.cs" />
+    <Compile Include="Http\Requets\MatchEngine\Netease\Models\NeteaseAlbum.cs" />
+    <Compile Include="Http\Requets\MatchEngine\Netease\Models\NeteaseResult.cs" />
+    <Compile Include="Http\Requets\MatchEngine\Netease\Models\NeteaseRoot.cs" />
+    <Compile Include="Http\Requets\MatchEngine\Netease\Models\NeteaseSong.cs" />
+    <Compile Include="Exceptions\ProviderException.cs" />
+    <Compile Include="Metadata\Providers\MetadataProviderLyricsOnlyBase.cs" />
+    <Compile Include="Metadata\Providers\GrooveMetadataProvider.cs" />
+    <Compile Include="Models\WebAlbum.cs" />
+    <Compile Include="Models\WebArtist.cs" />
+    <Compile Include="Models\WebItem.cs" />
+    <Compile Include="Models\WebResults.cs" />
+    <Compile Include="Models\WebItemWithTracks.cs" />
+    <Compile Include="Models\Void.cs" />
+    <Compile Include="Http\RestRequest.cs" />
+    <Compile Include="Http\RestResponse.cs" />
+    <Compile Include="Http\Requets\Metadata\Deezer\Models\DeezerAlbum.cs" />
+    <Compile Include="Http\Requets\Metadata\Deezer\Models\DeezerArtist.cs" />
+    <Compile Include="Http\Requets\Metadata\Deezer\Models\DeezerBaseResponse.cs" />
+    <Compile Include="Http\Requets\Metadata\Deezer\Models\DeezerError.cs" />
+    <Compile Include="Http\Requets\Metadata\Deezer\Models\DeezerPageResponse.cs" />
+    <Compile Include="Http\Requets\Metadata\Deezer\Models\DeezerSong.cs" />
+    <Compile Include="Http\Requets\MatchEngine\Meile\Models\MeileDetail.cs" />
+    <Compile Include="Http\Requets\MatchEngine\Meile\Models\MeileDetailRoot.cs" />
+    <Compile Include="Http\Requets\MatchEngine\Meile\Models\MeileValues.cs" />
+    <Compile Include="Http\Requets\MatchEngine\Netease\Models\NeteaseDetailRoot.cs" />
+    <Compile Include="Http\Requets\MatchEngine\Netease\Models\NeteaseDetailSong.cs" />
+    <Compile Include="Http\Requets\MatchEngine\Netease\Models\NeteaseArtist.cs" />
+    <Compile Include="Http\Requets\MatchEngine\SoundCloud\Models\SoundCloudRoot.cs" />
+    <Compile Include="Http\Requets\MatchEngine\SoundCloud\Models\SoundCloudSong.cs" />
+    <Compile Include="Http\Requets\MatchEngine\SoundCloud\Models\SoundCloudUser.cs" />
+    <Compile Include="Models\Vk\VkCaptcha.cs" />
+    <Compile Include="Models\Vk\VkError.cs" />
+    <Compile Include="Models\Vk\VkRoot.cs" />
+    <Compile Include="Models\Vk\VkSong.cs" />
+    <Compile Include="Models\MatchSong.cs" />
+    <Compile Include="Models\WebSong.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Serializer\DotNetXmlSerializer.cs" />
+    <Compile Include="Serializer\ISerializer.cs" />
+    <Compile Include="Serializer\JsonSerializer.cs" />
+    <Compile Include="MatchEngine\Interfaces\Providers\IMatchEngineService.cs" />
+    <Compile Include="MatchEngine\Services\MatchEngineService.cs" />
+    <Compile Include="MatchEngine\Validators\FlexibleTypeValidator.cs" />
+    <Compile Include="MatchEngine\Validators\SongAcapellaTypeValidator.cs" />
+    <Compile Include="MatchEngine\Validators\SongAcousticTypeValidator.cs" />
+    <Compile Include="MatchEngine\Validators\SongCoverTypeValidator.cs" />
+    <Compile Include="MatchEngine\Validators\SongLiveTypeValidator.cs" />
+    <Compile Include="MatchEngine\Validators\SongPreviewTypeValidator.cs" />
+    <Compile Include="MatchEngine\Validators\SongRadioTypeValidator.cs" />
+    <Compile Include="MatchEngine\Validators\SongRemixTypeValidator.cs" />
+    <Compile Include="MatchEngine\Validators\SongTypeValidatorBase.cs" />
+    <Compile Include="MatchEngine\Validators\BasicSongTypeValidatorBase.cs" />
+    <Compile Include="Metadata\Providers\SpotifyMetadataProvider.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="crypto, Version=1.7.0.0, Culture=neutral, PublicKeyToken=52d7d8cd84e8295f, processorArchitecture=MSIL">
+      <HintPath>..\packages\Portable.BouncyCastle-Signed.1.7.0.1\lib\portable-net4+sl5+wp8+win8+wpa81\crypto.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="HtmlAgilityPack, Version=1.4.9.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\HtmlAgilityPack.1.4.9\lib\portable-net45+netcore45+wpa81+wp8+MonoAndroid+MonoTouch\HtmlAgilityPack.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="IF.Lastfm.Core, Version=0.2.0.211, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Inflatable.Lastfm.0.2.0.211\lib\portable-win8+net45+wp8+wpa81\IF.Lastfm.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Threading.Tasks, Version=1.0.12.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Bcl.Async.1.0.168\lib\portable-net45+win8+wp8+wpa81\Microsoft.Threading.Tasks.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Threading.Tasks.Extensions, Version=1.0.12.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Bcl.Async.1.0.168\lib\portable-net45+win8+wp8+wpa81\Microsoft.Threading.Tasks.Extensions.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Xbox.Music.Platform.Client, Version=1.0.5713.24883, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\XboxMusicSDK.Zumicts.1.0.0\lib\portable-net45+netcore45+wpa81+wp8+MonoAndroid1+MonoTouch1\Microsoft.Xbox.Music.Platform.Client.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Xbox.Music.Platform.Contract, Version=1.0.5713.24572, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\XboxMusicSDK.Zumicts.1.0.0\lib\portable-net45+netcore45+wpa81+wp8+MonoAndroid1+MonoTouch1\Microsoft.Xbox.Music.Platform.Contract.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\portable-net40+sl5+wp80+win8+wpa81\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="RestSharp.Portable, Version=2.4.0.0, Culture=neutral, PublicKeyToken=be81bb0f53eab22f, processorArchitecture=MSIL">
+      <HintPath>..\packages\FubarCoder.RestSharp.Portable.2.4.4\lib\portable-net40+sl50+win+wpa81+wp80+MonoAndroid10+MonoTouch10+Xamarin.iOS10\RestSharp.Portable.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="RestSharp.Portable.OAuth, Version=2.4.0.0, Culture=neutral, PublicKeyToken=be81bb0f53eab22f, processorArchitecture=MSIL">
+      <HintPath>..\packages\FubarCoder.RestSharp.Portable.OAuth.2.4.4\lib\portable-net40+sl50+win+wpa81+wp80+MonoAndroid10+MonoTouch10+Xamarin.iOS10\RestSharp.Portable.OAuth.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Net.Http, Version=1.5.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Net.Http.2.2.29\lib\portable-net40+sl4+win8+wp71+wpa81\System.Net.Http.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Net.Http.Extensions, Version=1.5.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Net.Http.2.2.29\lib\portable-net40+sl4+win8+wp71+wpa81\System.Net.Http.Extensions.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Net.Http.Primitives, Version=1.5.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Net.Http.2.2.29\lib\portable-net40+sl4+win8+wp71+wpa81\System.Net.Http.Primitives.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Zlib.Portable, Version=1.11.0.0, Culture=neutral, PublicKeyToken=431cba815f6a8b5b, processorArchitecture=MSIL">
+      <HintPath>..\packages\Zlib.Portable.Signed.1.11.0\lib\portable-net4+sl5+wp8+win8+wpa81+MonoTouch+MonoAndroid\Zlib.Portable.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Audiotica.Core\Audiotica.Core.csproj">
+      <Project>{3b0d02a1-a45f-4925-93f0-cb4451317c80}</Project>
+      <Name>Audiotica.Core</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
+  <Import Project="..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets'))" />
+  </Target>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

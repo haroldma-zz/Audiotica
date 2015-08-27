@@ -1,0 +1,119 @@
+﻿<navigationService:NavigatablePage
+    x:Class="Audiotica.Windows.Views.SongsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Audiotica.Windows.Views"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:navigationService="using:Audiotica.Windows.Services.NavigationService"
+    xmlns:controls="using:Audiotica.Windows.Controls"
+    xmlns:customTriggers="using:Audiotica.Windows.CustomTriggers"
+    xmlns:tools="using:Audiotica.Windows.Tools"
+    xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
+    xmlns:core="using:Microsoft.Xaml.Interactions.Core"
+    xmlns:interactions="using:Audiotica.Windows.Interactions"
+    mc:Ignorable="d"
+    DataContext="{Binding SongsPage, Source={StaticResource ViewModelLocator}}">
+
+    <Grid x:Name="LayoutRoot" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <controls:LibraryHeader Title="Songs" DefaultSortIndex="{x:Bind ViewModel.DefaultSort}"
+                                SortItems="{x:Bind ViewModel.SortItems}"
+                                CurrentSortChangedCommand="{x:Bind ViewModel.SortChangedCommand}"
+                                Margin="{StaticResource PageThickness}" />
+
+        <!--No Music-->
+        <controls:NoMusicPanel Grid.Row="1" x:Name="NoMusicPanel"
+                               Margin="{StaticResource PageThickness}"
+                               Visibility="{x:Bind ViewModel.LibraryService.Tracks.Count, Mode=OneWay, Converter={StaticResource ReverseEmptyListToVisibilityConverter}}" />
+
+        <SemanticZoom Grid.Row="1">
+            <SemanticZoom.ZoomedInView>
+                <controls:AlternatingRowListView Grid.Row="1" x:Name="SongsListView"
+                                                 ItemsSource="{x:Bind ViewModel.ViewSource.View, Mode=OneWay}"
+                                                 Tag="{x:Bind ViewModel.ViewSource}"
+                                                 VerticalOffset="{x:Bind ViewModel.VerticalOffset, Mode=TwoWay}"
+                                                 BetterSelectedIndex="{x:Bind ViewModel.SelectedIndex, Mode=TwoWay}"
+                                                 Padding="{StaticResource PageThickness}"
+                                                 OddRowBackground="{StaticResource SystemChromeLowBrush}"
+                                                 ItemTemplate="{StaticResource TrackTemplate}">
+                    <ListView.GroupStyle>
+                        <GroupStyle HidesIfEmpty="True">
+                            <GroupStyle.HeaderTemplate>
+                                <DataTemplate x:DataType="tools:AlphaKeyGroup">
+                                    <TextBlock Text="{x:Bind Key}" FontSize="14.5"
+                                               Foreground="{StaticResource SystemControlForegroundAccentBrush}" />
+                                </DataTemplate>
+                            </GroupStyle.HeaderTemplate>
+                        </GroupStyle>
+                    </ListView.GroupStyle>
+                </controls:AlternatingRowListView>
+            </SemanticZoom.ZoomedInView>
+            <SemanticZoom.ZoomedOutView>
+                <ListView Background="#BF000000" Padding="{StaticResource PageThickness}"
+                          ItemContainerStyle="{StaticResource GroupListViewItemStyle}"
+                          ItemsSource="{x:Bind ViewModel.ViewSource.View.CollectionGroups, Mode=OneWay}">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="{Binding Group.GridLeftLength}" />
+                                        <ColumnDefinition Width="{Binding Group.GridRightLength}" />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid />
+                                    <Grid Grid.Column="1" VerticalAlignment="Stretch" Background="Black" />
+                                </Grid>
+                                <Grid Margin="10"
+                                      Opacity="{Binding Group.Count, Converter={StaticResource ReverseEmptyListToVisibilityConverter}, ConverterParameter=float}">
+                                    <StackPanel>
+                                        <TextBlock Text="{Binding Group.Key}"
+                                                   Style="{ThemeResource TitleTextBlockStyle}" />
+                                        <TextBlock Style="{StaticResource TaglineTextBlockStyle}">
+                                            <Run Text="{Binding Group.Count}" />
+                                            <Run Text="track(s)" />
+                                        </TextBlock>
+                                    </StackPanel>
+                                </Grid>
+                            </Grid>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </SemanticZoom.ZoomedOutView>
+        </SemanticZoom>
+
+
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup x:Name="DeviceFamilyStates">
+                <VisualState>
+                    <VisualState.StateTriggers>
+                        <customTriggers:DeviceFamilyTrigger DeviceFamily="Mobile" />
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="NoMusicPanel.Margin" Value="{StaticResource PageMobileStatusBarThickness}" />
+                        <Setter Target="SongsListView.Padding" Value="{StaticResource PageMobileStatusBarThickness}" />
+                    </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
+            <VisualStateGroup x:Name="WindowSizeStates">
+                <VisualState x:Name="NarrowScreen">
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="0" />
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="SongsListView.ItemTemplate" Value="{StaticResource TrackNarrowTemplate}" />
+                    </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="WideScreen">
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="600" />
+                    </VisualState.StateTriggers>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+    </Grid>
+</navigationService:NavigatablePage>

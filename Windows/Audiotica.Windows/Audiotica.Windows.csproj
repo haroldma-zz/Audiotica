@@ -1,0 +1,418 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProjectGuid>{FEFD3052-DC9D-49F3-B018-5342B4F2FF09}</ProjectGuid>
+    <OutputType>AppContainerExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Audiotica.Windows</RootNamespace>
+    <AssemblyName>Audiotica.Windows</AssemblyName>
+    <DefaultLanguage>en-US</DefaultLanguage>
+    <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
+    <TargetPlatformVersion>10.0.10240.0</TargetPlatformVersion>
+    <TargetPlatformMinVersion>10.0.10240.0</TargetPlatformMinVersion>
+    <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
+    <EnableDotNetNativeCompatibleProfile>true</EnableDotNetNativeCompatibleProfile>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <PackageCertificateKeyFile>Audiotica.Windows_StoreKey.pfx</PackageCertificateKeyFile>
+    <ApplicationInsightsResourceId>/subscriptions/91866a79-31b2-4bdb-9e24-3e4f686872ed/resourcegroups/Default-ApplicationInsights-CentralUS/providers/microsoft.insights/components/Audiotica.Windows</ApplicationInsightsResourceId>
+    <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
+    <AppxBundlePlatforms>x86|x64|arm</AppxBundlePlatforms>
+    <PackageCertificateThumbprint>B6652D7371FEE5694117657B8B1DF6D56D9E9C99</PackageCertificateThumbprint>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|ARM'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\ARM\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>ARM</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|ARM'">
+    <OutputPath>bin\ARM\Release\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <Optimize>true</Optimize>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>ARM</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+    <UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <Optimize>true</Optimize>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+    <UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <Optimize>true</Optimize>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+    <UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
+    <Content Include="ApplicationInsights.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Fonts\segxmvr.otf" />
+    <Content Include="Assets\Fonts\Glyphter.otf" />
+    <None Include="app.config" />
+    <None Include="Audiotica.Windows_StoreKey.pfx" />
+    <None Include="project.json" />
+    <None Include="Service References\Application Insights\ConnectedService.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="App.xaml.cs">
+      <DependentUpon>App.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="AppEngine\AppKernel.cs" />
+    <Compile Include="AppEngine\AppModule.cs" />
+    <Compile Include="AppEngine\Bootstrppers\BackgroundAudioBootstrapper.cs" />
+    <Compile Include="AppEngine\Bootstrppers\LibraryBootstrapper.cs" />
+    <Compile Include="AppEngine\Bootstrppers\IBootstrapper.cs" />
+    <Compile Include="AppEngine\Modules\ConverterModule.cs" />
+    <Compile Include="AppEngine\Modules\MatchEngineProviderModule.cs" />
+    <Compile Include="AppEngine\Modules\MatchEngineValidatorModule.cs" />
+    <Compile Include="AppEngine\Modules\MetadataProviderModule.cs" />
+    <Compile Include="AppEngine\Modules\ServiceModule.cs" />
+    <Compile Include="AppEngine\Modules\UtilityModule.cs" />
+    <Compile Include="AppEngine\Modules\ViewModelModule.cs" />
+    <Compile Include="AppEngine\Providers\IProvider.cs" />
+    <Compile Include="AppEngine\Providers\ProviderHelper.cs" />
+    <Compile Include="AppEngine\Providers\SQLiteConnectionProvider.cs" />
+    <Compile Include="Common\BootStrapper.cs" />
+    <Compile Include="Common\ColorThief.cs" />
+    <Compile Include="Common\CurtainPrompt.cs" />
+    <Compile Include="Common\MMCQ.cs" />
+    <Compile Include="Common\ScrollGridView.cs" />
+    <Compile Include="Common\ScrollListView.cs" />
+    <Compile Include="Common\UiBlocker.cs" />
+    <Compile Include="Controls\AlternatingRowListView.cs" />
+    <Compile Include="Controls\LibraryHeader.xaml.cs">
+      <DependentUpon>LibraryHeader.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="DataTemplates\LibraryDictionary.xaml.cs">
+      <DependentUpon>LibraryDictionary.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\NoMusicPanel.xaml.cs">
+      <DependentUpon>NoMusicPanel.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\TrackNarrowViewer.xaml.cs">
+      <DependentUpon>TrackNarrowViewer.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\TrackViewer.xaml.cs">
+      <DependentUpon>TrackViewer.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="CustomTriggers\ControlSizeTrigger.cs" />
+    <Compile Include="CustomTriggers\DeviceFamilyTrigger.cs" />
+    <Compile Include="CustomTriggers\InputTypeTrigger.cs" />
+    <Compile Include="CustomTriggers\OrientationTrigger.cs" />
+    <Compile Include="Common\WeakEvent.cs" />
+    <Compile Include="Enums\AlbumSort.cs" />
+    <Compile Include="Enums\ArtistSort.cs" />
+    <Compile Include="Enums\TrackSort.cs" />
+    <Compile Include="Extensions\ItemsControlExtensions.cs" />
+    <Compile Include="Extensions\VisualTreeHelperExtensions.cs" />
+    <Compile Include="Factories\AppKernelFactory.cs" />
+    <Compile Include="Common\MessageBox.cs" />
+    <Compile Include="Interactions\CloseFlyoutAction.cs" />
+    <Compile Include="Interactions\OpenFlyoutAction.cs" />
+    <Compile Include="Services\DesignTime\DesignPlayerService.cs" />
+    <Compile Include="Services\DesignTime\DesignInsightsService.cs" />
+    <Compile Include="Services\Interfaces\IPlayerService.cs" />
+    <Compile Include="Services\Interfaces\IInsightsService.cs" />
+    <Compile Include="Services\DesignTime\DesignLibraryCollectionService.cs" />
+    <Compile Include="Services\Interfaces\ILibraryCollectionService.cs" />
+    <Compile Include="Services\RunTime\LibraryCollectionService.cs" />
+    <Compile Include="Services\RunTime\PlayerService.cs" />
+    <Compile Include="Services\RunTime\InsightsService.cs" />
+    <Compile Include="Interactions\NavigateToPageAction.cs" />
+    <Compile Include="CustomTriggers\NetworkAvailableStateTrigger.cs" />
+    <Compile Include="Interactions\TextBoxEnterKeyBehavior.cs" />
+    <Compile Include="Interactions\TimerTriggerBehavior.cs" />
+    <Compile Include="Services\Interfaces\ILibraryMatchingService.cs" />
+    <Compile Include="Services\Interfaces\ITrackSaveService.cs" />
+    <Compile Include="Services\RunTime\LibraryMatchingService.cs" />
+    <Compile Include="Services\RunTime\TrackSaveService.cs" />
+    <Compile Include="Services\NavigationService\DesignNavigationService.cs" />
+    <Compile Include="Services\NavigationService\INavigatable.cs" />
+    <Compile Include="Services\NavigationService\INavigationService.cs" />
+    <Compile Include="Services\NavigationService\NavigationEventArgs.cs" />
+    <Compile Include="Services\NavigationService\NavigationFacade.cs" />
+    <Compile Include="Services\NavigationService\NavigationService.cs" />
+    <Compile Include="Tools\AlphaKeyGroup.cs" />
+    <Compile Include="Tools\Converters\BoolToColorBrushConverter.cs" />
+    <Compile Include="Tools\Converters\ContentConverter.cs" />
+    <Compile Include="Tools\Converters\EmptyListToVisibilityConverter.cs" />
+    <Compile Include="Tools\Converters\EmptyStringToVisibilityConverter.cs" />
+    <Compile Include="Tools\Converters\ImageSourceConverter.cs" />
+    <Compile Include="Tools\Converters\ListToStringConverter.cs" />
+    <Compile Include="Tools\Converters\NullToVisibilityConverter.cs" />
+    <Compile Include="Tools\Converters\PercentageConverter.cs" />
+    <Compile Include="Tools\Converters\StringFormatConverter.cs" />
+    <Compile Include="Tools\Converters\TimespanToStringConverter.cs" />
+    <Compile Include="Tools\Converters\TrackStatusConverter.cs" />
+    <Compile Include="Tools\Converters\UpperCaseConverter.cs" />
+    <Compile Include="Tools\Converters\VisibilityConverter.cs" />
+    <Compile Include="Tools\Mvvm\Command.cs" />
+    <Compile Include="Tools\Mvvm\ViewModelBase.cs" />
+    <Compile Include="Extensions\UriExtensions.cs" />
+    <Compile Include="ViewModels\AboutPageViewModel.cs" />
+    <Compile Include="ViewModels\AlbumPageViewModel.cs" />
+    <Compile Include="ViewModels\AlbumsPageViewModel.cs" />
+    <Compile Include="ViewModels\ArtistPageViewModel.cs" />
+    <Compile Include="ViewModels\ExplorePageViewModel.cs" />
+    <Compile Include="ViewModels\ArtistsPageViewModel.cs" />
+    <Compile Include="ViewModels\NowPlayingPageViewModel.cs" />
+    <Compile Include="ViewModels\SearchPageViewModel.cs" />
+    <Compile Include="ViewModels\SettingsPageViewModel.cs" />
+    <Compile Include="ViewModels\SongsPageViewModel.cs" />
+    <Compile Include="ViewModels\ViewModelLocator.cs" />
+    <Compile Include="Views\AboutPage.xaml.cs">
+      <DependentUpon>AboutPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\SearchPage.xaml.cs">
+      <DependentUpon>SearchPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\SettingsPage.xaml.cs">
+      <DependentUpon>SettingsPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\AlbumPage.xaml.cs">
+      <DependentUpon>AlbumPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\AlbumsPage.xaml.cs">
+      <DependentUpon>AlbumsPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ArtistPage.xaml.cs">
+      <DependentUpon>ArtistPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ArtistsPage.xaml.cs">
+      <DependentUpon>ArtistsPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ExplorePage.xaml.cs">
+      <DependentUpon>ExplorePage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Views\NowPlayingPage.xaml.cs">
+      <DependentUpon>NowPlayingPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Shell.xaml.cs">
+      <DependentUpon>Shell.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\SongsPage.xaml.cs">
+      <DependentUpon>SongsPage.xaml</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <AppxManifest Include="Package.appxmanifest">
+      <SubType>Designer</SubType>
+    </AppxManifest>
+    <None Include="Audiotica.Windows_TemporaryKey.pfx" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Assets\SplashScreen.scale-100.png" />
+    <Content Include="Assets\SplashScreen.scale-400.png" />
+    <Content Include="Assets\Square150x150Logo.scale-100.png" />
+    <Content Include="Assets\Square150x150Logo.scale-400.png" />
+    <Content Include="Assets\Square310x310Logo.scale-100.png" />
+    <Content Include="Assets\Square310x310Logo.scale-200.png" />
+    <Content Include="Assets\Square310x310Logo.scale-400.png" />
+    <Content Include="Assets\Square44x44Logo.scale-100.png" />
+    <Content Include="Assets\Square44x44Logo.scale-400.png" />
+    <Content Include="Assets\Square44x44Logo.targetsize-256.png" />
+    <Content Include="Assets\Square44x44Logo.targetsize-48.png" />
+    <Content Include="Assets\StoreLogo.scale-100.png" />
+    <Content Include="Assets\StoreLogo.scale-200.png" />
+    <Content Include="Assets\StoreLogo.scale-400.png" />
+    <Content Include="Assets\Wide310x150Logo.scale-100.png" />
+    <Content Include="Assets\Wide310x150Logo.scale-400.png" />
+    <None Include="Package.StoreAssociation.xml" />
+    <Content Include="Properties\Default.rd.xml" />
+    <Content Include="Assets\LockScreenLogo.scale-200.png" />
+    <Content Include="Assets\SplashScreen.scale-200.png" />
+    <Content Include="Assets\Square150x150Logo.scale-200.png" />
+    <Content Include="Assets\Square44x44Logo.scale-200.png" />
+    <Content Include="Assets\Square44x44Logo.targetsize-24_altform-unplated.png" />
+    <Content Include="Assets\Wide310x150Logo.scale-200.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ApplicationDefinition Include="App.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </ApplicationDefinition>
+    <Page Include="Controls\LibraryHeader.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="DataTemplates\LibraryDictionary.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\NoMusicPanel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\TrackNarrowViewer.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\TrackViewer.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="DeviceFamily-Mobile\Shell.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Styles\ControlStyles.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Styles\TextStyles.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Styles\SplitViewStyles.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\AboutPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\SearchPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\SettingsPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\AlbumPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\AlbumsPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ArtistPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ArtistsPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ExplorePage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\NowPlayingPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Shell.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\SongsPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Audiotica.Converters\Audiotica.Converters.csproj">
+      <Project>{1f2a3dcd-0350-4468-9c9a-85ea6cf0509e}</Project>
+      <Name>Audiotica.Converters</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Audiotica.Core\Audiotica.Core.csproj">
+      <Project>{3b0d02a1-a45f-4925-93f0-cb4451317c80}</Project>
+      <Name>Audiotica.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Audiotica.Database\Audiotica.Database.csproj">
+      <Project>{3d53e627-45b5-410d-8043-ec7f22c3e010}</Project>
+      <Name>Audiotica.Database</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Audiotica.Web\Audiotica.Web.csproj">
+      <Project>{0b8c5a00-8c9c-4663-a741-1b494c0e9e46}</Project>
+      <Name>Audiotica.Web</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Audiotica.Core.Windows\Audiotica.Core.Windows.csproj">
+      <Project>{5a3452a6-cf57-43d5-a0d9-26192741fab1}</Project>
+      <Name>Audiotica.Core.Windows</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Audiotica.Windows.Player\Audiotica.Windows.Player.csproj">
+      <Project>{51f65cd8-3f91-41f5-a18f-ae17fb2f0b69}</Project>
+      <Name>Audiotica.Windows.Player</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <SDKReference Include="BehaviorsXamlSDKManaged, Version=12.0">
+      <Name>Behaviors SDK %28XAML%29</Name>
+    </SDKReference>
+    <SDKReference Include="Microsoft.VCLibs, Version=14.0">
+      <Name>Visual C++ 2015 Runtime for Universal Windows Platform Apps</Name>
+    </SDKReference>
+    <SDKReference Include="SQLite.UAP.2015, Version=3.8.11.1">
+      <Name>SQLite for Universal App Platform</Name>
+    </SDKReference>
+  </ItemGroup>
+  <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
+    <VisualStudioVersion>14.0</VisualStudioVersion>
+  </PropertyGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
