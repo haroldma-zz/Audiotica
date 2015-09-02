@@ -29,11 +29,17 @@
                                    Style="{ThemeResource TitleTextBlockStyle}" />
                         <TextBlock Text="{x:Bind ViewModel.Album.Artist.Name, Mode=OneWay}"
                                    Style="{StaticResource SubtleTextBlockStyle}" />
-                        <HyperlinkButton Command="{x:Bind ViewModel.ViewInCatalogCommand, Mode=OneWay}"
+                       <StackPanel Orientation="Horizontal">
+                            <HyperlinkButton Margin="0,0,10,0" Command="{x:Bind ViewModel.PlayAllCommand, Mode=OneWay}"
+                                         Content="Play"
+                                         Foreground="{ThemeResource SystemControlForegroundBaseHighBrush}"
+                                         ContentTemplate="{StaticResource HyperlinkTemplate}" />
+                            <HyperlinkButton Command="{x:Bind ViewModel.ViewInCatalogCommand, Mode=OneWay}"
                                          Visibility="{x:Bind ViewModel.IsCatalogMode, Mode=OneWay, Converter={StaticResource ReverseVisibilityConverter}}"
                                          Content="View in catalog"
                                          Foreground="{ThemeResource SystemControlForegroundBaseHighBrush}"
                                          ContentTemplate="{StaticResource HyperlinkTemplate}" />
+                       </StackPanel>
                     </StackPanel>
                 </Grid>
             </ListView.Header>

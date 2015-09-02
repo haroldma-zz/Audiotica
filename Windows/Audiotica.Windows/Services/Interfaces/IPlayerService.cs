@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Windows.Media.Playback;
 using Audiotica.Core.Common;
@@ -37,6 +38,8 @@ namespace Audiotica.Windows.Services.Interfaces
         Task<QueueTrack> AddAsync(WebSong webSong, int position = -1);
         Task<QueueTrack> AddUpNextAsync(Track track);
         Task<QueueTrack> AddUpNextAsync(WebSong webSong);
+        Task NewQueueAsync(List<Track> tracks);
+        
 
         /// <summary>
         ///     Plays the specified queue.

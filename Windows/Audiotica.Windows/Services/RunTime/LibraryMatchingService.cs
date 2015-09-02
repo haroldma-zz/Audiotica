@@ -1,6 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Audiotica.Database.Models;
 using Audiotica.Database.Services.Interfaces;
@@ -11,11 +11,10 @@ namespace Audiotica.Windows.Services.RunTime
 {
     internal class LibraryMatchingService : ILibraryMatchingService
     {
-        private const int MaxParallels = 5;
         private readonly IInsightsService _insightsService;
         private readonly ILibraryService _libraryService;
         private readonly IMatchEngineService _matchEngineService;
-        private readonly List<Task> _matchingTasks = new List<Task>();
+        private readonly SemaphoreSlim _semaphoreSlim = new SemaphoreSlim(5, 5);
 
         public LibraryMatchingService(ILibraryService libraryService, IMatchEngineService matchEngineService,
             IInsightsService insightsService)
@@ -25,24 +24,21 @@ namespace Audiotica.Windows.Services.RunTime
             _insightsService = insightsService;
         }
 
-        public bool IsMatching { get; private set; }
-
         public void OnStartup()
         {
-            _matchingTasks.AddRange(
-                _libraryService.Tracks.Where(p => p.Status == Track.TrackStatus.Matching).Select(CreateTask));
-            RunTasks();
+            foreach (var track in _libraryService.Tracks.Where(p => p.Status == Track.TrackStatus.Matching))
+                Queue(track);
         }
 
-        public void Queue(Track track)
+        public async void Queue(Track track)
         {
-            _matchingTasks.Add(CreateTask(track));
-            if (!IsMatching)
-                RunTasks();
+            await CreateTask(track);
         }
 
         private async Task CreateTask(Track track)
         {
+            await _semaphoreSlim.WaitAsync();
+
             using (var timer = _insightsService.TrackTimeEvent("MatchedSong", new Dictionary<string, string>
             {
                 {"Title", track.Title},
@@ -71,31 +67,8 @@ namespace Audiotica.Windows.Services.RunTime
                 {
                     timer.AddProperty("Status", "Error");
                 }
-        }
 
-        private async void RunTasks()
-        {
-            // TODO: only run when internet is available?
-
-            IsMatching = true;
-
-            while (_matchingTasks.Count > 0)
-            {
-                var running = new List<Task>();
-
-                var min = Math.Min(_matchingTasks.Count, MaxParallels);
-                for (var index = 0; index < min; index++)
-                {
-                    var task = _matchingTasks[index];
-                    running.Add(task);
-                }
-
-                running.ForEach(task => _matchingTasks.Remove(task));
-
-                await Task.WhenAll(running);
-            }
-
-            IsMatching = false;
+            _semaphoreSlim.Release();
         }
     }
 }

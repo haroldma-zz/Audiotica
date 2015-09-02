@@ -17,6 +17,7 @@ using Audiotica.Web.Metadata.Interfaces;
 using Audiotica.Web.Models;
 using Audiotica.Windows.Common;
 using Audiotica.Windows.Extensions;
+using Audiotica.Windows.Services.Interfaces;
 using Audiotica.Windows.Services.NavigationService;
 using Audiotica.Windows.Tools.Mvvm;
 using Audiotica.Windows.Views;
@@ -29,6 +30,7 @@ namespace Audiotica.Windows.ViewModels
         private readonly List<IExtendedMetadataProvider> _metadataProviders;
         private readonly INavigationService _navigationService;
         private readonly ISettingsUtility _settingsUtility;
+        private readonly IPlayerService _playerService;
         private readonly IConverter<WebAlbum, Album> _webAlbumConverter;
         private Album _album;
         private SolidColorBrush _backgroundBrush;
@@ -37,20 +39,24 @@ namespace Audiotica.Windows.ViewModels
 
         public AlbumPageViewModel(ILibraryService libraryService, INavigationService navigationService,
             IEnumerable<IMetadataProvider> metadataProviders, IConverter<WebAlbum, Album> webAlbumConverter,
-            ISettingsUtility settingsUtility)
+            ISettingsUtility settingsUtility, IPlayerService playerService)
         {
             _libraryService = libraryService;
             _navigationService = navigationService;
             _webAlbumConverter = webAlbumConverter;
             _settingsUtility = settingsUtility;
+            _playerService = playerService;
             _metadataProviders = metadataProviders.FilterAndSort<IExtendedMetadataProvider>();
 
             ViewInCatalogCommand = new Command(ViewInCatalogExecute);
+            PlayAllCommand = new Command(PlayAllExecute);
 
             if (IsInDesignMode)
                 OnNavigatedTo(new AlbumPageParameter("Kauai", "Childish Gambino"), NavigationMode.New,
                     new Dictionary<string, object>());
         }
+
+        public Command PlayAllCommand { get; set; }
 
         public Command ViewInCatalogCommand { get; }
 
@@ -78,10 +84,17 @@ namespace Audiotica.Windows.ViewModels
             set { Set(ref _isCatalogMode, value); }
         }
 
+        private void PlayAllExecute()
+        {
+            var albumTracks = Album.Tracks.ToList();
+            _playerService.NewQueueAsync(albumTracks);
+        }
+
         private void ViewInCatalogExecute()
         {
             _navigationService.GoBack();
-            _navigationService.Navigate(typeof (AlbumPage), new AlbumPageParameter(Album.Title, Album.Artist.Name) {IsCatalogMode = true});
+            _navigationService.Navigate(typeof (AlbumPage),
+                new AlbumPageParameter(Album.Title, Album.Artist.Name) {IsCatalogMode = true});
         }
 
         public override sealed async void OnNavigatedTo(object parameter, NavigationMode mode,

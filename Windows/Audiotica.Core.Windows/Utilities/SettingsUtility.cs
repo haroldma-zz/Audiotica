@@ -1,15 +1,21 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using Windows.Foundation.Collections;
 using Windows.Storage;
+using Audiotica.Core.Extensions;
+using Audiotica.Core.Helpers;
 using Audiotica.Core.Utilities.Interfaces;
-using Newtonsoft.Json;
+using Audiotica.Core.Windows.Helpers;
 
 namespace Audiotica.Core.Windows.Utilities
 {
     public class SettingsUtility : ISettingsUtility
     {
+        private const string FileFallback = "SettingsUtility-Fallback/{0}.txt";
+
         private readonly Type[] _primitives =
         {
             typeof (string),
@@ -64,7 +70,18 @@ namespace Audiotica.Core.Windows.Utilities
                 }
                 catch
                 {
-                    // ignored
+                    // too big, fallback to file
+                    var file =
+                        AsyncHelper.RunSync(
+                            () =>
+                                StorageHelper.CreateFileAsync(string.Format(FileFallback, key),
+                                    option: CreationCollisionOption.ReplaceExisting));
+                    using (var stream = AsyncHelper.RunSync(() => file.OpenStreamForWriteAsync()))
+                    {
+                        var bytes = Encoding.UTF8.GetBytes(json);
+                        stream.Write(bytes, 0, bytes.Length);
+                        settings[key] = string.Format(FileFallback, key);
+                    }
                 }
             }
         }
@@ -76,11 +93,27 @@ namespace Audiotica.Core.Windows.Utilities
                 return otherwise;
             try
             {
+                var o = settings[key];
                 if (IsPrimitive(typeof (T)))
                 {
-                    return (T) settings[key];
+                    return (T) o;
                 }
-                var json = settings[key].ToString();
+
+                var json = o.ToString();
+
+                var fallback = string.Format(FileFallback, key);
+                if (json == fallback)
+                {
+                    var file = AsyncHelper.RunSync(() => StorageHelper.GetFileAsync(fallback));
+                    using (var stream = AsyncHelper.RunSync(() => file.OpenStreamForReadAsync()))
+                    {
+                        var bytes = new byte[stream.Length];
+                        stream.Read(bytes, 0, bytes.Length);
+                        json = Encoding.UTF8.GetString(bytes, 0, bytes.Length);
+                    }
+                    AsyncHelper.RunSync(() => file.DeleteAsync().AsTask());
+                }
+
                 return Deserialize<T>(json);
             }
             catch
@@ -98,12 +131,12 @@ namespace Audiotica.Core.Windows.Utilities
 
         private string Serialize<T>(T item)
         {
-            return JsonConvert.SerializeObject(item);
+            return item.SerializeToJson();
         }
 
         private T Deserialize<T>(string json)
         {
-            return JsonConvert.DeserializeObject<T>(json);
+            return json.TryDeserializeJson<T>();
         }
 
         private bool IsPrimitive(Type type)

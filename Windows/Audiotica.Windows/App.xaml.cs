@@ -34,8 +34,11 @@ namespace Audiotica.Windows
             // Set the bounds for the view to the core window
             ApplicationView.GetForCurrentView().SetDesiredBoundsMode(ApplicationViewBoundsMode.UseCoreWindow);
 
-            ApplicationView.GetForCurrentView().VisibleBoundsChanged += OnVisibleBoundsChanged;
-            OnVisibleBoundsChanged(null, null);
+            if (DeviceHelper.IsType(DeviceFamily.Mobile))
+            {
+                ApplicationView.GetForCurrentView().VisibleBoundsChanged += OnVisibleBoundsChanged;
+                OnVisibleBoundsChanged(null, null);
+            }
         }
 
         public override void OnLaunched(ILaunchActivatedEventArgs e)

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Windows.Media.Playback;
 using Audiotica.Core.Common;
@@ -49,6 +50,11 @@ namespace Audiotica.Windows.Services.DesignTime
         }
 
         public Task<QueueTrack> AddUpNextAsync(WebSong webSong)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task NewQueueAsync(List<Track> tracks)
         {
             throw new NotImplementedException();
         }
