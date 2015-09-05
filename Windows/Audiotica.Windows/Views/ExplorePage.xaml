@@ -73,7 +73,7 @@
             </Grid>
             <StackPanel Grid.Row="1" x:Name="TopArtistsPanel">
                 <TextBlock Text="Top Artists" Style="{StaticResource HeaderTextBlockStyle}" />
-                <GridView ItemsSource="{x:Bind ViewModel.TopArtists, Mode=OneWay}" IsItemClickEnabled="True" ItemTemplate="{StaticResource WebArtistTemplate}"
+                <GridView ItemsSource="{x:Bind ViewModel.TopArtists, Mode=OneWay}" IsItemClickEnabled="True" SelectionMode="None" ItemTemplate="{StaticResource WebArtistTemplate}"
                           ScrollViewer.VerticalScrollBarVisibility="Disabled">
                     <interactivity:Interaction.Behaviors>
                         <core:EventTriggerBehavior EventName="ItemClick">
@@ -91,7 +91,7 @@
                     </VisualState.StateTriggers>
                     <VisualState.Setters>
                         <Setter Target="ContentRoot.Padding" Value="{StaticResource MobileStatusBarThickness}" />
-                        <Setter Target="LayoutRoot.Padding" Value="{StaticResource PageMobileThickness}" />
+                        <Setter Target="LayoutRoot.Padding" Value="{StaticResource MobilePageThickness}" />
                     </VisualState.Setters>
                 </VisualState>
             </VisualStateGroup>

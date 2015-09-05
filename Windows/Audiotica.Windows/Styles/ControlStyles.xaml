@@ -135,6 +135,7 @@
     <DataTemplate x:Key="HyperlinkTemplate">
         <TextBlock Text="{Binding}" />
     </DataTemplate>
+    
     <Style x:Key="FlyoutPresenterStyle1" TargetType="FlyoutPresenter">
         <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
         <Setter Property="VerticalContentAlignment" Value="Stretch"/>

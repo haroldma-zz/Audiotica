@@ -26,7 +26,8 @@
                     <Grid />
                     <Grid Grid.Column="1" VerticalAlignment="Stretch" Background="Black" />
                 </Grid>
-                <Grid Margin="10" Opacity="{Binding Group.Count, Converter={StaticResource ReverseEmptyListToVisibilityConverter}, ConverterParameter=float}">
+                <Grid Margin="10"
+                      Opacity="{Binding Group.Count, Converter={StaticResource ReverseEmptyListToVisibilityConverter}, ConverterParameter=float}">
                     <StackPanel>
                         <TextBlock Text="{Binding Group.Key}"
                                    Style="{ThemeResource TitleTextBlockStyle}" />
@@ -46,22 +47,25 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <controls:LibraryHeader Title="Albums" DefaultSortIndex="{x:Bind ViewModel.DefaultSort}" SortItems="{x:Bind ViewModel.SortItems}" CurrentSortChangedCommand="{x:Bind ViewModel.SortChangedCommand}" Margin="{StaticResource PageThickness}" />
-        
+        <controls:LibraryHeader x:Name="LibraryHeader" Title="Albums" DefaultSortIndex="{x:Bind ViewModel.DefaultSort}"
+                                SortItems="{x:Bind ViewModel.SortItems}"
+                                CurrentSortChangedCommand="{x:Bind ViewModel.SortChangedCommand}"
+                                Margin="{StaticResource PageTopSideThickness}" />
+
         <!--No Music-->
         <controls:NoMusicPanel Grid.Row="1" x:Name="NoMusicPanel"
-                               Margin="{StaticResource PageThickness}"
+                               Margin="{StaticResource PageSideThickness}"
                                Visibility="{x:Bind ViewModel.LibraryService.Albums.Count, Mode=OneWay, Converter={StaticResource ReverseEmptyListToVisibilityConverter}}" />
 
-        <SemanticZoom Grid.Row="1" x:Name="AlbumsGridView">
+        <SemanticZoom x:Name="AlbumsGridZoom" Grid.Row="1">
             <SemanticZoom.ZoomedInView>
-                <common:ScrollGridView
-                    VerticalOffset="{x:Bind ViewModel.GridViewVerticalOffset, Mode=TwoWay}"
-                    SelectionMode="None"
-                    IsItemClickEnabled="True"
-                    ItemsSource="{x:Bind ViewModel.ViewSource.View, Mode=OneWay}"
-                    Padding="{StaticResource PageThickness}"
-                    ItemTemplate="{StaticResource AlbumTemplate}">
+                <common:ScrollGridView x:Name="AlbumsGridView"
+                                       Padding="{StaticResource PageThickness}"
+                                       VerticalOffset="{x:Bind ViewModel.GridViewVerticalOffset, Mode=TwoWay}"
+                                       SelectionMode="None"
+                                       IsItemClickEnabled="True"
+                                       ItemsSource="{x:Bind ViewModel.ViewSource.View, Mode=OneWay}"
+                                       ItemTemplate="{StaticResource AlbumTemplate}">
                     <interactivity:Interaction.Behaviors>
                         <core:EventTriggerBehavior EventName="ItemClick">
                             <core:InvokeCommandAction Command="{x:Bind ViewModel.AlbumClickCommand}" />
@@ -80,22 +84,23 @@
                 </common:ScrollGridView>
             </SemanticZoom.ZoomedInView>
             <SemanticZoom.ZoomedOutView>
-                <ListView Background="#BF000000" Padding="{StaticResource PageThickness}"
+                <ListView x:Name="AlbumsZoomedOutGridView"
+                          Padding="{StaticResource PageThickness}" Background="#BF000000"
                           ItemContainerStyle="{StaticResource GroupListViewItemStyle}"
                           ItemsSource="{x:Bind ViewModel.ViewSource.View.CollectionGroups, Mode=OneWay}"
                           ItemTemplate="{StaticResource JumpTemplate}" />
             </SemanticZoom.ZoomedOutView>
         </SemanticZoom>
 
-        <SemanticZoom Grid.Row="1" x:Name="AlbumsListView" Visibility="Collapsed">
+        <SemanticZoom Grid.Row="1" x:Name="AlbumsListZoom" Visibility="Collapsed">
             <SemanticZoom.ZoomedInView>
-                <common:ScrollListView
-                    VerticalOffset="{x:Bind ViewModel.ListViewVerticalOffset, Mode=TwoWay}"
-                    SelectionMode="None"
-                    IsItemClickEnabled="True"
-                    ItemsSource="{x:Bind ViewModel.ViewSource.View, Mode=OneWay}"
-                    Padding="{StaticResource PageMobileStatusBarThickness}"
-                    ItemTemplate="{StaticResource AlbumNarrowTemplate}">
+                <common:ScrollListView x:Name="AlbumsListView"
+                                       Padding="{StaticResource PageThickness}"
+                                       VerticalOffset="{x:Bind ViewModel.ListViewVerticalOffset, Mode=TwoWay}"
+                                       SelectionMode="None"
+                                       IsItemClickEnabled="True"
+                                       ItemsSource="{x:Bind ViewModel.ViewSource.View, Mode=OneWay}"
+                                       ItemTemplate="{StaticResource AlbumNarrowTemplate}">
                     <interactivity:Interaction.Behaviors>
                         <core:EventTriggerBehavior EventName="ItemClick">
                             <core:InvokeCommandAction Command="{x:Bind ViewModel.AlbumClickCommand}" />
@@ -114,7 +119,8 @@
                 </common:ScrollListView>
             </SemanticZoom.ZoomedInView>
             <SemanticZoom.ZoomedOutView>
-                <ListView Background="#BF000000" Padding="{StaticResource PageThickness}"
+                <ListView x:Name="AlbumsZoomedOutListView"
+                          Padding="{StaticResource PageThickness}" Background="#BF000000"
                           ItemContainerStyle="{StaticResource GroupListViewItemStyle}"
                           ItemsSource="{x:Bind ViewModel.ViewSource.View.CollectionGroups, Mode=OneWay}"
                           ItemTemplate="{StaticResource JumpTemplate}" />
@@ -128,8 +134,12 @@
                         <customTriggers:DeviceFamilyTrigger DeviceFamily="Mobile" />
                     </VisualState.StateTriggers>
                     <VisualState.Setters>
-                        <Setter Target="NoMusicPanel.Margin" Value="{StaticResource PageMobileStatusBarThickness}" />
-                        <Setter Target="AlbumsGridView.Padding" Value="{StaticResource PageMobileStatusBarThickness}" />
+                        <Setter Target="LibraryHeader.Margin" Value="{StaticResource MobilePageTopSideThickness}" />
+                        <Setter Target="NoMusicPanel.Margin" Value="{StaticResource MobilePageSideThickness}" />
+                        <Setter Target="AlbumsGridView.Padding" Value="{StaticResource MobilePageThickness}" />
+                        <Setter Target="AlbumsZoomedOutGridView.Padding" Value="{StaticResource MobilePageThickness}" />
+                        <Setter Target="AlbumsListView.Padding" Value="{StaticResource MobilePageThickness}" />
+                        <Setter Target="AlbumsZoomedOutListView.Padding" Value="{StaticResource MobilePageThickness}" />
                     </VisualState.Setters>
                 </VisualState>
             </VisualStateGroup>
@@ -139,8 +149,8 @@
                         <AdaptiveTrigger MinWindowWidth="0" />
                     </VisualState.StateTriggers>
                     <VisualState.Setters>
-                        <Setter Target="AlbumsListView.Visibility" Value="Visible" />
-                        <Setter Target="AlbumsGridView.Visibility" Value="Collapsed" />
+                        <Setter Target="AlbumsListZoom.Visibility" Value="Visible" />
+                        <Setter Target="AlbumsGridZoom.Visibility" Value="Collapsed" />
                     </VisualState.Setters>
                 </VisualState>
                 <VisualState x:Name="WideScreen">

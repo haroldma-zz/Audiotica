@@ -48,24 +48,23 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <controls:LibraryHeader Title="Artists" SortItems="{x:Bind ViewModel.SortItems}"
+        <controls:LibraryHeader x:Name="LibraryHeader" Title="Artists" SortItems="{x:Bind ViewModel.SortItems}"
                                 CurrentSortChangedCommand="{x:Bind ViewModel.SortChangedCommand}"
-                                Margin="{StaticResource PageThickness}" />
+                                Margin="{StaticResource PageTopSideThickness}" />
 
         <!--No Music-->
         <controls:NoMusicPanel Grid.Row="1" x:Name="NoMusicPanel"
-                               Margin="{StaticResource PageThickness}"
+                               Margin="{StaticResource PageSideThickness}"
                                Visibility="{x:Bind ViewModel.LibraryService.Artists.Count, Mode=OneWay, Converter={StaticResource ReverseEmptyListToVisibilityConverter}}" />
 
-        <SemanticZoom x:Name="ArtistsGridView" Grid.Row="1">
+        <SemanticZoom x:Name="ArtistsGridZoom" Grid.Row="1">
             <SemanticZoom.ZoomedInView>
-                <common:ScrollGridView Grid.Row="1"
+                <common:ScrollGridView x:Name="ArtistsGridView" Grid.Row="1" Padding="{StaticResource PageThickness}"
                                        VerticalOffset="{x:Bind ViewModel.GridViewVerticalOffset, Mode=TwoWay}"
                                        IsItemClickEnabled="True"
                                        SelectionMode="None"
                                        ItemsSource="{x:Bind ViewModel.ViewSource.View, Mode=OneWay}"
-                                       ItemTemplate="{StaticResource ArtistTemplate}"
-                                       Padding="{StaticResource PageThickness}">
+                                       ItemTemplate="{StaticResource ArtistTemplate}">
                     <interactivity:Interaction.Behaviors>
                         <core:EventTriggerBehavior EventName="ItemClick">
                             <core:InvokeCommandAction Command="{x:Bind ViewModel.ArtistClickCommand}" />
@@ -84,22 +83,23 @@
                 </common:ScrollGridView>
             </SemanticZoom.ZoomedInView>
             <SemanticZoom.ZoomedOutView>
-                <ListView Background="#BF000000" Padding="{StaticResource PageThickness}"
+                <ListView x:Name="ArtistsZoomedOutGridView" Background="#BF000000"
+                          Padding="{StaticResource PageThickness}"
                           ItemContainerStyle="{StaticResource GroupListViewItemStyle}"
                           ItemsSource="{x:Bind ViewModel.ViewSource.View.CollectionGroups, Mode=OneWay}"
                           ItemTemplate="{StaticResource JumpTemplate}" />
             </SemanticZoom.ZoomedOutView>
         </SemanticZoom>
 
-        <SemanticZoom x:Name="ArtistsListView" Visibility="Collapsed" Grid.Row="1">
+        <SemanticZoom x:Name="ArtistsListZoom" Visibility="Collapsed"
+                      Grid.Row="1">
             <SemanticZoom.ZoomedInView>
-                <common:ScrollListView
-                    VerticalOffset="{x:Bind ViewModel.ListViewVerticalOffset, Mode=TwoWay}"
-                    IsItemClickEnabled="True"
-                    SelectionMode="None"
-                    ItemsSource="{x:Bind ViewModel.ViewSource.View, Mode=OneWay}"
-                    Padding="{StaticResource PageMobileStatusBarThickness}"
-                    ItemTemplate="{StaticResource ArtistNarrowTemplate}">
+                <common:ScrollListView x:Name="ArtistsListView" Padding="{StaticResource PageThickness}"
+                                       VerticalOffset="{x:Bind ViewModel.ListViewVerticalOffset, Mode=TwoWay}"
+                                       IsItemClickEnabled="True"
+                                       SelectionMode="None"
+                                       ItemsSource="{x:Bind ViewModel.ViewSource.View, Mode=OneWay}"
+                                       ItemTemplate="{StaticResource ArtistNarrowTemplate}">
                     <ListView.GroupStyle>
                         <GroupStyle HidesIfEmpty="True">
                             <GroupStyle.HeaderTemplate>
@@ -113,7 +113,8 @@
                 </common:ScrollListView>
             </SemanticZoom.ZoomedInView>
             <SemanticZoom.ZoomedOutView>
-                <ListView Background="#BF000000" Padding="{StaticResource PageThickness}"
+                <ListView x:Name="ArtistsZoomedOutListView" Background="#BF000000"
+                          Padding="{StaticResource PageThickness}"
                           ItemContainerStyle="{StaticResource GroupListViewItemStyle}"
                           ItemsSource="{x:Bind ViewModel.ViewSource.View.CollectionGroups, Mode=OneWay}"
                           ItemTemplate="{StaticResource JumpTemplate}" />
@@ -127,8 +128,12 @@
                         <customTriggers:DeviceFamilyTrigger DeviceFamily="Mobile" />
                     </VisualState.StateTriggers>
                     <VisualState.Setters>
-                        <Setter Target="NoMusicPanel.Margin" Value="{StaticResource PageMobileStatusBarThickness}" />
-                        <Setter Target="ArtistsGridView.Padding" Value="{StaticResource PageMobileStatusBarThickness}" />
+                        <Setter Target="LibraryHeader.Margin" Value="{StaticResource MobilePageTopSideThickness}" />
+                        <Setter Target="NoMusicPanel.Margin" Value="{StaticResource MobilePageSideThickness}" />
+                        <Setter Target="ArtistsGridView.Padding" Value="{StaticResource MobilePageThickness}" />
+                        <Setter Target="ArtistsZoomedOutGridView.Padding" Value="{StaticResource MobilePageThickness}" />
+                        <Setter Target="ArtistsListView.Padding" Value="{StaticResource MobilePageThickness}" />
+                        <Setter Target="ArtistsZoomedOutListView.Padding" Value="{StaticResource MobilePageThickness}" />
                     </VisualState.Setters>
                 </VisualState>
             </VisualStateGroup>
@@ -138,8 +143,8 @@
                         <AdaptiveTrigger MinWindowWidth="0" />
                     </VisualState.StateTriggers>
                     <VisualState.Setters>
-                        <Setter Target="ArtistsListView.Visibility" Value="Visible" />
-                        <Setter Target="ArtistsGridView.Visibility" Value="Collapsed" />
+                        <Setter Target="ArtistsListZoom.Visibility" Value="Visible" />
+                        <Setter Target="ArtistsGridZoom.Visibility" Value="Collapsed" />
                     </VisualState.Setters>
                 </VisualState>
                 <VisualState x:Name="WideScreen">

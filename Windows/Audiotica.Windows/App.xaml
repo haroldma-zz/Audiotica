@@ -28,10 +28,21 @@
 
             <SolidColorBrush x:Name="SubtleTextBrush" Color="{ThemeResource SystemBaseMediumColor}" />
 
+            <!--Thickness for page-->
+            <Thickness x:Key="PageThickness">30, 26</Thickness>
+            <!--Padding for page on mobile-->
+            <Thickness x:Key="MobilePageThickness">18, 26</Thickness>
+            
+            <!--Thickness for top/bottom only-->
+            <Thickness x:Key="TopBottomThickness">0, 26</Thickness>
+
+
+            <Thickness x:Key="PageTopSideThickness">30, 26, 30, 0</Thickness>
+            <Thickness x:Key="PageSideThickness">30, 0</Thickness>
+            <Thickness x:Key="MobilePageTopSideThickness">18, 26, 18, 0</Thickness>
+            <Thickness x:Key="MobilePageSideThickness">18, 0</Thickness>
+
             <Thickness x:Key="MobileStatusBarThickness">0, 26, 0, 0</Thickness>
-            <Thickness x:Key="PageThickness">30, 20, 30, 0</Thickness>
-            <Thickness x:Key="PageMobileThickness">10, 0</Thickness>
-            <Thickness x:Key="PageMobileStatusBarThickness">10, 26, 10, 0</Thickness>
 
             <ResourceDictionary.MergedDictionaries>
                 <dataTemplates:LibraryDictionary />

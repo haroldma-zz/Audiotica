@@ -1,4 +1,8 @@
-﻿using Windows.UI.Xaml;
+﻿using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Reflection;
+using Windows.UI.Xaml;
 using Audiotica.Core.Windows.Helpers;
 
 namespace Audiotica.Windows.CustomTriggers
