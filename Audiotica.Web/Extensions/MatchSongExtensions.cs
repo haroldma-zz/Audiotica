@@ -3,7 +3,7 @@ using Audiotica.Web.Models;
 
 namespace Audiotica.Web.Extensions
 {
-    public static class WebSongExtensions
+    public static class MatchSongExtensions
     {
         /// <summary>
         ///     Sets the name and artist by extracting it from a title that uses the specified [seperator].

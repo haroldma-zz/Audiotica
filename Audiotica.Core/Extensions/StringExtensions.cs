@@ -16,7 +16,7 @@ namespace Audiotica.Core.Extensions
     {
         public static string ToSha1(this string text) => SHA.ComputeSHA1(text.ToBytes()).ToHex();
 
-        public static string ToHex(this byte[] bytes) => BitConverter.ToString(bytes).Replace("-", "");
+        public static string ToHex(this byte[] bytes) => BitConverter.ToString(bytes).Replace("-", "").ToLower();
         public static string ToBase64(this byte[] bytes) => Convert.ToBase64String(bytes);
         public static string ToBase64(this string text) => Convert.ToBase64String(text.ToBytes());
         public static byte[] ToBytes(this string text) => Encoding.UTF8.GetBytes(text);
@@ -159,7 +159,7 @@ namespace Audiotica.Core.Extensions
             return string.IsNullOrEmpty(accentedString) ? accentedString : DiacritisHelper.Remove(accentedString);
         }
 
-        public static string ToSanitizedFileName(this string str, string invalidMessage)
+        public static string ToSanitizedFileName(this string str, string invalidMessage = null)
         {
             if (string.IsNullOrEmpty(str))
             {
@@ -188,7 +188,7 @@ namespace Audiotica.Core.Extensions
                     .Replace(">", string.Empty)
                     .Replace("|", " ");
 
-            return string.IsNullOrEmpty(name) ? invalidMessage : name;
+            return string.IsNullOrEmpty(name) ? invalidMessage ?? "Invalid" : name;
         }
 
         public static string ToValidFileNameEnding(this string str)
