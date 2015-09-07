@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using Windows.Media;
 using Windows.Storage.Streams;
+using Audiotica.Core.Helpers;
 using Audiotica.Database.Models;
 
 namespace Audiotica.Windows.Player
@@ -45,7 +46,9 @@ namespace Audiotica.Windows.Player
             _smtc.PlaybackStatus = MediaPlaybackStatus.Playing;
             _smtc.DisplayUpdater.MusicProperties.Title = track.Title;
             _smtc.DisplayUpdater.MusicProperties.Artist = track.Artists;
-            _smtc.DisplayUpdater.MusicProperties.AlbumTitle = track.AlbumTitle;
+
+            // settings this on mobile throws an exception
+            ActionHelper.Try(() => _smtc.DisplayUpdater.MusicProperties.AlbumTitle = track.AlbumTitle);
             _smtc.DisplayUpdater.MusicProperties.AlbumArtist = track.AlbumArtist;
 
             var albumArt = track.ArtworkUri;
