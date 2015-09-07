@@ -32,14 +32,14 @@ namespace Audiotica.Windows.Services.RunTime
 
         public async void Queue(Track track)
         {
-            await CreateTask(track);
+            await CreateTaskAsync(track);
         }
 
-        private async Task CreateTask(Track track)
+        private async Task CreateTaskAsync(Track track)
         {
             await _semaphoreSlim.WaitAsync();
 
-            using (var timer = _insightsService.TrackTimeEvent("MatchedSong", new Dictionary<string, string>
+            using (var timer = _insightsService.TrackTimeEvent("SongMatched", new Dictionary<string, string>
             {
                 {"Title", track.Title},
                 {"Artists", track.Artists},
