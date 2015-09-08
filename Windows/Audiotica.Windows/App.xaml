@@ -17,7 +17,7 @@
             <converters:TrackStatusConverter x:Name="MatchingVisibilityConverter" DesiredStatus="Matching" />
             <converters:TrackStatusConverter x:Name="NoMatchVisibilityConverter" DesiredStatus="NoMatch" />
             <converters:TrackTypeConverter x:Name="StreamingVisibilityConverter" DesiredStatus="Stream" />
-            
+
             <converters:VisibilityConverter x:Key="VisibilityConverter" />
             <converters:VisibilityConverter x:Key="ReverseVisibilityConverter" Reverse="True" />
             <converters:PercentageConverter x:Key="PercentageConverter" />
@@ -25,6 +25,7 @@
             <converters:EmptyListToVisibilityConverter x:Key="ReverseEmptyListToVisibilityConverter" Reverse="True" />
             <converters:ImageSourceConverter x:Key="ImageSourceConverter" />
             <converters:UpperCaseConverter x:Key="UpperCaseConverter" />
+            <converters:UniformSpacingConverter x:Key="UniformSpacingConverter" />
 
             <SolidColorBrush x:Name="SubtleTextBrush" Color="{ThemeResource SystemBaseMediumColor}" />
 

@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
+using Audiotica.Core.Common;
 using Audiotica.Core.Exceptions;
 using Audiotica.Core.Windows.Helpers;
+using Audiotica.Database.Models;
 using Audiotica.Web.Exceptions;
 using Audiotica.Web.Extensions;
 using Audiotica.Web.Metadata.Interfaces;
@@ -21,19 +23,20 @@ namespace Audiotica.Windows.ViewModels
         private readonly List<IChartMetadataProvider> _metadataProviders;
         private readonly INavigationService _navigationService;
         private readonly IPlayerService _playerService;
+        private readonly IConverter<WebSong, Track> _webToTrackConverter;
         private List<WebAlbum> _topAlbums;
         private List<WebArtist> _topArtists;
-        private List<WebSong> _topSongs;
+        private List<Track> _topSongs;
 
         public ExplorePageViewModel(INavigationService navigationService,
             IEnumerable<IMetadataProvider> metadataProviders,
-            IPlayerService playerService)
+            IPlayerService playerService, IConverter<WebSong, Track> webToTrackConverter)
         {
             _navigationService = navigationService;
             _playerService = playerService;
+            _webToTrackConverter = webToTrackConverter;
             _metadataProviders = metadataProviders.FilterAndSort<IChartMetadataProvider>();
-
-            SongClickCommand = new Command<ItemClickEventArgs>(SongClickExecute);
+            
             ArtistClickCommand = new Command<ItemClickEventArgs>(ArtistClickExecute);
             AlbumClickCommand = new Command<ItemClickEventArgs>(AlbumClickExecute);
 
@@ -51,9 +54,8 @@ namespace Audiotica.Windows.ViewModels
         public Command<ItemClickEventArgs> AlbumClickCommand { get; set; }
 
         public Command<ItemClickEventArgs> ArtistClickCommand { get; set; }
-        public Command<ItemClickEventArgs> SongClickCommand { get; }
 
-        public List<WebSong> TopSongs
+        public List<Track> TopSongs
         {
             get { return _topSongs; }
             set { Set(ref _topSongs, value); }
@@ -77,20 +79,6 @@ namespace Audiotica.Windows.ViewModels
             _navigationService.Navigate(typeof (ArtistPage), artist.Name);
         }
 
-        private async void SongClickExecute(ItemClickEventArgs e)
-        {
-            var song = (WebSong) e.ClickedItem;
-            try
-            {
-                var queue = await _playerService.AddAsync(song);
-                _playerService.Play(queue);
-            }
-            catch (AppException ex)
-            {
-                CurtainPrompt.ShowError(ex.Message ?? "Something happened.");
-            }
-        }
-
         public override void OnNavigatedTo(object parameter, NavigationMode mode, Dictionary<string, object> state)
         {
             var count = DeviceHelper.IsType(DeviceFamily.Mobile) ? 6 : 40;
@@ -106,7 +94,7 @@ namespace Audiotica.Windows.ViewModels
                 try
                 {
                     var results = await metadataProvider.GetTopSongsAsync(count);
-                    TopSongs = results.Songs;
+                    TopSongs = await _webToTrackConverter.ConvertAsync(results.Songs);
                     break;
                 }
                 catch (NotImplementedException)
