@@ -10,11 +10,12 @@
     xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
     xmlns:core="using:Microsoft.Xaml.Interactions.Core"
     xmlns:interactions="using:Audiotica.Windows.Interactions"
+    xmlns:customTriggers="using:Audiotica.Windows.CustomTriggers"
     mc:Ignorable="d"
     DataContext="{Binding SearchPage, Source={StaticResource ViewModelLocator}}">
 
-    <ScrollViewer Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <StackPanel Padding="{StaticResource PageThickness}">
+    <ScrollViewer x:Name="ContentScrollViewer" Padding="{StaticResource PageSideThickness}" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <StackPanel Padding="{StaticResource TopBottomThickness}">
             <TextBlock Text="Search works but needs a lot of refining, in the meantime is good for testing." />
             <!--<TextBlock Text="Results for &quot;Gambino&quot;" Style="{StaticResource LargeHeaderTextBlockStyle}" />-->
             <TextBox PlaceholderText="Search the catalog" Width="300" HorizontalAlignment="Left" Margin="0,0,0,10">
@@ -74,5 +75,17 @@
                 </interactivity:Interaction.Behaviors>
             </GridView>
         </StackPanel>
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup x:Name="DeviceFamilyStates">
+                <VisualState>
+                    <VisualState.StateTriggers>
+                        <customTriggers:DeviceFamilyTrigger DeviceFamily="Mobile" />
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="ContentScrollViewer.Padding" Value="{StaticResource MobilePageSideThickness}" />
+                    </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
     </ScrollViewer>
 </navigationService:NavigatablePage>

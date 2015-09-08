@@ -21,21 +21,21 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <controls:LibraryHeader Title="Songs" DefaultSortIndex="{x:Bind ViewModel.DefaultSort}"
+        <controls:LibraryHeader x:Name="LibraryHeader" Title="Songs" DefaultSortIndex="{x:Bind ViewModel.DefaultSort}"
                                 SortItems="{x:Bind ViewModel.SortItems}"
                                 CurrentSortChangedCommand="{x:Bind ViewModel.SortChangedCommand}"
-                                Margin="{StaticResource PageThickness}" />
+                                Margin="{StaticResource PageTopSideThickness}" />
 
         <!--No Music-->
         <controls:NoMusicPanel Grid.Row="1" x:Name="NoMusicPanel"
-                               Margin="{StaticResource PageThickness}"
+                               Margin="{StaticResource PageSideThickness}"
                                Visibility="{x:Bind ViewModel.LibraryService.Tracks.Count, Mode=OneWay, Converter={StaticResource ReverseEmptyListToVisibilityConverter}}" />
 
         <SemanticZoom Grid.Row="1">
             <SemanticZoom.ZoomedInView>
                 <controls:AlternatingRowListView Grid.Row="1" x:Name="SongsListView"
                                                  ItemsSource="{x:Bind ViewModel.ViewSource.View, Mode=OneWay}"
-                                                 Tag="{x:Bind ViewModel.ViewSource}"
+                                                 Tag="{x:Bind ViewModel.ViewSource, Mode=OneWay}"
                                                  VerticalOffset="{x:Bind ViewModel.VerticalOffset, Mode=TwoWay}"
                                                  BetterSelectedIndex="{x:Bind ViewModel.SelectedIndex, Mode=TwoWay}"
                                                  Padding="{StaticResource PageThickness}"
@@ -54,7 +54,7 @@
                 </controls:AlternatingRowListView>
             </SemanticZoom.ZoomedInView>
             <SemanticZoom.ZoomedOutView>
-                <ListView Background="#BF000000" Padding="{StaticResource PageThickness}"
+                <ListView x:Name="SongsZoomedOutListView" Background="#BF000000" Padding="{StaticResource PageThickness}"
                           ItemContainerStyle="{StaticResource GroupListViewItemStyle}"
                           ItemsSource="{x:Bind ViewModel.ViewSource.View.CollectionGroups, Mode=OneWay}">
                     <ListView.ItemTemplate>
@@ -94,8 +94,10 @@
                         <customTriggers:DeviceFamilyTrigger DeviceFamily="Mobile" />
                     </VisualState.StateTriggers>
                     <VisualState.Setters>
-                        <Setter Target="NoMusicPanel.Margin" Value="{StaticResource PageMobileStatusBarThickness}" />
-                        <Setter Target="SongsListView.Padding" Value="{StaticResource PageMobileStatusBarThickness}" />
+                        <Setter Target="LibraryHeader.Margin" Value="{StaticResource MobilePageTopSideThickness}" />
+                        <Setter Target="NoMusicPanel.Margin" Value="{StaticResource MobilePageSideThickness}" />
+                        <Setter Target="SongsListView.Padding" Value="{StaticResource MobilePageThickness}" />
+                        <Setter Target="SongsZoomedOutListView.Padding" Value="{StaticResource MobilePageThickness}" />
                     </VisualState.Setters>
                 </VisualState>
             </VisualStateGroup>

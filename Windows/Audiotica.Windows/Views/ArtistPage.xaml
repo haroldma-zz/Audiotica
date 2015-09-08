@@ -15,25 +15,22 @@
     DataContext="{Binding ArtistPage, Source={StaticResource ViewModelLocator}}">
 
     <Grid Background="{x:Bind ViewModel.BackgroundBrush, Mode=OneWay}">
-        <ScrollViewer x:Name="ContentScrollViewer" Padding="{StaticResource PageThickness}">
-            <StackPanel>
-                <Grid>
+        <ScrollViewer x:Name="ContentScrollViewer" Padding="{StaticResource PageSideThickness}">
+            <StackPanel Margin="{StaticResource TopBottomThickness}">
+                <Grid x:Name="HeaderGrid" Margin="0,0,0,20">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width=".5*" MaxWidth="250" />
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
-                    <Grid HorizontalAlignment="Left">
-                        <Ellipse Width="140" Height="140">
-                            <Ellipse.Fill>
-                                <!--Compile binding seems to not update, even with Mode=OneWay-->
-                                <ImageBrush
-                                    ImageSource="{Binding Artist.ArtworkUri}"
-                                    Stretch="UniformToFill" />
-                            </Ellipse.Fill>
-                        </Ellipse>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Image Source="{x:Bind ViewModel.Artist.ArtworkUri, Mode=OneWay, Converter={StaticResource ImageSourceConverter}}" Stretch="UniformToFill" />
+                    <Grid x:Name="MetadataGrid" Grid.Row="0" Grid.Column="1" Margin="10">
+                        <TextBlock Text="{x:Bind ViewModel.Artist.Name, Mode=OneWay}"
+                                   Style="{StaticResource HeaderTextBlockStyle}" />
                     </Grid>
-                    <TextBlock Grid.Column="1" Text="{x:Bind ViewModel.Artist.Name, Mode=OneWay}"
-                               Style="{StaticResource HeaderTextBlockStyle}" />
                 </Grid>
                 <TextBlock Text="In Collection" Margin="0, 0, 0, 5"
                            Visibility="{x:Bind ViewModel.Artist.Albums.Count, Mode=OneWay, Converter={StaticResource EmptyListToVisibilityConverter}}" />
@@ -106,7 +103,7 @@
                         <customTriggers:DeviceFamilyTrigger DeviceFamily="Mobile" />
                     </VisualState.StateTriggers>
                     <VisualState.Setters>
-                        <Setter Target="ContentScrollViewer.Padding" Value="{StaticResource PageMobileThickness}" />
+                        <Setter Target="ContentScrollViewer.Padding" Value="{StaticResource MobilePageSideThickness}" />
                     </VisualState.Setters>
                 </VisualState>
             </VisualStateGroup>
@@ -116,6 +113,11 @@
                         <AdaptiveTrigger MinWindowWidth="0" />
                     </VisualState.StateTriggers>
                     <VisualState.Setters>
+                        <Setter Target="MetadataGrid.(Grid.Row)" Value="1" />
+                        <Setter Target="MetadataGrid.(Grid.Column)" Value="0" />
+                        <Setter Target="HeaderGrid.ColumnDefinitions[0].Width" Value="*" />
+                        <Setter Target="HeaderGrid.ColumnDefinitions[0].MaxWidth" Value="600" />
+                        <Setter Target="HeaderGrid.ColumnDefinitions[1].Width" Value="0" />
                         <Setter Target="TopTracksListView.ItemTemplate"
                                 Value="{StaticResource CatalogTrackNarrowTemplate}" />
                     </VisualState.Setters>

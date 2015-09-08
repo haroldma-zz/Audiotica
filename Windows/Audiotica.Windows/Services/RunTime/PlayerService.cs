@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
@@ -98,6 +99,15 @@ namespace Audiotica.Windows.Services.RunTime
         {
             var track = await ConvertToTrackAsync(webSong);
             return await AddUpNextAsync(track);
+        }
+
+        public async Task NewQueueAsync(List<Track> tracks)
+        {
+            foreach (var track in tracks)
+                await PrepareTrackAsync(track);
+            var newQueue = tracks.Select(track => new QueueTrack(track)).ToList();
+            MessageHelper.SendMessageToBackground(new UpdatePlaylistMessage(newQueue));
+
         }
 
         public void Play(QueueTrack queue)

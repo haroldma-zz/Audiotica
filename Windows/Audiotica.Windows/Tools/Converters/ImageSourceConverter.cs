@@ -8,7 +8,8 @@ namespace Audiotica.Windows.Tools.Converters
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {
-            var size = parameter as int?;
+            int size;
+            int.TryParse(parameter as string, out size);
 
             var url = value as string;
             Uri uri;
@@ -22,10 +23,10 @@ namespace Audiotica.Windows.Tools.Converters
 
             var bitmap = new BitmapImage(uri);
 
-            if (size != null)
+            if (size != 0)
             {
-                bitmap.DecodePixelHeight = size.Value;
-                bitmap.DecodePixelWidth = size.Value;
+                bitmap.DecodePixelHeight = size;
+                bitmap.DecodePixelWidth = size;
             }
 
             return bitmap;

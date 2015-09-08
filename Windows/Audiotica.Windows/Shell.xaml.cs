@@ -9,6 +9,9 @@ namespace Audiotica.Windows
 {
     public sealed partial class Shell
     {
+        public static readonly DependencyProperty HamburgerPaddingProperty =
+            DependencyProperty.RegisterAttached("HamburgerPadding", typeof (Thickness), typeof (Shell), null);
+
         // back
         private Command _backCommand;
         // menu
@@ -37,6 +40,12 @@ namespace Audiotica.Windows
             frame.Navigated += (s, e) => update();
             Loaded += (s, e) => update();
             DataContext = this;
+        }
+
+        public Thickness HamburgerPadding
+        {
+            get { return (Thickness) GetValue(HamburgerPaddingProperty); }
+            set { SetValue(HamburgerPaddingProperty, value); }
         }
 
         public Command BackCommand => _backCommand ?? (_backCommand = new Command(ExecuteBack, CanBack));

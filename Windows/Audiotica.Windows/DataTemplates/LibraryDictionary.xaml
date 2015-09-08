@@ -95,7 +95,7 @@
                 <Ellipse Width="100" Height="100" Fill="#333" />
                 <Ellipse Grid.Row="0" Width="100" Height="100">
                     <Ellipse.Fill>
-                        <ImageBrush ImageSource="{x:Bind ArtworkUri, Converter={StaticResource ImageSourceConverter}, ConverterParameter=140}"
+                        <ImageBrush ImageSource="{x:Bind ArtworkUri, Converter={StaticResource ImageSourceConverter}, ConverterParameter=100}"
                                     Stretch="UniformToFill" />
                     </Ellipse.Fill>
                 </Ellipse>
@@ -167,7 +167,7 @@
             <Ellipse Margin="5" Width="150" Height="150">
                 <Ellipse.Fill>
                     <ImageBrush Stretch="UniformToFill" Opacity=".5"
-                                                    ImageSource="{x:Bind Artwork, Converter={StaticResource ImageSourceConverter}}" />
+                                                    ImageSource="{x:Bind Artwork, Converter={StaticResource ImageSourceConverter}, ConverterParameter=150}" />
                 </Ellipse.Fill>
             </Ellipse>
             <TextBlock Text="{x:Bind Name}" Margin="2"
