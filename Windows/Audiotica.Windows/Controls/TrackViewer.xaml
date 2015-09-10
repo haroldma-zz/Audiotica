@@ -41,19 +41,23 @@
                        Style="{StaticResource BaseTextBlockStyle}" Margin="0,0,10,0" />
             <StackPanel Grid.Column="1" Margin="20,0,20,0" Orientation="Horizontal"
                         Visibility="{x:Bind IsSelected, Mode=OneWay, Converter={StaticResource VisibilityConverter}}">
-                <Button Style="{StaticResource PlainButtonStyle}" Padding="-5" Click="PlayButton_Click">
-                    <SymbolIcon Symbol="Play" RenderTransformOrigin="0.5,0.5">
-                        <SymbolIcon.RenderTransform>
-                            <CompositeTransform ScaleX=".7" ScaleY=".7" />
-                        </SymbolIcon.RenderTransform>
-                    </SymbolIcon>
+                <Button Style="{StaticResource PlainButtonStyle}" Click="PlayButton_Click">
+                    <Grid Background="Transparent">
+                        <SymbolIcon Symbol="Play" RenderTransformOrigin="0.5,0.5">
+                            <SymbolIcon.RenderTransform>
+                                <CompositeTransform ScaleX=".7" ScaleY=".7" />
+                            </SymbolIcon.RenderTransform>
+                        </SymbolIcon>
+                    </Grid>
                 </Button>
-                <Button Margin="40,0,0,0" Style="{StaticResource PlainButtonStyle}" Padding="-5">
-                    <SymbolIcon Symbol="Add" RenderTransformOrigin="0.5,0.5">
-                        <SymbolIcon.RenderTransform>
-                            <CompositeTransform ScaleX=".7" ScaleY=".7" />
-                        </SymbolIcon.RenderTransform>
-                    </SymbolIcon>
+                <Button Margin="40,0,0,0" Style="{StaticResource PlainButtonStyle}">
+                    <Grid Background="Transparent">
+                        <SymbolIcon Symbol="Add" RenderTransformOrigin="0.5,0.5">
+                            <SymbolIcon.RenderTransform>
+                                <CompositeTransform ScaleX=".7" ScaleY=".7" />
+                            </SymbolIcon.RenderTransform>
+                        </SymbolIcon>
+                    </Grid>
                     <Button.Flyout>
                         <MenuFlyout>
                             <MenuFlyoutItem Text="Collection" Click="AddCollection_Click"
