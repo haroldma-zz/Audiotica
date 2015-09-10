@@ -57,7 +57,9 @@ namespace Audiotica.Windows.Controls
                 try
                 {
                     var queue = await playerService.AddAsync(Track);
-                    playerService.Play(queue);
+                    // player auto plays when there is only one track
+                    if (playerService.PlaybackQueue.Count > 1)
+                        playerService.Play(queue);
                 }
                 catch (AppException ex)
                 {
