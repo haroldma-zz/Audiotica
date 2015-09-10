@@ -22,6 +22,7 @@
     <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
     <AppxBundlePlatforms>x86|x64|arm</AppxBundlePlatforms>
     <PackageCertificateThumbprint>B6652D7371FEE5694117657B8B1DF6D56D9E9C99</PackageCertificateThumbprint>
+    <AppxBundle>Always</AppxBundle>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|ARM'">
     <DebugSymbols>true</DebugSymbols>
@@ -183,6 +184,7 @@
     <Compile Include="Services\NavigationService\NavigationEventArgs.cs" />
     <Compile Include="Services\NavigationService\NavigationFacade.cs" />
     <Compile Include="Services\NavigationService\NavigationService.cs" />
+    <Compile Include="Tools\ActualSizeProxy.cs" />
     <Compile Include="Tools\AlphaKeyGroup.cs" />
     <Compile Include="Tools\Converters\BooleanTemplateSelector.cs" />
     <Compile Include="Tools\Converters\BoolToColorBrushConverter.cs" />
@@ -196,6 +198,7 @@
     <Compile Include="Tools\Converters\StringFormatConverter.cs" />
     <Compile Include="Tools\Converters\TimespanToStringConverter.cs" />
     <Compile Include="Tools\Converters\TrackStatusConverter.cs" />
+    <Compile Include="Tools\Converters\UniformSpacingConverter.cs" />
     <Compile Include="Tools\Converters\UpperCaseConverter.cs" />
     <Compile Include="Tools\Converters\VisibilityConverter.cs" />
     <Compile Include="Tools\Mvvm\Command.cs" />

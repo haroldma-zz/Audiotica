@@ -47,7 +47,7 @@
             </Grid>
 
             <TextBlock Text="Tracks" />
-            <controls:AlternatingRowListView ItemsSource="{x:Bind ViewModel.TracksResults, Mode=OneWay}"
+            <controls:AlternatingRowListView x:Name="TrackResults" ItemsSource="{x:Bind ViewModel.TracksResults, Mode=OneWay}"
                                              ItemTemplate="{StaticResource CatalogTrackTemplate}"
                                              OddRowBackground="{StaticResource SystemChromeLowBrush}"
                                              ScrollViewer.VerticalScrollBarVisibility="Disabled" />
@@ -84,6 +84,21 @@
                     <VisualState.Setters>
                         <Setter Target="ContentScrollViewer.Padding" Value="{StaticResource MobilePageSideThickness}" />
                     </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
+            <VisualStateGroup x:Name="WindowSizeStates">
+                <VisualState x:Name="NarrowScreen">
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="0" />
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="TrackResults.ItemTemplate" Value="{StaticResource CatalogTrackNarrowTemplate}" />
+                    </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="WideScreen">
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="600" />
+                    </VisualState.StateTriggers>
                 </VisualState>
             </VisualStateGroup>
         </VisualStateManager.VisualStateGroups>

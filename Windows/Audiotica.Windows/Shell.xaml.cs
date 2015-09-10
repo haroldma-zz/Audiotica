@@ -11,6 +11,8 @@ namespace Audiotica.Windows
     {
         public static readonly DependencyProperty HamburgerPaddingProperty =
             DependencyProperty.RegisterAttached("HamburgerPadding", typeof (Thickness), typeof (Shell), null);
+        public static readonly DependencyProperty NavBarMarginProperty =
+            DependencyProperty.RegisterAttached("NavBarMargin", typeof(Thickness), typeof(Shell), null);
 
         // back
         private Command _backCommand;
@@ -46,6 +48,12 @@ namespace Audiotica.Windows
         {
             get { return (Thickness) GetValue(HamburgerPaddingProperty); }
             set { SetValue(HamburgerPaddingProperty, value); }
+        }
+
+        public Thickness NavBarMargin
+        {
+            get { return (Thickness)GetValue(NavBarMarginProperty); }
+            set { SetValue(NavBarMarginProperty, value); }
         }
 
         public Command BackCommand => _backCommand ?? (_backCommand = new Command(ExecuteBack, CanBack));

@@ -121,7 +121,7 @@
                 </ScrollViewer>
             </SplitView.Pane>
         </SplitView>
-        <Grid Grid.Row="1" Background="{ThemeResource SplitViewBackgroundBrush}">
+        <Grid Grid.Row="1" Margin="{x:Bind NavBarMargin}" Background="{ThemeResource SplitViewBackgroundBrush}">
             <!-- hamburger -->
             <RadioButton Checked="DontCheck" Command="{Binding MenuCommand}" Margin="{x:Bind HamburgerPadding, Mode=OneWay}"
                          Style="{StaticResource SplitViewRadioButtonStyle}" HorizontalAlignment="Left" MinWidth="0">

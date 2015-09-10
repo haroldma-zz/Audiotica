@@ -168,13 +168,24 @@ namespace Audiotica.Web.Metadata.Providers
                 {
                     var song = CreateSong(result.Content);
 
-                    // little hack to ensure we get album artwork.
+                    // little hack to ensure we get the album and artwork.
                     if (song.Album?.Artwork == null)
                     {
-                        var album = await GetAlbumAsync(songToken);
+                        try
+                        {
+                            var album = await GetAlbumAsync(song.Album?.Token ?? songToken);
 
-                        if (song.Album == null || album.Artwork != null)
-                            song.Album = album;
+                            if (song.Album == null || album.Artwork != null)
+                                song.Album = album;
+                        }
+                        catch (ProviderException)
+                        {
+                            // try searching for it
+                            var results = await SearchAsync(song.Title.Append(artist), WebResults.Type.Album, 1);
+                            var album = results?.Albums?.FirstOrDefault();
+                            if (album?.Artwork != null && song.Title.ToAudioticaSlug().Contains(album.Title.ToAudioticaSlug()) && song.Artists[0].Name.ToAudioticaSlug().Contains(album.Artist.Name.ToAudioticaSlug()))
+                                song.Album = album;
+                        }
 
                         song.IsPartial = song.Album != null;
                     }

@@ -251,10 +251,15 @@ namespace Audiotica.Windows.Services.RunTime
 
         private async Task PrepareTrackAsync(Track track)
         {
-            if (track.Status == Track.TrackStatus.Matching
-                || track.Status == Track.TrackStatus.NoMatch
-                || track.Status == Track.TrackStatus.NotAvailable)
-                throw new AppException("Track is still matching.");
+            switch (track.Status)
+            {
+                case Track.TrackStatus.Matching:
+                    throw new AppException("Track is still matching.");
+                case Track.TrackStatus.NoMatch:
+                    throw new AppException("No match found for track, try manual matching it.");
+                case Track.TrackStatus.NotAvailable:
+                    throw new AppException("The audio file is not available.");
+            }
 
             if (track.AudioWebUri == null)
                 using (var blocker = new UiBlocker())

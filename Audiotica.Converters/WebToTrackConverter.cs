@@ -40,7 +40,9 @@ namespace Audiotica.Converters
                     Artist = other.Artists[0]
                 };
             else if (other.Album.IsPartial)
+            {
                 other.Album = await provider.GetAlbumAsync(other.Album.Token);
+            }
             if (other.Album.Artist.IsPartial)
                 other.Album.Artist = await provider.GetArtistAsync(other.Album.Artist.Token);
             if (other.Artists[0].Token == other.Album.Artist.Token)
