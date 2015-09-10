@@ -163,6 +163,7 @@
     <Compile Include="Interactions\OpenFlyoutAction.cs" />
     <Compile Include="Services\DesignTime\DesignPlayerService.cs" />
     <Compile Include="Services\DesignTime\DesignInsightsService.cs" />
+    <Compile Include="Services\Interfaces\IDownloadService.cs" />
     <Compile Include="Services\Interfaces\IPlayerService.cs" />
     <Compile Include="Services\Interfaces\IInsightsService.cs" />
     <Compile Include="Services\DesignTime\DesignLibraryCollectionService.cs" />
