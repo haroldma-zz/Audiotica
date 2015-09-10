@@ -5,6 +5,29 @@ using Audiotica.Database.Models;
 
 namespace Audiotica.Windows.Tools.Converters
 {
+    public class TrackStatusToContentConverter : IValueConverter
+    {
+        public Track.TrackStatus DesiredStatus { get; set; }
+        public bool NotDesired { get; set; }
+        public object TrueContent { get; set; }
+        public object FalseContent { get; set; }
+
+        public object Convert(object value, Type targetType, object parameter, string culture)
+        {
+            if (!(value is Track.TrackStatus))
+                return FalseContent;
+
+            var status = (Track.TrackStatus)value;
+            var visible = (NotDesired && status != DesiredStatus) || (!NotDesired && status == DesiredStatus);
+            return visible ? TrueContent : FalseContent;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
     public class TrackStatusConverter : IValueConverter
     {
         public Track.TrackStatus DesiredStatus { get; set; }

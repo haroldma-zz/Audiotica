@@ -14,6 +14,14 @@
 
             <SolidColorBrush x:Key="SystemChromeLowBrush" Color="{ThemeResource SystemChromeLowColor}" />
 
+            <converters:TrackStatusToContentConverter x:Name="TrackMatchingOpacityConverter" DesiredStatus="Matching">
+                <converters:TrackStatusToContentConverter.TrueContent>
+                    <x:Double>.2</x:Double>
+                </converters:TrackStatusToContentConverter.TrueContent>
+                <converters:TrackStatusToContentConverter.FalseContent>
+                    <x:Double>1</x:Double>
+                </converters:TrackStatusToContentConverter.FalseContent>
+            </converters:TrackStatusToContentConverter>
             <converters:TrackStatusConverter x:Name="MatchingVisibilityConverter" DesiredStatus="Matching" />
             <converters:TrackStatusConverter x:Name="NoMatchVisibilityConverter" DesiredStatus="NoMatch" />
             <converters:TrackTypeConverter x:Name="StreamingVisibilityConverter" DesiredStatus="Stream" />
