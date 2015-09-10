@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
+using Audiotica.Core.Common;
 using Audiotica.Core.Extensions;
 using SQLite.Net.Attributes;
 
@@ -29,6 +31,7 @@ namespace Audiotica.Database.Models
         private bool _isFromLibrary;
         private TrackStatus _status;
         private TrackType _type;
+        private BackgroundDownload _backgroundDownload;
 
         /// <summary>
         ///     Gets or sets a value indicating whether this instance is from the music library.
@@ -277,6 +280,54 @@ namespace Audiotica.Database.Models
         ///     The artist artwork URI.
         /// </value>
         public string ArtistArtworkUri { get; set; }
+
+        /// <summary>
+        /// Gets or sets the background download.
+        /// </summary>
+        /// <value>
+        /// The current background download.
+        /// </value>
+        [Ignore]
+        public BackgroundDownload BackgroundDownload
+        {
+            get { return _backgroundDownload; }
+            set { Set(ref _backgroundDownload, value); }
+        }
+    }
+
+    public class BackgroundDownload : ObservableObject
+    {
+        private string _status;
+        private double _bytesReceived;
+        private double _bytesToReceive;
+
+        public BackgroundDownload(object downloadOperation)
+        {
+            DownloadOperation = downloadOperation;
+            CancellationTokenSrc = new CancellationTokenSource();
+        }
+
+        public CancellationTokenSource CancellationTokenSrc { get; }
+
+        public object DownloadOperation { get; }
+
+        public double BytesToReceive
+        {
+            get { return _bytesToReceive; }
+            set { Set(ref _bytesToReceive, value); }
+        }
+
+        public double BytesReceived
+        {
+            get { return _bytesReceived; }
+            set { Set(ref _bytesReceived, value); }
+        }
+
+        public string Status
+        {
+            get { return _status; }
+            set { Set(ref _status, value); }
+        }
     }
 
     public class TrackComparer : IEqualityComparer<Track>
