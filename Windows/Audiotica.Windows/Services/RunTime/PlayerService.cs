@@ -253,11 +253,11 @@ namespace Audiotica.Windows.Services.RunTime
         {
             switch (track.Status)
             {
-                case Track.TrackStatus.Matching:
+                case TrackStatus.Matching:
                     throw new AppException("Track is still matching.");
-                case Track.TrackStatus.NoMatch:
+                case TrackStatus.NoMatch:
                     throw new AppException("No match found for track, try manual matching it.");
-                case Track.TrackStatus.NotAvailable:
+                case TrackStatus.NotAvailable:
                     throw new AppException("The audio file is not available.");
             }
 

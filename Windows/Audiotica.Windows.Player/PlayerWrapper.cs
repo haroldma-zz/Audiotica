@@ -6,6 +6,7 @@ using Windows.Foundation;
 using Windows.Media;
 using Windows.Media.Core;
 using Windows.Media.Playback;
+using Windows.Storage;
 using Audiotica.Core.Helpers;
 using Audiotica.Core.Utilities.Interfaces;
 using Audiotica.Core.Windows.Enums;
@@ -125,7 +126,7 @@ namespace Audiotica.Windows.Player
         ///     Create a playback list from the list of songs received from the foreground app.
         /// </summary>
         /// <param name="queues"></param>
-        public void CreatePlaybackList(IEnumerable<QueueTrack> queues)
+        public async void CreatePlaybackList(IEnumerable<QueueTrack> queues)
         {
             // Make a new list and enable looping
             _mediaPlaybackList = new MediaPlaybackList {AutoRepeatEnabled = true};
@@ -133,7 +134,14 @@ namespace Audiotica.Windows.Player
             // Add playback items to the list
             foreach (var song in queues)
             {
-                var source = MediaSource.CreateFromUri(new Uri(song.Track.AudioWebUri));
+                MediaSource source;
+                if (song.Track.Type == TrackType.Stream)
+                    source = MediaSource.CreateFromUri(new Uri(song.Track.AudioWebUri));
+                else
+                {
+                    source = MediaSource.CreateFromStorageFile(
+                            await StorageHelper.GetFileFromPathAsync(song.Track.AudioLocalUri));
+                }
                 source.Queue(song);
                 _mediaPlaybackList.Items.Add(new MediaPlaybackItem(source));
             }

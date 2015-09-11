@@ -88,7 +88,7 @@ namespace Audiotica.Converters
                 TrackCount = other.Album.Tracks?.Count ?? 1,
                 Genres = string.Join("; ", genres.Distinct()),
                 AudioWebUri = other.AudioUrl,
-                Type = Track.TrackType.Stream
+                Type = TrackType.Stream
             };
 
             track.DiscCount = track.DiscNumber;

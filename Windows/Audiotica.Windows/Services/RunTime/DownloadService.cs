@@ -59,16 +59,15 @@ namespace Audiotica.Windows.Services.RunTime
 
         public async Task StartDownloadAsync(Track track)
         {
-            track.Status = Track.TrackStatus.Downloading;
+            track.Status = TrackStatus.Downloading;
 
             try
             {
                 // first create the final destination path (after download finishes)
                 var downloadsPath = _appSettingsUtility.DownloadsPath;
 
-                var path = "Audiotica/" +
-                           track.AlbumArtist.ToSanitizedFileName() + "/" +
-                           track.AlbumTitle.ToSanitizedFileName();
+                var path = track.AlbumArtist.ToSanitizedFileName() + "/" +
+                           track.AlbumTitle.ToSanitizedFileName() + "/";
                 var filename = track.Title.ToSanitizedFileName();
 
                 if (track.DisplayArtist != track.AlbumArtist)
@@ -98,7 +97,7 @@ namespace Audiotica.Windows.Services.RunTime
             {
                 if (e.Message.Contains("there is not enough space on the disk"))
                     CurtainPrompt.ShowError("Not enough disk space to download.");
-                track.Status = Track.TrackStatus.None;
+                track.Status = TrackStatus.None;
                 await _libraryService.UpdateTrackAsync(track);
             }
         }
@@ -142,9 +141,17 @@ namespace Audiotica.Windows.Services.RunTime
                 //failed silently
                 return;
             }
-
+            
             //no downloads? exit!
-            if (downloads.Count == 0) return;
+            if (downloads.Count == 0)
+            {
+                foreach (var track in _libraryService.Tracks.Where(p => p.Status == TrackStatus.Downloading).ToList())
+                {
+                    track.Status = TrackStatus.None;
+                    await _libraryService.UpdateTrackAsync(track);
+                }
+                return;
+            }
 
             foreach (var download in downloads)
             {
@@ -157,6 +164,13 @@ namespace Audiotica.Windows.Services.RunTime
                     Debug.WriteLine("Handling downoad for {0}", songEntry);
                     HandleDownload(songEntry, download, false);
                 }
+            }
+
+            // reset those without a bg download
+            foreach (var track in _libraryService.Tracks.Where(p => p.Status == TrackStatus.Downloading && p.BackgroundDownload == null).ToList())
+            {
+                track.Status = TrackStatus.None;
+                await _libraryService.UpdateTrackAsync(track);
             }
         }
 
@@ -196,7 +210,7 @@ namespace Audiotica.Windows.Services.RunTime
                 else
                 {
                     Debug.WriteLine("Download status code for {0} is bad :/", track);
-                    track.Status = Track.TrackStatus.None;
+                    track.Status = TrackStatus.None;
                     await _libraryService.UpdateTrackAsync(track);
                     await ((DownloadOperation) track.BackgroundDownload.DownloadOperation).ResultFile.DeleteAsync();
                 }
@@ -205,7 +219,7 @@ namespace Audiotica.Windows.Services.RunTime
             {
                 Debug.WriteLine("Download cancelled {0}", track);
 
-                track.Status = Track.TrackStatus.None;
+                track.Status = TrackStatus.None;
                 await _libraryService.UpdateTrackAsync(track);
                 await ((DownloadOperation) track.BackgroundDownload.DownloadOperation).ResultFile.DeleteAsync();
             }
@@ -262,6 +276,7 @@ namespace Audiotica.Windows.Services.RunTime
                 using (var fileStream = await tempFile.OpenStreamForWriteAsync())
                 {
                     var tagFile = File.Create(new SimpleFileAbstraction(tempFile.Name, fileStream, fileStream));
+                    tagFile.RemoveTags(TagTypes.Id3v2);
                     var newTags = tagFile.GetTag(TagTypes.Id3v2, true);
 
                     newTags.Title = track.Title;
@@ -277,13 +292,17 @@ namespace Audiotica.Windows.Services.RunTime
                     if (!string.IsNullOrEmpty(track.Genres))
                         newTags.Genres = track.Genres.Split(';').Select(p => p.Trim()).ToArray();
 
-                    newTags.Track = (uint) track.TrackNumber;
+                    newTags.Track = (uint)track.TrackNumber;
+                    newTags.TrackCount = (uint)track.TrackCount;
+                    newTags.Disc = (uint)track.DiscNumber;
+                    if (track.Year != null)
+                        newTags.Year = (uint) track.Year.Value;
 
                     newTags.Comment = "Downloaded with Audiotica - http://audiotica.fm";
 
                     if (!string.IsNullOrEmpty(track.ArtworkUri) && !track.ArtworkUri.StartsWith("http"))
                     {
-                        var artworkFile = await StorageFile.GetFileFromPathAsync(track.ArtworkUri);
+                        var artworkFile = await StorageHelper.GetFileAsync(track.ArtworkUri.Replace("ms-appdata:///local/", ""));
 
                         using (var artworkStream = await artworkFile.OpenStreamForReadAsync())
                         {
@@ -304,14 +323,12 @@ namespace Audiotica.Windows.Services.RunTime
 
             #endregion
 
-            var newFile = StorageVirtualHelper.IsVirtualPath(track.AudioLocalUri)
-                ? await StorageVirtualHelper.CreateFileAsync(track.AudioLocalUri)
-                : await StorageHelper.CreateFileAsync(track.AudioLocalUri);
-
+            var newFile = await StorageHelper.CreateFileFromPathAsync(track.AudioLocalUri);
             await tempFile.MoveAndReplaceAsync(newFile);
 
-            track.Status = Track.TrackStatus.None;
-            track.Type = Track.TrackType.Download;
+            track.Status = TrackStatus.None;
+            track.Type = TrackType.Download;
+            track.BackgroundDownload = null;
             await _libraryService.UpdateTrackAsync(track);
         }
 

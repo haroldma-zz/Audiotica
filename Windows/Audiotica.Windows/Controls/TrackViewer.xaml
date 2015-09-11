@@ -9,7 +9,24 @@
     d:DesignHeight="300"
     d:DesignWidth="400">
 
-    <Grid>
+    <Grid Background="Transparent" RightTapped="Viewer_RightTapped">
+        <FlyoutBase.AttachedFlyout>
+            <MenuFlyout Placement="Bottom">
+                <MenuFlyoutItem Text="Play" Click="PlayButton_Click" />
+                <MenuFlyoutSubItem Text="Add to">
+                    <MenuFlyoutItem Text="Collection" Click="AddCollection_Click"
+                                            Visibility="{x:Bind Track.IsFromLibrary, Mode=OneWay, Converter={StaticResource ReverseVisibilityConverter}}" />
+                    <MenuFlyoutSeparator
+                                Visibility="{x:Bind Track.IsFromLibrary, Mode=OneWay, Converter={StaticResource ReverseVisibilityConverter}}" />
+                    <MenuFlyoutItem Text="Queue" Click="AddQueue_Click" />
+                    <MenuFlyoutItem Text="Up next" Click="AddUpNext_Click" />
+                </MenuFlyoutSubItem>
+                <MenuFlyoutItem Text="Explore artist" Click="ExploreArtist_Click" />
+                <MenuFlyoutItem Text="Download" Click="Download_Click" Visibility="{x:Bind Track.IsDownloadable, Mode=OneWay, Converter={StaticResource VisibilityConverter}}" />
+                <MenuFlyoutItem Text="Delete" IsEnabled="False" Foreground="Red" Visibility="{x:Bind Track.IsFromLibrary, Mode=OneWay, Converter={StaticResource VisibilityConverter}}" />
+                <MenuFlyoutItem Text="Properties" IsEnabled="False" Visibility="{x:Bind Track.IsFromLibrary, Mode=OneWay, Converter={StaticResource VisibilityConverter}}" />
+            </MenuFlyout>
+        </FlyoutBase.AttachedFlyout>
         <Grid Margin="0,15" Opacity="{x:Bind Track.Status, Converter={StaticResource TrackMatchingOpacityConverter}, Mode=OneWay}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="32" />

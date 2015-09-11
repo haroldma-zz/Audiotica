@@ -22,7 +22,7 @@ namespace Audiotica.Core.Extensions
         public static byte[] ToBytes(this string text) => Encoding.UTF8.GetBytes(text);
 
         public static bool EqualsIgnoreCase(this string text, string other) =>
-            text.Equals(other, StringComparison.CurrentCultureIgnoreCase);
+            text?.Equals(other, StringComparison.CurrentCultureIgnoreCase) ?? false;
 
         public static string GetEnumText(this Enum value)
         {

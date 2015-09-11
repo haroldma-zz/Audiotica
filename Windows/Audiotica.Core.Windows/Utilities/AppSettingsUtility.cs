@@ -7,7 +7,7 @@ namespace Audiotica.Core.Windows.Utilities
     {
         public AppSettingsUtility(ISettingsUtility settingsUtility)
         {
-            DownloadsPath = settingsUtility.Read("DownloadsPath", "virutal://Music/Audiotica");
+            DownloadsPath = settingsUtility.Read("DownloadsPath", "virtual://Music/Audiotica/");
             TempDownloadsPath = settingsUtility.Read("TempDownloadsPath", ApplicationData.Current.TemporaryFolder.Path);
         }
 

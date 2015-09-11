@@ -26,7 +26,7 @@ namespace Audiotica.Windows.Services.RunTime
 
         public void OnStartup()
         {
-            foreach (var track in _libraryService.Tracks.Where(p => p.Status == Track.TrackStatus.Matching))
+            foreach (var track in _libraryService.Tracks.Where(p => p.Status == TrackStatus.Matching))
                 Queue(track);
         }
 
@@ -53,13 +53,13 @@ namespace Audiotica.Windows.Services.RunTime
                     {
                         timer.AddProperty("Status", "Found match");
                         track.AudioWebUri = uri.ToString();
-                        track.Status = Track.TrackStatus.None;
+                        track.Status = TrackStatus.None;
                         await _libraryService.UpdateTrackAsync(track);
                     }
                     else
                     {
                         timer.AddProperty("Status", "No match");
-                        track.Status = Track.TrackStatus.NoMatch;
+                        track.Status = TrackStatus.NoMatch;
                         await _libraryService.UpdateTrackAsync(track);
                     }
                 }

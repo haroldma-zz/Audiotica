@@ -84,7 +84,7 @@ namespace Audiotica.Windows.Controls
                 }
                 catch (AppException ex)
                 {
-                    Track.Status = Track.TrackStatus.None;
+                    Track.Status = TrackStatus.None;
                     CurtainPrompt.ShowError(ex.Message ?? "Problem saving song.");
                 }
                 finally
