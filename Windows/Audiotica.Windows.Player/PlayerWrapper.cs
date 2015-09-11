@@ -129,7 +129,7 @@ namespace Audiotica.Windows.Player
         public async void CreatePlaybackList(IEnumerable<QueueTrack> queues)
         {
             // Make a new list and enable looping
-            _mediaPlaybackList = new MediaPlaybackList {AutoRepeatEnabled = true};
+            _mediaPlaybackList = new MediaPlaybackList {AutoRepeatEnabled = false};
 
             // Add playback items to the list
             foreach (var song in queues)
