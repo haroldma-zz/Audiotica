@@ -6,7 +6,6 @@ using Windows.Foundation;
 using Windows.Media;
 using Windows.Media.Core;
 using Windows.Media.Playback;
-using Windows.Storage;
 using Audiotica.Core.Helpers;
 using Audiotica.Core.Utilities.Interfaces;
 using Audiotica.Core.Windows.Enums;
@@ -141,7 +140,7 @@ namespace Audiotica.Windows.Player
                 {
                     source = MediaSource.CreateFromStorageFile(
                             await StorageHelper.GetFileFromPathAsync(song.Track.AudioLocalUri));
-                }
+                } 
                 source.Queue(song);
                 _mediaPlaybackList.Items.Add(new MediaPlaybackItem(source));
             }
