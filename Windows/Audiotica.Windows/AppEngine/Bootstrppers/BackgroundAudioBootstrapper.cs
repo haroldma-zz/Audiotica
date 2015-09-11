@@ -4,19 +4,15 @@ using Autofac;
 
 namespace Audiotica.Windows.AppEngine.Bootstrppers
 {
-    public class BackgroundAudioBootstrapper : IBootStrapper
+    public class BackgroundAudioBootstrapper : AppBootStrapper
     {
-        public void OnLaunched(IComponentContext context)
+        public override void OnStart(IComponentContext context)
         {
-            StartTask(context);
+            var service = context.Resolve<IPlayerService>();
+            service.StartBackgroundTask();
         }
-
-        public void OnRelaunched(IComponentContext context, Dictionary<string, object> state)
-        {
-            StartTask(context);
-        }
-
-        public void OnResuming(IComponentContext context)
+        
+        public override void OnResuming(IComponentContext context)
         {
             var service = context.Resolve<IPlayerService>();
 
@@ -24,18 +20,12 @@ namespace Audiotica.Windows.AppEngine.Bootstrppers
             service.Resuming();
         }
 
-        public void OnSuspending(IComponentContext context, Dictionary<string, object> state)
+        public override void OnSuspending(IComponentContext context, Dictionary<string, object> state)
         {
             var service = context.Resolve<IPlayerService>();
 
             // Tell the background audio that the app is being suspended
             service.Suspending();
-        }
-
-        protected void StartTask(IComponentContext context)
-        {
-            var service = context.Resolve<IPlayerService>();
-            service.StartBackgroundTask();
         }
     }
 }

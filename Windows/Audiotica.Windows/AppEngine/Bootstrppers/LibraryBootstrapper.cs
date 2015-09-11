@@ -7,7 +7,7 @@ namespace Audiotica.Windows.AppEngine.Bootstrppers
 {
     public class LibraryBootstrapper : AppBootStrapper
     {
-        protected void Start(IComponentContext context)
+        public override void OnStart(IComponentContext context)
         {
             var service = context.Resolve<ILibraryService>();
             var insights = context.Resolve<IInsightsService>();
@@ -21,16 +21,6 @@ namespace Audiotica.Windows.AppEngine.Bootstrppers
 
             var matchingService = context.Resolve<ILibraryMatchingService>();
             matchingService.OnStartup();
-        }
-
-        public override void OnLaunched(IComponentContext context)
-        {
-            Start(context);
-        }
-
-        public override void OnRelaunched(IComponentContext context, Dictionary<string, object> state)
-        {
-            Start(context);
         }
     }
 }

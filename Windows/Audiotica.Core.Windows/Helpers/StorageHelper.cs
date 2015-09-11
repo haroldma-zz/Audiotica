@@ -35,6 +35,44 @@ using Audiotica.Core.Extensions;
 
 namespace Audiotica.Core.Windows.Helpers
 {
+    public static class StorageVirtualHelper
+    {
+        public static StorageFolder GetVirtualFolder(string path)
+        {
+            switch (path.ToLower())
+            {
+                case "music":
+                    return KnownFolders.MusicLibrary;
+                case "videos":
+                    return KnownFolders.VideosLibrary;
+                case "pictures":
+                    return KnownFolders.PicturesLibrary;
+                case "saved-pictures":
+                    return KnownFolders.SavedPictures;
+                case "documents":
+                    return KnownFolders.DocumentsLibrary;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(path));
+            }
+        }
+
+        public static Task<StorageFile> CreateFileAsync(string path,
+            CreationCollisionOption option = CreationCollisionOption.OpenIfExists)
+        {
+            path = path.Replace("virutal://", "");
+            var virtualPath = path.Substring(0, path.IndexOf("/", StringComparison.Ordinal));
+            var virtualDir = GetVirtualFolder(virtualPath);
+            path = path.Replace(virtualPath, "");
+
+            return StorageHelper.CreateFileAsync(path, virtualDir);
+        }
+
+        public static bool IsVirtualPath(string path)
+        {
+            return path.StartsWith("virtual://");
+        }
+    }
+
     // based on http://codepaste.net/gtu5mq
     public static class StorageHelper
     {

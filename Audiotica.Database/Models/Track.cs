@@ -293,6 +293,11 @@ namespace Audiotica.Database.Models
             get { return _backgroundDownload; }
             set { Set(ref _backgroundDownload, value); }
         }
+
+        public override string ToString()
+        {
+            return $"{Title} by {DisplayArtist}";
+        }
     }
 
     public class BackgroundDownload : ObservableObject

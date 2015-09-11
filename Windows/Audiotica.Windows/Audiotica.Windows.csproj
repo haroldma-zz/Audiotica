@@ -112,6 +112,7 @@
     <Compile Include="AppEngine\AppKernel.cs" />
     <Compile Include="AppEngine\AppModule.cs" />
     <Compile Include="AppEngine\Bootstrppers\BackgroundAudioBootstrapper.cs" />
+    <Compile Include="AppEngine\Bootstrppers\DownloadServiceBootstrapper.cs" />
     <Compile Include="AppEngine\Bootstrppers\LibraryBootstrapper.cs" />
     <Compile Include="AppEngine\Bootstrppers\IBootstrapper.cs" />
     <Compile Include="AppEngine\Modules\ConverterModule.cs" />
@@ -168,6 +169,7 @@
     <Compile Include="Services\Interfaces\IInsightsService.cs" />
     <Compile Include="Services\DesignTime\DesignLibraryCollectionService.cs" />
     <Compile Include="Services\Interfaces\ILibraryCollectionService.cs" />
+    <Compile Include="Services\RunTime\DownloadService.cs" />
     <Compile Include="Services\RunTime\LibraryCollectionService.cs" />
     <Compile Include="Services\RunTime\PlayerService.cs" />
     <Compile Include="Services\RunTime\InsightsService.cs" />

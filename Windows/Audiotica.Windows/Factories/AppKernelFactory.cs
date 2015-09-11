@@ -23,7 +23,8 @@ namespace Audiotica.Windows.Factories
             new IBootStrapper[]
             {
                 new BackgroundAudioBootstrapper(),
-                new LibraryBootstrapper()
+                new LibraryBootstrapper(),
+                new DownloadServiceBootstrapper()
             };
 
         public static AppKernel Create() => new AppKernel(GetBootStrappers(), GetModules());

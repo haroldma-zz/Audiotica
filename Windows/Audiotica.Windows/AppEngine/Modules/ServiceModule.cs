@@ -33,6 +33,7 @@ namespace Audiotica.Windows.AppEngine.Modules
             builder.RegisterType<TrackSaveService>().As<ITrackSaveService>();
             builder.RegisterType<LibraryMatchingService>().As<ILibraryMatchingService>().SingleInstance();
             builder.RegisterType<LibraryCollectionService>().As<ILibraryCollectionService>().SingleInstance().AutoActivate();
+            builder.RegisterType<DownloadService>().As<IDownloadService>().SingleInstance();
         }
     }
 }

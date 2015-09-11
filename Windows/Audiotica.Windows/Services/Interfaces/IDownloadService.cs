@@ -8,6 +8,7 @@ namespace Audiotica.Windows.Services.Interfaces
     {
         ObservableCollection<Track> ActiveDownloads { get; }
         Task StartDownloadAsync(Track track);
+        void Cancel(Track track);
         void Cancel(BackgroundDownload backgroundDownload);
         void PauseAll();
         void LoadDownloads();
