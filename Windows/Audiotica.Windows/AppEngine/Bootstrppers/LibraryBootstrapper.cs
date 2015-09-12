@@ -1,4 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Windows.Storage;
+using Audiotica.Core.Extensions;
+using Audiotica.Core.Windows.Helpers;
 using Audiotica.Database.Services.Interfaces;
 using Audiotica.Windows.Services.Interfaces;
 using Autofac;
@@ -21,6 +26,24 @@ namespace Audiotica.Windows.AppEngine.Bootstrppers
 
             var matchingService = context.Resolve<ILibraryMatchingService>();
             matchingService.OnStartup();
+
+            CleanupFiles(service);
+        }
+
+        private void CleanupFiles(ILibraryService service)
+        {
+            CleanupFiles(s => !service.Tracks.Any(p => p.ArtistArtworkUri?.EndsWithIgnoreCase(s) ?? false), "Library/Images/Artists/");
+            CleanupFiles(s => !service.Tracks.Any(p => p.ArtworkUri?.EndsWithIgnoreCase(s) ?? false), "Library/Images/Albums/");
+        }
+
+        private async void CleanupFiles(Func<string, bool> shouldDelete, string folderPath)
+        {
+            var folder = await StorageHelper.GetFolderAsync(folderPath);
+            var files = await folder.GetFilesAsync();
+            foreach (var file in files.Where(file => shouldDelete(file.Name)))
+            {
+                await file.DeleteAsync();
+            }
         }
     }
 }

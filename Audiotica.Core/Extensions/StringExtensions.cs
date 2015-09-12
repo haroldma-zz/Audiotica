@@ -24,6 +24,9 @@ namespace Audiotica.Core.Extensions
         public static bool EqualsIgnoreCase(this string text, string other) =>
             text?.Equals(other, StringComparison.CurrentCultureIgnoreCase) ?? false;
 
+        public static bool EndsWithIgnoreCase(this string text, string other) =>
+            text?.EndsWith(other, StringComparison.CurrentCultureIgnoreCase) ?? false;
+
         public static string GetEnumText(this Enum value)
         {
             var fi = value.GetType().GetRuntimeField(value.ToString());
