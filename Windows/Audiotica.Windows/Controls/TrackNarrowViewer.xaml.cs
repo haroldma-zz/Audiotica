@@ -1,9 +1,12 @@
-﻿using Windows.UI.Xaml;
+﻿using System.Linq;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Audiotica.Core.Exceptions;
+using Audiotica.Core.Extensions;
 using Audiotica.Core.Windows.Helpers;
 using Audiotica.Database.Models;
+using Audiotica.Database.Services.Interfaces;
 using Audiotica.Windows.Common;
 using Audiotica.Windows.Services.Interfaces;
 using Audiotica.Windows.Services.NavigationService;
@@ -154,6 +157,23 @@ namespace Audiotica.Windows.Controls
             {
                 var downloadService = scope.Resolve<IDownloadService>();
                 downloadService.StartDownloadAsync(Track);
+            }
+        }
+
+        private async void Delete_Click(object sender, RoutedEventArgs e)
+        {
+            using (var scope = App.Current.Kernel.BeginScope())
+            {
+                var libraryService = scope.Resolve<ILibraryService>();
+                await libraryService.DeleteTrackAsync(Track);
+
+                // make sure to navigate away if album turns out empty
+                if (!IsCatalog && App.Current.NavigationService.CurrentPageType == typeof (AlbumPage))
+                {
+                    var album = libraryService.Albums.FirstOrDefault(p => p.Title.EqualsIgnoreCase(Track.AlbumTitle));
+                    if (album == null)
+                        App.Current.NavigationService.GoBack();
+                }
             }
         }
     }

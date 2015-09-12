@@ -219,6 +219,7 @@ namespace Audiotica.Windows.Services.RunTime
             {
                 Debug.WriteLine("Download cancelled {0}", track);
 
+                track.AudioLocalUri = null;
                 track.Status = TrackStatus.None;
                 await _libraryService.UpdateTrackAsync(track);
                 await ((DownloadOperation) track.BackgroundDownload.DownloadOperation).ResultFile.DeleteAsync();
@@ -247,7 +248,7 @@ namespace Audiotica.Windows.Services.RunTime
 
                 Debug.WriteLine("Updating song BackgroundDownload progress for {0}", songDownload);
 
-                songDownload.BackgroundDownload.Status = download.Progress.Status.ToString();
+                songDownload.BackgroundDownload.Status = download.Progress.Status.ToString().ToSentenceCase().Replace("Running", "Downloading");
 
                 if (download.Progress.TotalBytesToReceive > 0)
                 {

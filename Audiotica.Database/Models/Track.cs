@@ -317,9 +317,9 @@ namespace Audiotica.Database.Models
 
     public class BackgroundDownload : ObservableObject
     {
-        private string _status;
+        private string _status = "Waiting";
         private double _bytesReceived;
-        private double _bytesToReceive;
+        private double _bytesToReceive = 1;
 
         public BackgroundDownload(object downloadOperation)
         {

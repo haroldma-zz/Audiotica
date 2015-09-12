@@ -24,7 +24,7 @@
                 <MenuFlyoutItem Text="Explore artist" Click="ExploreArtist_Click" />
                 <MenuFlyoutItem Text="Download" Click="Download_Click"
                                 Visibility="{x:Bind Track.IsDownloadable, Mode=OneWay, Converter={StaticResource VisibilityConverter}}" />
-                <MenuFlyoutItem Text="Delete" IsEnabled="False" Foreground="Red"
+                <MenuFlyoutItem Text="Delete" Click="Delete_Click" Foreground="Red"
                                 Visibility="{x:Bind Track.IsFromLibrary, Mode=OneWay, Converter={StaticResource VisibilityConverter}}" />
                 <MenuFlyoutItem Text="Properties" IsEnabled="False"
                                 Visibility="{x:Bind Track.IsFromLibrary, Mode=OneWay, Converter={StaticResource VisibilityConverter}}" />
@@ -53,12 +53,21 @@
                                Visibility="{x:Bind Track.Type, Mode=OneWay, Converter={StaticResource StreamingVisibilityConverter}}" />
                 </Grid>
             </Grid>
-            <StackPanel Grid.Column="1">
+            <Grid Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
                 <TextBlock Text="{x:Bind Track.Title, Mode=OneWay}"
                            Style="{StaticResource BaseTextBlockStyle}" />
-                <TextBlock Text="{x:Bind Track.Artists, Mode=OneWay}"
+                <TextBlock Grid.Row="1" Text="{x:Bind Track.Artists, Mode=OneWay}"
                            Style="{StaticResource SubtleTextBlockStyle}" />
-            </StackPanel>
+                <ProgressBar Grid.Row="2" ToolTipService.ToolTip="{x:Bind Track.BackgroundDownload.Status, Mode=OneWay}"
+                             Visibility="{x:Bind Track.Status, Converter={StaticResource DownloadingVisibilityConverter}, Mode=OneWay}"
+                             Value="{x:Bind Track.BackgroundDownload.BytesReceived, Mode=OneWay}"
+                             Maximum="{x:Bind Track.BackgroundDownload.BytesToReceive, Mode=OneWay}" Margin="0,2,10,0" />
+            </Grid>
             <StackPanel Grid.Column="2" Margin="20,0,20,0" Orientation="Horizontal"
                         Visibility="{x:Bind IsSelected, Mode=OneWay, Converter={StaticResource VisibilityConverter}}">
                 <Button Style="{StaticResource PlainButtonStyle}" Padding="-5" Click="PlayButton_Click">

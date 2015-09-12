@@ -24,7 +24,8 @@
             </converters:TrackStatusToContentConverter>
             <converters:TrackStatusConverter x:Name="MatchingVisibilityConverter" DesiredStatus="Matching" />
             <converters:TrackStatusConverter x:Name="NoMatchVisibilityConverter" DesiredStatus="NoMatch" />
-            <converters:TrackTypeConverter x:Name="StreamingVisibilityConverter" DesiredStatus="Stream" />
+            <converters:TrackStatusConverter x:Name="DownloadingVisibilityConverter" DesiredStatus="Downloading" />
+            <converters:TrackTypeConverter x:Name="StreamingVisibilityConverter" DesiredType="Stream" />
 
             <converters:VisibilityConverter x:Key="VisibilityConverter" />
             <converters:VisibilityConverter x:Key="ReverseVisibilityConverter" Reverse="True" />

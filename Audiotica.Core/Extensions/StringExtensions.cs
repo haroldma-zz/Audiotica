@@ -14,6 +14,11 @@ namespace Audiotica.Core.Extensions
 {
     public static class StringExtensions
     {
+        public static string ToSentenceCase(this string str)
+        {
+            return Regex.Replace(str, "[a-z][A-Z]", m => m.Value[0] + " " + char.ToLower(m.Value[1]));
+        }
+
         public static string ToSha1(this string text) => SHA.ComputeSHA1(text.ToBytes()).ToHex();
 
         public static string ToHex(this byte[] bytes) => BitConverter.ToString(bytes).Replace("-", "").ToLower();

@@ -51,7 +51,7 @@ namespace Audiotica.Windows.Tools.Converters
 
     public class TrackTypeConverter : IValueConverter
     {
-        public TrackType DesiredStatus { get; set; }
+        public TrackType DesiredType { get; set; }
         public bool NotDesired { get; set; }
 
         public object Convert(object value, Type targetType, object parameter, string culture)
@@ -60,7 +60,7 @@ namespace Audiotica.Windows.Tools.Converters
                 return Visibility.Collapsed;
 
             var status = (TrackType)value;
-            var visible = (NotDesired && status != DesiredStatus) || (!NotDesired && status == DesiredStatus);
+            var visible = (NotDesired && status != DesiredType) || (!NotDesired && status == DesiredType);
             return visible ? Visibility.Visible : Visibility.Collapsed;
         }
 
