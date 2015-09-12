@@ -75,9 +75,6 @@ namespace Audiotica.Windows.Services.RunTime
 
             if (!exists)
             {
-                if (string.IsNullOrEmpty(track.ArtistArtworkUri) || !track.ArtistArtworkUri.StartsWith("http"))
-                    return;
-
                 if (!await DownloadArtworkAsync(track.ArtistArtworkUri, path))
                     return;
             }
@@ -96,9 +93,6 @@ namespace Audiotica.Windows.Services.RunTime
 
             if (!exists)
             {
-                if (string.IsNullOrEmpty(track.ArtworkUri) || !track.ArtworkUri.StartsWith("http"))
-                    return;
-
                 if (!await DownloadArtworkAsync(track.ArtworkUri, path))
                     return;
             }
@@ -108,6 +102,9 @@ namespace Audiotica.Windows.Services.RunTime
 
         private async Task<bool> DownloadArtworkAsync(string uri, string path)
         {
+            if (string.IsNullOrEmpty(uri) || !uri.StartsWith("http"))
+                return false;
+
             // make sure it doesn't exists (when track is deleted, artwork won't be deleted until next startup)
             if (!await _storageUtility.ExistsAsync(path))
             {
