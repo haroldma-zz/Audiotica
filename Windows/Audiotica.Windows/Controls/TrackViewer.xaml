@@ -23,7 +23,7 @@
                 </MenuFlyoutSubItem>
                 <MenuFlyoutItem Text="Explore artist" Click="ExploreArtist_Click" />
                 <MenuFlyoutItem Text="Download" Click="Download_Click" Visibility="{x:Bind Track.IsDownloadable, Mode=OneWay, Converter={StaticResource VisibilityConverter}}" />
-                <MenuFlyoutItem Text="Delete" IsEnabled="False" Foreground="Red" Visibility="{x:Bind Track.IsFromLibrary, Mode=OneWay, Converter={StaticResource VisibilityConverter}}" />
+                <MenuFlyoutItem Text="Delete" Click="Delete_Click" Foreground="Red" Visibility="{x:Bind Track.IsFromLibrary, Mode=OneWay, Converter={StaticResource VisibilityConverter}}" />
                 <MenuFlyoutItem Text="Properties" IsEnabled="False" Visibility="{x:Bind Track.IsFromLibrary, Mode=OneWay, Converter={StaticResource VisibilityConverter}}" />
             </MenuFlyout>
         </FlyoutBase.AttachedFlyout>

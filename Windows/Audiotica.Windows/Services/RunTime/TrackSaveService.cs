@@ -75,14 +75,18 @@ namespace Audiotica.Windows.Services.RunTime
 
             if (!exists)
             {
-                if (string.IsNullOrEmpty(track.ArtistArtworkUri))
+                if (string.IsNullOrEmpty(track.ArtistArtworkUri) || !track.ArtistArtworkUri.StartsWith("http"))
                     return;
 
-                using (var response = await track.ArtistArtworkUri.ToUri().GetAsync())
-                    if (response.IsSuccessStatusCode)
-                        using (var stream = await response.Content.ReadAsStreamAsync())
-                            await _storageUtility.WriteStreamAsync(path, stream);
-                    else return;
+                // make sure it doesn't exists (when track is deleted, artwork is deleted on next startup)
+                if (!await _storageUtility.ExistsAsync(path))
+                {
+                    using (var response = await track.ArtistArtworkUri.ToUri().GetAsync())
+                        if (response.IsSuccessStatusCode)
+                            using (var stream = await response.Content.ReadAsStreamAsync())
+                                await _storageUtility.WriteStreamAsync(path, stream);
+                        else return;
+                }
             }
 
             track.ArtistArtworkUri = uri;
@@ -99,14 +103,17 @@ namespace Audiotica.Windows.Services.RunTime
 
             if (!exists)
             {
-                if (string.IsNullOrEmpty(track.ArtworkUri))
+                if (string.IsNullOrEmpty(track.ArtworkUri) || !track.ArtworkUri.StartsWith("http"))
                     return;
-
-                using (var response = await track.ArtworkUri.ToUri().GetAsync())
-                    if (response.IsSuccessStatusCode)
-                        using (var stream = await response.Content.ReadAsStreamAsync())
-                            await _storageUtility.WriteStreamAsync(path, stream);
-                    else return;
+                // make sure it doesn't exists (when track is deleted, artwork is deleted on next startup)
+                if (!await _storageUtility.ExistsAsync(path))
+                {
+                    using (var response = await track.ArtworkUri.ToUri().GetAsync())
+                        if (response.IsSuccessStatusCode)
+                            using (var stream = await response.Content.ReadAsStreamAsync())
+                                await _storageUtility.WriteStreamAsync(path, stream);
+                        else return;
+                }
             }
 
             track.ArtworkUri = uri;
