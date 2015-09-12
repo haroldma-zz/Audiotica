@@ -63,6 +63,7 @@ namespace Audiotica.Database.Services.Interfaces
         void AddTrack(Track track);
 
         void UpdateTrack(Track track);
+        void DeleteTrack(Track track);
 
         #endregion
 
@@ -76,6 +77,7 @@ namespace Audiotica.Database.Services.Interfaces
         Task AddTrackAsync(Track track);
 
         Task UpdateTrackAsync(Track track);
+        Task DeleteTrackAsync(Track track);
 
         #endregion
     }

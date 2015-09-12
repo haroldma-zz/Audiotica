@@ -44,12 +44,19 @@ namespace Audiotica.Windows.AppEngine.Bootstrppers
 
     public class AppBootStrapper : IBootStrapper
     {
+        public virtual void OnStart(IComponentContext context)
+        {
+
+        }
+
         public virtual void OnLaunched(IComponentContext context)
         {
+            OnStart(context);
         }
 
         public virtual void OnRelaunched(IComponentContext context, Dictionary<string, object> state)
         {
+            OnStart(context);
         }
 
         public virtual void OnResuming(IComponentContext context)

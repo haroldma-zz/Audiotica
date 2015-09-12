@@ -89,6 +89,17 @@ namespace Audiotica.Database.Services.RunTime
             _sqLiteConnection.Update(track);
         }
 
+        public void DeleteTrack(Track track)
+        {
+            _sqLiteConnection.Delete(track);
+            _dispatcherUtility.Run(() =>
+            {
+                DeleteRelatedObjects(track);
+                Tracks.Remove(track);
+                track.IsFromLibrary = false;
+            });
+        }
+
         public Task LoadAsync()
         {
             return Task.Factory.StartNew(Load);
@@ -102,6 +113,11 @@ namespace Audiotica.Database.Services.RunTime
         public Task UpdateTrackAsync(Track track)
         {
             return Task.Factory.StartNew(() => UpdateTrack(track));
+        }
+
+        public Task DeleteTrackAsync(Track track)
+        {
+            return Task.Factory.StartNew(() => DeleteTrack(track));
         }
 
         private void CreateTables()
@@ -124,6 +140,25 @@ namespace Audiotica.Database.Services.RunTime
                 CreateRelatedObjects(track);
                 Tracks.Add(track);
             }
+        }
+
+        private void DeleteRelatedObjects(Track track)
+        {
+            var displaySameAsAlbumArtist = track.DisplayArtist.EqualsIgnoreCase(track.AlbumArtist);
+
+            var albumArtist = Artists.FirstOrDefault(p =>
+                p.Name.EqualsIgnoreCase(track.AlbumArtist));
+            
+            albumArtist.Tracks.Remove(track);
+            if (albumArtist.Tracks.Count == 0 && albumArtist.TracksThatAppearsIn.Count == 0)
+                Artists.Remove(albumArtist);
+
+            DeleteAlbum(track, albumArtist);
+
+            if (!displaySameAsAlbumArtist)
+                DeleteDisplayArtist(track);
+
+            DeleteSecondaryArtists(track);
         }
 
         private void CreateRelatedObjects(Track track)
@@ -157,6 +192,16 @@ namespace Audiotica.Database.Services.RunTime
             CreateSecondaryArtists(track);
         }
 
+        private void DeleteDisplayArtist(Track track)
+        {
+            var displayArtist = Artists.FirstOrDefault(p =>
+                p.Name.EqualsIgnoreCase(track.DisplayArtist));
+            
+            displayArtist.Tracks.Remove(track);
+            if (displayArtist.TracksThatAppearsIn.Count == 0 && displayArtist.Tracks.Count == 0)
+                Artists.Remove(displayArtist);
+        }
+
         private void CreateDisplayArtist(Track track)
         {
             var displayArtist = Artists.FirstOrDefault(p =>
@@ -177,6 +222,22 @@ namespace Audiotica.Database.Services.RunTime
             displayArtist.Tracks.Add(track);
             if (newRelation)
                 Artists.Add(displayArtist);
+        }
+        
+        private void DeleteSecondaryArtists(Track track)
+        {
+            var artistAppearing = track.Artists.Split(';').Select(p => p.Trim());
+
+            foreach (var artist in artistAppearing
+                .Where(p => !p.EqualsIgnoreCase(track.DisplayArtist)
+                            && !p.EqualsIgnoreCase(track.AlbumArtist)).Select(artistName => Artists.First(p =>
+                                p.Name.EqualsIgnoreCase(artistName))))
+            {
+                artist.TracksThatAppearsIn.Remove(track);
+
+                if (artist.TracksThatAppearsIn.Count == 0 && artist.Tracks.Count == 0)
+                    Artists.Remove(artist);
+            }
         }
 
         private void CreateSecondaryArtists(Track track)
@@ -199,6 +260,19 @@ namespace Audiotica.Database.Services.RunTime
                 }
 
                 artist.TracksThatAppearsIn.Add(track);
+            }
+        }
+
+        private void DeleteAlbum(Track track, Artist albumArtist)
+        {
+            var album = Albums.FirstOrDefault(p =>
+                p.Title.EqualsIgnoreCase(track.AlbumTitle) && p.Artist == albumArtist);
+            
+            album.Tracks.Remove(track);
+            if (album.Tracks.Count == 0)
+            {
+                Albums.Remove(album);
+                albumArtist.Albums.Remove(album);
             }
         }
 

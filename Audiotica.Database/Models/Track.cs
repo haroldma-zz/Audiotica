@@ -1,34 +1,37 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
+using Audiotica.Core.Common;
 using Audiotica.Core.Extensions;
+using Newtonsoft.Json;
 using SQLite.Net.Attributes;
 
 namespace Audiotica.Database.Models
 {
+    public enum TrackType
+    {
+        Local,
+        Stream,
+        Download
+    }
+    public enum TrackStatus
+    {
+        None,
+        NotAvailable,
+        NoMatch,
+        Downloading,
+        Matching
+    }
+
     /// <summary>
     ///     Track object, used in database.
     /// </summary>
     public class Track : DatabaseEntryBase
     {
-        public enum TrackStatus
-        {
-            None,
-            NotAvailable,
-            NoMatch,
-            Downloading,
-            Matching
-        }
-
-        public enum TrackType
-        {
-            Local,
-            Stream,
-            Download
-        }
-
         private bool _isFromLibrary;
         private TrackStatus _status;
         private TrackType _type;
+        private BackgroundDownload _backgroundDownload;
 
         /// <summary>
         ///     Gets or sets a value indicating whether this instance is from the music library.
@@ -40,8 +43,15 @@ namespace Audiotica.Database.Models
         public bool IsFromLibrary
         {
             get { return _isFromLibrary; }
-            set { Set(ref _isFromLibrary, value); }
+            set
+            {
+                Set(ref _isFromLibrary, value);
+                RaisePropertyChanged("IsDownloadable");
+            }
         }
+
+        [Ignore, JsonIgnore]
+        public bool IsDownloadable => Type == TrackType.Stream && Status == TrackStatus.None && IsFromLibrary;
 
         /// <summary>
         ///     Gets or sets the track's title.
@@ -253,13 +263,21 @@ namespace Audiotica.Database.Models
         public TrackType Type
         {
             get { return _type; }
-            set { Set(ref _type, value); }
+            set
+            {
+                Set(ref _type, value);
+                RaisePropertyChanged("IsDownloadable");
+            }
         }
 
         public TrackStatus Status
         {
             get { return _status; }
-            set { Set(ref _status, value); }
+            set
+            {
+                Set(ref _status, value);
+                RaisePropertyChanged("IsDownloadable");
+            }
         }
 
         /// <summary>
@@ -277,6 +295,59 @@ namespace Audiotica.Database.Models
         ///     The artist artwork URI.
         /// </value>
         public string ArtistArtworkUri { get; set; }
+
+        /// <summary>
+        /// Gets or sets the background download.
+        /// </summary>
+        /// <value>
+        /// The current background download.
+        /// </value>
+        [Ignore, JsonIgnore]
+        public BackgroundDownload BackgroundDownload
+        {
+            get { return _backgroundDownload; }
+            set { Set(ref _backgroundDownload, value); }
+        }
+
+        public override string ToString()
+        {
+            return $"{Title} by {DisplayArtist}";
+        }
+    }
+
+    public class BackgroundDownload : ObservableObject
+    {
+        private string _status = "Waiting";
+        private double _bytesReceived;
+        private double _bytesToReceive = 1;
+
+        public BackgroundDownload(object downloadOperation)
+        {
+            DownloadOperation = downloadOperation;
+            CancellationTokenSrc = new CancellationTokenSource();
+        }
+
+        public CancellationTokenSource CancellationTokenSrc { get; }
+
+        public object DownloadOperation { get; }
+
+        public double BytesToReceive
+        {
+            get { return _bytesToReceive; }
+            set { Set(ref _bytesToReceive, value); }
+        }
+
+        public double BytesReceived
+        {
+            get { return _bytesReceived; }
+            set { Set(ref _bytesReceived, value); }
+        }
+
+        public string Status
+        {
+            get { return _status; }
+            set { Set(ref _status, value); }
+        }
     }
 
     public class TrackComparer : IEqualityComparer<Track>

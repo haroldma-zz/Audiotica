@@ -50,7 +50,7 @@ namespace Audiotica.Windows.Services.RunTime
             }))
             {
                 var isMatching = track.AudioWebUri == null && track.AudioLocalUri == null;
-                track.Status = isMatching ? Track.TrackStatus.Matching : Track.TrackStatus.None;
+                track.Status = isMatching ? TrackStatus.Matching : TrackStatus.None;
 
                 // Download artwork
                 await DownloadAlbumArtworkAsync(track);
@@ -70,19 +70,13 @@ namespace Audiotica.Windows.Services.RunTime
             const string prefix = "ms-appdata:///local/";
             var path = $"Library/Images/Artists/{artistHash}.png";
             var uri = prefix + path;
-
-            var exists = _libraryService.Tracks.Any(p => p.ArtistArtworkUri == uri);
+            
+            var exists = _libraryService.Tracks.Any(p => p.ArtistArtworkUri.EqualsIgnoreCase(uri));
 
             if (!exists)
             {
-                if (string.IsNullOrEmpty(track.ArtistArtworkUri))
+                if (!await DownloadArtworkAsync(track.ArtistArtworkUri, path))
                     return;
-
-                using (var response = await track.ArtistArtworkUri.ToUri().GetAsync())
-                    if (response.IsSuccessStatusCode)
-                        using (var stream = await response.Content.ReadAsStreamAsync())
-                            await _storageUtility.WriteStreamAsync(path, stream);
-                    else return;
             }
 
             track.ArtistArtworkUri = uri;
@@ -95,21 +89,34 @@ namespace Audiotica.Windows.Services.RunTime
             var path = $"Library/Images/Albums/{albumHash}.png";
             var uri = prefix + path;
 
-            var exists = _libraryService.Tracks.Any(p => p.ArtworkUri == uri);
+            var exists = _libraryService.Tracks.Any(p => p.ArtworkUri.EqualsIgnoreCase(uri));
 
             if (!exists)
             {
-                if (string.IsNullOrEmpty(track.ArtworkUri))
+                if (!await DownloadArtworkAsync(track.ArtworkUri, path))
                     return;
-
-                using (var response = await track.ArtworkUri.ToUri().GetAsync())
-                    if (response.IsSuccessStatusCode)
-                        using (var stream = await response.Content.ReadAsStreamAsync())
-                            await _storageUtility.WriteStreamAsync(path, stream);
-                    else return;
             }
 
             track.ArtworkUri = uri;
+        }
+
+        private async Task<bool> DownloadArtworkAsync(string uri, string path)
+        {
+            if (string.IsNullOrEmpty(uri) || !uri.StartsWith("http"))
+                return false;
+
+            // make sure it doesn't exists (when track is deleted, artwork won't be deleted until next startup)
+            if (!await _storageUtility.ExistsAsync(path))
+            {
+                using (var response = await uri.ToUri().GetAsync())
+                    if (response.IsSuccessStatusCode)
+                        using (var stream = await response.Content.ReadAsStreamAsync())
+                        {
+                            await _storageUtility.WriteStreamAsync(path, stream);
+                            return true;
+                        }
+            }
+            return false;
         }
     }
 }

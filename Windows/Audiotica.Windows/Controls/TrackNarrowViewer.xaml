@@ -9,8 +9,29 @@
     d:DesignHeight="300"
     d:DesignWidth="400">
 
-    <Grid>
-        <Grid Margin="0,15" Opacity="{x:Bind Track.Status, Converter={StaticResource TrackMatchingOpacityConverter}, Mode=OneWay}">
+    <Grid Background="Transparent" RightTapped="Viewer_RightTapped">
+        <FlyoutBase.AttachedFlyout>
+            <MenuFlyout Placement="Bottom">
+                <MenuFlyoutItem Text="Play" Click="PlayButton_Click" />
+                <MenuFlyoutSubItem Text="Add to">
+                    <MenuFlyoutItem Text="Collection" Click="AddCollection_Click"
+                                    Visibility="{x:Bind Track.IsFromLibrary, Mode=OneWay, Converter={StaticResource ReverseVisibilityConverter}}" />
+                    <MenuFlyoutSeparator
+                        Visibility="{x:Bind Track.IsFromLibrary, Mode=OneWay, Converter={StaticResource ReverseVisibilityConverter}}" />
+                    <MenuFlyoutItem Text="Queue" Click="AddQueue_Click" />
+                    <MenuFlyoutItem Text="Up next" Click="AddUpNext_Click" />
+                </MenuFlyoutSubItem>
+                <MenuFlyoutItem Text="Explore artist" Click="ExploreArtist_Click" />
+                <MenuFlyoutItem Text="Download" Click="Download_Click"
+                                Visibility="{x:Bind Track.IsDownloadable, Mode=OneWay, Converter={StaticResource VisibilityConverter}}" />
+                <MenuFlyoutItem Text="Delete" Click="Delete_Click" Foreground="Red"
+                                Visibility="{x:Bind Track.IsFromLibrary, Mode=OneWay, Converter={StaticResource VisibilityConverter}}" />
+                <MenuFlyoutItem Text="Properties" IsEnabled="False"
+                                Visibility="{x:Bind Track.IsFromLibrary, Mode=OneWay, Converter={StaticResource VisibilityConverter}}" />
+            </MenuFlyout>
+        </FlyoutBase.AttachedFlyout>
+        <Grid Margin="0,15"
+              Opacity="{x:Bind Track.Status, Converter={StaticResource TrackMatchingOpacityConverter}, Mode=OneWay}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="32" />
                 <ColumnDefinition Width="*" />
@@ -20,25 +41,35 @@
             <Grid HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,3,1,0">
                 <Grid Visibility="{x:Bind IsCatalog, Mode=OneWay, Converter={StaticResource VisibilityConverter}}">
                     <TextBlock Style="{StaticResource MusicInCollectionTextBlockStyle}"
-                           Foreground="{StaticResource SubtleTextBrush}"
-                           ToolTipService.ToolTip="In collection"
-                           Visibility="{x:Bind Track.IsFromLibrary, Mode=OneWay, Converter={StaticResource VisibilityConverter}}" />
+                               Foreground="{StaticResource SubtleTextBrush}"
+                               ToolTipService.ToolTip="In collection"
+                               Visibility="{x:Bind Track.IsFromLibrary, Mode=OneWay, Converter={StaticResource VisibilityConverter}}" />
                 </Grid>
-                <Grid Visibility="{x:Bind IsCatalog, Mode=OneWay, Converter={StaticResource ReverseVisibilityConverter}}">
+                <Grid
+                    Visibility="{x:Bind IsCatalog, Mode=OneWay, Converter={StaticResource ReverseVisibilityConverter}}">
                     <TextBlock Style="{StaticResource StreamingTextBlockStyle}"
-                           Foreground="{StaticResource SubtleTextBrush}"
-                           ToolTipService.ToolTip="Streaming"
-                           Visibility="{x:Bind Track.Type, Mode=OneWay, Converter={StaticResource StreamingVisibilityConverter}}" />
+                               Foreground="{StaticResource SubtleTextBrush}"
+                               ToolTipService.ToolTip="Streaming"
+                               Visibility="{x:Bind Track.Type, Mode=OneWay, Converter={StaticResource StreamingVisibilityConverter}}" />
                 </Grid>
             </Grid>
-            <StackPanel Grid.Column="1">
+            <Grid Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
                 <TextBlock Text="{x:Bind Track.Title, Mode=OneWay}"
-                       Style="{StaticResource BaseTextBlockStyle}" />
-                <TextBlock Text="{x:Bind Track.Artists, Mode=OneWay}"
-                       Style="{StaticResource SubtleTextBlockStyle}" />
-            </StackPanel>
+                           Style="{StaticResource BaseTextBlockStyle}" />
+                <TextBlock Grid.Row="1" Text="{x:Bind Track.Artists, Mode=OneWay}"
+                           Style="{StaticResource SubtleTextBlockStyle}" />
+                <ProgressBar Grid.Row="2" ToolTipService.ToolTip="{x:Bind Track.BackgroundDownload.Status, Mode=OneWay}"
+                             Visibility="{x:Bind Track.Status, Converter={StaticResource DownloadingVisibilityConverter}, Mode=OneWay}"
+                             Value="{x:Bind Track.BackgroundDownload.BytesReceived, Mode=OneWay}"
+                             Maximum="{x:Bind Track.BackgroundDownload.BytesToReceive, Mode=OneWay}" Margin="0,2,10,0" />
+            </Grid>
             <StackPanel Grid.Column="2" Margin="20,0,20,0" Orientation="Horizontal"
-                    Visibility="{x:Bind IsSelected, Mode=OneWay, Converter={StaticResource VisibilityConverter}}">
+                        Visibility="{x:Bind IsSelected, Mode=OneWay, Converter={StaticResource VisibilityConverter}}">
                 <Button Style="{StaticResource PlainButtonStyle}" Padding="-5" Click="PlayButton_Click">
                     <SymbolIcon Symbol="Play" RenderTransformOrigin="0.5,0.5">
                         <SymbolIcon.RenderTransform>

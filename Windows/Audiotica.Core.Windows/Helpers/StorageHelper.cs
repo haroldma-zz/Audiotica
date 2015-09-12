@@ -35,6 +35,36 @@ using Audiotica.Core.Extensions;
 
 namespace Audiotica.Core.Windows.Helpers
 {
+    public static class StorageVirtualHelper
+    {
+        public static StorageFolder GetVirtualFolder(ref string path)
+        {
+            path = path.Replace("virtual://", "");
+            var folder = path.Substring(0, path.IndexOf("/", StringComparison.Ordinal));
+            path = path.Substring(folder.Length);
+            switch (folder.ToLower())
+            {
+                case "music":
+                    return KnownFolders.MusicLibrary;
+                case "videos":
+                    return KnownFolders.VideosLibrary;
+                case "pictures":
+                    return KnownFolders.PicturesLibrary;
+                case "saved-pictures":
+                    return KnownFolders.SavedPictures;
+                case "documents":
+                    return KnownFolders.DocumentsLibrary;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(path));
+            }
+        }
+
+        public static bool IsVirtualPath(string path)
+        {
+            return path.StartsWith("virtual://");
+        }
+    }
+
     // based on http://codepaste.net/gtu5mq
     public static class StorageHelper
     {
@@ -237,6 +267,31 @@ namespace Audiotica.Core.Windows.Helpers
             }
 
             return await folder.CreateFileAsync(fileName, option).AsTask().ConfigureAwait(false);
+        }
+
+        public static async Task<StorageFile> CreateFileFromPathAsync(string path, CreationCollisionOption option = CreationCollisionOption.OpenIfExists)
+        {
+            StorageFolder folder;
+            if (StorageVirtualHelper.IsVirtualPath(path))
+                folder = StorageVirtualHelper.GetVirtualFolder(ref path);
+            else
+            {
+                var folderPath = path.Substring(0, path.LastIndexOf("/", StringComparison.Ordinal) + 1);
+                path = path.Replace(folderPath, "");
+                folder = await StorageFolder.GetFolderFromPathAsync(folderPath);
+            }
+
+            return await CreateFileAsync(path, folder, option);
+        }
+
+        public static Task<StorageFile> GetFileFromPathAsync(string path)
+        {
+            if (StorageVirtualHelper.IsVirtualPath(path))
+            {
+                var folder = StorageVirtualHelper.GetVirtualFolder(ref path);
+                return GetFileAsync(path, folder);
+            }
+            return StorageFile.GetFileFromPathAsync(path).AsTask();
         }
 
         public static async Task<StorageFile> GetFileAsync(string path,

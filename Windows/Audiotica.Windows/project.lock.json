@@ -1629,6 +1629,14 @@
           "lib/netcore50/System.Xml.XmlSerializer.dll": {}
         }
       },
+      "TagLib.Portable/1.0.2": {
+        "compile": {
+          "lib/portable-net45+win8+wpa81/TagLib.Portable.dll": {}
+        },
+        "runtime": {
+          "lib/portable-net45+win8+wpa81/TagLib.Portable.dll": {}
+        }
+      },
       "WriteableBitmapEx/1.5.0": {
         "compile": {
           "lib/NetCore45/WriteableBitmapEx.WinRT.dll": {}
@@ -3355,6 +3363,14 @@
           "lib/netcore50/System.Xml.XmlSerializer.dll": {}
         }
       },
+      "TagLib.Portable/1.0.2": {
+        "compile": {
+          "lib/portable-net45+win8+wpa81/TagLib.Portable.dll": {}
+        },
+        "runtime": {
+          "lib/portable-net45+win8+wpa81/TagLib.Portable.dll": {}
+        }
+      },
       "WriteableBitmapEx/1.5.0": {
         "compile": {
           "lib/NetCore45/WriteableBitmapEx.WinRT.dll": {}
@@ -5051,6 +5067,14 @@
         },
         "runtime": {
           "runtimes/win8-aot/lib/netcore50/System.Xml.XmlSerializer.dll": {}
+        }
+      },
+      "TagLib.Portable/1.0.2": {
+        "compile": {
+          "lib/portable-net45+win8+wpa81/TagLib.Portable.dll": {}
+        },
+        "runtime": {
+          "lib/portable-net45+win8+wpa81/TagLib.Portable.dll": {}
         }
       },
       "WriteableBitmapEx/1.5.0": {
@@ -6784,6 +6808,14 @@
           "lib/netcore50/System.Xml.XmlSerializer.dll": {}
         }
       },
+      "TagLib.Portable/1.0.2": {
+        "compile": {
+          "lib/portable-net45+win8+wpa81/TagLib.Portable.dll": {}
+        },
+        "runtime": {
+          "lib/portable-net45+win8+wpa81/TagLib.Portable.dll": {}
+        }
+      },
       "WriteableBitmapEx/1.5.0": {
         "compile": {
           "lib/NetCore45/WriteableBitmapEx.WinRT.dll": {}
@@ -8480,6 +8512,14 @@
         },
         "runtime": {
           "runtimes/win8-aot/lib/netcore50/System.Xml.XmlSerializer.dll": {}
+        }
+      },
+      "TagLib.Portable/1.0.2": {
+        "compile": {
+          "lib/portable-net45+win8+wpa81/TagLib.Portable.dll": {}
+        },
+        "runtime": {
+          "lib/portable-net45+win8+wpa81/TagLib.Portable.dll": {}
         }
       },
       "WriteableBitmapEx/1.5.0": {
@@ -10213,6 +10253,14 @@
           "lib/netcore50/System.Xml.XmlSerializer.dll": {}
         }
       },
+      "TagLib.Portable/1.0.2": {
+        "compile": {
+          "lib/portable-net45+win8+wpa81/TagLib.Portable.dll": {}
+        },
+        "runtime": {
+          "lib/portable-net45+win8+wpa81/TagLib.Portable.dll": {}
+        }
+      },
       "WriteableBitmapEx/1.5.0": {
         "compile": {
           "lib/NetCore45/WriteableBitmapEx.WinRT.dll": {}
@@ -11909,6 +11957,14 @@
         },
         "runtime": {
           "runtimes/win8-aot/lib/netcore50/System.Xml.XmlSerializer.dll": {}
+        }
+      },
+      "TagLib.Portable/1.0.2": {
+        "compile": {
+          "lib/portable-net45+win8+wpa81/TagLib.Portable.dll": {}
+        },
+        "runtime": {
+          "lib/portable-net45+win8+wpa81/TagLib.Portable.dll": {}
         }
       },
       "WriteableBitmapEx/1.5.0": {
@@ -15606,6 +15662,17 @@
         "[Content_Types].xml"
       ]
     },
+    "TagLib.Portable/1.0.2": {
+      "sha512": "+0XJXi5+/Sg9vtEIkElOCQ6CvaH3h0iYXE3t7bNR4HKWAV8ph5TVOHqYfe+G8pUF/qkybBg3uKrRu0yqfTOLIw==",
+      "type": "Package",
+      "files": [
+        "_rels/.rels",
+        "TagLib.Portable.nuspec",
+        "lib/portable-net45+win8+wpa81/TagLib.Portable.dll",
+        "package/services/metadata/core-properties/b02689813d8546fca0b61857126583d5.psmdcp",
+        "[Content_Types].xml"
+      ]
+    },
     "WriteableBitmapEx/1.5.0": {
       "sha512": "K4g5wN6y4RhDUcfLdOoNZrQQBdv6dbXycaOoeBcS3qrXMhXssECb4K/3cPXehi+hDSwNx5dYLhRilk49DXiFZQ==",
       "type": "Package",
@@ -15652,6 +15719,7 @@
       "Microsoft.NETCore.UniversalWindowsPlatform >= 5.0.0",
       "PCLStorage >= 1.0.2",
       "SQLite.Net-PCL >= 3.0.5",
+      "TagLib.Portable >= 1.0.2",
       "WriteableBitmapEx >= 1.5.0"
     ],
     "UAP,Version=v10.0": []

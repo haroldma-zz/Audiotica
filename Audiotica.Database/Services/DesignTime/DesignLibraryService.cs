@@ -87,6 +87,11 @@ namespace Audiotica.Database.Services.DesignTime
             throw new NotImplementedException();
         }
 
+        public void DeleteTrack(Track track)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task LoadAsync()
         {
             throw new NotImplementedException();
@@ -98,6 +103,11 @@ namespace Audiotica.Database.Services.DesignTime
         }
 
         public Task UpdateTrackAsync(Track track)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task DeleteTrackAsync(Track track)
         {
             throw new NotImplementedException();
         }
