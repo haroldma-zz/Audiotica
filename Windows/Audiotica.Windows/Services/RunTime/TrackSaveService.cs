@@ -78,15 +78,8 @@ namespace Audiotica.Windows.Services.RunTime
                 if (string.IsNullOrEmpty(track.ArtistArtworkUri) || !track.ArtistArtworkUri.StartsWith("http"))
                     return;
 
-                // make sure it doesn't exists (when track is deleted, artwork is deleted on next startup)
-                if (!await _storageUtility.ExistsAsync(path))
-                {
-                    using (var response = await track.ArtistArtworkUri.ToUri().GetAsync())
-                        if (response.IsSuccessStatusCode)
-                            using (var stream = await response.Content.ReadAsStreamAsync())
-                                await _storageUtility.WriteStreamAsync(path, stream);
-                        else return;
-                }
+                if (!await DownloadArtworkAsync(track.ArtistArtworkUri, path))
+                    return;
             }
 
             track.ArtistArtworkUri = uri;
@@ -105,18 +98,28 @@ namespace Audiotica.Windows.Services.RunTime
             {
                 if (string.IsNullOrEmpty(track.ArtworkUri) || !track.ArtworkUri.StartsWith("http"))
                     return;
-                // make sure it doesn't exists (when track is deleted, artwork is deleted on next startup)
-                if (!await _storageUtility.ExistsAsync(path))
-                {
-                    using (var response = await track.ArtworkUri.ToUri().GetAsync())
-                        if (response.IsSuccessStatusCode)
-                            using (var stream = await response.Content.ReadAsStreamAsync())
-                                await _storageUtility.WriteStreamAsync(path, stream);
-                        else return;
-                }
+
+                if (!await DownloadArtworkAsync(track.ArtworkUri, path))
+                    return;
             }
 
             track.ArtworkUri = uri;
+        }
+
+        private async Task<bool> DownloadArtworkAsync(string uri, string path)
+        {
+            // make sure it doesn't exists (when track is deleted, artwork won't be deleted until next startup)
+            if (!await _storageUtility.ExistsAsync(path))
+            {
+                using (var response = await uri.ToUri().GetAsync())
+                    if (response.IsSuccessStatusCode)
+                        using (var stream = await response.Content.ReadAsStreamAsync())
+                        {
+                            await _storageUtility.WriteStreamAsync(path, stream);
+                            return true;
+                        }
+            }
+            return false;
         }
     }
 }
