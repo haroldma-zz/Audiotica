@@ -80,7 +80,7 @@ namespace Audiotica.Windows
             RootFrame.Margin = new Thickness(left, 0, right, bottom);
             Shell.HamburgerPadding = new Thickness(left, 0, 0, 0);
             Shell.NavBarMargin = new Thickness(0, 0, 0, bottom);
-            Shell.Padding = new Thickness(left, top, 0, bottom);
+            Shell.Padding = new Thickness(left, top, 0, 0);
         }
     }
 }
