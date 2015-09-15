@@ -114,8 +114,14 @@ namespace Audiotica.Windows.Player
         /// </summary>
         public void SkipToPrev()
         {
-            _smtcWrapper.PlaybackStatus = MediaPlaybackStatus.Changing;
-            _mediaPlaybackList.MovePrevious();
+            if (BackgroundMediaPlayer.Current.Position.TotalSeconds > 5)
+                BackgroundMediaPlayer.Current.Position = TimeSpan.Zero;
+
+            else
+            {
+                _smtcWrapper.PlaybackStatus = MediaPlaybackStatus.Changing;
+                _mediaPlaybackList.MovePrevious();
+            }
 
             // TODO: Work around playlist bug that doesn't continue playing after a switch; remove later
             BackgroundMediaPlayer.Current.Play();
