@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Data;
@@ -23,6 +24,7 @@ namespace Audiotica.Windows.ViewModels
         private double _gridViewVerticalOffset;
         private bool? _isSelectMode = false;
         private double _listViewVerticalOffset;
+        private ObservableCollection<object> _selectedItems = new ObservableCollection<object>();
         private CollectionViewSource _viewSource;
 
         public ArtistsPageViewModel(ILibraryCollectionService libraryCollectionService,
@@ -78,6 +80,12 @@ namespace Audiotica.Windows.ViewModels
         {
             get { return _isSelectMode; }
             set { Set(ref _isSelectMode, value); }
+        }
+
+        public ObservableCollection<object> SelectedItems
+        {
+            get { return _selectedItems; }
+            set { Set(ref _selectedItems, value); }
         }
 
         private async void ShuffleAllExecute()

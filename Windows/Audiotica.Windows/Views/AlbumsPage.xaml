@@ -12,6 +12,7 @@
     xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
     xmlns:core="using:Microsoft.Xaml.Interactions.Core"
     xmlns:common="using:Audiotica.Windows.Common"
+    xmlns:extensions="using:Audiotica.Windows.Extensions"
     mc:Ignorable="d"
     DataContext="{Binding AlbumsPage, Source={StaticResource ViewModelLocator}}">
 
@@ -62,6 +63,7 @@
         <SemanticZoom x:Name="AlbumsGridZoom" Grid.Row="1">
             <SemanticZoom.ZoomedInView>
                 <common:ScrollGridView x:Name="AlbumsGridView"
+                                       extensions:ListViewExtensions.BindableSelection="{Binding SelectedItems, Mode=TwoWay}"
                                        Padding="{StaticResource PageThickness}"
                                        VerticalOffset="{x:Bind ViewModel.GridViewVerticalOffset, Mode=TwoWay}"
                                        SelectionMode="{x:Bind ViewModel.IsSelectMode, Mode=OneWay, Converter={StaticResource NoneMultiSelectionModeConverter}}"
@@ -97,6 +99,7 @@
         <SemanticZoom Grid.Row="1" x:Name="AlbumsListZoom" Visibility="Collapsed">
             <SemanticZoom.ZoomedInView>
                 <common:ScrollListView x:Name="AlbumsListView"
+                                       extensions:ListViewExtensions.BindableSelection="{Binding SelectedItems, Mode=TwoWay}"
                                        Padding="{StaticResource PageThickness}"
                                        VerticalOffset="{x:Bind ViewModel.ListViewVerticalOffset, Mode=TwoWay}"
                                        SelectionMode="{x:Bind ViewModel.IsSelectMode, Mode=OneWay, Converter={StaticResource NoneMultiSelectionModeConverter}}"
@@ -163,4 +166,7 @@
             </VisualStateGroup>
         </VisualStateManager.VisualStateGroups>
     </Grid>
+    <Page.BottomAppBar>
+        <controls:SelectModeCommandBar SelectedItems="{x:Bind ViewModel.SelectedItems, Mode=OneWay}" Visibility="{x:Bind ViewModel.IsSelectMode, Converter={StaticResource VisibilityConverter}, Mode=OneWay}" />
+    </Page.BottomAppBar>
 </navigationService:NavigatablePage>

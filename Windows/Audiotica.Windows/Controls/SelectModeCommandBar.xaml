@@ -1,0 +1,21 @@
+﻿<CommandBar x:Class="Audiotica.Windows.Controls.SelectModeCommandBar"
+            xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+            xmlns:local="using:Audiotica.Windows.Controls"
+            xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+            mc:Ignorable="d"
+            d:DesignHeight="200"
+            d:DesignWidth="400">
+    <AppBarButton Label="Play" Icon="Play" Click="Play_Click" />
+    <AppBarButton Label="Add to" Icon="Add">
+        <AppBarButton.Flyout>
+            <MenuFlyout>
+                <MenuFlyoutItem Text="Queue" Click="AddQueue_Click" />
+                <MenuFlyoutItem Text="Up next" Click="AddUpNext_Click" />
+            </MenuFlyout>
+        </AppBarButton.Flyout>
+    </AppBarButton>
+    <AppBarButton Label="Download" Icon="Download" Click="Download_Click" />
+    <AppBarButton Label="Delete" Icon="Delete" Click="Delete_Click" />
+</CommandBar>

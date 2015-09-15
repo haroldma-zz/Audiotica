@@ -13,6 +13,7 @@
     xmlns:tools="using:Audiotica.Windows.Tools"
     xmlns:converters="using:Audiotica.Windows.Tools.Converters"
     xmlns:common="using:Audiotica.Windows.Common"
+    xmlns:extensions="using:Audiotica.Windows.Extensions"
     mc:Ignorable="d"
     DataContext="{Binding ArtistsPage, Source={StaticResource ViewModelLocator}}">
 
@@ -62,6 +63,7 @@
         <SemanticZoom x:Name="ArtistsGridZoom" Grid.Row="1">
             <SemanticZoom.ZoomedInView>
                 <common:ScrollGridView x:Name="ArtistsGridView" Grid.Row="1" Padding="{StaticResource PageThickness}"
+                                       extensions:ListViewExtensions.BindableSelection="{Binding SelectedItems, Mode=TwoWay}"
                                        VerticalOffset="{x:Bind ViewModel.GridViewVerticalOffset, Mode=TwoWay}"
                                        IsItemClickEnabled="True"
                                        SelectionMode="{x:Bind ViewModel.IsSelectMode, Mode=OneWay, Converter={StaticResource NoneMultiSelectionModeConverter}}"
@@ -97,6 +99,7 @@
                       Grid.Row="1">
             <SemanticZoom.ZoomedInView>
                 <common:ScrollListView x:Name="ArtistsListView" Padding="{StaticResource PageThickness}"
+                                       extensions:ListViewExtensions.BindableSelection="{Binding SelectedItems, Mode=TwoWay}"
                                        VerticalOffset="{x:Bind ViewModel.ListViewVerticalOffset, Mode=TwoWay}"
                                        IsItemClickEnabled="True"
                                        SelectionMode="{x:Bind ViewModel.IsSelectMode, Mode=OneWay, Converter={StaticResource NoneMultiSelectionModeConverter}}"
@@ -157,4 +160,7 @@
             </VisualStateGroup>
         </VisualStateManager.VisualStateGroups>
     </Grid>
+    <Page.BottomAppBar>
+        <controls:SelectModeCommandBar SelectedItems="{x:Bind ViewModel.SelectedItems, Mode=OneWay}" Visibility="{x:Bind ViewModel.IsSelectMode, Converter={StaticResource VisibilityConverter}, Mode=OneWay}" />
+    </Page.BottomAppBar>
 </navigationService:NavigatablePage>

@@ -136,6 +136,9 @@
     <Compile Include="Controls\LibraryHeader.xaml.cs">
       <DependentUpon>LibraryHeader.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\SelectModeCommandBar.xaml.cs">
+      <DependentUpon>SelectModeCommandBar.xaml</DependentUpon>
+    </Compile>
     <Compile Include="DataTemplates\LibraryDictionary.xaml.cs">
       <DependentUpon>LibraryDictionary.xaml</DependentUpon>
     </Compile>
@@ -157,6 +160,8 @@
     <Compile Include="Enums\ArtistSort.cs" />
     <Compile Include="Enums\TrackSort.cs" />
     <Compile Include="Extensions\ItemsControlExtensions.cs" />
+    <Compile Include="Extensions\ListViewBindableSelectionHandler.cs" />
+    <Compile Include="Extensions\ListViewExtensions.cs" />
     <Compile Include="Extensions\VisualTreeHelperExtensions.cs" />
     <Compile Include="Factories\AppKernelFactory.cs" />
     <Compile Include="Common\MessageBox.cs" />
@@ -292,6 +297,10 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Page Include="Controls\LibraryHeader.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\SelectModeCommandBar.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

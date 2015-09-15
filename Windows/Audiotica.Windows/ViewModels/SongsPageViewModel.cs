@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Data;
@@ -20,7 +21,9 @@ namespace Audiotica.Windows.ViewModels
         private readonly ILibraryCollectionService _libraryCollectionService;
         private readonly IPlayerService _playerService;
         private readonly ISettingsUtility _settingsUtility;
+        private bool? _isSelectMode = false;
         private int _selectedIndex;
+        private ObservableCollection<object> _selectedItems = new ObservableCollection<object>();
         private double _verticalOffset;
         private CollectionViewSource _viewSource;
 
@@ -56,6 +59,12 @@ namespace Audiotica.Windows.ViewModels
 
         public ILibraryService LibraryService { get; set; }
 
+        public ObservableCollection<object> SelectedItems
+        {
+            get { return _selectedItems; }
+            set { Set(ref _selectedItems, value); }
+        }
+
         public CollectionViewSource ViewSource
         {
             get { return _viewSource; }
@@ -72,6 +81,12 @@ namespace Audiotica.Windows.ViewModels
         {
             get { return _verticalOffset; }
             set { Set(ref _verticalOffset, value); }
+        }
+
+        public bool? IsSelectMode
+        {
+            get { return _isSelectMode; }
+            set { Set(ref _isSelectMode, value); }
         }
 
         private async void ShuffleAllExecute()
