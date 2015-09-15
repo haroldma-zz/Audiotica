@@ -6,6 +6,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using Audiotica.Core.Common;
+using Audiotica.Core.Exceptions;
 using Audiotica.Core.Extensions;
 using Audiotica.Core.Utilities.Interfaces;
 using Audiotica.Core.Windows.Extensions;
@@ -29,8 +30,9 @@ namespace Audiotica.Windows.ViewModels
         private readonly ILibraryService _libraryService;
         private readonly List<IExtendedMetadataProvider> _metadataProviders;
         private readonly INavigationService _navigationService;
-        private readonly ISettingsUtility _settingsUtility;
         private readonly IPlayerService _playerService;
+        private readonly ISettingsUtility _settingsUtility;
+        private readonly ITrackSaveService _trackSaveService;
         private readonly IConverter<WebAlbum, Album> _webAlbumConverter;
         private Album _album;
         private SolidColorBrush _backgroundBrush;
@@ -39,24 +41,28 @@ namespace Audiotica.Windows.ViewModels
 
         public AlbumPageViewModel(ILibraryService libraryService, INavigationService navigationService,
             IEnumerable<IMetadataProvider> metadataProviders, IConverter<WebAlbum, Album> webAlbumConverter,
-            ISettingsUtility settingsUtility, IPlayerService playerService)
+            ISettingsUtility settingsUtility, IPlayerService playerService, ITrackSaveService trackSaveService)
         {
             _libraryService = libraryService;
             _navigationService = navigationService;
             _webAlbumConverter = webAlbumConverter;
             _settingsUtility = settingsUtility;
             _playerService = playerService;
+            _trackSaveService = trackSaveService;
             _metadataProviders = metadataProviders.FilterAndSort<IExtendedMetadataProvider>();
 
             ViewInCatalogCommand = new Command(ViewInCatalogExecute);
             PlayAllCommand = new Command(PlayAllExecute);
+            SaveAllCommand = new Command<object>(SaveAllExecute);
 
             if (IsInDesignMode)
                 OnNavigatedTo(new AlbumPageParameter("Kauai", "Childish Gambino"), NavigationMode.New,
                     new Dictionary<string, object>());
         }
 
-        public Command PlayAllCommand { get; set; }
+        public Command<object> SaveAllCommand { get; }
+
+        public Command PlayAllCommand { get; }
 
         public Command ViewInCatalogCommand { get; }
 
@@ -82,6 +88,22 @@ namespace Audiotica.Windows.ViewModels
         {
             get { return _isCatalogMode; }
             set { Set(ref _isCatalogMode, value); }
+        }
+
+        private async void SaveAllExecute(object sender)
+        {
+            foreach (var track in Album.Tracks.Where(p => !p.IsFromLibrary))
+            {
+                try
+                {
+                    await _trackSaveService.SaveAsync(track);
+                }
+                catch (AppException ex)
+                {
+                    track.Status = TrackStatus.None;
+                    CurtainPrompt.ShowError(ex.Message ?? "Problem saving: " + track);
+                }
+            }
         }
 
         private void PlayAllExecute()
@@ -112,23 +134,7 @@ namespace Audiotica.Windows.ViewModels
             {
                 try
                 {
-                    var webAlbum = albumParameter.WebAlbum;
-
-                    if (webAlbum == null)
-                    {
-                        if (albumParameter.Provider != null)
-                        {
-                            var provider = _metadataProviders.FirstOrDefault(p => p.GetType() == albumParameter.Provider);
-                            webAlbum = await provider.GetAlbumAsync(albumParameter.Token);
-                        }
-                        else
-                        {
-                            webAlbum = await GetAlbumByTitleAsync(albumParameter.Title, albumParameter.Artist);
-                        }
-                    }
-
-                    if (webAlbum != null)
-                        Album = await _webAlbumConverter.ConvertAsync(webAlbum, IsCatalogMode);
+                    await LoadAsync(albumParameter);
                 }
                 catch
                 {
@@ -138,11 +144,48 @@ namespace Audiotica.Windows.ViewModels
                 if (Album == null)
                 {
                     _navigationService.GoBack();
+                    return;
                 }
             }
 
             if (_settingsUtility.Read(ApplicationSettingsConstants.IsAlbumAdaptiveColorEnabled, true))
                 DetectColorFromArtwork();
+        }
+
+        private async Task LoadAsync(AlbumPageParameter albumParameter)
+        {
+            var webAlbum = albumParameter.WebAlbum;
+            if (webAlbum == null)
+            {
+                if (albumParameter.Provider != null)
+                {
+                    var provider = _metadataProviders.FirstOrDefault(p => p.GetType() == albumParameter.Provider);
+                    webAlbum = await provider.GetAlbumAsync(albumParameter.Token);
+
+                    if (webAlbum != null)
+                        Album = await _webAlbumConverter.ConvertAsync(webAlbum, IsCatalogMode);
+                }
+                else
+                {
+                    for (var i = 0; i < _metadataProviders.Count; i++)
+                    {
+                        try
+                        {
+                            webAlbum = await GetAlbumByTitleAsync(albumParameter.Title, albumParameter.Artist, i);
+
+                            if (webAlbum != null)
+                            {
+                                Album = await _webAlbumConverter.ConvertAsync(webAlbum, IsCatalogMode);
+                                break;
+                            }
+                        }
+                        catch
+                        {
+                            // ignored
+                        }
+                    }
+                }
+            }
         }
 
         public override void OnNavigatedFrom()
@@ -151,19 +194,16 @@ namespace Audiotica.Windows.ViewModels
             RequestedTheme = ElementTheme.Default;
         }
 
-        private async Task<WebAlbum> GetAlbumByTitleAsync(string title, string artist)
+        private async Task<WebAlbum> GetAlbumByTitleAsync(string title, string artist, int providerIndex)
         {
-            foreach (var provider in _metadataProviders)
+            try
             {
-                try
-                {
-                    var webAlbum = await provider.GetAlbumByTitleAsync(title, artist);
-                    if (webAlbum != null) return webAlbum;
-                }
-                catch
-                {
-                    // ignored
-                }
+                var webAlbum = await _metadataProviders[providerIndex].GetAlbumByTitleAsync(title, artist);
+                if (webAlbum != null) return webAlbum;
+            }
+            catch
+            {
+                // ignored
             }
             return null;
         }

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Audiotica.Core.Common;
 using Audiotica.Core.Extensions;
@@ -50,18 +51,39 @@ namespace Audiotica.Converters
         {
             await FillPartialAsync(other);
 
+            // fill the album partial for each track
+            foreach (var webSong in other.Tracks)
+                webSong.Album = other;
+            
             var album = new Album
             {
                 Title = other.Title,
                 ArtworkUri = other.Artwork.ToString(),
                 Artist = await _webArtistConverter.ConvertAsync(other.Artist),
                 Year = other.ReleaseDate?.Year,
-                Tracks =
-                    other.Tracks != null
-                        ? new OptimizedObservableCollection<Track>(
-                            await Task.WhenAll(other.Tracks.Select(p => _webTrackConverter.ConvertAsync(p))))
-                        : null
             };
+
+            if (other.Tracks != null)
+            {
+                // only let 10 concurrent conversions
+                using (var semaphoreSlim = new SemaphoreSlim(10, 10))
+                {
+                    // ReSharper disable AccessToDisposedClosure
+                    var trackTasks = other.Tracks.Select(async p =>
+                    {
+                        await semaphoreSlim.WaitAsync();
+                        var track = await _webTrackConverter.ConvertAsync(p);
+                        semaphoreSlim.Release();
+                        return track;
+                    });
+                    album.Tracks =
+                        other.Tracks != null
+                            ? new OptimizedObservableCollection<Track>(
+                                await Task.WhenAll(trackTasks))
+                            : null;
+                    // ReSharper restore AccessToDisposedClosure
+                }
+            }
 
             var libraryAlbum = _libraryService.Albums.FirstOrDefault(p => p.Title.EqualsIgnoreCase(album.Title));
             other.PreviousConversion = libraryAlbum ?? album;
