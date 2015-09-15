@@ -156,23 +156,32 @@ namespace Audiotica.Windows.Player
             _mediaPlaybackList.CurrentItemChanged += MediaPlaybackListOnCurrentItemChanged;
         }
 
-        public void AddToPlaybackList(QueueTrack queue, int position)
+        public async void AddToPlaybackList(List<QueueTrack> queue, int position)
         {
             if (_mediaPlaybackList == null
                 || BackgroundMediaPlayer.Current.Source != _mediaPlaybackList)
-                CreatePlaybackList(new[] {queue});
+                CreatePlaybackList(queue);
 
             else
             {
-                var source = MediaSource.CreateFromUri(new Uri(queue.Track.AudioWebUri));
-                source.Queue(queue);
-
-                if (position > -1 && position < _mediaPlaybackList.Items.Count)
+                foreach (var item in queue)
                 {
-                    _mediaPlaybackList.Items.Insert(position, new MediaPlaybackItem(source));
+                    MediaSource source;
+                    if (item.Track.Type == TrackType.Stream)
+                        source = MediaSource.CreateFromUri(new Uri(item.Track.AudioWebUri));
+                    else
+                    {
+                        source = MediaSource.CreateFromStorageFile(
+                            await StorageHelper.GetFileFromPathAsync(item.Track.AudioLocalUri));
+                    }
+                    source.Queue(item);
+                    var playbackItem = new MediaPlaybackItem(source);
+
+                    if (position > -1 && position < _mediaPlaybackList.Items.Count)
+                        _mediaPlaybackList.Items.Insert(position++, playbackItem);
+                    else
+                        _mediaPlaybackList.Items.Add(playbackItem);
                 }
-                else
-                    _mediaPlaybackList.Items.Add(new MediaPlaybackItem(source));
             }
         }
 
@@ -338,7 +347,7 @@ namespace Audiotica.Windows.Player
             _foregroundMessenger.UpdatePlaylist -= ForegroundMessengerOnUpdatePlaylist;
         }
 
-        private void ForegroundMessengerOnAddToPlaylist(QueueTrack queueTrack, int position)
+        private void ForegroundMessengerOnAddToPlaylist(List<QueueTrack> queueTrack, int position)
         {
             AddToPlaybackList(queueTrack, position);
         }
