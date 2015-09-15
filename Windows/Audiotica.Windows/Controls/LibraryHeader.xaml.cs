@@ -25,6 +25,9 @@ namespace Audiotica.Windows.Controls
         public static readonly DependencyProperty ShuffleAllCommandProperty =
             DependencyProperty.Register("ShuffleAllCommand", typeof (ICommand), typeof (LibraryHeader), null);
 
+        public static readonly DependencyProperty IsSelectModeProperty =
+           DependencyProperty.Register("IsSelectMode", typeof(bool?), typeof(LibraryHeader), new PropertyMetadata(false));
+
         public LibraryHeader()
         {
             InitializeComponent();
@@ -58,6 +61,12 @@ namespace Audiotica.Windows.Controls
         {
             get { return (ICommand) GetValue(ShuffleAllCommandProperty); }
             set { SetValue(ShuffleAllCommandProperty, value); }
+        }
+
+        public bool? IsSelectMode
+        {
+            get { return (bool?)GetValue(IsSelectModeProperty); }
+            set { SetValue(IsSelectModeProperty, value); }
         }
 
         public event EventHandler<ListBoxItem> CurrentSortChanged;

@@ -51,7 +51,8 @@
                                 SortItems="{x:Bind ViewModel.SortItems}"
                                 ShuffleAllCommand="{x:Bind ViewModel.ShuffleAllCommand}"
                                 CurrentSortChangedCommand="{x:Bind ViewModel.SortChangedCommand}"
-                                Margin="{StaticResource PageTopSideThickness}" />
+                                Margin="{StaticResource PageTopSideThickness}"
+                                IsSelectMode="{x:Bind ViewModel.IsSelectMode, Mode=TwoWay}"/>
 
         <!--No Music-->
         <controls:NoMusicPanel Grid.Row="1" x:Name="NoMusicPanel"
@@ -63,7 +64,7 @@
                 <common:ScrollGridView x:Name="AlbumsGridView"
                                        Padding="{StaticResource PageThickness}"
                                        VerticalOffset="{x:Bind ViewModel.GridViewVerticalOffset, Mode=TwoWay}"
-                                       SelectionMode="None"
+                                       SelectionMode="{x:Bind ViewModel.IsSelectMode, Mode=OneWay, Converter={StaticResource NoneMultiSelectionModeConverter}}"
                                        IsItemClickEnabled="True"
                                        ItemsSource="{x:Bind ViewModel.ViewSource.View, Mode=OneWay}"
                                        ItemTemplate="{StaticResource AlbumTemplate}">
@@ -98,7 +99,7 @@
                 <common:ScrollListView x:Name="AlbumsListView"
                                        Padding="{StaticResource PageThickness}"
                                        VerticalOffset="{x:Bind ViewModel.ListViewVerticalOffset, Mode=TwoWay}"
-                                       SelectionMode="None"
+                                       SelectionMode="{x:Bind ViewModel.IsSelectMode, Mode=OneWay, Converter={StaticResource NoneMultiSelectionModeConverter}}"
                                        IsItemClickEnabled="True"
                                        ItemsSource="{x:Bind ViewModel.ViewSource.View, Mode=OneWay}"
                                        ItemTemplate="{StaticResource AlbumNarrowTemplate}">

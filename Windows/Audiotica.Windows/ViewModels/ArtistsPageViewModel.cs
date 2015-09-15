@@ -21,6 +21,7 @@ namespace Audiotica.Windows.ViewModels
         private readonly INavigationService _navigationService;
         private readonly IPlayerService _playerService;
         private double _gridViewVerticalOffset;
+        private bool? _isSelectMode = false;
         private double _listViewVerticalOffset;
         private CollectionViewSource _viewSource;
 
@@ -73,6 +74,12 @@ namespace Audiotica.Windows.ViewModels
             set { Set(ref _gridViewVerticalOffset, value); }
         }
 
+        public bool? IsSelectMode
+        {
+            get { return _isSelectMode; }
+            set { Set(ref _isSelectMode, value); }
+        }
+
         private async void ShuffleAllExecute()
         {
             var playable = LibraryService.Tracks
@@ -107,6 +114,7 @@ namespace Audiotica.Windows.ViewModels
 
         private void ArtistClickExecute(ItemClickEventArgs e)
         {
+            if (IsSelectMode == true) return;
             var artist = (Artist) e.ClickedItem;
             _navigationService.Navigate(typeof (ArtistPage), artist.Name);
         }

@@ -34,7 +34,8 @@
 
         <SemanticZoom Grid.Row="1">
             <SemanticZoom.ZoomedInView>
-                <controls:AlternatingRowListView Grid.Row="1" x:Name="SongsListView"
+                <controls:AlternatingRowListView Grid.Row="1" x:Name="SongsListView" 
+                                                 SelectionMode="{x:Bind LibraryHeader.IsSelectMode, Mode=OneWay, Converter={StaticResource SingleMultiSelectionModeConverter}}"
                                                  ItemsSource="{x:Bind ViewModel.ViewSource.View, Mode=OneWay}"
                                                  Tag="{x:Bind ViewModel.ViewSource, Mode=OneWay}"
                                                  VerticalOffset="{x:Bind ViewModel.VerticalOffset, Mode=TwoWay}"
@@ -86,7 +87,6 @@
                 </ListView>
             </SemanticZoom.ZoomedOutView>
         </SemanticZoom>
-
 
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroup x:Name="DeviceFamilyStates">

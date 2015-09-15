@@ -35,6 +35,25 @@
             <converters:ImageSourceConverter x:Key="ImageSourceConverter" />
             <converters:UpperCaseConverter x:Key="UpperCaseConverter" />
             <converters:UniformSpacingConverter x:Key="UniformSpacingConverter" />
+            <converters:NotConverter x:Key="NotConverter" />
+
+            <converters:ContentConverter x:Key="SingleMultiSelectionModeConverter">
+                <converters:ContentConverter.TrueContent>
+                    <ListViewSelectionMode>Multiple</ListViewSelectionMode>
+                </converters:ContentConverter.TrueContent>
+                <converters:ContentConverter.FalseContent>
+                    <ListViewSelectionMode>Single</ListViewSelectionMode>
+                </converters:ContentConverter.FalseContent>
+            </converters:ContentConverter>
+
+            <converters:ContentConverter x:Key="NoneMultiSelectionModeConverter">
+                <converters:ContentConverter.TrueContent>
+                    <ListViewSelectionMode>Multiple</ListViewSelectionMode>
+                </converters:ContentConverter.TrueContent>
+                <converters:ContentConverter.FalseContent>
+                    <ListViewSelectionMode>None</ListViewSelectionMode>
+                </converters:ContentConverter.FalseContent>
+            </converters:ContentConverter>
 
             <SolidColorBrush x:Name="SubtleTextBrush" Color="{ThemeResource SystemBaseMediumColor}" />
 

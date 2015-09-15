@@ -11,7 +11,7 @@
     mc:Ignorable="d"
     d:DesignHeight="300"
     d:DesignWidth="400">
-
+    
     <StackPanel>
         <TextBlock Text="{x:Bind Title, Mode=OneWay}" Style="{ThemeResource TitleTextBlockStyle}" FontSize="34" />
         <StackPanel Orientation="Horizontal" Margin="0, 20, 0, 15">
@@ -21,9 +21,9 @@
                     <TextBlock Text="Shuffle all" />
                 </StackPanel>
             </HyperlinkButton>
-            <TextBlock Text="Sort by:" />
-            <HyperlinkButton x:Name="SortHyperlinkButton" Content="{Binding SelectedItem.Content, ElementName=ListBox}" Padding="0"
-                                 ContentTemplate="{StaticResource HyperlinkTemplate}" Margin="5,0,0,0">
+            <TextBlock Text="Sort by:" TextLineBounds="TrimToBaseline" />
+            <HyperlinkButton x:Name="SortHyperlinkButton" Content="{Binding SelectedItem.Content, ElementName=ListBox}" Padding="0" Margin="5,0,20,0" 
+                                 ContentTemplate="{StaticResource HyperlinkTemplate}">
                 <interactivity:Interaction.Behaviors>
                     <core:EventTriggerBehavior EventName="Click">
                         <interactions:OpenFlyoutAction />
@@ -41,6 +41,12 @@
                     </Flyout>
                 </FlyoutBase.AttachedFlyout>
             </HyperlinkButton>
+            <ToggleButton Background="Transparent" Padding="0" Style="{StaticResource ToggleButtonStyle}" IsChecked="{x:Bind IsSelectMode, Mode=TwoWay}">
+                <StackPanel Orientation="Horizontal">
+                    <SymbolIcon Symbol="List" Margin="0,0,10,0" />
+                    <TextBlock Text="Select" />
+                </StackPanel>
+            </ToggleButton>
         </StackPanel>
     </StackPanel>
 </UserControl>
