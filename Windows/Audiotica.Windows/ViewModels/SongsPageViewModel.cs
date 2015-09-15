@@ -7,6 +7,7 @@ using Windows.UI.Xaml.Navigation;
 using Audiotica.Core.Extensions;
 using Audiotica.Core.Utilities.Interfaces;
 using Audiotica.Core.Windows.Helpers;
+using Audiotica.Database.Models;
 using Audiotica.Database.Services.Interfaces;
 using Audiotica.Windows.Enums;
 using Audiotica.Windows.Services.Interfaces;
@@ -17,16 +18,18 @@ namespace Audiotica.Windows.ViewModels
     public class SongsPageViewModel : ViewModelBase
     {
         private readonly ILibraryCollectionService _libraryCollectionService;
+        private readonly IPlayerService _playerService;
         private readonly ISettingsUtility _settingsUtility;
         private int _selectedIndex;
         private double _verticalOffset;
         private CollectionViewSource _viewSource;
 
         public SongsPageViewModel(ILibraryCollectionService libraryCollectionService, ILibraryService libraryService,
-            ISettingsUtility settingsUtility)
+            ISettingsUtility settingsUtility, IPlayerService playerService)
         {
             _libraryCollectionService = libraryCollectionService;
             _settingsUtility = settingsUtility;
+            _playerService = playerService;
             LibraryService = libraryService;
 
             SortItems =
@@ -35,12 +38,15 @@ namespace Audiotica.Windows.ViewModels
                     .Select(sort => new ListBoxItem {Content = sort.GetEnumText(), Tag = sort})
                     .ToList();
             SortChangedCommand = new Command<ListBoxItem>(SortChangedExecute);
+            ShuffleAllCommand = new Command(ShuffleAllExecute);
 
             var defaultSort = _settingsUtility.Read(ApplicationSettingsConstants.SongSort, TrackSort.DateAdded,
                 SettingsStrategy.Roam);
             DefaultSort = SortItems.IndexOf(SortItems.FirstOrDefault(p => (TrackSort) p.Tag == defaultSort));
             ChangeSort(defaultSort);
         }
+
+        public Command ShuffleAllCommand { get; }
 
         public Command<ListBoxItem> SortChangedCommand { get; }
 
@@ -66,6 +72,17 @@ namespace Audiotica.Windows.ViewModels
         {
             get { return _verticalOffset; }
             set { Set(ref _verticalOffset, value); }
+        }
+
+        private async void ShuffleAllExecute()
+        {
+            var playable = LibraryService.Tracks
+                .Where(p => p.Status == TrackStatus.None || p.Status == TrackStatus.Downloading)
+                .ToList();
+            if (!playable.Any()) return;
+
+            var tracks = playable.Shuffle();
+            await _playerService.NewQueueAsync(tracks);
         }
 
         private void SortChangedExecute(ListBoxItem item)

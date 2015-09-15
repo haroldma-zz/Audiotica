@@ -49,6 +49,7 @@
         </Grid.RowDefinitions>
 
         <controls:LibraryHeader x:Name="LibraryHeader" Title="Artists" SortItems="{x:Bind ViewModel.SortItems}"
+                                ShuffleAllCommand="{x:Bind ViewModel.ShuffleAllCommand}"
                                 CurrentSortChangedCommand="{x:Bind ViewModel.SortChangedCommand}"
                                 Margin="{StaticResource PageTopSideThickness}" />
 

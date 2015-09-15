@@ -23,6 +23,7 @@
 
         <controls:LibraryHeader x:Name="LibraryHeader" Title="Songs" DefaultSortIndex="{x:Bind ViewModel.DefaultSort}"
                                 SortItems="{x:Bind ViewModel.SortItems}"
+                                ShuffleAllCommand="{x:Bind ViewModel.ShuffleAllCommand}"
                                 CurrentSortChangedCommand="{x:Bind ViewModel.SortChangedCommand}"
                                 Margin="{StaticResource PageTopSideThickness}" />
 

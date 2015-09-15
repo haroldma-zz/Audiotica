@@ -86,6 +86,7 @@ namespace Audiotica.Windows.ViewModels
 
         private void PlayAllExecute()
         {
+            if (Album.Tracks.Count == 0) return;
             var albumTracks = Album.Tracks.ToList();
             _playerService.NewQueueAsync(albumTracks);
         }

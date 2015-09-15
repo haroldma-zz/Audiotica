@@ -101,11 +101,12 @@ namespace Audiotica.Windows.Services.RunTime
             return await AddUpNextAsync(track);
         }
 
-        public async Task NewQueueAsync(List<Track> tracks)
+        public async Task NewQueueAsync(IEnumerable<Track> tracks)
         {
-            foreach (var track in tracks)
+            var arr = tracks.ToArray();
+            foreach (var track in arr)
                 await PrepareTrackAsync(track);
-            var newQueue = tracks.Select(track => new QueueTrack(track)).ToList();
+            var newQueue = arr.Select(track => new QueueTrack(track)).ToList();
             MessageHelper.SendMessageToBackground(new UpdatePlaylistMessage(newQueue));
 
         }

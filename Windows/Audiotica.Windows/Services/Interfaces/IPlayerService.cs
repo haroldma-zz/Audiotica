@@ -38,7 +38,7 @@ namespace Audiotica.Windows.Services.Interfaces
         Task<QueueTrack> AddAsync(WebSong webSong, int position = -1);
         Task<QueueTrack> AddUpNextAsync(Track track);
         Task<QueueTrack> AddUpNextAsync(WebSong webSong);
-        Task NewQueueAsync(List<Track> tracks);
+        Task NewQueueAsync(IEnumerable<Track> tracks);
         
 
         /// <summary>

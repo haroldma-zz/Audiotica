@@ -15,6 +15,12 @@
     <StackPanel>
         <TextBlock Text="{x:Bind Title, Mode=OneWay}" Style="{ThemeResource TitleTextBlockStyle}" FontSize="34" />
         <StackPanel Orientation="Horizontal" Margin="0, 20, 0, 15">
+            <HyperlinkButton Margin="0,0,20,0" Padding="0" Foreground="{ThemeResource SystemControlForegroundBaseHighBrush}" Click="ShuffleAll_Click">
+                <StackPanel Orientation="Horizontal">
+                    <SymbolIcon Symbol="Shuffle" Margin="0,0,10,0" />
+                    <TextBlock Text="Shuffle all" />
+                </StackPanel>
+            </HyperlinkButton>
             <TextBlock Text="Sort by:" />
             <HyperlinkButton x:Name="SortHyperlinkButton" Content="{Binding SelectedItem.Content, ElementName=ListBox}" Padding="0"
                                  ContentTemplate="{StaticResource HyperlinkTemplate}" Margin="5,0,0,0">

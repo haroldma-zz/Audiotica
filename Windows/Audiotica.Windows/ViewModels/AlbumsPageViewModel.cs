@@ -21,21 +21,25 @@ namespace Audiotica.Windows.ViewModels
     {
         private readonly ILibraryCollectionService _libraryCollectionService;
         private readonly INavigationService _navigationService;
+        private readonly IPlayerService _playerService;
         private readonly ISettingsUtility _settingsUtility;
         private double _gridViewVerticalOffset;
         private double _listViewVerticalOffset;
         private CollectionViewSource _viewSource;
 
         public AlbumsPageViewModel(ILibraryService libraryService, ILibraryCollectionService libraryCollectionService,
+            IPlayerService playerService,
             ISettingsUtility settingsUtility, INavigationService navigationService)
         {
             _libraryCollectionService = libraryCollectionService;
+            _playerService = playerService;
             _settingsUtility = settingsUtility;
             _navigationService = navigationService;
             LibraryService = libraryService;
 
             AlbumClickCommand = new Command<ItemClickEventArgs>(AlbumClickExecute);
             SortChangedCommand = new Command<ListBoxItem>(SortChangedExecute);
+            ShuffleAllCommand = new Command(ShuffleAllExecute);
 
             SortItems =
                 Enum.GetValues(typeof (AlbumSort))
@@ -48,6 +52,8 @@ namespace Audiotica.Windows.ViewModels
             DefaultSort = SortItems.IndexOf(SortItems.FirstOrDefault(p => (AlbumSort) p.Tag == defaultSort));
             ChangeSort(defaultSort);
         }
+
+        public Command ShuffleAllCommand { get; }
 
         public Command<ListBoxItem> SortChangedCommand { get; }
 
@@ -76,6 +82,17 @@ namespace Audiotica.Windows.ViewModels
         public List<ListBoxItem> SortItems { get; set; }
 
         public ILibraryService LibraryService { get; }
+
+        private async void ShuffleAllExecute()
+        {
+            var playable = LibraryService.Tracks
+                .Where(p => p.Status == TrackStatus.None || p.Status == TrackStatus.Downloading)
+                .ToList();
+            if (!playable.Any()) return;
+
+            var tracks = playable.Shuffle();
+            await _playerService.NewQueueAsync(tracks);
+        }
 
         private void SortChangedExecute(ListBoxItem item)
         {

@@ -54,7 +54,7 @@ namespace Audiotica.Windows.Services.DesignTime
             throw new NotImplementedException();
         }
 
-        public Task NewQueueAsync(List<Track> tracks)
+        public Task NewQueueAsync(IEnumerable<Track> tracks)
         {
             throw new NotImplementedException();
         }
