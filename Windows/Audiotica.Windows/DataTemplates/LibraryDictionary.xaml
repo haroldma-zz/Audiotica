@@ -5,7 +5,7 @@
     xmlns:controls="using:Audiotica.Windows.Controls"
     xmlns:databaseModels="using:Audiotica.Database.Models"
     xmlns:webModels="using:Audiotica.Web.Models">
-    
+
     <DataTemplate x:Key="TrackTemplate" x:DataType="databaseModels:Track">
         <controls:TrackViewer Track="{x:Bind}"
                               IsSelected="{Binding Tag, RelativeSource={RelativeSource Mode=TemplatedParent}}" />
@@ -28,89 +28,147 @@
     </DataTemplate>
 
     <DataTemplate x:Key="AlbumTemplate" x:DataType="databaseModels:Album">
-        <StackPanel Width="140" Height="210" Margin="4">
-            <Grid Width="140" Height="140" Background="{ThemeResource SystemControlBackgroundAccentBrush}"
-                  Margin="0,0,0,5">
-                <Image Source="{x:Bind ArtworkUri, Converter={StaticResource ImageSourceConverter}, ConverterParameter=140}"
-                       Stretch="UniformToFill" />
-            </Grid>
-            <TextBlock Text="{x:Bind Title}" TextWrapping="Wrap" Margin="0,0,0,5"
-                       MaxHeight="40" LineHeight="20" LineStackingStrategy="BlockLineHeight" />
-            <TextBlock Text="{x:Bind Artist.Name}" Style="{StaticResource SubtleTextBlockStyle}" />
-        </StackPanel>
+        <Grid RightTapped="Panel_RightTapped" Background="Transparent">
+            <FlyoutBase.AttachedFlyout>
+                <MenuFlyout Placement="Bottom">
+                    <MenuFlyoutItem Text="Play" Click="PlayButton_Click" />
+                    <MenuFlyoutSubItem Text="Add to">
+                        <MenuFlyoutItem Text="Queue" Click="AddQueue_Click" />
+                        <MenuFlyoutItem Text="Up next" Click="AddUpNext_Click" />
+                    </MenuFlyoutSubItem>
+                    <MenuFlyoutItem Text="Explore artist" Click="ExploreArtist_Click" />
+                    <MenuFlyoutItem Text="Download" Click="Download_Click" />
+                    <MenuFlyoutItem Text="Delete" Click="Delete_Click" Foreground="Red" />
+                </MenuFlyout>
+            </FlyoutBase.AttachedFlyout>
+            <StackPanel Width="140" Height="210" Margin="4">
+                <Grid Width="140" Height="140" Background="{ThemeResource SystemControlBackgroundAccentBrush}"
+                      Margin="0,0,0,5">
+                    <Image
+                        Source="{x:Bind ArtworkUri, Converter={StaticResource ImageSourceConverter}, ConverterParameter=140}"
+                        Stretch="UniformToFill" />
+                </Grid>
+                <TextBlock Text="{x:Bind Title}" TextWrapping="Wrap" Margin="0,0,0,5"
+                           MaxHeight="40" LineHeight="20" LineStackingStrategy="BlockLineHeight" />
+                <TextBlock Text="{x:Bind Artist.Name}" Style="{StaticResource SubtleTextBlockStyle}" />
+            </StackPanel>
+        </Grid>
     </DataTemplate>
 
     <DataTemplate x:Key="AlbumNarrowTemplate" x:DataType="databaseModels:Album">
-        <Grid Margin="0,4">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
-            <Grid Width="100" Height="100" Background="{ThemeResource SystemControlBackgroundAccentBrush}"
-                  Margin="0,0,5,0">
-                <Image Source="{x:Bind ArtworkUri, Converter={StaticResource ImageSourceConverter}, ConverterParameter=100}"
-                       Stretch="UniformToFill" />
-            </Grid>
-            <Grid Grid.Column="1">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                </Grid.RowDefinitions>
-                <TextBlock Text="{x:Bind Title}" TextWrapping="Wrap" Margin="0,0,0,5"
-                           MaxHeight="80" LineHeight="20" LineStackingStrategy="BlockLineHeight" />
-                <TextBlock Grid.Row="1" Text="{x:Bind Artist.Name}" Style="{StaticResource SubtleTextBlockStyle}" />
+        <Grid RightTapped="Panel_RightTapped" Background="Transparent">
+            <FlyoutBase.AttachedFlyout>
+                <MenuFlyout Placement="Bottom">
+                    <MenuFlyoutItem Text="Play" Click="PlayButton_Click" />
+                    <MenuFlyoutSubItem Text="Add to">
+                        <MenuFlyoutItem Text="Queue" Click="AddQueue_Click" />
+                        <MenuFlyoutItem Text="Up next" Click="AddUpNext_Click" />
+                    </MenuFlyoutSubItem>
+                    <MenuFlyoutItem Text="Explore artist" Click="ExploreArtist_Click" />
+                    <MenuFlyoutItem Text="Download" Click="Download_Click" />
+                    <MenuFlyoutItem Text="Delete" Click="Delete_Click" Foreground="Red" />
+                </MenuFlyout>
+            </FlyoutBase.AttachedFlyout>
+            <Grid Margin="0,4">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid Width="100" Height="100" Background="{ThemeResource SystemControlBackgroundAccentBrush}"
+                      Margin="0,0,5,0">
+                    <Image
+                        Source="{x:Bind ArtworkUri, Converter={StaticResource ImageSourceConverter}, ConverterParameter=100}"
+                        Stretch="UniformToFill" />
+                </Grid>
+                <Grid Grid.Column="1">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <TextBlock Text="{x:Bind Title}" TextWrapping="Wrap" Margin="0,0,0,5"
+                               MaxHeight="80" LineHeight="20" LineStackingStrategy="BlockLineHeight" />
+                    <TextBlock Grid.Row="1" Text="{x:Bind Artist.Name}" Style="{StaticResource SubtleTextBlockStyle}" />
+                </Grid>
             </Grid>
         </Grid>
     </DataTemplate>
 
     <DataTemplate x:Key="ArtistTemplate" x:DataType="databaseModels:Artist">
-        <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
-            <Ellipse Width="140" Height="140" Fill="#333" />
-            <Ellipse Grid.Row="0" Width="140" Height="140">
-                <Ellipse.Fill>
-                    <ImageBrush ImageSource="{x:Bind ArtworkUri, Mode=OneWay, Converter={StaticResource ImageSourceConverter}, ConverterParameter=140}"
-                                Stretch="UniformToFill" />
-                </Ellipse.Fill>
-            </Ellipse>
-            <TextBlock Grid.Row="1" Text="{x:Bind Name}" TextAlignment="Center" Margin="0,10,0,0" />
-            <TextBlock Grid.Row="2" TextAlignment="Center" Style="{StaticResource SubtleTextBlockStyle}">
-                <Run Text="{x:Bind Albums.Count, Mode=OneWay}" />
-                <Run Text="album(s)" />
-            </TextBlock>
+        <Grid RightTapped="Panel_RightTapped" Background="Transparent">
+            <FlyoutBase.AttachedFlyout>
+                <MenuFlyout Placement="Bottom">
+                    <MenuFlyoutItem Text="Play" Click="PlayButton_Click" />
+                    <MenuFlyoutSubItem Text="Add to">
+                        <MenuFlyoutItem Text="Queue" Click="AddQueue_Click" />
+                        <MenuFlyoutItem Text="Up next" Click="AddUpNext_Click" />
+                    </MenuFlyoutSubItem>
+                    <MenuFlyoutItem Text="Download" Click="Download_Click" />
+                    <MenuFlyoutItem Text="Delete" Click="Delete_Click" Foreground="Red" />
+                </MenuFlyout>
+            </FlyoutBase.AttachedFlyout>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Ellipse Width="140" Height="140" Fill="#333" />
+                <Ellipse Grid.Row="0" Width="140" Height="140">
+                    <Ellipse.Fill>
+                        <ImageBrush
+                            ImageSource="{x:Bind ArtworkUri, Mode=OneWay, Converter={StaticResource ImageSourceConverter}, ConverterParameter=140}"
+                            Stretch="UniformToFill" />
+                    </Ellipse.Fill>
+                </Ellipse>
+                <TextBlock Grid.Row="1" Text="{x:Bind Name}" TextAlignment="Center" Margin="0,10,0,0" />
+                <TextBlock Grid.Row="2" TextAlignment="Center" Style="{StaticResource SubtleTextBlockStyle}">
+                    <Run Text="{x:Bind Albums.Count, Mode=OneWay}" />
+                    <Run Text="album(s)" />
+                </TextBlock>
+            </Grid>
         </Grid>
     </DataTemplate>
 
     <DataTemplate x:Key="ArtistNarrowTemplate" x:DataType="databaseModels:Artist">
-        <Grid Margin="0,4">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
-            <Grid Margin="0,0,5,0">
-                <Ellipse Width="100" Height="100" Fill="#333" />
-                <Ellipse Grid.Row="0" Width="100" Height="100">
-                    <Ellipse.Fill>
-                        <ImageBrush ImageSource="{x:Bind ArtworkUri, Converter={StaticResource ImageSourceConverter}, ConverterParameter=100}"
-                                    Stretch="UniformToFill" />
-                    </Ellipse.Fill>
-                </Ellipse>
-            </Grid>
-            <Grid Grid.Column="1">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                </Grid.RowDefinitions>
-                <TextBlock Text="{x:Bind Name}" TextWrapping="Wrap" Margin="0,0,0,5"
-                           MaxHeight="80" LineHeight="20" LineStackingStrategy="BlockLineHeight" />
-                <TextBlock Grid.Row="1" Style="{StaticResource SubtleTextBlockStyle}">
-                    <Run Text="{x:Bind Albums.Count}" />
-                    <Run Text="album(s)" />
-                </TextBlock>
+        <Grid RightTapped="Panel_RightTapped" Background="Transparent">
+            <FlyoutBase.AttachedFlyout>
+                <MenuFlyout Placement="Bottom">
+                    <MenuFlyoutItem Text="Play" Click="PlayButton_Click" />
+                    <MenuFlyoutSubItem Text="Add to">
+                        <MenuFlyoutItem Text="Queue" Click="AddQueue_Click" />
+                        <MenuFlyoutItem Text="Up next" Click="AddUpNext_Click" />
+                    </MenuFlyoutSubItem>
+                    <MenuFlyoutItem Text="Download" Click="Download_Click" />
+                    <MenuFlyoutItem Text="Delete" Click="Delete_Click" Foreground="Red" />
+                </MenuFlyout>
+            </FlyoutBase.AttachedFlyout>
+            <Grid Margin="0,4">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid Margin="0,0,5,0">
+                    <Ellipse Width="100" Height="100" Fill="#333" />
+                    <Ellipse Grid.Row="0" Width="100" Height="100">
+                        <Ellipse.Fill>
+                            <ImageBrush
+                                ImageSource="{x:Bind ArtworkUri, Converter={StaticResource ImageSourceConverter}, ConverterParameter=100}"
+                                Stretch="UniformToFill" />
+                        </Ellipse.Fill>
+                    </Ellipse>
+                </Grid>
+                <Grid Grid.Column="1">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <TextBlock Text="{x:Bind Name}" TextWrapping="Wrap" Margin="0,0,0,5"
+                               MaxHeight="80" LineHeight="20" LineStackingStrategy="BlockLineHeight" />
+                    <TextBlock Grid.Row="1" Style="{StaticResource SubtleTextBlockStyle}">
+                        <Run Text="{x:Bind Albums.Count}" />
+                        <Run Text="album(s)" />
+                    </TextBlock>
+                </Grid>
             </Grid>
         </Grid>
     </DataTemplate>
@@ -153,8 +211,9 @@
         <StackPanel Width="140" Height="210" Margin="4">
             <Grid Width="140" Height="140" Background="{ThemeResource SystemControlBackgroundAccentBrush}"
                   Margin="0,0,0,5">
-                <Image Source="{x:Bind Artwork, Converter={StaticResource ImageSourceConverter}, ConverterParameter=140}"
-                       Stretch="UniformToFill" />
+                <Image
+                    Source="{x:Bind Artwork, Converter={StaticResource ImageSourceConverter}, ConverterParameter=140}"
+                    Stretch="UniformToFill" />
             </Grid>
             <TextBlock Text="{x:Bind Title}" TextWrapping="Wrap" Margin="0,0,0,5"
                        MaxHeight="40" LineHeight="20" LineStackingStrategy="BlockLineHeight" />
@@ -167,12 +226,12 @@
             <Ellipse Width="140" Height="140">
                 <Ellipse.Fill>
                     <ImageBrush Stretch="UniformToFill" Opacity=".5"
-                                                    ImageSource="{x:Bind Artwork, Converter={StaticResource ImageSourceConverter}, ConverterParameter=150}" />
+                                ImageSource="{x:Bind Artwork, Converter={StaticResource ImageSourceConverter}, ConverterParameter=150}" />
                 </Ellipse.Fill>
             </Ellipse>
             <TextBlock Text="{x:Bind Name}" Margin="2"
-                                           VerticalAlignment="Center" TextAlignment="Center"
-                                           TextTrimming="CharacterEllipsis" />
+                       VerticalAlignment="Center" TextAlignment="Center"
+                       TextTrimming="CharacterEllipsis" />
         </Grid>
     </DataTemplate>
 </ResourceDictionary>

@@ -83,16 +83,30 @@ namespace Audiotica.Windows.Services.RunTime
             return Add(track, position);
         }
 
+        public async Task AddAsync(IEnumerable<Track> tracks, int position = -1)
+        {
+            var arr = tracks.ToArray();
+            foreach (var track in arr)
+                await PrepareTrackAsync(track);
+            Add(arr, position);
+        }
+
         public async Task<QueueTrack> AddAsync(WebSong webSong, int position = -1)
         {
             var track = await ConvertToTrackAsync(webSong);
             return await AddAsync(track, position);
         }
 
-        public async Task<QueueTrack> AddUpNextAsync(Track track)
+        public Task<QueueTrack> AddUpNextAsync(Track track)
         {
             var currentPosition = PlaybackQueue.IndexOf(PlaybackQueue.FirstOrDefault(p => p.Id == CurrentQueueId));
-            return await AddAsync(track, currentPosition + 1);
+            return AddAsync(track, currentPosition + 1);
+        }
+
+        public async Task AddUpNextAsync(IEnumerable<Track> tracks)
+        {
+            var currentPosition = PlaybackQueue.IndexOf(PlaybackQueue.FirstOrDefault(p => p.Id == CurrentQueueId));
+            await AddAsync(tracks, currentPosition + 1);
         }
 
         public async Task<QueueTrack> AddUpNextAsync(WebSong webSong)
@@ -248,6 +262,19 @@ namespace Audiotica.Windows.Services.RunTime
             else
                 PlaybackQueue.Add(queue);
             return queue;
+        }
+
+        private void Add(IEnumerable<Track> tracks, int position = -1)
+        {
+            var queue = tracks.Select(track => new QueueTrack(track)).ToList();
+            MessageHelper.SendMessageToBackground(new AddToPlaylistMessage(queue, position));
+            if (position > -1 && position < PlaybackQueue.Count)
+                foreach (var item in queue)
+                {
+                    PlaybackQueue.Insert(position++, item);
+                }
+            else
+                PlaybackQueue.AddRange(queue);
         }
 
         private async Task PrepareTrackAsync(Track track)

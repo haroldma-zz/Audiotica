@@ -34,9 +34,11 @@ namespace Audiotica.Windows.Services.Interfaces
         /// <param name="position">The position.</param>
         /// <returns></returns>
         Task<QueueTrack> AddAsync(Track track, int position = -1);
+        Task AddAsync(IEnumerable<Track> tracks, int position = -1);
 
         Task<QueueTrack> AddAsync(WebSong webSong, int position = -1);
         Task<QueueTrack> AddUpNextAsync(Track track);
+        Task AddUpNextAsync(IEnumerable<Track> tracks);
         Task<QueueTrack> AddUpNextAsync(WebSong webSong);
         Task NewQueueAsync(IEnumerable<Track> tracks);
         

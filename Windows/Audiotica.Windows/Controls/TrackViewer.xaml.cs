@@ -149,11 +149,7 @@ namespace Audiotica.Windows.Controls
 
         private void ExploreArtist_Click(object sender, RoutedEventArgs e)
         {
-            using (var scope = App.Current.Kernel.BeginScope())
-            {
-                var navigationService = scope.Resolve<INavigationService>();
-                navigationService.Navigate(typeof (ArtistPage), Track.DisplayArtist);
-            }
+            App.Current.NavigationService.Navigate(typeof (ArtistPage), Track.DisplayArtist);
         }
 
         private void Download_Click(object sender, RoutedEventArgs e)

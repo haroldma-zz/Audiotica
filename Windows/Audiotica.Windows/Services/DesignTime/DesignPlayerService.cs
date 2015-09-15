@@ -39,12 +39,22 @@ namespace Audiotica.Windows.Services.DesignTime
             throw new NotImplementedException();
         }
 
+        public Task AddAsync(IEnumerable<Track> tracks, int position = -1)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<QueueTrack> AddAsync(WebSong webSong, int position = -1)
         {
             throw new NotImplementedException();
         }
 
         public Task<QueueTrack> AddUpNextAsync(Track track)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task AddUpNextAsync(IEnumerable<Track> tracks)
         {
             throw new NotImplementedException();
         }

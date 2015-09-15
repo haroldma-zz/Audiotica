@@ -32,7 +32,7 @@ namespace Audiotica.Windows.Controls
             set { SetValue(SelectedItemsProperty, value); }
         }
 
-        private List<Track> GetTracks()
+        private IEnumerable<Track> GetTracks()
         {
             List<Track> tracks;
 
@@ -54,7 +54,8 @@ namespace Audiotica.Windows.Controls
             using (var lifetimeScope = App.Current.Kernel.BeginScope())
             {
                 var playerService = lifetimeScope.Resolve<IPlayerService>();
-                var tracks = GetTracks();
+                var tracks = GetTracks().Where(p => p.Status == TrackStatus.None || p.Status == TrackStatus.Downloading)
+                .ToList();
                 await playerService.NewQueueAsync(tracks);
             }
         }
@@ -66,9 +67,10 @@ namespace Audiotica.Windows.Controls
                 var backgroundAudioService = scope.Resolve<IPlayerService>();
                 try
                 {
-                    var tracks = GetTracks();
-                    foreach (var track in tracks)
-                        await backgroundAudioService.AddAsync(track);
+                    var tracks = GetTracks()
+                      .Where(p => p.Status == TrackStatus.None || p.Status == TrackStatus.Downloading)
+                      .ToList();
+                    await backgroundAudioService.AddAsync(tracks);
                     CurtainPrompt.Show("Added to queue");
                 }
                 catch (AppException ex)
@@ -85,9 +87,10 @@ namespace Audiotica.Windows.Controls
                 var backgroundAudioService = scope.Resolve<IPlayerService>();
                 try
                 {
-                    var tracks = GetTracks();
-                    foreach (var track in tracks)
-                        await backgroundAudioService.AddUpNextAsync(track);
+                    var tracks = GetTracks()
+                      .Where(p => p.Status == TrackStatus.None || p.Status == TrackStatus.Downloading)
+                      .ToList();
+                    await backgroundAudioService.AddUpNextAsync(tracks);
                     CurtainPrompt.Show("Added up next");
                 }
                 catch (AppException ex)
@@ -113,7 +116,7 @@ namespace Audiotica.Windows.Controls
             using (var scope = App.Current.Kernel.BeginScope())
             {
                 var libraryService = scope.Resolve<ILibraryService>();
-                var tracks = GetTracks();
+                var tracks = GetTracks().ToList();
                 foreach (var track in tracks)
                     await libraryService.DeleteTrackAsync(track);
 
