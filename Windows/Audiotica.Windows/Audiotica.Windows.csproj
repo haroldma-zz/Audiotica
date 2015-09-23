@@ -220,6 +220,7 @@
     <Compile Include="ViewModels\ExplorePageViewModel.cs" />
     <Compile Include="ViewModels\ArtistsPageViewModel.cs" />
     <Compile Include="ViewModels\NowPlayingPageViewModel.cs" />
+    <Compile Include="ViewModels\PlayerBarViewModel.cs" />
     <Compile Include="ViewModels\SearchPageViewModel.cs" />
     <Compile Include="ViewModels\SettingsPageViewModel.cs" />
     <Compile Include="ViewModels\SongsPageViewModel.cs" />

@@ -382,21 +382,16 @@ namespace Audiotica.Windows.Player
 
         private void ForegroundMessengerOnTrackChanged(object sender, string queueId)
         {
-            var index = _mediaPlaybackList.Items.ToList().FindIndex(i => i.Source.Queue().Id == queueId);
+            var queue = _mediaPlaybackList.Items.Select(p => p.Source.Queue()).ToList();
+            var index = queue.FindIndex(i => i.Id == queueId);
+            if (index < 0) return;
             Debug.WriteLine("Skipping to track " + index);
             _smtcWrapper.PlaybackStatus = MediaPlaybackStatus.Changing;
 
-            try
-            {
-                _mediaPlaybackList.MoveTo((uint) index);
+            _mediaPlaybackList.MoveTo((uint)index);
 
-                // TODO: Work around playlist bug that doesn't continue playing after a switch; remove later
-                BackgroundMediaPlayer.Current.Play();
-            }
-            catch
-            {
-                // ignored
-            }
+            // TODO: Work around playlist bug that doesn't continue playing after a switch; remove later
+            BackgroundMediaPlayer.Current.Play();
         }
 
         private void ForegroundMessengerOnStartPlayback(object sender, EventArgs eventArgs)

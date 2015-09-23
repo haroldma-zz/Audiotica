@@ -80,7 +80,7 @@ namespace Audiotica.Windows.Services.RunTime
         public async Task<QueueTrack> AddAsync(Track track, int position = -1)
         {
             await PrepareTrackAsync(track);
-            return Add(track, position);
+            return await InternalAddAsync(track, position);
         }
 
         public async Task AddAsync(IEnumerable<Track> tracks, int position = -1)
@@ -121,6 +121,7 @@ namespace Audiotica.Windows.Services.RunTime
             foreach (var track in arr)
                 await PrepareTrackAsync(track);
             var newQueue = arr.Select(track => new QueueTrack(track)).ToList();
+            PlaybackQueue.SwitchTo(newQueue);
             MessageHelper.SendMessageToBackground(new UpdatePlaylistMessage(newQueue));
 
         }
@@ -253,21 +254,21 @@ namespace Audiotica.Windows.Services.RunTime
             }
         }
 
-        private QueueTrack Add(Track track, int position = -1)
+        private async Task<QueueTrack> InternalAddAsync(Track track, int position = -1)
         {
             var queue = new QueueTrack(track);
-            MessageHelper.SendMessageToBackground(new AddToPlaylistMessage(queue, position));
             if (position > -1 && position < PlaybackQueue.Count)
                 PlaybackQueue.Insert(position, queue);
             else
                 PlaybackQueue.Add(queue);
+            MessageHelper.SendMessageToBackground(new AddToPlaylistMessage(queue, position));
+            await Task.Delay(25);
             return queue;
         }
 
         private void Add(IEnumerable<Track> tracks, int position = -1)
         {
             var queue = tracks.Select(track => new QueueTrack(track)).ToList();
-            MessageHelper.SendMessageToBackground(new AddToPlaylistMessage(queue, position));
             if (position > -1 && position < PlaybackQueue.Count)
                 foreach (var item in queue)
                 {
@@ -275,6 +276,7 @@ namespace Audiotica.Windows.Services.RunTime
                 }
             else
                 PlaybackQueue.AddRange(queue);
+            MessageHelper.SendMessageToBackground(new AddToPlaylistMessage(queue, position));
         }
 
         private async Task PrepareTrackAsync(Track track)

@@ -63,6 +63,7 @@ namespace Audiotica.Converters
                 Year = other.ReleaseDate?.Year,
             };
 
+            // TODO: ISupportIncrementalLoading?
             if (other.Tracks != null)
             {
                 // only let 10 concurrent conversions
