@@ -157,7 +157,7 @@
                 </StackPanel>
             </StackPanel>
             <Grid Grid.Column="1" Margin="5">
-                <Slider VerticalAlignment="Center" />
+                <Slider VerticalAlignment="Center" Value="{x:Bind ViewModel.PlaybackPosition, Mode=TwoWay}" Maximum="{x:Bind ViewModel.PlaybackDuration, Mode=OneWay}" />
             </Grid>
             <StackPanel Orientation="Horizontal" Grid.Column="2">
                 <AppBarButton Icon="Previous" IsCompact="True" Command="{x:Bind ViewModel.PrevCommand}" />
