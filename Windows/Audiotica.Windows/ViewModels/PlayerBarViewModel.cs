@@ -11,11 +11,14 @@ namespace Audiotica.Windows.ViewModels
 {
     public class PlayerBarViewModel : ViewModelBase
     {
+        private const int TimerInterval = 500;
         private readonly IPlayerService _playerService;
         private readonly DispatcherTimer _timer;
         private QueueTrack _currentQueueTrack;
         private double _playbackDuration;
+        private string _playbackDurationText;
         private double _playbackPosition;
+        private string _playbackPositionText;
         private Symbol _playPauseIcon = Symbol.Play;
 
         public PlayerBarViewModel(IPlayerService playerService)
@@ -28,7 +31,7 @@ namespace Audiotica.Windows.ViewModels
             NextCommand = new Command(() => _playerService.Next());
             PrevCommand = new Command(() => _playerService.Previous());
 
-            _timer = new DispatcherTimer {Interval = TimeSpan.FromMilliseconds(500)};
+            _timer = new DispatcherTimer {Interval = TimeSpan.FromMilliseconds(TimerInterval)};
             _timer.Tick += TimerOnTick;
         }
 
@@ -53,7 +56,11 @@ namespace Audiotica.Windows.ViewModels
         public double PlaybackPosition
         {
             get { return _playbackPosition; }
-            set { Set(ref _playbackPosition, value); }
+            set
+            {
+                Set(ref _playbackPosition, value);
+                UpdatePosition();
+            }
         }
 
         public double PlaybackDuration
@@ -62,10 +69,34 @@ namespace Audiotica.Windows.ViewModels
             set { Set(ref _playbackDuration, value); }
         }
 
+        public string PlaybackPositionText
+        {
+            get { return _playbackPositionText; }
+            set { Set(ref _playbackPositionText, value); }
+        }
+
+        public string PlaybackDurationText
+        {
+            get { return _playbackDurationText; }
+            set { Set(ref _playbackDurationText, value); }
+        }
+
+        private void UpdatePosition()
+        {
+            var playerPosition = BackgroundMediaPlayer.Current.Position.TotalMilliseconds;
+            var difference = Math.Abs(PlaybackPosition - playerPosition);
+            if (difference > TimerInterval)
+                BackgroundMediaPlayer.Current.Position = TimeSpan.FromMilliseconds(PlaybackPosition);
+        }
+
         private void TimerOnTick(object sender, object o)
         {
-            PlaybackPosition = BackgroundMediaPlayer.Current.Position.TotalMilliseconds;
-            PlaybackDuration = BackgroundMediaPlayer.Current.NaturalDuration.TotalMilliseconds;
+            var position = BackgroundMediaPlayer.Current.Position;
+            var duration = BackgroundMediaPlayer.Current.NaturalDuration;
+            PlaybackPosition = position.TotalMilliseconds;
+            PlaybackDuration = duration.TotalMilliseconds;
+            PlaybackPositionText = position.ToString(@"m\:ss");
+            PlaybackDurationText = duration.ToString(@"m\:ss");
         }
 
         private void PlayerServiceOnMediaStateChanged(object sender, MediaPlayerState mediaPlayerState)
