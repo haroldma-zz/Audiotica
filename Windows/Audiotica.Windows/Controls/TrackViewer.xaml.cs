@@ -77,7 +77,7 @@ namespace Audiotica.Windows.Controls
             var player = App.Current.Kernel.Resolve<IPlayerService>();
             if (player.CurrentQueueTrack?.Track != null)
                 IsPlaying = TrackComparer.AreEqual(player.CurrentQueueTrack.Track, Track) ||
-                            player.CurrentQueueTrack.Track.Id == Track.Id;
+                            (Track.Id > 0 && player.CurrentQueueTrack.Track.Id == Track.Id);
             else
                 IsPlaying = false;
 
