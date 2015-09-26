@@ -67,6 +67,7 @@ namespace Audiotica.Windows.Controls
             {
                 _track = value;
                 Bindings.Update();
+                TrackChanged();
             }
         }
 
