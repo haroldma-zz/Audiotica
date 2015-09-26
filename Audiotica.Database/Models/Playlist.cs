@@ -10,7 +10,10 @@ namespace Audiotica.Database.Models
     {
         public string Id { get; set; }
         public DateTime CreatedAt { get; set; }
+        public DateTime EditedAt { get; set; }
+        public DateTime DeletedAt { get; set; }
         public string Name { get; set; }
+        public bool IsVisible { get; set; }
         public List<PlaylistTrack> Tracks { get; set; }
     }
 }
