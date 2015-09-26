@@ -8,23 +8,23 @@
 
     <DataTemplate x:Key="TrackTemplate" x:DataType="databaseModels:Track">
         <controls:TrackViewer Track="{x:Bind}"
-                              IsSelected="{Binding Tag, RelativeSource={RelativeSource Mode=TemplatedParent}}" />
+                              IsSelected="{Binding Tag, Mode=TwoWay, RelativeSource={RelativeSource Mode=TemplatedParent}}" />
     </DataTemplate>
 
     <DataTemplate x:Key="CatalogTrackTemplate" x:DataType="databaseModels:Track">
         <controls:TrackViewer Track="{x:Bind}"
                               IsCatalog="True"
-                              IsSelected="{Binding Tag, RelativeSource={RelativeSource Mode=TemplatedParent}}" />
+                              IsSelected="{Binding Tag, Mode=TwoWay, RelativeSource={RelativeSource Mode=TemplatedParent}}" />
     </DataTemplate>
 
     <DataTemplate x:Key="TrackNarrowTemplate" x:DataType="databaseModels:Track">
         <controls:TrackNarrowViewer Track="{x:Bind}"
-                                    IsSelected="{Binding Tag, RelativeSource={RelativeSource Mode=TemplatedParent}}" />
+                                    IsSelected="{Binding Tag, Mode=TwoWay, RelativeSource={RelativeSource Mode=TemplatedParent}}" />
     </DataTemplate>
     <DataTemplate x:Key="CatalogTrackNarrowTemplate" x:DataType="databaseModels:Track">
         <controls:TrackNarrowViewer Track="{x:Bind}"
                                     IsCatalog="True"
-                                    IsSelected="{Binding Tag, RelativeSource={RelativeSource Mode=TemplatedParent}}" />
+                                    IsSelected="{Binding Tag, Mode=TwoWay, RelativeSource={RelativeSource Mode=TemplatedParent}}" />
     </DataTemplate>
 
     <DataTemplate x:Key="AlbumTemplate" x:DataType="databaseModels:Album">

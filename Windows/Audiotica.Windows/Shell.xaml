@@ -143,14 +143,14 @@
                 </Grid>
             </SplitView.Pane>
         </SplitView>
-        <Grid Grid.Row="1" Background="{ThemeResource SystemControlBackgroundAccentBrush}" Height="48">
+        <Grid Grid.Row="1" Background="{ThemeResource SplitViewBackgroundBrush}" Height="48">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
             <StackPanel Orientation="Horizontal" Margin="5">
-                <Image Width="38" Height="38" Source="{x:Bind ViewModel.CurrentQueueTrack.Track.ArtworkUri, Mode=OneWay}" Stretch="UniformToFill" />
+                <Image Width="38" Height="38" Source="{x:Bind ViewModel.CurrentQueueTrack.Track.ArtworkUri, Mode=OneWay, Converter={StaticResource ImageSourceConverter}}" Stretch="UniformToFill" />
                 <StackPanel Margin="5,0,0,0" VerticalAlignment="Center">
                     <TextBlock Text="{x:Bind ViewModel.CurrentQueueTrack.Track.Title, Mode=OneWay}" Style="{StaticResource BaseTextBlockStyle}" />
                     <TextBlock Text="{x:Bind ViewModel.CurrentQueueTrack.Track.Artists, Mode=OneWay}" Style="{StaticResource BaseSmallTextBlockStyle}" />
@@ -163,8 +163,8 @@
                 <AppBarButton Icon="Previous" IsCompact="True" Command="{x:Bind ViewModel.PrevCommand}" />
                 <AppBarButton Icon="Play" IsCompact="True" Command="{x:Bind ViewModel.PlayPauseCommand}"/>
                 <AppBarButton Icon="Next" IsCompact="True" Command="{x:Bind ViewModel.NextCommand}" />
-                <AppBarButton Icon="Shuffle" IsCompact="True" />
-                <AppBarButton Icon="Sync" IsCompact="True" />
+                <AppBarToggleButton Icon="Shuffle" IsCompact="True" />
+                <AppBarToggleButton Icon="Sync" IsCompact="True" />
             </StackPanel>
         </Grid>
     </Grid>

@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System.ComponentModel;
+using System.Linq;
+using System.Runtime.CompilerServices;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
@@ -16,7 +18,7 @@ using Autofac;
 namespace Audiotica.Windows.Controls
 {
     // TODO: find a way to get state triggers to work on usercontrol, then we won't need a seperate control _sight_ (hopefully just a bug on the current SDK)
-    public sealed partial class TrackNarrowViewer
+    public sealed partial class TrackNarrowViewer: INotifyPropertyChanged
     {
         public static readonly DependencyProperty IsSelectedProperty =
             DependencyProperty.Register("IsSelected", typeof (bool), typeof (TrackNarrowViewer), null);
@@ -25,10 +27,21 @@ namespace Audiotica.Windows.Controls
            DependencyProperty.Register("IsCatalog", typeof(bool), typeof(TrackViewer), null);
 
         private Track _track;
+        private bool _isPlaying;
 
         public TrackNarrowViewer()
         {
             InitializeComponent();
+        }
+
+        public bool IsPlaying
+        {
+            get { return _isPlaying; }
+            set
+            {
+                _isPlaying = value;
+                OnPropertyChanged();
+            }
         }
 
         public bool IsSelected
@@ -57,6 +70,21 @@ namespace Audiotica.Windows.Controls
             }
         }
 
+        private void TrackChanged()
+        {
+            var player = App.Current.Kernel.Resolve<IPlayerService>();
+            if (player.CurrentQueueTrack?.Track != null)
+                IsPlaying = TrackComparer.AreEqual(player.CurrentQueueTrack.Track, Track) ||
+                            player.CurrentQueueTrack.Track.Id == Track.Id;
+            else
+                IsPlaying = false;
+
+            player.TrackChanged -= PlayerOnTrackChanged;
+            player.TrackChanged += PlayerOnTrackChanged;
+        }
+
+        private void PlayerOnTrackChanged(object sender, string s) => TrackChanged();
+
         private async void PlayButton_Click(object sender, RoutedEventArgs e)
         {
             using (var lifetimeScope = App.Current.Kernel.BeginScope())
@@ -68,6 +96,7 @@ namespace Audiotica.Windows.Controls
                     // player auto plays when there is only one track
                     if (playerService.PlaybackQueue.Count > 1)
                         playerService.Play(queue);
+                    IsSelected = false;
                 }
                 catch (AppException ex)
                 {
@@ -175,6 +204,13 @@ namespace Audiotica.Windows.Controls
                         App.Current.NavigationService.GoBack();
                 }
             }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        private void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

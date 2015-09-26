@@ -13,6 +13,7 @@ namespace Audiotica.Windows.Services.Interfaces
         bool IsBackgroundTaskRunning { get; }
         MediaPlayerState CurrentState { get; set; }
         string CurrentQueueId { get; }
+        QueueTrack CurrentQueueTrack { get; }
         OptimizedObservableCollection<QueueTrack> PlaybackQueue { get; }
         event EventHandler<MediaPlayerState> MediaStateChanged;
         event EventHandler<string> TrackChanged;

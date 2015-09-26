@@ -19,6 +19,7 @@ namespace Audiotica.Windows.Services.DesignTime
         public bool IsBackgroundTaskRunning { get; }
         public MediaPlayerState CurrentState { get; set; }
         public string CurrentQueueId { get; }
+        public QueueTrack CurrentQueueTrack { get; }
         public OptimizedObservableCollection<QueueTrack> PlaybackQueue { get; }
         public event EventHandler<MediaPlayerState> MediaStateChanged;
         public event EventHandler<string> TrackChanged;

@@ -17,7 +17,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="ListViewItem">
-                    <ListViewItemPresenter Tag="{TemplateBinding IsSelected}"
+                    <ListViewItemPresenter Tag="{Binding IsSelected, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
                                            CheckBrush="{ThemeResource SystemControlForegroundBaseMediumHighBrush}"
                                            ContentMargin="{TemplateBinding Padding}" CheckMode="Inline"
                                            ContentTransitions="{TemplateBinding ContentTransitions}"
@@ -61,7 +61,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="ListViewItem">
-                    <ListViewItemPresenter Tag="{TemplateBinding IsSelected}"
+                    <ListViewItemPresenter Tag="{Binding IsSelected, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
                                            CheckBrush="{ThemeResource SystemControlForegroundBaseMediumHighBrush}"
                                            ContentMargin="{TemplateBinding Padding}" CheckMode="Inline"
                                            ContentTransitions="{TemplateBinding ContentTransitions}"

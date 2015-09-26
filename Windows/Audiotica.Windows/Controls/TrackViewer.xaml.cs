@@ -1,13 +1,9 @@
-﻿using System;
+﻿using System.ComponentModel;
 using System.Linq;
-using Windows.Foundation;
-using Windows.UI;
-using Windows.UI.Popups;
+using System.Runtime.CompilerServices;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
 using Audiotica.Core.Exceptions;
 using Audiotica.Core.Extensions;
 using Audiotica.Core.Windows.Helpers;
@@ -15,25 +11,36 @@ using Audiotica.Database.Models;
 using Audiotica.Database.Services.Interfaces;
 using Audiotica.Windows.Common;
 using Audiotica.Windows.Services.Interfaces;
-using Audiotica.Windows.Services.NavigationService;
 using Audiotica.Windows.Views;
 using Autofac;
 
 namespace Audiotica.Windows.Controls
 {
-    public sealed partial class TrackViewer
+    public sealed partial class TrackViewer : INotifyPropertyChanged
     {
         public static readonly DependencyProperty IsSelectedProperty =
             DependencyProperty.Register("IsSelected", typeof (bool), typeof (TrackViewer), null);
 
         public static readonly DependencyProperty IsCatalogProperty =
-            DependencyProperty.Register("IsCatalog", typeof(bool), typeof(TrackViewer), null);
+            DependencyProperty.Register("IsCatalog", typeof (bool), typeof (TrackViewer), null);
+
+        private bool _isPlaying;
 
         private Track _track;
 
         public TrackViewer()
         {
             InitializeComponent();
+        }
+
+        public bool IsPlaying
+        {
+            get { return _isPlaying; }
+            set
+            {
+                _isPlaying = value;
+                OnPropertyChanged();
+            }
         }
 
         public bool IsSelected
@@ -59,8 +66,26 @@ namespace Audiotica.Windows.Controls
             {
                 _track = value;
                 Bindings.Update();
+                TrackChanged();
             }
         }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        private void TrackChanged()
+        {
+            var player = App.Current.Kernel.Resolve<IPlayerService>();
+            if (player.CurrentQueueTrack?.Track != null)
+                IsPlaying = TrackComparer.AreEqual(player.CurrentQueueTrack.Track, Track) ||
+                            player.CurrentQueueTrack.Track.Id == Track.Id;
+            else
+                IsPlaying = false;
+
+            player.TrackChanged -= PlayerOnTrackChanged;
+            player.TrackChanged += PlayerOnTrackChanged;
+        }
+
+        private void PlayerOnTrackChanged(object sender, string s) => TrackChanged();
 
         private async void PlayButton_Click(object sender, RoutedEventArgs e)
         {
@@ -73,6 +98,7 @@ namespace Audiotica.Windows.Controls
                     // player auto plays when there is only one track
                     if (playerService.PlaybackQueue.Count > 1)
                         playerService.Play(queue);
+                    IsSelected = false;
                 }
                 catch (AppException ex)
                 {
@@ -144,7 +170,6 @@ namespace Audiotica.Windows.Controls
         {
             var grid = (Grid) sender;
             FlyoutEx.ShowAttachedFlyoutAtPointer(grid);
-
         }
 
         private void ExploreArtist_Click(object sender, RoutedEventArgs e)
@@ -176,6 +201,11 @@ namespace Audiotica.Windows.Controls
                         App.Current.NavigationService.GoBack();
                 }
             }
+        }
+
+        private void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

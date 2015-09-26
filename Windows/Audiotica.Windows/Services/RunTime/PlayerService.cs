@@ -59,7 +59,7 @@ namespace Audiotica.Windows.Services.RunTime
 
         public string CurrentQueueId
             => _settingsUtility.Read(ApplicationSettingsConstants.QueueId, string.Empty);
-
+        public QueueTrack CurrentQueueTrack { get; private set; }
         public OptimizedObservableCollection<QueueTrack> PlaybackQueue { get; private set; }
         public event EventHandler<MediaPlayerState> MediaStateChanged;
         public event EventHandler<string> TrackChanged;
@@ -262,7 +262,7 @@ namespace Audiotica.Windows.Services.RunTime
             else
                 PlaybackQueue.Add(queue);
             MessageHelper.SendMessageToBackground(new AddToPlaylistMessage(queue, position));
-            await Task.Delay(25);
+            await Task.Delay(50);
             return queue;
         }
 
@@ -347,6 +347,7 @@ namespace Audiotica.Windows.Services.RunTime
             if (message is TrackChangedMessage)
             {
                 var trackChangedMessage = message as TrackChangedMessage;
+                CurrentQueueTrack = PlaybackQueue.FirstOrDefault(p => p.Id == trackChangedMessage.QueueId);
                 // When foreground app is active change track based on background message
                 await _dispatcherUtility.RunAsync(
                         () => { TrackChanged?.Invoke(sender, trackChangedMessage.QueueId); });
