@@ -53,7 +53,7 @@
                                Visibility="{x:Bind Track.Type, Mode=OneWay, Converter={StaticResource StreamingVisibilityConverter}}" />
                 </Grid>
             </Grid>
-            <Grid Grid.Column="0" HorizontalAlignment="Center" Margin="0,3,1,0" Visibility="{x:Bind IsPlaying, Mode=OneWay, Converter={StaticResource VisibilityConverter}}">
+            <Grid Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,3,1,0" Visibility="{x:Bind IsPlaying, Mode=OneWay, Converter={StaticResource VisibilityConverter}}">
                 <TextBlock Style="{StaticResource NowPlayingTextBlockStyle}"
                                Foreground="{StaticResource SystemControlForegroundAccentBrush}"
                                ToolTipService.ToolTip="Playing"/>
