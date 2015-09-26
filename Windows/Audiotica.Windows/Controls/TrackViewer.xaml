@@ -18,8 +18,8 @@
                                     Visibility="{x:Bind Track.IsFromLibrary, Mode=OneWay, Converter={StaticResource ReverseVisibilityConverter}}" />
                     <MenuFlyoutSeparator
                         Visibility="{x:Bind Track.IsFromLibrary, Mode=OneWay, Converter={StaticResource ReverseVisibilityConverter}}" />
-                    <MenuFlyoutItem Text="Queue" Click="AddQueue_Click" />
-                    <MenuFlyoutItem Text="Up next" Click="AddUpNext_Click" />
+                    <MenuFlyoutItem Text="Queue" Click="AddQueue_Click" Visibility="{x:Bind IsQueue, Converter={StaticResource ReverseVisibilityConverter}}" />
+                    <MenuFlyoutItem Text="Up next" Click="AddUpNext_Click" Visibility="{x:Bind IsQueue, Converter={StaticResource ReverseVisibilityConverter}}" />
                 </MenuFlyoutSubItem>
                 <MenuFlyoutItem Text="Explore artist" Click="ExploreArtist_Click" />
                 <MenuFlyoutItem Text="Download" Click="Download_Click"

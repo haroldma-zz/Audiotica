@@ -24,6 +24,9 @@ namespace Audiotica.Windows.Controls
         public static readonly DependencyProperty IsCatalogProperty =
             DependencyProperty.Register("IsCatalog", typeof (bool), typeof (TrackViewer), null);
 
+        public static readonly DependencyProperty IsQueueProperty =
+            DependencyProperty.Register("IsQueue", typeof (bool), typeof (TrackViewer), null);
+
         private bool _isPlaying;
 
         private Track _track;
@@ -57,6 +60,14 @@ namespace Audiotica.Windows.Controls
             get { return (bool) GetValue(IsCatalogProperty); }
 
             set { SetValue(IsCatalogProperty, value); }
+        }
+
+        public bool IsQueue
+
+        {
+            get { return (bool) GetValue(IsQueueProperty); }
+
+            set { SetValue(IsQueueProperty, value); }
         }
 
         public Track Track
@@ -94,7 +105,7 @@ namespace Audiotica.Windows.Controls
                 var playerService = lifetimeScope.Resolve<IPlayerService>();
                 try
                 {
-                    var queue = await playerService.AddAsync(Track);
+                    var queue = playerService.ContainsTrack(Track) ?? await playerService.AddAsync(Track);
                     // player auto plays when there is only one track
                     if (playerService.PlaybackQueue.Count > 1)
                         playerService.Play(queue);

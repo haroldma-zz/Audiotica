@@ -28,6 +28,7 @@ namespace Audiotica.Windows.Services.Interfaces
         /// </summary>
         void PlayOrPause();
 
+        QueueTrack ContainsTrack(Track track);
         /// <summary>
         ///     Adds the specified track to the queue.
         /// </summary>

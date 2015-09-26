@@ -93,7 +93,7 @@ namespace Audiotica.Windows.Controls
                 var playerService = lifetimeScope.Resolve<IPlayerService>();
                 try
                 {
-                    var queue = await playerService.AddAsync(Track);
+                    var queue = playerService.ContainsTrack(Track) ?? await playerService.AddAsync(Track);
                     // player auto plays when there is only one track
                     if (playerService.PlaybackQueue.Count > 1)
                         playerService.Play(queue);

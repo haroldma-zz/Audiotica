@@ -354,6 +354,8 @@ namespace Audiotica.Database.Models
     {
         public bool Equals(Track x, Track y)
         {
+            if (x == null && y == null) return true;
+            if (x == null || y == null) return false;
             if (x.IsFromLibrary && y.IsFromLibrary)
                 return x.Id == y.Id;
             return GetHashCode(x) == GetHashCode(y);

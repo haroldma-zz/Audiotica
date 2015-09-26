@@ -35,6 +35,11 @@ namespace Audiotica.Windows.Services.DesignTime
             throw new NotImplementedException();
         }
 
+        public QueueTrack ContainsTrack(Track track)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<QueueTrack> AddAsync(Track track, int position = -1)
         {
             throw new NotImplementedException();

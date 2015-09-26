@@ -10,7 +10,7 @@
         <controls:TrackViewer Track="{x:Bind}"
                               IsSelected="{Binding Tag, Mode=TwoWay, RelativeSource={RelativeSource Mode=TemplatedParent}}" />
     </DataTemplate>
-
+    
     <DataTemplate x:Key="CatalogTrackTemplate" x:DataType="databaseModels:Track">
         <controls:TrackViewer Track="{x:Bind}"
                               IsCatalog="True"
@@ -27,6 +27,12 @@
                                     IsSelected="{Binding Tag, Mode=TwoWay, RelativeSource={RelativeSource Mode=TemplatedParent}}" />
     </DataTemplate>
 
+    <DataTemplate x:Key="QueueTrackTemplate" x:DataType="databaseModels:QueueTrack">
+        <controls:TrackViewer Track="{x:Bind Track}"
+                              IsQueue="True"
+                              IsSelected="{Binding Tag, Mode=TwoWay, RelativeSource={RelativeSource Mode=TemplatedParent}}" />
+    </DataTemplate>
+    
     <DataTemplate x:Key="AlbumTemplate" x:DataType="databaseModels:Album">
         <Grid RightTapped="Panel_RightTapped" Background="Transparent">
             <FlyoutBase.AttachedFlyout>

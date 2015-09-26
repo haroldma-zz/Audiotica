@@ -77,6 +77,8 @@ namespace Audiotica.Windows.Services.RunTime
             return started;
         }
 
+        public QueueTrack ContainsTrack(Track track) => PlaybackQueue.FirstOrDefault(p => track.Id == p.Track.Id);
+
         public async Task<QueueTrack> AddAsync(Track track, int position = -1)
         {
             await PrepareTrackAsync(track);
