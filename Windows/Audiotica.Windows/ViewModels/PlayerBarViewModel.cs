@@ -19,7 +19,7 @@ namespace Audiotica.Windows.ViewModels
         private string _playbackDurationText;
         private double _playbackPosition;
         private string _playbackPositionText;
-        private Symbol _playPauseIcon = Symbol.Play;
+        private IconElement _playPauseIcon = new SymbolIcon(Symbol.Play);
 
         public PlayerBarViewModel(IPlayerService playerService)
         {
@@ -47,7 +47,7 @@ namespace Audiotica.Windows.ViewModels
             set { Set(ref _currentQueueTrack, value); }
         }
 
-        public Symbol PlayPauseIcon
+        public IconElement PlayPauseIcon
         {
             get { return _playPauseIcon; }
             set { Set(ref _playPauseIcon, value); }
@@ -112,7 +112,7 @@ namespace Audiotica.Windows.ViewModels
                     _timer.Stop();
                     break;
             }
-            PlayPauseIcon = icon;
+            PlayPauseIcon = new SymbolIcon(icon);
         }
 
         private void PlayerServiceOnTrackChanged(object sender, string s)
