@@ -26,6 +26,13 @@ namespace Audiotica.Windows.Controls
         public static readonly DependencyProperty IsCatalogProperty =
            DependencyProperty.Register("IsCatalog", typeof(bool), typeof(TrackViewer), null);
 
+
+        public static readonly DependencyProperty IsQueueProperty =
+            DependencyProperty.Register("IsQueue", typeof(bool), typeof(TrackViewer), null);
+
+        public static readonly DependencyProperty QueueIdProperty =
+            DependencyProperty.Register("QueueId", typeof(string), typeof(TrackViewer), null);
+
         private Track _track;
         private bool _isPlaying;
 
@@ -71,14 +78,37 @@ namespace Audiotica.Windows.Controls
             }
         }
 
+        public bool IsQueue
+
+        {
+            get { return (bool)GetValue(IsQueueProperty); }
+
+            set { SetValue(IsQueueProperty, value); }
+        }
+
+        public string QueueId
+        {
+            get { return (string)GetValue(QueueIdProperty); }
+
+            set { SetValue(QueueIdProperty, value); }
+        }
+
         private void TrackChanged()
         {
             var player = App.Current.Kernel.Resolve<IPlayerService>();
-            if (player.CurrentQueueTrack?.Track != null)
-                IsPlaying = TrackComparer.AreEqual(player.CurrentQueueTrack.Track, Track) ||
-                            (Track.Id > 0 && player.CurrentQueueTrack.Track.Id == Track.Id);
-            else
+
+            if (Track == null)
                 IsPlaying = false;
+            else
+            {
+                if (IsQueue && QueueId != null)
+                    IsPlaying = player.CurrentQueueId == QueueId;
+                else if (!IsQueue && player.CurrentQueueTrack?.Track != null)
+                    IsPlaying = (Track.Id > 0 && player.CurrentQueueTrack.Track.Id == Track.Id)
+                        || TrackComparer.AreEqual(player.CurrentQueueTrack.Track, Track);
+                else
+                    IsPlaying = false;
+            }
 
             player.TrackChanged -= PlayerOnTrackChanged;
             player.TrackChanged += PlayerOnTrackChanged;

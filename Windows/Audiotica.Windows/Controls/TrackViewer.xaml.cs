@@ -27,6 +27,9 @@ namespace Audiotica.Windows.Controls
         public static readonly DependencyProperty IsQueueProperty =
             DependencyProperty.Register("IsQueue", typeof (bool), typeof (TrackViewer), null);
 
+        public static readonly DependencyProperty QueueIdProperty =
+            DependencyProperty.Register("QueueId", typeof(string), typeof(TrackViewer), null);
+
         private bool _isPlaying;
 
         private Track _track;
@@ -70,6 +73,13 @@ namespace Audiotica.Windows.Controls
             set { SetValue(IsQueueProperty, value); }
         }
 
+        public string QueueId
+        {
+            get { return (string)GetValue(QueueIdProperty); }
+
+            set { SetValue(QueueIdProperty, value); }
+        }
+
         public Track Track
         {
             get { return _track; }
@@ -86,11 +96,19 @@ namespace Audiotica.Windows.Controls
         private void TrackChanged()
         {
             var player = App.Current.Kernel.Resolve<IPlayerService>();
-            if (player.CurrentQueueTrack?.Track != null)
-                IsPlaying = TrackComparer.AreEqual(player.CurrentQueueTrack.Track, Track) ||
-                            (Track.Id > 0 && player.CurrentQueueTrack.Track.Id == Track.Id);
-            else
+
+            if (Track == null)
                 IsPlaying = false;
+            else
+            {
+                if (IsQueue && QueueId != null)
+                    IsPlaying = player.CurrentQueueId == QueueId;
+                else if (!IsQueue && player.CurrentQueueTrack?.Track != null)
+                    IsPlaying = (Track.Id > 0 && player.CurrentQueueTrack.Track.Id == Track.Id) 
+                        || TrackComparer.AreEqual(player.CurrentQueueTrack.Track, Track);
+                else
+                    IsPlaying = false;
+            }
 
             player.TrackChanged -= PlayerOnTrackChanged;
             player.TrackChanged += PlayerOnTrackChanged;

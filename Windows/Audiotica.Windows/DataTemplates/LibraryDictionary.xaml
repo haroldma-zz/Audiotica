@@ -28,11 +28,17 @@
     </DataTemplate>
 
     <DataTemplate x:Key="QueueTrackTemplate" x:DataType="databaseModels:QueueTrack">
-        <controls:TrackViewer Track="{x:Bind Track}"
-                              IsQueue="True"
+        <controls:TrackViewer IsQueue="True" QueueId="{x:Bind Id}"
+                              Track="{x:Bind Track}"
                               IsSelected="{Binding Tag, Mode=TwoWay, RelativeSource={RelativeSource Mode=TemplatedParent}}" />
     </DataTemplate>
-    
+
+    <DataTemplate x:Key="QueueTrackNarrowTemplate" x:DataType="databaseModels:QueueTrack">
+        <controls:TrackNarrowViewer IsQueue="True" QueueId="{x:Bind Id}"
+                              Track="{x:Bind Track}"
+                              IsSelected="{Binding Tag, Mode=TwoWay, RelativeSource={RelativeSource Mode=TemplatedParent}}" />
+    </DataTemplate>
+
     <DataTemplate x:Key="AlbumTemplate" x:DataType="databaseModels:Album">
         <Grid RightTapped="Panel_RightTapped" Background="Transparent">
             <FlyoutBase.AttachedFlyout>
