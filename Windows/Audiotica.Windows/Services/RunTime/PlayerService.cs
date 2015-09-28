@@ -270,11 +270,12 @@ namespace Audiotica.Windows.Services.RunTime
 
         private void Add(IEnumerable<Track> tracks, int position = -1)
         {
+            var index = position;
             var queue = tracks.Select(track => new QueueTrack(track)).ToList();
-            if (position > -1 && position < PlaybackQueue.Count)
+            if (index > -1 && index < PlaybackQueue.Count)
                 foreach (var item in queue)
                 {
-                    PlaybackQueue.Insert(position++, item);
+                    PlaybackQueue.Insert(index++, item);
                 }
             else
                 PlaybackQueue.AddRange(queue);
