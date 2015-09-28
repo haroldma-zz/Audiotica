@@ -143,7 +143,7 @@ namespace Audiotica.Windows.ViewModels
 
                 if (Album == null)
                 {
-                    _navigationService.GoBack();
+                    CurtainPrompt.ShowError("Problem loading album");
                     return;
                 }
             }
@@ -155,35 +155,43 @@ namespace Audiotica.Windows.ViewModels
         private async Task LoadAsync(AlbumPageParameter albumParameter)
         {
             var webAlbum = albumParameter.WebAlbum;
-            if (webAlbum == null)
+            if (webAlbum == null && albumParameter.Provider != null)
             {
-                if (albumParameter.Provider != null)
+                var provider = _metadataProviders.FirstOrDefault(p => p.GetType() == albumParameter.Provider);
+                webAlbum = await provider.GetAlbumAsync(albumParameter.Token);
+            }
+            if (webAlbum != null)
+            {
+                try
                 {
-                    var provider = _metadataProviders.FirstOrDefault(p => p.GetType() == albumParameter.Provider);
-                    webAlbum = await provider.GetAlbumAsync(albumParameter.Token);
+                    Album = await _webAlbumConverter.ConvertAsync(webAlbum, IsCatalogMode);
+                }
+                catch
+                {
+                    await LoadByTitleAsync(albumParameter);
+                }
+            }
+            else
+                await LoadByTitleAsync(albumParameter);
+        }
+
+        private async Task LoadByTitleAsync(AlbumPageParameter albumParameter)
+        {
+            for (var i = 0; i < _metadataProviders.Count; i++)
+            {
+                try
+                {
+                    var webAlbum = await GetAlbumByTitleAsync(albumParameter.Title, albumParameter.Artist, i);
 
                     if (webAlbum != null)
-                        Album = await _webAlbumConverter.ConvertAsync(webAlbum, IsCatalogMode);
-                }
-                else
-                {
-                    for (var i = 0; i < _metadataProviders.Count; i++)
                     {
-                        try
-                        {
-                            webAlbum = await GetAlbumByTitleAsync(albumParameter.Title, albumParameter.Artist, i);
-
-                            if (webAlbum != null)
-                            {
-                                Album = await _webAlbumConverter.ConvertAsync(webAlbum, IsCatalogMode);
-                                break;
-                            }
-                        }
-                        catch
-                        {
-                            // ignored
-                        }
+                        Album = await _webAlbumConverter.ConvertAsync(webAlbum, IsCatalogMode);
+                        break;
                     }
+                }
+                catch
+                {
+                    // ignored
                 }
             }
         }

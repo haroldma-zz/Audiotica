@@ -28,13 +28,15 @@
     </DataTemplate>
 
     <DataTemplate x:Key="QueueTrackTemplate" x:DataType="databaseModels:QueueTrack">
-        <controls:TrackViewer IsQueue="True" QueueId="{x:Bind Id}"
+        <controls:TrackViewer IsQueue="True" IsCatalog="True" 
+                              QueueId="{x:Bind Id}"
                               Track="{x:Bind Track}"
                               IsSelected="{Binding Tag, Mode=TwoWay, RelativeSource={RelativeSource Mode=TemplatedParent}}" />
     </DataTemplate>
 
     <DataTemplate x:Key="QueueTrackNarrowTemplate" x:DataType="databaseModels:QueueTrack">
-        <controls:TrackNarrowViewer IsQueue="True" QueueId="{x:Bind Id}"
+        <controls:TrackNarrowViewer IsQueue="True" IsCatalog="True" 
+                              QueueId="{x:Bind Id}"
                               Track="{x:Bind Track}"
                               IsSelected="{Binding Tag, Mode=TwoWay, RelativeSource={RelativeSource Mode=TemplatedParent}}" />
     </DataTemplate>
