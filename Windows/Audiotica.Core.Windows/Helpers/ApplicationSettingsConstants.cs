@@ -13,5 +13,6 @@
         public const string IsAlbumAdaptiveColorEnabled = "IsAlbumAdaptiveColorEnabled";
         public const string SongSort = "SongSort";
         public const string AlbumSort = "AlbumSort";
+        public const string Theme = "Theme";
     }
 }

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
+using Audiotica.Core.Utilities.Interfaces;
+using Audiotica.Core.Windows.Helpers;
 using Audiotica.Windows.Services.Interfaces;
 using Audiotica.Windows.Services.RunTime;
 using Audiotica.Windows.Tools.Mvvm;
@@ -46,6 +48,16 @@ namespace Audiotica.Windows
             Loaded += (s, e) => update();
             DataContext = this;
             ViewModel = App.Current.Kernel.Resolve<PlayerBarViewModel>();
+
+            var settings = App.Current.Kernel.Resolve<ISettingsUtility>();
+            RequestedTheme = settings.Read(ApplicationSettingsConstants.Theme, ElementTheme.Dark);
+        }
+
+        public void SetTheme(ElementTheme theme)
+        {
+            var settings = App.Current.Kernel.Resolve<ISettingsUtility>();
+            settings.Write(ApplicationSettingsConstants.Theme, theme);
+            RequestedTheme = theme;
         }
 
         public Thickness HamburgerPadding

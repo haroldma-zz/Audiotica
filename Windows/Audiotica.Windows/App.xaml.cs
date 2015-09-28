@@ -14,11 +14,6 @@ namespace Audiotica.Windows
         public App()
         {
             WindowsAppInitializer.InitializeAsync();
-
-            // Only the dark theme is supported in everything else (they only have light option)
-            if (!DeviceHelper.IsType(DeviceFamily.Mobile))
-                RequestedTheme = ApplicationTheme.Dark;
-
             InitializeComponent();
         }
 

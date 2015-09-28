@@ -149,11 +149,11 @@
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
-            <StackPanel Orientation="Horizontal" Margin="5">
-                <Image Width="38" Height="38" Source="{x:Bind ViewModel.CurrentQueueTrack.Track.ArtworkUri, Mode=OneWay, Converter={StaticResource ImageSourceConverter}}" Stretch="UniformToFill" />
+            <StackPanel Orientation="Horizontal" Margin="5" Width="200">
+                <Image Width="38" Height="38" Source="{x:Bind ViewModel.CurrentQueueTrack.Track.ArtworkUri, Mode=OneWay, Converter={StaticResource ImageSourceConverter}}" Stretch="UniformToFill" Margin="0,0,2,0" />
                 <StackPanel Margin="5,0,0,0" VerticalAlignment="Center">
-                    <TextBlock Text="{x:Bind ViewModel.CurrentQueueTrack.Track.Title, Mode=OneWay}" Style="{StaticResource BaseTextBlockStyle}" />
-                    <TextBlock Text="{x:Bind ViewModel.CurrentQueueTrack.Track.Artists, Mode=OneWay}" Style="{StaticResource BaseSmallTextBlockStyle}" />
+                    <TextBlock Text="{x:Bind ViewModel.CurrentQueueTrack.Track.Title, Mode=OneWay}" Style="{StaticResource BaseTextBlockStyle}" TextTrimming="CharacterEllipsis" />
+                    <TextBlock Text="{x:Bind ViewModel.CurrentQueueTrack.Track.Artists, Mode=OneWay}" Style="{StaticResource BaseSmallTextBlockStyle}" TextTrimming="CharacterEllipsis" />
                 </StackPanel>
             </StackPanel>
             <Grid Grid.Column="1" Margin="5">
@@ -162,9 +162,9 @@
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
-                <TextBlock Style="{StaticResource BaseSmallTextBlockStyle}" TextLineBounds="Tight" Foreground="{StaticResource SystemControlForegroundBaseMediumBrush}" Text="{x:Bind ViewModel.PlaybackPositionText, Mode=OneWay}" VerticalAlignment="Center" />
+                <TextBlock Style="{StaticResource BaseSmallTextBlockStyle}" TextLineBounds="Tight" Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}" Text="{x:Bind ViewModel.PlaybackPositionText, Mode=OneWay}" VerticalAlignment="Center" />
                 <Slider Margin="10,0,10,0" Grid.Column="1" IsThumbToolTipEnabled="False" VerticalAlignment="Center" Value="{x:Bind ViewModel.PlaybackPosition, Mode=TwoWay}" Maximum="{x:Bind ViewModel.PlaybackDuration, Mode=OneWay}" />
-                <TextBlock Style="{StaticResource BaseSmallTextBlockStyle}" TextLineBounds="Tight" Foreground="{StaticResource SystemControlForegroundBaseMediumBrush}" Grid.Column="2" Text="{x:Bind ViewModel.PlaybackDurationText, Mode=OneWay}" VerticalAlignment="Center" />
+                <TextBlock Style="{StaticResource BaseSmallTextBlockStyle}" TextLineBounds="Tight" Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}" Grid.Column="2" Text="{x:Bind ViewModel.PlaybackDurationText, Mode=OneWay}" VerticalAlignment="Center" />
             </Grid>
             <StackPanel Orientation="Horizontal" Grid.Column="2">
                 <AppBarButton Icon="Previous" IsCompact="True" Command="{x:Bind ViewModel.PrevCommand}" />
