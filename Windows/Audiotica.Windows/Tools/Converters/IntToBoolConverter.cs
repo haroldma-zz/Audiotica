@@ -1,21 +1,20 @@
 ﻿using System;
-using Windows.UI.Xaml;
 using Windows.UI.Xaml.Data;
 
 namespace Audiotica.Windows.Tools.Converters
 {
-    public class IntToThemeConverter : IValueConverter
+    public class IntToBoolConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {
             var i = (int) value;
-            return (ElementTheme) i;
+            return i == 2;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)
         {
-            var i = (ElementTheme)value;
-            return (int)i;
+            var i = (bool) value;
+            return i ? 2 : 1;
         }
     }
 }

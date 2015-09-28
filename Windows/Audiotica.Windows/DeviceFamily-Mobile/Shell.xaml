@@ -6,7 +6,7 @@
     xmlns:views="using:Audiotica.Windows.Views"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    RequestedTheme="{x:Bind AppSettings.Theme, Mode=OneWay, Converter={StaticResource IntToThemeConverter}}"
+    RequestedTheme="{Binding AppSettings.Theme, Converter={StaticResource IntToThemeConverter}}"
     mc:Ignorable="d">
 
     <Grid>

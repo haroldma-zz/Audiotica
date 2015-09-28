@@ -1,8 +1,15 @@
-﻿using Audiotica.Windows.Tools.Mvvm;
+﻿using Audiotica.Core.Utilities.Interfaces;
+using Audiotica.Windows.Tools.Mvvm;
 
 namespace Audiotica.Windows.ViewModels
 {
-    internal class SettingsPageViewModel : ViewModelBase
+    public class SettingsPageViewModel : ViewModelBase
     {
+        public SettingsPageViewModel(IAppSettingsUtility appSettingsUtility)
+        {
+            AppSettingsUtility = appSettingsUtility;
+        }
+
+        public IAppSettingsUtility AppSettingsUtility { get; }
     }
 }

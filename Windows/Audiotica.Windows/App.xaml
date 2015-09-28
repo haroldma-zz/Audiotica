@@ -37,8 +37,9 @@
             <converters:UniformSpacingConverter x:Key="UniformSpacingConverter" />
             <converters:NotConverter x:Key="NotConverter" />
             <converters:IntToThemeConverter x:Key="IntToThemeConverter" />
+            <converters:IntToBoolConverter x:Key="IntToBoolConverter" />
 
-            <converters:ContentConverter x:Key="SingleMultiSelectionModeConverter">
+                <converters:ContentConverter x:Key="SingleMultiSelectionModeConverter">
                 <converters:ContentConverter.TrueContent>
                     <ListViewSelectionMode>Multiple</ListViewSelectionMode>
                 </converters:ContentConverter.TrueContent>

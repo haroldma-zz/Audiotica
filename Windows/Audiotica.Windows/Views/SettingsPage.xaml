@@ -10,6 +10,6 @@
     DataContext="{Binding SettingsPage, Source={StaticResource ViewModelLocator}}">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <TextBlock Text="lol" />
+        <ToggleSwitch Header="Theme" OnContent="Dark" OffContent="Light" IsOn="{x:Bind ViewModel.AppSettingsUtility.Theme, Mode=TwoWay, Converter={StaticResource IntToBoolConverter}}" />
     </Grid>
 </navigationService:NavigatablePage>

@@ -46,10 +46,9 @@ namespace Audiotica.Windows
             });
             frame.Navigated += (s, e) => update();
             Loaded += (s, e) => update();
-            DataContext = this;
             ViewModel = App.Current.Kernel.Resolve<PlayerBarViewModel>();
-
             AppSettings = App.Current.Kernel.Resolve<IAppSettingsUtility>();
+            DataContext = this;
         }
 
         public IAppSettingsUtility AppSettings { get; }

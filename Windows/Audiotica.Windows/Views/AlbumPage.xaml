@@ -10,7 +10,7 @@
     xmlns:customTriggers="using:Audiotica.Windows.CustomTriggers"
     xmlns:converters="using:Audiotica.Windows.Tools.Converters"
     mc:Ignorable="d"
-    RequestedTheme="{Binding RequestedTheme, Mode=OneWay}"
+    RequestedTheme="{Binding RequestedTheme}"
     DataContext="{Binding AlbumPage, Source={StaticResource ViewModelLocator}}">
 
     <Grid Background="{Binding BackgroundBrush}">
