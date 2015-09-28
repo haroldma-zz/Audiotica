@@ -24,7 +24,7 @@ namespace Audiotica.Windows.AppEngine.Modules
             builder.RegisterType<DispatcherUtility>().As<IDispatcherUtility>();
             builder.RegisterType<CredentialUtility>().As<ICredentialUtility>();
             builder.RegisterType<SettingsUtility>().As<ISettingsUtility>();
-            builder.RegisterType<AppSettingsUtility>().As<IAppSettingsUtility>();
+            builder.RegisterType<AppSettingsUtility>().As<IAppSettingsUtility>().SingleInstance();
             builder.RegisterType<StorageUtility>().As<IStorageUtility>();
         }
     }

@@ -4,6 +4,7 @@ using System.Linq;
 using Windows.UI.Xaml;
 using Audiotica.Core.Exceptions;
 using Audiotica.Core.Extensions;
+using Audiotica.Core.Utilities.Interfaces;
 using Audiotica.Database.Models;
 using Audiotica.Database.Services.Interfaces;
 using Audiotica.Windows.Common;
@@ -22,7 +23,11 @@ namespace Audiotica.Windows.Controls
         public SelectModeCommandBar()
         {
             InitializeComponent();
+
+            AppSettings = App.Current.Kernel.Resolve<IAppSettingsUtility>();
         }
+
+        public IAppSettingsUtility AppSettings { get; }
 
         public bool IsCatalog { get; set; }
 

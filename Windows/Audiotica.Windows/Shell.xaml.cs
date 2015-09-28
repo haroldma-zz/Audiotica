@@ -49,16 +49,10 @@ namespace Audiotica.Windows
             DataContext = this;
             ViewModel = App.Current.Kernel.Resolve<PlayerBarViewModel>();
 
-            var settings = App.Current.Kernel.Resolve<ISettingsUtility>();
-            RequestedTheme = settings.Read(ApplicationSettingsConstants.Theme, ElementTheme.Dark);
+            AppSettings = App.Current.Kernel.Resolve<IAppSettingsUtility>();
         }
 
-        public void SetTheme(ElementTheme theme)
-        {
-            var settings = App.Current.Kernel.Resolve<ISettingsUtility>();
-            settings.Write(ApplicationSettingsConstants.Theme, theme);
-            RequestedTheme = theme;
-        }
+        public IAppSettingsUtility AppSettings { get; }
 
         public Thickness HamburgerPadding
         {

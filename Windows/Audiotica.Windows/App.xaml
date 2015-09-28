@@ -36,6 +36,7 @@
             <converters:UpperCaseConverter x:Key="UpperCaseConverter" />
             <converters:UniformSpacingConverter x:Key="UniformSpacingConverter" />
             <converters:NotConverter x:Key="NotConverter" />
+            <converters:IntToThemeConverter x:Key="IntToThemeConverter" />
 
             <converters:ContentConverter x:Key="SingleMultiSelectionModeConverter">
                 <converters:ContentConverter.TrueContent>

@@ -4,5 +4,6 @@
     {
         string DownloadsPath { get; set; }
         string TempDownloadsPath { get; }
+        int Theme { get; set; }
     }
 }

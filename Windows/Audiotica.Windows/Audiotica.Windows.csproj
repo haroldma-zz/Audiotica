@@ -200,6 +200,7 @@
     <Compile Include="Tools\Converters\EmptyListToVisibilityConverter.cs" />
     <Compile Include="Tools\Converters\EmptyStringToVisibilityConverter.cs" />
     <Compile Include="Tools\Converters\ImageSourceConverter.cs" />
+    <Compile Include="Tools\Converters\IntToThemeConverter.cs" />
     <Compile Include="Tools\Converters\ListToStringConverter.cs" />
     <Compile Include="Tools\Converters\NotConverter.cs" />
     <Compile Include="Tools\Converters\NullToVisibilityConverter.cs" />
