@@ -23,8 +23,8 @@ namespace Audiotica.Windows.Controls
         public SelectModeCommandBar()
         {
             InitializeComponent();
-
             AppSettings = App.Current.Kernel.Resolve<IAppSettingsUtility>();
+            DataContext = this;
         }
 
         public IAppSettingsUtility AppSettings { get; }
