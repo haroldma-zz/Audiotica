@@ -171,8 +171,8 @@
                 <AppBarButton Icon="Previous" IsCompact="True" Command="{x:Bind ViewModel.PrevCommand}" />
                 <AppBarButton Icon="{x:Bind ViewModel.PlayPauseIcon, Mode=OneWay}" IsCompact="True" Command="{x:Bind ViewModel.PlayPauseCommand}"/>
                 <AppBarButton Icon="Next" IsCompact="True" Command="{x:Bind ViewModel.NextCommand}" />
-                <AppBarToggleButton Icon="Shuffle" IsCompact="True" />
-                <AppBarToggleButton Icon="Sync" IsCompact="True" />
+                <AppBarToggleButton Icon="Shuffle" IsCompact="True" IsEnabled="False" />
+                <AppBarToggleButton Icon="Sync" IsCompact="True" IsEnabled="False" />
             </StackPanel>
         </Grid>
     </Grid>
