@@ -10,6 +10,8 @@
     DataContext="{Binding AboutPage, Source={StaticResource ViewModelLocator}}">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <TextBlock Text="lol" />
+        <StackPanel Margin="{StaticResource PageThickness}">
+            <TextBlock Text="Audiotica is meant to be an all in one replacement music platform." TextWrapping="Wrap" />
+        </StackPanel>
     </Grid>
 </navigationService:NavigatablePage>
