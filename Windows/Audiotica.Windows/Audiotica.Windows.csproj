@@ -104,6 +104,8 @@
     <None Include="Audiotica.Windows_StoreKey.pfx" />
     <None Include="project.json" />
     <None Include="Service References\Application Insights\ConnectedService.json" />
+    <!--Workaround for a bug in the current Universal SDK-->
+    <AppxSystemBinary Include="Audiotica.Windows.dll" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App.xaml.cs">
