@@ -1,8 +1,15 @@
+using Audiotica.Windows.Services.Interfaces;
 using Audiotica.Windows.Tools.Mvvm;
 
 namespace Audiotica.Windows.ViewModels
 {
-    internal class NowPlayingPageViewModel : ViewModelBase
+    public class NowPlayingPageViewModel : ViewModelBase
     {
+        public NowPlayingPageViewModel(IPlayerService playerService)
+        {
+            PlayerService = playerService;
+        }
+
+        public IPlayerService PlayerService { get; }
     }
 }

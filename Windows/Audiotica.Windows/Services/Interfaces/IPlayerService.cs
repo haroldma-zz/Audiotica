@@ -13,6 +13,7 @@ namespace Audiotica.Windows.Services.Interfaces
         bool IsBackgroundTaskRunning { get; }
         MediaPlayerState CurrentState { get; set; }
         string CurrentQueueId { get; }
+        QueueTrack CurrentQueueTrack { get; }
         OptimizedObservableCollection<QueueTrack> PlaybackQueue { get; }
         event EventHandler<MediaPlayerState> MediaStateChanged;
         event EventHandler<string> TrackChanged;
@@ -27,6 +28,7 @@ namespace Audiotica.Windows.Services.Interfaces
         /// </summary>
         void PlayOrPause();
 
+        QueueTrack ContainsTrack(Track track);
         /// <summary>
         ///     Adds the specified track to the queue.
         /// </summary>
@@ -34,11 +36,13 @@ namespace Audiotica.Windows.Services.Interfaces
         /// <param name="position">The position.</param>
         /// <returns></returns>
         Task<QueueTrack> AddAsync(Track track, int position = -1);
+        Task AddAsync(IEnumerable<Track> tracks, int position = -1);
 
         Task<QueueTrack> AddAsync(WebSong webSong, int position = -1);
         Task<QueueTrack> AddUpNextAsync(Track track);
+        Task AddUpNextAsync(IEnumerable<Track> tracks);
         Task<QueueTrack> AddUpNextAsync(WebSong webSong);
-        Task NewQueueAsync(List<Track> tracks);
+        Task NewQueueAsync(IEnumerable<Track> tracks);
         
 
         /// <summary>

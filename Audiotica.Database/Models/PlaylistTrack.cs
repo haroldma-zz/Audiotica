@@ -7,7 +7,6 @@ namespace Audiotica.Database.Models
     /// </summary>
     public class PlaylistTrack
     {
-        public string Id { get; set; }
         public string TrackId { get; set; }
 
         [JsonIgnore]

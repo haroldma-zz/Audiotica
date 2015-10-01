@@ -10,7 +10,7 @@
     xmlns:customTriggers="using:Audiotica.Windows.CustomTriggers"
     xmlns:converters="using:Audiotica.Windows.Tools.Converters"
     mc:Ignorable="d"
-    RequestedTheme="{Binding RequestedTheme, Mode=OneWay}"
+    RequestedTheme="{Binding RequestedTheme}"
     DataContext="{Binding AlbumPage, Source={StaticResource ViewModelLocator}}">
 
     <Grid Background="{Binding BackgroundBrush}">
@@ -49,17 +49,25 @@
                             <HyperlinkButton Margin="0,0,20,0" Command="{x:Bind ViewModel.PlayAllCommand, Mode=OneWay}"
                                              Visibility="{x:Bind ViewModel.IsCatalogMode, Mode=OneWay, Converter={StaticResource ReverseVisibilityConverter}}"
                                              Foreground="{ThemeResource SystemControlForegroundBaseHighBrush}">
-                                <StackPanel Orientation="Horizontal">
-                                    <SymbolIcon Symbol="Play" />
+                                <StackPanel Orientation="Horizontal" Background="Transparent">
+                                    <SymbolIcon Symbol="Play" Margin="0,0,10,0" />
                                     <TextBlock Text="Play" />
                                 </StackPanel>
                             </HyperlinkButton>
                             <HyperlinkButton Command="{x:Bind ViewModel.ViewInCatalogCommand, Mode=OneWay}"
                                              Visibility="{x:Bind ViewModel.IsCatalogMode, Mode=OneWay, Converter={StaticResource ReverseVisibilityConverter}}"
                                              Foreground="{ThemeResource SystemControlForegroundBaseHighBrush}">
-                                <StackPanel Orientation="Horizontal">
+                                <StackPanel Orientation="Horizontal" Background="Transparent">
                                     <SymbolIcon Margin="0,0,5,0" Symbol="View" />
                                     <TextBlock Text="View in catalog" />
+                                </StackPanel>
+                            </HyperlinkButton>
+                            <HyperlinkButton Command="{x:Bind ViewModel.SaveAllCommand, Mode=OneWay}"
+                                             Visibility="{x:Bind ViewModel.IsCatalogMode, Mode=OneWay, Converter={StaticResource VisibilityConverter}}"
+                                             Foreground="{ThemeResource SystemControlForegroundBaseHighBrush}">
+                                <StackPanel Orientation="Horizontal" Background="Transparent">
+                                    <SymbolIcon Margin="0,0,5,0" Symbol="Save" />
+                                    <TextBlock Text="Save" />
                                 </StackPanel>
                             </HyperlinkButton>
                         </StackPanel>

@@ -12,6 +12,7 @@
     xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
     xmlns:core="using:Microsoft.Xaml.Interactions.Core"
     xmlns:interactions="using:Audiotica.Windows.Interactions"
+    xmlns:extensions="using:Audiotica.Windows.Extensions"
     mc:Ignorable="d"
     DataContext="{Binding SongsPage, Source={StaticResource ViewModelLocator}}">
 
@@ -23,8 +24,10 @@
 
         <controls:LibraryHeader x:Name="LibraryHeader" Title="Songs" DefaultSortIndex="{x:Bind ViewModel.DefaultSort}"
                                 SortItems="{x:Bind ViewModel.SortItems}"
+                                ShuffleAllCommand="{x:Bind ViewModel.ShuffleAllCommand}"
                                 CurrentSortChangedCommand="{x:Bind ViewModel.SortChangedCommand}"
-                                Margin="{StaticResource PageTopSideThickness}" />
+                                Margin="{StaticResource PageTopSideThickness}"
+                                IsSelectMode="{x:Bind ViewModel.IsSelectMode, Mode=TwoWay}"/>
 
         <!--No Music-->
         <controls:NoMusicPanel Grid.Row="1" x:Name="NoMusicPanel"
@@ -34,6 +37,8 @@
         <SemanticZoom Grid.Row="1">
             <SemanticZoom.ZoomedInView>
                 <controls:AlternatingRowListView Grid.Row="1" x:Name="SongsListView"
+                                                 extensions:ListViewExtensions.BindableSelection="{Binding SelectedItems, Mode=TwoWay}"
+                                                 SelectionMode="{x:Bind ViewModel.IsSelectMode, Mode=OneWay, Converter={StaticResource SingleMultiSelectionModeConverter}}"
                                                  ItemsSource="{x:Bind ViewModel.ViewSource.View, Mode=OneWay}"
                                                  Tag="{x:Bind ViewModel.ViewSource, Mode=OneWay}"
                                                  VerticalOffset="{x:Bind ViewModel.VerticalOffset, Mode=TwoWay}"
@@ -86,7 +91,6 @@
             </SemanticZoom.ZoomedOutView>
         </SemanticZoom>
 
-
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroup x:Name="DeviceFamilyStates">
                 <VisualState>
@@ -118,4 +122,7 @@
             </VisualStateGroup>
         </VisualStateManager.VisualStateGroups>
     </Grid>
+    <Page.BottomAppBar>
+        <controls:SelectModeCommandBar SelectedItems="{x:Bind ViewModel.SelectedItems, Mode=OneWay}" Visibility="{x:Bind ViewModel.IsSelectMode, Converter={StaticResource VisibilityConverter}, Mode=OneWay}" />
+    </Page.BottomAppBar>
 </navigationService:NavigatablePage>

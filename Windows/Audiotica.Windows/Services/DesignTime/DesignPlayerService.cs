@@ -19,6 +19,7 @@ namespace Audiotica.Windows.Services.DesignTime
         public bool IsBackgroundTaskRunning { get; }
         public MediaPlayerState CurrentState { get; set; }
         public string CurrentQueueId { get; }
+        public QueueTrack CurrentQueueTrack { get; }
         public OptimizedObservableCollection<QueueTrack> PlaybackQueue { get; }
         public event EventHandler<MediaPlayerState> MediaStateChanged;
         public event EventHandler<string> TrackChanged;
@@ -34,7 +35,17 @@ namespace Audiotica.Windows.Services.DesignTime
             throw new NotImplementedException();
         }
 
+        public QueueTrack ContainsTrack(Track track)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<QueueTrack> AddAsync(Track track, int position = -1)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task AddAsync(IEnumerable<Track> tracks, int position = -1)
         {
             throw new NotImplementedException();
         }
@@ -49,12 +60,17 @@ namespace Audiotica.Windows.Services.DesignTime
             throw new NotImplementedException();
         }
 
+        public Task AddUpNextAsync(IEnumerable<Track> tracks)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<QueueTrack> AddUpNextAsync(WebSong webSong)
         {
             throw new NotImplementedException();
         }
 
-        public Task NewQueueAsync(List<Track> tracks)
+        public Task NewQueueAsync(IEnumerable<Track> tracks)
         {
             throw new NotImplementedException();
         }

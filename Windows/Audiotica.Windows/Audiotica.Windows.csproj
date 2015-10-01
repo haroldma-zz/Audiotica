@@ -104,6 +104,8 @@
     <None Include="Audiotica.Windows_StoreKey.pfx" />
     <None Include="project.json" />
     <None Include="Service References\Application Insights\ConnectedService.json" />
+    <!--Workaround for a bug in the current Universal SDK-->
+    <AppxSystemBinary Include="Audiotica.Windows.dll" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App.xaml.cs">
@@ -136,6 +138,9 @@
     <Compile Include="Controls\LibraryHeader.xaml.cs">
       <DependentUpon>LibraryHeader.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\SelectModeCommandBar.xaml.cs">
+      <DependentUpon>SelectModeCommandBar.xaml</DependentUpon>
+    </Compile>
     <Compile Include="DataTemplates\LibraryDictionary.xaml.cs">
       <DependentUpon>LibraryDictionary.xaml</DependentUpon>
     </Compile>
@@ -157,6 +162,8 @@
     <Compile Include="Enums\ArtistSort.cs" />
     <Compile Include="Enums\TrackSort.cs" />
     <Compile Include="Extensions\ItemsControlExtensions.cs" />
+    <Compile Include="Extensions\ListViewBindableSelectionHandler.cs" />
+    <Compile Include="Extensions\ListViewExtensions.cs" />
     <Compile Include="Extensions\VisualTreeHelperExtensions.cs" />
     <Compile Include="Factories\AppKernelFactory.cs" />
     <Compile Include="Common\MessageBox.cs" />
@@ -195,7 +202,10 @@
     <Compile Include="Tools\Converters\EmptyListToVisibilityConverter.cs" />
     <Compile Include="Tools\Converters\EmptyStringToVisibilityConverter.cs" />
     <Compile Include="Tools\Converters\ImageSourceConverter.cs" />
+    <Compile Include="Tools\Converters\IntToBoolConverter.cs" />
+    <Compile Include="Tools\Converters\IntToThemeConverter.cs" />
     <Compile Include="Tools\Converters\ListToStringConverter.cs" />
+    <Compile Include="Tools\Converters\NotConverter.cs" />
     <Compile Include="Tools\Converters\NullToVisibilityConverter.cs" />
     <Compile Include="Tools\Converters\PercentageConverter.cs" />
     <Compile Include="Tools\Converters\StringFormatConverter.cs" />
@@ -214,6 +224,7 @@
     <Compile Include="ViewModels\ExplorePageViewModel.cs" />
     <Compile Include="ViewModels\ArtistsPageViewModel.cs" />
     <Compile Include="ViewModels\NowPlayingPageViewModel.cs" />
+    <Compile Include="ViewModels\PlayerBarViewModel.cs" />
     <Compile Include="ViewModels\SearchPageViewModel.cs" />
     <Compile Include="ViewModels\SettingsPageViewModel.cs" />
     <Compile Include="ViewModels\SongsPageViewModel.cs" />
@@ -291,6 +302,10 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Page Include="Controls\LibraryHeader.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\SelectModeCommandBar.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

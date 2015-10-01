@@ -59,7 +59,7 @@ namespace Audiotica.Windows.Services.RunTime
 
         public string CurrentQueueId
             => _settingsUtility.Read(ApplicationSettingsConstants.QueueId, string.Empty);
-
+        public QueueTrack CurrentQueueTrack { get; private set; }
         public OptimizedObservableCollection<QueueTrack> PlaybackQueue { get; private set; }
         public event EventHandler<MediaPlayerState> MediaStateChanged;
         public event EventHandler<string> TrackChanged;
@@ -77,10 +77,20 @@ namespace Audiotica.Windows.Services.RunTime
             return started;
         }
 
+        public QueueTrack ContainsTrack(Track track) => PlaybackQueue.FirstOrDefault(p => track.Id == p.Track.Id);
+
         public async Task<QueueTrack> AddAsync(Track track, int position = -1)
         {
             await PrepareTrackAsync(track);
-            return Add(track, position);
+            return await InternalAddAsync(track, position);
+        }
+
+        public async Task AddAsync(IEnumerable<Track> tracks, int position = -1)
+        {
+            var arr = tracks.ToArray();
+            foreach (var track in arr)
+                await PrepareTrackAsync(track);
+            Add(arr, position);
         }
 
         public async Task<QueueTrack> AddAsync(WebSong webSong, int position = -1)
@@ -89,10 +99,16 @@ namespace Audiotica.Windows.Services.RunTime
             return await AddAsync(track, position);
         }
 
-        public async Task<QueueTrack> AddUpNextAsync(Track track)
+        public Task<QueueTrack> AddUpNextAsync(Track track)
         {
             var currentPosition = PlaybackQueue.IndexOf(PlaybackQueue.FirstOrDefault(p => p.Id == CurrentQueueId));
-            return await AddAsync(track, currentPosition + 1);
+            return AddAsync(track, currentPosition + 1);
+        }
+
+        public async Task AddUpNextAsync(IEnumerable<Track> tracks)
+        {
+            var currentPosition = PlaybackQueue.IndexOf(PlaybackQueue.FirstOrDefault(p => p.Id == CurrentQueueId));
+            await AddAsync(tracks, currentPosition + 1);
         }
 
         public async Task<QueueTrack> AddUpNextAsync(WebSong webSong)
@@ -101,11 +117,13 @@ namespace Audiotica.Windows.Services.RunTime
             return await AddUpNextAsync(track);
         }
 
-        public async Task NewQueueAsync(List<Track> tracks)
+        public async Task NewQueueAsync(IEnumerable<Track> tracks)
         {
-            foreach (var track in tracks)
+            var arr = tracks.ToArray();
+            foreach (var track in arr)
                 await PrepareTrackAsync(track);
-            var newQueue = tracks.Select(track => new QueueTrack(track)).ToList();
+            var newQueue = arr.Select(track => new QueueTrack(track)).ToList();
+            PlaybackQueue.SwitchTo(newQueue);
             MessageHelper.SendMessageToBackground(new UpdatePlaylistMessage(newQueue));
 
         }
@@ -238,15 +256,30 @@ namespace Audiotica.Windows.Services.RunTime
             }
         }
 
-        private QueueTrack Add(Track track, int position = -1)
+        private async Task<QueueTrack> InternalAddAsync(Track track, int position = -1)
         {
             var queue = new QueueTrack(track);
-            MessageHelper.SendMessageToBackground(new AddToPlaylistMessage(queue, position));
             if (position > -1 && position < PlaybackQueue.Count)
                 PlaybackQueue.Insert(position, queue);
             else
                 PlaybackQueue.Add(queue);
+            MessageHelper.SendMessageToBackground(new AddToPlaylistMessage(queue, position));
+            await Task.Delay(50);
             return queue;
+        }
+
+        private void Add(IEnumerable<Track> tracks, int position = -1)
+        {
+            var index = position;
+            var queue = tracks.Select(track => new QueueTrack(track)).ToList();
+            if (index > -1 && index < PlaybackQueue.Count)
+                foreach (var item in queue)
+                {
+                    PlaybackQueue.Insert(index++, item);
+                }
+            else
+                PlaybackQueue.AddRange(queue);
+            MessageHelper.SendMessageToBackground(new AddToPlaylistMessage(queue, position));
         }
 
         private async Task PrepareTrackAsync(Track track)
@@ -317,6 +350,7 @@ namespace Audiotica.Windows.Services.RunTime
             if (message is TrackChangedMessage)
             {
                 var trackChangedMessage = message as TrackChangedMessage;
+                CurrentQueueTrack = PlaybackQueue.FirstOrDefault(p => p.Id == trackChangedMessage.QueueId);
                 // When foreground app is active change track based on background message
                 await _dispatcherUtility.RunAsync(
                         () => { TrackChanged?.Invoke(sender, trackChangedMessage.QueueId); });

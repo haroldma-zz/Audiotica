@@ -13,6 +13,7 @@
     xmlns:tools="using:Audiotica.Windows.Tools"
     xmlns:converters="using:Audiotica.Windows.Tools.Converters"
     xmlns:common="using:Audiotica.Windows.Common"
+    xmlns:extensions="using:Audiotica.Windows.Extensions"
     mc:Ignorable="d"
     DataContext="{Binding ArtistsPage, Source={StaticResource ViewModelLocator}}">
 
@@ -49,8 +50,10 @@
         </Grid.RowDefinitions>
 
         <controls:LibraryHeader x:Name="LibraryHeader" Title="Artists" SortItems="{x:Bind ViewModel.SortItems}"
+                                ShuffleAllCommand="{x:Bind ViewModel.ShuffleAllCommand}"
                                 CurrentSortChangedCommand="{x:Bind ViewModel.SortChangedCommand}"
-                                Margin="{StaticResource PageTopSideThickness}" />
+                                Margin="{StaticResource PageTopSideThickness}"
+                                IsSelectMode="{x:Bind ViewModel.IsSelectMode, Mode=TwoWay}" />
 
         <!--No Music-->
         <controls:NoMusicPanel Grid.Row="1" x:Name="NoMusicPanel"
@@ -60,9 +63,10 @@
         <SemanticZoom x:Name="ArtistsGridZoom" Grid.Row="1">
             <SemanticZoom.ZoomedInView>
                 <common:ScrollGridView x:Name="ArtistsGridView" Grid.Row="1" Padding="{StaticResource PageThickness}"
+                                       extensions:ListViewExtensions.BindableSelection="{Binding SelectedItems, Mode=TwoWay}"
                                        VerticalOffset="{x:Bind ViewModel.GridViewVerticalOffset, Mode=TwoWay}"
                                        IsItemClickEnabled="True"
-                                       SelectionMode="None"
+                                       SelectionMode="{x:Bind ViewModel.IsSelectMode, Mode=OneWay, Converter={StaticResource NoneMultiSelectionModeConverter}}"
                                        ItemsSource="{x:Bind ViewModel.ViewSource.View, Mode=OneWay}"
                                        ItemTemplate="{StaticResource ArtistTemplate}">
                     <interactivity:Interaction.Behaviors>
@@ -95,9 +99,10 @@
                       Grid.Row="1">
             <SemanticZoom.ZoomedInView>
                 <common:ScrollListView x:Name="ArtistsListView" Padding="{StaticResource PageThickness}"
+                                       extensions:ListViewExtensions.BindableSelection="{Binding SelectedItems, Mode=TwoWay}"
                                        VerticalOffset="{x:Bind ViewModel.ListViewVerticalOffset, Mode=TwoWay}"
                                        IsItemClickEnabled="True"
-                                       SelectionMode="None"
+                                       SelectionMode="{x:Bind ViewModel.IsSelectMode, Mode=OneWay, Converter={StaticResource NoneMultiSelectionModeConverter}}"
                                        ItemsSource="{x:Bind ViewModel.ViewSource.View, Mode=OneWay}"
                                        ItemTemplate="{StaticResource ArtistNarrowTemplate}">
                     <ListView.GroupStyle>
@@ -155,4 +160,7 @@
             </VisualStateGroup>
         </VisualStateManager.VisualStateGroups>
     </Grid>
+    <Page.BottomAppBar>
+        <controls:SelectModeCommandBar SelectedItems="{x:Bind ViewModel.SelectedItems, Mode=OneWay}" Visibility="{x:Bind ViewModel.IsSelectMode, Converter={StaticResource VisibilityConverter}, Mode=OneWay}" />
+    </Page.BottomAppBar>
 </navigationService:NavigatablePage>

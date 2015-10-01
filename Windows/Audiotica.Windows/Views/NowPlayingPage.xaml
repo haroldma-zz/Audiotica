@@ -6,8 +6,14 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:navigationService="using:Audiotica.Windows.Services.NavigationService"
+    xmlns:controls="using:Audiotica.Windows.Controls"
     mc:Ignorable="d"
     DataContext="{Binding NowPlaying, Source={StaticResource ViewModelLocator}}">
 
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" />
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <controls:AlternatingRowListView ItemsSource="{x:Bind ViewModel.PlayerService.PlaybackQueue}"
+                                         Padding="{StaticResource PageThickness}"
+                                         OddRowBackground="{StaticResource SystemChromeLowBrush}"
+                                         ItemTemplate="{StaticResource QueueTrackTemplate}" />
+    </Grid>
 </navigationService:NavigatablePage>

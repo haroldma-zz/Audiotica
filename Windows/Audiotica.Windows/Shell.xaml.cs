@@ -3,7 +3,12 @@ using System.Collections.Generic;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
+using Audiotica.Core.Utilities.Interfaces;
+using Audiotica.Core.Windows.Helpers;
+using Audiotica.Windows.Services.Interfaces;
+using Audiotica.Windows.Services.RunTime;
 using Audiotica.Windows.Tools.Mvvm;
+using Audiotica.Windows.ViewModels;
 
 namespace Audiotica.Windows
 {
@@ -41,8 +46,12 @@ namespace Audiotica.Windows
             });
             frame.Navigated += (s, e) => update();
             Loaded += (s, e) => update();
+            ViewModel = App.Current.Kernel.Resolve<PlayerBarViewModel>();
+            AppSettings = App.Current.Kernel.Resolve<IAppSettingsUtility>();
             DataContext = this;
         }
+
+        public IAppSettingsUtility AppSettings { get; }
 
         public Thickness HamburgerPadding
         {
@@ -56,6 +65,7 @@ namespace Audiotica.Windows
             set { SetValue(NavBarMarginProperty, value); }
         }
 
+        public PlayerBarViewModel ViewModel { get; }
         public Command BackCommand => _backCommand ?? (_backCommand = new Command(ExecuteBack, CanBack));
         public Command MenuCommand => _menuCommand ?? (_menuCommand = new Command(ExecuteMenu));
         public Command<NavType> NavCommand => _navCommand ?? (_navCommand = new Command<NavType>(ExecuteNav));

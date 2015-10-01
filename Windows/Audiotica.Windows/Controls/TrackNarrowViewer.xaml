@@ -9,7 +9,7 @@
     d:DesignHeight="300"
     d:DesignWidth="400">
 
-    <Grid Background="Transparent" RightTapped="Viewer_RightTapped">
+    <Grid Background="Transparent" RightTapped="Viewer_RightTapped" DoubleTapped="PlayButton_Click">
         <FlyoutBase.AttachedFlyout>
             <MenuFlyout Placement="Bottom">
                 <MenuFlyoutItem Text="Play" Click="PlayButton_Click" />
@@ -38,7 +38,7 @@
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="32" />
             </Grid.ColumnDefinitions>
-            <Grid HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,3,1,0">
+            <Grid HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,3,1,0"  Visibility="{x:Bind IsPlaying, Mode=OneWay, Converter={StaticResource ReverseVisibilityConverter}}">
                 <Grid Visibility="{x:Bind IsCatalog, Mode=OneWay, Converter={StaticResource VisibilityConverter}}">
                     <TextBlock Style="{StaticResource MusicInCollectionTextBlockStyle}"
                                Foreground="{StaticResource SubtleTextBrush}"
@@ -52,6 +52,11 @@
                                ToolTipService.ToolTip="Streaming"
                                Visibility="{x:Bind Track.Type, Mode=OneWay, Converter={StaticResource StreamingVisibilityConverter}}" />
                 </Grid>
+            </Grid>
+            <Grid Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,3,1,0" Visibility="{x:Bind IsPlaying, Mode=OneWay, Converter={StaticResource VisibilityConverter}}">
+                <TextBlock Style="{StaticResource NowPlayingTextBlockStyle}"
+                               Foreground="{StaticResource SystemControlForegroundAccentBrush}"
+                               ToolTipService.ToolTip="Playing"/>
             </Grid>
             <Grid Grid.Column="1">
                 <Grid.RowDefinitions>

@@ -1,11 +1,10 @@
 ﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Input;
 using Audiotica.Core.Exceptions;
 using Audiotica.Core.Extensions;
-using Audiotica.Core.Windows.Helpers;
+using Audiotica.Core.Utilities.Interfaces;
 using Audiotica.Database.Models;
 using Audiotica.Database.Services.Interfaces;
 using Audiotica.Windows.Common;
@@ -13,58 +12,69 @@ using Audiotica.Windows.Services.Interfaces;
 using Audiotica.Windows.Views;
 using Autofac;
 
-namespace Audiotica.Windows.DataTemplates
+namespace Audiotica.Windows.Controls
 {
-    public sealed partial class LibraryDictionary
+    public sealed partial class SelectModeCommandBar
     {
-        public LibraryDictionary()
+        public static readonly DependencyProperty SelectedItemsProperty =
+            DependencyProperty.Register("SelectedItems", typeof (ObservableCollection<object>),
+                typeof (SelectModeCommandBar), null);
+
+        public SelectModeCommandBar()
         {
             InitializeComponent();
+            AppSettings = App.Current.Kernel.Resolve<IAppSettingsUtility>();
+            DataContext = this;
         }
 
-        private void Panel_RightTapped(object sender, RightTappedRoutedEventArgs e)
+        public IAppSettingsUtility AppSettings { get; }
+
+        public bool IsCatalog { get; set; }
+
+        public ObservableCollection<object> SelectedItems
         {
-            var panel = (Grid) sender;
-            FlyoutEx.ShowAttachedFlyoutAtPointer(panel);
+            get { return (ObservableCollection<object>) GetValue(SelectedItemsProperty); }
+            set { SetValue(SelectedItemsProperty, value); }
         }
 
-        private static IEnumerable<Track> GetTracks(object item)
+        private IEnumerable<Track> GetTracks()
         {
             List<Track> tracks;
 
-            if (item is Album)
-                tracks = item.As<Album>().Tracks.ToList();
-            else
+            if (SelectedItems.FirstOrDefault() is Album)
+                tracks = SelectedItems.Cast<Album>().SelectMany(p => p.Tracks).ToList();
+            else if (SelectedItems.FirstOrDefault() is Artist)
                 tracks =
-                    item.As<Artist>().Tracks.Union(item.As<Artist>().TracksThatAppearsIn)
+                    SelectedItems.Cast<Artist>()
+                        .SelectMany(p => p.Tracks)
+                        .Union(SelectedItems.Cast<Artist>().SelectMany(p => p.TracksThatAppearsIn))
                         .ToList();
+            else
+                tracks = SelectedItems.Cast<Track>().ToList();
             return tracks;
         }
 
-        private async void PlayButton_Click(object sender, RoutedEventArgs e)
+        private async void Play_Click(object sender, RoutedEventArgs e)
         {
-            var item = ((FrameworkElement) sender).DataContext;
             using (var lifetimeScope = App.Current.Kernel.BeginScope())
             {
                 var playerService = lifetimeScope.Resolve<IPlayerService>();
-                var tracks = GetTracks(item)
-                        .Where(p => p.Status == TrackStatus.None || p.Status == TrackStatus.Downloading)
-                        .ToList();
+                var tracks = GetTracks().Where(p => p.Status == TrackStatus.None || p.Status == TrackStatus.Downloading)
+                .ToList();
                 await playerService.NewQueueAsync(tracks);
             }
         }
 
         private async void AddQueue_Click(object sender, RoutedEventArgs e)
         {
-            var item = ((FrameworkElement) sender).DataContext;
             using (var scope = App.Current.Kernel.BeginScope())
             {
                 var backgroundAudioService = scope.Resolve<IPlayerService>();
                 try
                 {
-                    var tracks = GetTracks(item)
-                       .Where(p => p.Status == TrackStatus.None || p.Status == TrackStatus.Downloading)
-                       .ToList();
+                    var tracks = GetTracks()
+                      .Where(p => p.Status == TrackStatus.None || p.Status == TrackStatus.Downloading)
+                      .ToList();
                     await backgroundAudioService.AddAsync(tracks);
                     CurtainPrompt.Show("Added to queue");
                 }
@@ -77,15 +87,14 @@ namespace Audiotica.Windows.DataTemplates
 
         private async void AddUpNext_Click(object sender, RoutedEventArgs e)
         {
-            var item = ((FrameworkElement) sender).DataContext;
             using (var scope = App.Current.Kernel.BeginScope())
             {
                 var backgroundAudioService = scope.Resolve<IPlayerService>();
                 try
                 {
-                    var tracks = GetTracks(item)
-                       .Where(p => p.Status == TrackStatus.None || p.Status == TrackStatus.Downloading)
-                       .ToList();
+                    var tracks = GetTracks()
+                      .Where(p => p.Status == TrackStatus.None || p.Status == TrackStatus.Downloading)
+                      .ToList();
                     await backgroundAudioService.AddUpNextAsync(tracks);
                     CurtainPrompt.Show("Added up next");
                 }
@@ -98,11 +107,10 @@ namespace Audiotica.Windows.DataTemplates
 
         private void Download_Click(object sender, RoutedEventArgs e)
         {
-            var item = ((FrameworkElement) sender).DataContext;
             using (var scope = App.Current.Kernel.BeginScope())
             {
                 var downloadService = scope.Resolve<IDownloadService>();
-                var tracks = GetTracks(item).Where(p => p.IsDownloadable);
+                var tracks = GetTracks().Where(p => p.IsDownloadable);
                 foreach (var track in tracks)
                     downloadService.StartDownloadAsync(track);
             }
@@ -110,20 +118,26 @@ namespace Audiotica.Windows.DataTemplates
 
         private async void Delete_Click(object sender, RoutedEventArgs e)
         {
-            var item = ((FrameworkElement) sender).DataContext;
             using (var scope = App.Current.Kernel.BeginScope())
             {
                 var libraryService = scope.Resolve<ILibraryService>();
-                var tracks = GetTracks(item);
+                var tracks = GetTracks().ToList();
                 foreach (var track in tracks)
                     await libraryService.DeleteTrackAsync(track);
-            }
-        }
 
-        private void ExploreArtist_Click(object sender, RoutedEventArgs e)
-        {
-            var item = (Album) ((FrameworkElement) sender).DataContext;
-            App.Current.NavigationService.Navigate(typeof (ArtistPage), item.Artist.Name);
+                // make sure to navigate away if album turns out empty
+                if (!IsCatalog && App.Current.NavigationService.CurrentPageType == typeof (AlbumPage))
+                {
+                    if (
+                        tracks.Select(
+                            track =>
+                                libraryService.Albums.FirstOrDefault(p => p.Title.EqualsIgnoreCase(track.AlbumTitle)))
+                            .Any(album => album == null))
+                    {
+                        App.Current.NavigationService.GoBack();
+                    }
+                }
+            }
         }
     }
 }

@@ -20,8 +20,13 @@ namespace Audiotica.Windows.Controls
                 new PropertyMetadata(0));
 
         public static readonly DependencyProperty CurrentSortChangedCommandProperty =
-            DependencyProperty.Register("CurrentSortChangedCommand", typeof (ICommand), typeof (LibraryHeader),
-                new PropertyMetadata(0));
+            DependencyProperty.Register("CurrentSortChangedCommand", typeof (ICommand), typeof (LibraryHeader), null);
+
+        public static readonly DependencyProperty ShuffleAllCommandProperty =
+            DependencyProperty.Register("ShuffleAllCommand", typeof (ICommand), typeof (LibraryHeader), null);
+
+        public static readonly DependencyProperty IsSelectModeProperty =
+           DependencyProperty.Register("IsSelectMode", typeof(bool?), typeof(LibraryHeader), new PropertyMetadata(false));
 
         public LibraryHeader()
         {
@@ -52,7 +57,20 @@ namespace Audiotica.Windows.Controls
             set { SetValue(CurrentSortChangedCommandProperty, value); }
         }
 
+        public ICommand ShuffleAllCommand
+        {
+            get { return (ICommand) GetValue(ShuffleAllCommandProperty); }
+            set { SetValue(ShuffleAllCommandProperty, value); }
+        }
+
+        public bool? IsSelectMode
+        {
+            get { return (bool?)GetValue(IsSelectModeProperty); }
+            set { SetValue(IsSelectModeProperty, value); }
+        }
+
         public event EventHandler<ListBoxItem> CurrentSortChanged;
+        public event EventHandler ShuffleAll;
 
         private static void SortItemsPropertyChangedCallback(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
@@ -70,6 +88,12 @@ namespace Audiotica.Windows.Controls
                 CurrentSortChanged?.Invoke(this, item);
                 CurrentSortChangedCommand?.Execute(item);
             }
+        }
+
+        private void ShuffleAll_Click(object sender, RoutedEventArgs e)
+        {
+            ShuffleAll?.Invoke(this, EventArgs.Empty);
+            ShuffleAllCommand?.Execute(EventArgs.Empty);
         }
     }
 }

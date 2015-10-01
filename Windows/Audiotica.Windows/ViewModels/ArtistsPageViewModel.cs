@@ -1,17 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Navigation;
-using Audiotica.Core.Common;
 using Audiotica.Core.Extensions;
 using Audiotica.Database.Models;
 using Audiotica.Database.Services.Interfaces;
 using Audiotica.Windows.Enums;
 using Audiotica.Windows.Services.Interfaces;
 using Audiotica.Windows.Services.NavigationService;
-using Audiotica.Windows.Tools;
 using Audiotica.Windows.Tools.Mvvm;
 using Audiotica.Windows.Views;
 
@@ -21,20 +20,25 @@ namespace Audiotica.Windows.ViewModels
     {
         private readonly ILibraryCollectionService _libraryCollectionService;
         private readonly INavigationService _navigationService;
+        private readonly IPlayerService _playerService;
         private double _gridViewVerticalOffset;
+        private bool? _isSelectMode = false;
         private double _listViewVerticalOffset;
+        private ObservableCollection<object> _selectedItems = new ObservableCollection<object>();
         private CollectionViewSource _viewSource;
 
         public ArtistsPageViewModel(ILibraryCollectionService libraryCollectionService,
-            ILibraryService libraryService,
+            ILibraryService libraryService, IPlayerService playerService,
             INavigationService navigationService)
         {
             LibraryService = libraryService;
             _libraryCollectionService = libraryCollectionService;
+            _playerService = playerService;
             _navigationService = navigationService;
 
             ArtistClickCommand = new Command<ItemClickEventArgs>(ArtistClickExecute);
             SortChangedCommand = new Command<ListBoxItem>(SortChangedExecute);
+            ShuffleAllCommand = new Command(ShuffleAllExecute);
 
             SortItems =
                 Enum.GetValues(typeof (ArtistSort))
@@ -43,6 +47,8 @@ namespace Audiotica.Windows.ViewModels
                     .ToList();
             ChangeSort(ArtistSort.AtoZ);
         }
+
+        public Command ShuffleAllCommand { get; }
 
         public Command<ListBoxItem> SortChangedCommand { get; }
 
@@ -70,6 +76,29 @@ namespace Audiotica.Windows.ViewModels
             set { Set(ref _gridViewVerticalOffset, value); }
         }
 
+        public bool? IsSelectMode
+        {
+            get { return _isSelectMode; }
+            set { Set(ref _isSelectMode, value); }
+        }
+
+        public ObservableCollection<object> SelectedItems
+        {
+            get { return _selectedItems; }
+            set { Set(ref _selectedItems, value); }
+        }
+
+        private async void ShuffleAllExecute()
+        {
+            var playable = LibraryService.Tracks
+                .Where(p => p.Status == TrackStatus.None || p.Status == TrackStatus.Downloading)
+                .ToList();
+            if (!playable.Any()) return;
+
+            var tracks = playable.Shuffle();
+            await _playerService.NewQueueAsync(tracks);
+        }
+
         private void SortChangedExecute(ListBoxItem item)
         {
             if (!(item?.Tag is ArtistSort)) return;
@@ -93,6 +122,7 @@ namespace Audiotica.Windows.ViewModels
 
         private void ArtistClickExecute(ItemClickEventArgs e)
         {
+            if (IsSelectMode == true) return;
             var artist = (Artist) e.ClickedItem;
             _navigationService.Navigate(typeof (ArtistPage), artist.Name);
         }

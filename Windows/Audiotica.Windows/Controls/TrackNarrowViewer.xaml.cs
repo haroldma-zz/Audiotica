@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System.ComponentModel;
+using System.Linq;
+using System.Runtime.CompilerServices;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
@@ -16,7 +18,7 @@ using Autofac;
 namespace Audiotica.Windows.Controls
 {
     // TODO: find a way to get state triggers to work on usercontrol, then we won't need a seperate control _sight_ (hopefully just a bug on the current SDK)
-    public sealed partial class TrackNarrowViewer
+    public sealed partial class TrackNarrowViewer: INotifyPropertyChanged
     {
         public static readonly DependencyProperty IsSelectedProperty =
             DependencyProperty.Register("IsSelected", typeof (bool), typeof (TrackNarrowViewer), null);
@@ -24,11 +26,29 @@ namespace Audiotica.Windows.Controls
         public static readonly DependencyProperty IsCatalogProperty =
            DependencyProperty.Register("IsCatalog", typeof(bool), typeof(TrackViewer), null);
 
+
+        public static readonly DependencyProperty IsQueueProperty =
+            DependencyProperty.Register("IsQueue", typeof(bool), typeof(TrackViewer), null);
+
+        public static readonly DependencyProperty QueueIdProperty =
+            DependencyProperty.Register("QueueId", typeof(string), typeof(TrackViewer), null);
+
         private Track _track;
+        private bool _isPlaying;
 
         public TrackNarrowViewer()
         {
             InitializeComponent();
+        }
+
+        public bool IsPlaying
+        {
+            get { return _isPlaying; }
+            set
+            {
+                _isPlaying = value;
+                OnPropertyChanged();
+            }
         }
 
         public bool IsSelected
@@ -54,8 +74,47 @@ namespace Audiotica.Windows.Controls
             {
                 _track = value;
                 Bindings.Update();
+                TrackChanged();
             }
         }
+
+        public bool IsQueue
+
+        {
+            get { return (bool)GetValue(IsQueueProperty); }
+
+            set { SetValue(IsQueueProperty, value); }
+        }
+
+        public string QueueId
+        {
+            get { return (string)GetValue(QueueIdProperty); }
+
+            set { SetValue(QueueIdProperty, value); }
+        }
+
+        private void TrackChanged()
+        {
+            var player = App.Current.Kernel.Resolve<IPlayerService>();
+
+            if (Track == null)
+                IsPlaying = false;
+            else
+            {
+                if (IsQueue && QueueId != null)
+                    IsPlaying = player.CurrentQueueId == QueueId;
+                else if (!IsQueue && player.CurrentQueueTrack?.Track != null)
+                    IsPlaying = (Track.Id > 0 && player.CurrentQueueTrack.Track.Id == Track.Id)
+                        || TrackComparer.AreEqual(player.CurrentQueueTrack.Track, Track);
+                else
+                    IsPlaying = false;
+            }
+
+            player.TrackChanged -= PlayerOnTrackChanged;
+            player.TrackChanged += PlayerOnTrackChanged;
+        }
+
+        private void PlayerOnTrackChanged(object sender, string s) => TrackChanged();
 
         private async void PlayButton_Click(object sender, RoutedEventArgs e)
         {
@@ -64,10 +123,11 @@ namespace Audiotica.Windows.Controls
                 var playerService = lifetimeScope.Resolve<IPlayerService>();
                 try
                 {
-                    var queue = await playerService.AddAsync(Track);
+                    var queue = playerService.ContainsTrack(Track) ?? await playerService.AddAsync(Track);
                     // player auto plays when there is only one track
                     if (playerService.PlaybackQueue.Count > 1)
                         playerService.Play(queue);
+                    IsSelected = false;
                 }
                 catch (AppException ex)
                 {
@@ -175,6 +235,13 @@ namespace Audiotica.Windows.Controls
                         App.Current.NavigationService.GoBack();
                 }
             }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        private void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }
