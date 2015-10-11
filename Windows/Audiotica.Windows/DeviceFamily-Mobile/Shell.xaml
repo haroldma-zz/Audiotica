@@ -132,7 +132,7 @@
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
             <!-- More Controls -->
-            <Grid Grid.ColumnSpan="2" Background="{ThemeResource SystemControlBackgroundAltMediumLowBrush}">
+            <Grid Grid.ColumnSpan="2" Background="{ThemeResource SystemControlBackgroundAltMediumLowBrush}" Visibility="{x:Bind ViewModel.PlaybackDuration, Mode=OneWay, Converter={StaticResource ZeroToVisibilityConverter}}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
