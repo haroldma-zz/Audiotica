@@ -1,7 +1,9 @@
 ﻿using System;
 using Windows.ApplicationModel.Activation;
+using Windows.UI;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
+using Audiotica.Core.Utilities.Interfaces;
 using Audiotica.Core.Windows.Helpers;
 using Audiotica.Windows.Common;
 using Microsoft.ApplicationInsights;
@@ -34,6 +36,10 @@ namespace Audiotica.Windows
             {
                 ApplicationView.GetForCurrentView().VisibleBoundsChanged += OnVisibleBoundsChanged;
                 OnVisibleBoundsChanged(null, null);
+                
+                var appSettings = Kernel.Resolve<IAppSettingsUtility>();
+                var isDark = appSettings.Theme == 2 || appSettings.Theme == 0;
+                StatusBar.GetForCurrentView().ForegroundColor = (isDark ? Colors.White : Colors.Black) as Color?;
             }
         }
 
