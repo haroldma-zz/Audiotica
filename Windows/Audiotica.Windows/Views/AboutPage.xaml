@@ -1,11 +1,11 @@
 ﻿<navigationService:NavigatablePage
-    x:Class="Audiotica.Windows.Views.AboutPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:Audiotica.Windows.Views"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:navigationService="using:Audiotica.Windows.Services.NavigationService"
+    x:Class="Audiotica.Windows.Views.AboutPage"
     mc:Ignorable="d"
     DataContext="{Binding AboutPage, Source={StaticResource ViewModelLocator}}">
 

@@ -9,9 +9,10 @@
     RequestedTheme="{Binding AppSettings.Theme, Converter={StaticResource IntToThemeConverter}}"
     mc:Ignorable="d">
 
-    <Grid>
+    <Grid x:Name="RootLayout">
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <SplitView x:Name="ShellSplitView" DisplayMode="CompactOverlay">

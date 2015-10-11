@@ -5,10 +5,9 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using Audiotica.Core.Utilities.Interfaces;
 using Audiotica.Core.Windows.Helpers;
-using Audiotica.Windows.Services.Interfaces;
-using Audiotica.Windows.Services.RunTime;
 using Audiotica.Windows.Tools.Mvvm;
 using Audiotica.Windows.ViewModels;
+using Microsoft.AdMediator.Universal;
 
 namespace Audiotica.Windows
 {
@@ -16,8 +15,9 @@ namespace Audiotica.Windows
     {
         public static readonly DependencyProperty HamburgerPaddingProperty =
             DependencyProperty.RegisterAttached("HamburgerPadding", typeof (Thickness), typeof (Shell), null);
+
         public static readonly DependencyProperty NavBarMarginProperty =
-            DependencyProperty.RegisterAttached("NavBarMargin", typeof(Thickness), typeof(Shell), null);
+            DependencyProperty.RegisterAttached("NavBarMargin", typeof (Thickness), typeof (Shell), null);
 
         // back
         private Command _backCommand;
@@ -45,7 +45,11 @@ namespace Audiotica.Windows
                 BackCommand.RaiseCanExecuteChanged();
             });
             frame.Navigated += (s, e) => update();
-            Loaded += (s, e) => update();
+            Loaded += (s, e) =>
+            {
+                update();
+                ConfigureAds();
+            };
             ViewModel = App.Current.Kernel.Resolve<PlayerBarViewModel>();
             AppSettings = App.Current.Kernel.Resolve<IAppSettingsUtility>();
             DataContext = this;
@@ -61,7 +65,7 @@ namespace Audiotica.Windows
 
         public Thickness NavBarMargin
         {
-            get { return (Thickness)GetValue(NavBarMarginProperty); }
+            get { return (Thickness) GetValue(NavBarMarginProperty); }
             set { SetValue(NavBarMarginProperty, value); }
         }
 
@@ -69,6 +73,45 @@ namespace Audiotica.Windows
         public Command BackCommand => _backCommand ?? (_backCommand = new Command(ExecuteBack, CanBack));
         public Command MenuCommand => _menuCommand ?? (_menuCommand = new Command(ExecuteMenu));
         public Command<NavType> NavCommand => _navCommand ?? (_navCommand = new Command<NavType>(ExecuteNav));
+
+        private void ConfigureAds()
+        {
+            /*
+               Windows Desktop     Windows Phone & Windows Mobile
+               250×250*            300×50
+               300×250             320×50
+               728×90              480×80
+               160×600             640×100
+               300×600	
+               */
+
+            AdMediatorControl mediatorBar;
+
+            if (DeviceHelper.IsType(DeviceFamily.Mobile))
+            {
+                mediatorBar = new AdMediatorControl
+                {
+                    Id = "AdMediator-Id-13B224DA-AEC5-41E6-9B0A-FE01E4E1EB2B",
+                    Name = "AdMediator_3CB848",
+                    Width = 320,
+                    Height = 50
+                };
+
+            }
+            else
+            {
+                mediatorBar = new AdMediatorControl
+                {
+                    Id = "AdMediator-Id-05738009-2BFC-470B-825B-821C7D1FC6E9",
+                    Name = "AdMediator_E307A7",
+                    Width = 728,
+                    Height = 90
+                };
+            }
+
+            Grid.SetRow(mediatorBar, 2);
+            RootLayout.Children.Add(mediatorBar);
+        }
 
         public bool CanBack()
         {

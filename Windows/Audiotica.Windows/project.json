@@ -1,6 +1,8 @@
 ﻿{
   "dependencies": {
+    "AdDuplexWin10": "10.0.0.2",
     "Autofac": "3.5.2",
+    "Microsoft.AdMediator.Universal.AdDuplex": "2.1.0",
     "Microsoft.ApplicationInsights": "1.2.0",
     "Microsoft.ApplicationInsights.PersistenceChannel": "1.2.0",
     "Microsoft.ApplicationInsights.WindowsApps": "1.1.0",
