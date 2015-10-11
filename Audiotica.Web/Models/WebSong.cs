@@ -22,5 +22,18 @@ namespace Audiotica.Web.Models
         public int TrackNumber { get; set; }
         public int DiskNumber { get; set; }
         public object PreviousConversion { get; set; }
+
+        public class Comparer : IEqualityComparer<WebSong>
+        {
+            public bool Equals(WebSong x, WebSong y)
+            {
+                return GetHashCode(x) == GetHashCode(y);
+            }
+
+            public int GetHashCode(WebSong obj)
+            {
+                return (obj.Title + obj.Artists + obj.Album).ToLower().GetHashCode();
+            }
+        }
     }
 }
