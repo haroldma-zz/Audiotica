@@ -52,7 +52,7 @@
                             </RadioButton>
 
                             <Rectangle Height="1" Fill="{StaticResource NavButtonPressedBackgroundBrush}"
-                                   Margin="18,10,18,0" />
+                                       Margin="18,10,18,0" />
                         </StackPanel>
 
                         <StackPanel Grid.Row="1" x:Name="RadioButtonContainer">
@@ -123,12 +123,39 @@
             </SplitView.Pane>
         </SplitView>
         <Grid Grid.Row="1" Margin="{x:Bind NavBarMargin}" Background="{ThemeResource SplitViewBackgroundBrush}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
+            <!-- More Controls -->
+            <Grid Grid.ColumnSpan="2" Background="{ThemeResource SystemControlBackgroundAltMediumLowBrush}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <TextBlock Style="{StaticResource BaseSmallTextBlockStyle}" TextLineBounds="Tight" Margin="5,0,0,0"
+                           Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
+                           Text="{x:Bind ViewModel.PlaybackPositionText, Mode=OneWay}" VerticalAlignment="Center" />
+                <Slider Margin="10,0,10,0" Grid.Column="1" IsThumbToolTipEnabled="False" VerticalAlignment="Center"
+                        Value="{x:Bind ViewModel.PlaybackPosition, Mode=TwoWay}"
+                        Maximum="{x:Bind ViewModel.PlaybackDuration, Mode=OneWay}" />
+                <TextBlock Style="{StaticResource BaseSmallTextBlockStyle}" TextLineBounds="Tight"
+                           Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}" Grid.Column="2"
+                           Text="{x:Bind ViewModel.PlaybackDurationText, Mode=OneWay}" VerticalAlignment="Center" />
+                <StackPanel Orientation="Horizontal" Margin="5,0,0,0" Grid.Column="3">
+                    <AppBarToggleButton Icon="Shuffle" IsCompact="True" IsEnabled="False" />
+                    <AppBarToggleButton Icon="Sync" IsCompact="True" IsEnabled="False" />
+                </StackPanel>
+            </Grid>
             <!-- hamburger -->
-            <RadioButton Checked="DontCheck" Command="{Binding MenuCommand}" Margin="{x:Bind HamburgerPadding, Mode=OneWay}"
+            <RadioButton Grid.Row="1" Grid.Column="0" Checked="DontCheck" Command="{Binding MenuCommand}"
+                         Margin="{x:Bind HamburgerPadding, Mode=OneWay}"
                          Style="{StaticResource SplitViewRadioButtonStyle}" HorizontalAlignment="Left" MinWidth="0">
                 <RadioButton.Tag>
                     <TextBlock Text="{StaticResource MenuButtonIconText}"
@@ -137,20 +164,26 @@
                 </RadioButton.Tag>
             </RadioButton>
             <!-- Player -->
-            <Grid Grid.Column="1" Background="{ThemeResource SplitViewBackgroundBrush}" Visibility="{x:Bind ViewModel.PlaybackDuration, Mode=OneWay, Converter={StaticResource ZeroToVisibilityConverter}}">
+            <Grid Grid.Row="1" Grid.Column="1" Background="{ThemeResource SplitViewBackgroundBrush}"
+                  Visibility="{x:Bind ViewModel.PlaybackDuration, Mode=OneWay, Converter={StaticResource ZeroToVisibilityConverter}}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="68" />
                 </Grid.ColumnDefinitions>
                 <StackPanel Orientation="Horizontal" Margin="5">
-                    <Image Width="38" Height="38" Source="{x:Bind ViewModel.CurrentQueueTrack.Track.ArtworkUri, Mode=OneWay, Converter={StaticResource ImageSourceConverter}}" Stretch="UniformToFill" Margin="0,0,2,0" />
+                    <Image Width="38" Height="38"
+                           Source="{x:Bind ViewModel.CurrentQueueTrack.Track.ArtworkUri, Mode=OneWay, Converter={StaticResource ImageSourceConverter}}"
+                           Stretch="UniformToFill" Margin="0,0,2,0" />
                     <StackPanel Margin="5,0,0,0" VerticalAlignment="Center">
-                        <TextBlock Text="{x:Bind ViewModel.CurrentQueueTrack.Track.Title, Mode=OneWay}" Style="{StaticResource BaseTextBlockStyle}" TextTrimming="CharacterEllipsis" />
-                        <TextBlock Text="{x:Bind ViewModel.CurrentQueueTrack.Track.Artists, Mode=OneWay}" Style="{StaticResource BaseSmallTextBlockStyle}" TextTrimming="CharacterEllipsis" />
+                        <TextBlock Text="{x:Bind ViewModel.CurrentQueueTrack.Track.Title, Mode=OneWay}"
+                                   Style="{StaticResource BaseTextBlockStyle}" TextTrimming="CharacterEllipsis" />
+                        <TextBlock Text="{x:Bind ViewModel.CurrentQueueTrack.Track.Artists, Mode=OneWay}"
+                                   Style="{StaticResource BaseSmallTextBlockStyle}" TextTrimming="CharacterEllipsis" />
                     </StackPanel>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Grid.Column="1">
-                    <AppBarButton Icon="{x:Bind ViewModel.PlayPauseIcon, Mode=OneWay}" IsCompact="True" Command="{x:Bind ViewModel.PlayPauseCommand}"/>
+                    <AppBarButton Icon="{x:Bind ViewModel.PlayPauseIcon, Mode=OneWay}" IsCompact="True"
+                                  Command="{x:Bind ViewModel.PlayPauseCommand}" />
                 </StackPanel>
             </Grid>
         </Grid>
