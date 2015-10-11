@@ -144,7 +144,7 @@
                 </Grid>
             </SplitView.Pane>
         </SplitView>
-        <Grid Grid.Row="1" Background="{ThemeResource SplitViewBackgroundBrush}" Height="48">
+        <Grid Grid.Row="1" Background="{ThemeResource SplitViewBackgroundBrush}" Height="48" Visibility="{x:Bind ViewModel.PlaybackDuration, Mode=OneWay, Converter={StaticResource ZeroToVisibilityConverter}}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
@@ -164,7 +164,7 @@
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
                 <TextBlock Style="{StaticResource BaseSmallTextBlockStyle}" TextLineBounds="Tight" Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}" Text="{x:Bind ViewModel.PlaybackPositionText, Mode=OneWay}" VerticalAlignment="Center" />
-                <Slider Margin="10,0,10,0" Grid.Column="1" IsThumbToolTipEnabled="False" VerticalAlignment="Center" Value="{x:Bind ViewModel.PlaybackPosition, Mode=TwoWay}" Maximum="{x:Bind ViewModel.PlaybackDuration, Mode=OneWay}" Visibility="{x:Bind ViewModel.PlaybackDuration, Mode=OneWay, Converter={StaticResource ZeroToVisibilityConverter}}" />
+                <Slider Margin="10,0,10,0" Grid.Column="1" IsThumbToolTipEnabled="False" VerticalAlignment="Center" Value="{x:Bind ViewModel.PlaybackPosition, Mode=TwoWay}" Maximum="{x:Bind ViewModel.PlaybackDuration, Mode=OneWay}" />
                 <TextBlock Style="{StaticResource BaseSmallTextBlockStyle}" TextLineBounds="Tight" Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}" Grid.Column="2" Text="{x:Bind ViewModel.PlaybackDurationText, Mode=OneWay}" VerticalAlignment="Center" />
             </Grid>
             <StackPanel Orientation="Horizontal" Grid.Column="2">
