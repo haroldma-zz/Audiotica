@@ -123,6 +123,10 @@
             </SplitView.Pane>
         </SplitView>
         <Grid Grid.Row="1" Margin="{x:Bind NavBarMargin}" Background="{ThemeResource SplitViewBackgroundBrush}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
             <!-- hamburger -->
             <RadioButton Checked="DontCheck" Command="{Binding MenuCommand}" Margin="{x:Bind HamburgerPadding, Mode=OneWay}"
                          Style="{StaticResource SplitViewRadioButtonStyle}" HorizontalAlignment="Left" MinWidth="0">
@@ -132,6 +136,23 @@
                                FontSize="{StaticResource SplitViewLargeNavFontSize}" />
                 </RadioButton.Tag>
             </RadioButton>
+            <!-- Player -->
+            <Grid Grid.Column="1" Background="{ThemeResource SplitViewBackgroundBrush}" Visibility="{x:Bind ViewModel.PlaybackDuration, Mode=OneWay, Converter={StaticResource ZeroToVisibilityConverter}}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="68" />
+                </Grid.ColumnDefinitions>
+                <StackPanel Orientation="Horizontal" Margin="5">
+                    <Image Width="38" Height="38" Source="{x:Bind ViewModel.CurrentQueueTrack.Track.ArtworkUri, Mode=OneWay, Converter={StaticResource ImageSourceConverter}}" Stretch="UniformToFill" Margin="0,0,2,0" />
+                    <StackPanel Margin="5,0,0,0" VerticalAlignment="Center">
+                        <TextBlock Text="{x:Bind ViewModel.CurrentQueueTrack.Track.Title, Mode=OneWay}" Style="{StaticResource BaseTextBlockStyle}" TextTrimming="CharacterEllipsis" />
+                        <TextBlock Text="{x:Bind ViewModel.CurrentQueueTrack.Track.Artists, Mode=OneWay}" Style="{StaticResource BaseSmallTextBlockStyle}" TextTrimming="CharacterEllipsis" />
+                    </StackPanel>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Grid.Column="1">
+                    <AppBarButton Icon="{x:Bind ViewModel.PlayPauseIcon, Mode=OneWay}" IsCompact="True" Command="{x:Bind ViewModel.PlayPauseCommand}"/>
+                </StackPanel>
+            </Grid>
         </Grid>
     </Grid>
 </Page>
