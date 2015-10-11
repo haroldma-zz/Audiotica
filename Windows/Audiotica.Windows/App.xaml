@@ -38,6 +38,7 @@
             <converters:NotConverter x:Key="NotConverter" />
             <converters:IntToThemeConverter x:Key="IntToThemeConverter" />
             <converters:IntToBoolConverter x:Key="IntToBoolConverter" />
+            <converters:ZeroToVisibilityConverter x:Key="ZeroToVisibilityConverter" />
 
                 <converters:ContentConverter x:Key="SingleMultiSelectionModeConverter">
                 <converters:ContentConverter.TrueContent>

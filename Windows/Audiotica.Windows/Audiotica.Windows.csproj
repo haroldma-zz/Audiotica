@@ -214,6 +214,7 @@
     <Compile Include="Tools\Converters\UniformSpacingConverter.cs" />
     <Compile Include="Tools\Converters\UpperCaseConverter.cs" />
     <Compile Include="Tools\Converters\VisibilityConverter.cs" />
+    <Compile Include="Tools\Converters\ZeroToVisibilityConverter.cs" />
     <Compile Include="Tools\Mvvm\Command.cs" />
     <Compile Include="Tools\Mvvm\ViewModelBase.cs" />
     <Compile Include="Extensions\UriExtensions.cs" />

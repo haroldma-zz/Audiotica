@@ -3,7 +3,7 @@
   <Identity Name="3237Zumicts.AudioticaBeta" Publisher="CN=E38C2EDA-A823-4D3D-BBB1-8F0B81FF4C7B" Version="1510.0.0.0" />
   <mp:PhoneIdentity PhoneProductId="f1c50415-69ae-4a31-8e64-fecae1ddb07d" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
-    <DisplayName>Audiotica</DisplayName>
+    <DisplayName>Audiotica Beta</DisplayName>
     <PublisherDisplayName>Zumicts Studio</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
