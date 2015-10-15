@@ -26,6 +26,8 @@
                                 Visibility="{x:Bind Track.IsDownloadable, Mode=OneWay, Converter={StaticResource VisibilityConverter}}" />
                 <MenuFlyoutItem Text="Delete" Click="Delete_Click" Foreground="Red"
                                 Visibility="{x:Bind Track.IsFromLibrary, Mode=OneWay, Converter={StaticResource VisibilityConverter}}" />
+                <MenuFlyoutItem Text="Manual match" Click="ManualMatch_Click"
+                                Visibility="{x:Bind Track.IsFromLibrary, Mode=OneWay, Converter={StaticResource VisibilityConverter}}" />
                 <MenuFlyoutItem Text="Properties" IsEnabled="False"
                                 Visibility="{x:Bind Track.IsFromLibrary, Mode=OneWay, Converter={StaticResource VisibilityConverter}}" />
             </MenuFlyout>

@@ -47,13 +47,13 @@ namespace Audiotica.Web.MatchEngine.Providers
 
             return Uri.IsWellFormedUriString(uriString, UriKind.Absolute) ? new Uri(uriString, UriKind.Absolute) : null;
         }
-
+        
         public async Task<List<MatchSong>> GetSongsAsync(string title, string artist,
-            int limit = 10)
+            int limit = 10, bool verifyMatchesOnly = true)
         {
             return
                 await
-                    VerifyMatchesAsync(title, artist, await InternalGetSongsAsync(title, artist, limit).DontMarshall())
+                    VerifyMatchesAsync(title, artist, await InternalGetSongsAsync(title, artist, limit).DontMarshall(), verifyMatchesOnly)
                         .DontMarshall();
         }
 

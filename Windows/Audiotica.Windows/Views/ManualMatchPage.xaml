@@ -1,0 +1,56 @@
+﻿<navigationService:NavigatablePage
+    x:Class="Audiotica.Windows.Views.ManualMatchPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Audiotica.Windows.Views"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:navigationService="using:Audiotica.Windows.Services.NavigationService"
+    xmlns:viewModels="using:Audiotica.Windows.ViewModels"
+    xmlns:models="using:Audiotica.Web.Models"
+    xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
+    xmlns:core="using:Microsoft.Xaml.Interactions.Core"
+    x:Name="Page"
+    mc:Ignorable="d"
+    DataContext="{Binding ManualMatchPage, Source={StaticResource ViewModelLocator}}">
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Pivot x:Name="ProviderPivot" Title="Manual Match" ItemsSource="{x:Bind ViewModel.ProviderPivots}">
+            <Pivot.HeaderTemplate>
+                <DataTemplate x:DataType="viewModels:MatchProviderPivotItem">
+                    <TextBlock Text="{x:Bind Title}" />
+                </DataTemplate>
+            </Pivot.HeaderTemplate>
+            <Pivot.ItemTemplate>
+                <DataTemplate x:DataType="viewModels:MatchProviderPivotItem">
+                    <Grid>
+                        <ProgressBar
+                            IsIndeterminate="{x:Bind Results.Busy, Mode=OneWay, Converter={StaticResource NotConverter}}"
+                            Visibility="{x:Bind Results.Busy, Mode=OneWay, Converter={StaticResource ReverseVisibilityConverter}}"
+                            VerticalAlignment="Top" />
+                        <ListView ItemsSource="{x:Bind Results}" IsItemClickEnabled="True">
+                            <interactivity:Interaction.Behaviors>
+                                <core:EventTriggerBehavior EventName="ItemClick">
+                                    <core:InvokeCommandAction Command="{Binding ElementName=Page, Path=ViewModel.MatchClickCommand}" />
+                                </core:EventTriggerBehavior>
+                            </interactivity:Interaction.Behaviors>
+                            <ListView.ItemTemplate>
+                                <DataTemplate x:DataType="models:MatchSong">
+                                    <StackPanel>
+                                        <TextBlock Text="{x:Bind Title}" />
+                                        <TextBlock Text="{x:Bind Artist}" />
+                                        <TextBlock Text="{x:Bind Duration}" />
+                                        <TextBlock Text="{x:Bind FormattedBytes}" />
+                                        <TextBlock Text="{x:Bind BitRate}" />
+                                        <TextBlock Text="{x:Bind IsLinkDeath}" />
+                                        <TextBlock Text="{x:Bind IsMatch}" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
+                    </Grid>
+                </DataTemplate>
+            </Pivot.ItemTemplate>
+        </Pivot>
+    </Grid>
+</navigationService:NavigatablePage>

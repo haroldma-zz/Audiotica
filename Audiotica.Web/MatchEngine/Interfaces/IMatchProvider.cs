@@ -8,6 +8,6 @@ namespace Audiotica.Web.MatchEngine.Interfaces
     public interface IMatchProvider : IConfigurableProvider
     {
         Task<Uri> GetLinkAsync(string title, string artist);
-        Task<List<MatchSong>> GetSongsAsync(string title, string artist, int limit = 10);
+        Task<List<MatchSong>> GetSongsAsync(string title, string artist, int limit = 10, bool verifyMatchesOnly = true);
     }
 }
