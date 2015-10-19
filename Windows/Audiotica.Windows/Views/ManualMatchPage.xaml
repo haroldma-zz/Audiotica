@@ -28,7 +28,7 @@
                             IsIndeterminate="{x:Bind Results.Busy, Mode=OneWay, Converter={StaticResource NotConverter}}"
                             Visibility="{x:Bind Results.Busy, Mode=OneWay, Converter={StaticResource ReverseVisibilityConverter}}"
                             VerticalAlignment="Top" />
-                        <ListView ItemsSource="{x:Bind Results}" IsItemClickEnabled="True">
+                        <ListView ItemsSource="{x:Bind Results}" IsItemClickEnabled="True" SelectionMode="None">
                             <interactivity:Interaction.Behaviors>
                                 <core:EventTriggerBehavior EventName="ItemClick">
                                     <core:InvokeCommandAction Command="{Binding ElementName=Page, Path=ViewModel.MatchClickCommand}" />

@@ -9,6 +9,7 @@ using Audiotica.Database.Models;
 using Audiotica.Database.Services.Interfaces;
 using Audiotica.Web.MatchEngine.Interfaces;
 using Audiotica.Web.Models;
+using Audiotica.Windows.Services.NavigationService;
 using Audiotica.Windows.Tools.Mvvm;
 
 namespace Audiotica.Windows.ViewModels
@@ -16,13 +17,15 @@ namespace Audiotica.Windows.ViewModels
     public class ManualMatchPageViewModel : ViewModelBase
     {
         private readonly ILibraryService _libraryService;
+        private readonly INavigationService _navigationService;
         private readonly IEnumerable<IMatchProvider> _providers;
         private List<MatchProviderPivotItem> _providerPivots;
         private Track _track;
 
-        public ManualMatchPageViewModel(IEnumerable<IMatchProvider> providers, ILibraryService libraryService)
+        public ManualMatchPageViewModel(IEnumerable<IMatchProvider> providers, ILibraryService libraryService, INavigationService navigationService)
         {
             _libraryService = libraryService;
+            _navigationService = navigationService;
             _providers = providers.Where(p => p.IsEnabled).OrderByDescending(p => p.Priority).ToList();
             MatchClickCommand = new Command<ItemClickEventArgs>(MatchClickExecute);
 
@@ -49,7 +52,9 @@ namespace Audiotica.Windows.ViewModels
             var match = (MatchSong) e.ClickedItem;
             // TODO: Update queue items that belong to this track
             Track.AudioWebUri = match.AudioUrl;
+            Track.Status = TrackStatus.None;
             await _libraryService.UpdateTrackAsync(Track);
+            _navigationService.GoBack();
         }
 
         public override sealed void OnNavigatedTo(object parameter, NavigationMode mode,
@@ -88,9 +93,17 @@ namespace Audiotica.Windows.ViewModels
 
         protected override async Task<IList<MatchSong>> LoadMoreItemsOverrideAsync(CancellationToken c, uint count)
         {
-            var results = await _provider.GetSongsAsync(_title, _artist, verifyMatchesOnly: false);
-            _hasMore = false;
-            return results;
+            try
+            {
+                _hasMore = false;
+                var results = await _provider.GetSongsAsync(_title, _artist, verifyMatchesOnly: false);
+                return results;
+            }
+            catch
+            {
+                _hasMore = true;
+                return null;
+            }
         }
 
         protected override bool HasMoreItemsOverride() => _hasMore;
