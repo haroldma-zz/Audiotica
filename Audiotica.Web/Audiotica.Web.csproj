@@ -61,7 +61,7 @@
     <Compile Include="Http\Requets\MatchEngine\Mp3Pm\Mp3PmSearchRequest.cs" />
     <Compile Include="Http\Requets\MatchEngine\Mp3Skull\Mp3SkullRequest.cs" />
     <Compile Include="Http\Requets\MatchEngine\Mp3lio\Mp3lioSearchRequest.cs" />
-    <Compile Include="Http\Requets\MatchEngine\Mp3Truck\Mp3TruckSearchRequest.cs" />
+    <Compile Include="Http\Requets\MatchEngine\Mp3Truck\Mp3GluSearchRequest.cs" />
     <Compile Include="Http\Requets\MatchEngine\Netease\NeteaseDetailsRequest.cs" />
     <Compile Include="Http\Requets\MatchEngine\Netease\NeteaseSearchRequest.cs" />
     <Compile Include="Http\Requets\MatchEngine\Pleer\PleerDetailsRequest.cs" />
@@ -113,7 +113,7 @@
     <Compile Include="MatchEngine\Interfaces\Validators\ISongTypeValidator.cs" />
     <Compile Include="MatchEngine\Providers\MeileMatchProvider.cs" />
     <Compile Include="MatchEngine\Providers\Mp3SkullMatchProvider.cs" />
-    <Compile Include="MatchEngine\Providers\Mp3TruckMatchProvider.cs" />
+    <Compile Include="MatchEngine\Providers\Mp3GluMatchProvider.cs" />
     <Compile Include="MatchEngine\Providers\NeteaseMatchProvider.cs" />
     <Compile Include="MatchEngine\Providers\PleerMatchProvider.cs" />
     <Compile Include="MatchEngine\Providers\MatchProviderBase.cs" />
