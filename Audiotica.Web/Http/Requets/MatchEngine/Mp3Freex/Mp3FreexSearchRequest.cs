@@ -7,7 +7,7 @@ namespace Audiotica.Web.Http.Requets.MatchEngine.Mp3Freex
     {
         public Mp3FreexSearchRequest(string query)
         {
-            this.Url("http://mp3freex.com/{query}-download").UrlParam("query", query.Replace(" ", "-")).Get();
+            this.Url("http://mp3freex.net/").QParam("inmp3", query).Get();
         }
     }
 }

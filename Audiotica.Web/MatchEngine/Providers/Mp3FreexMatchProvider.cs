@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -46,14 +47,33 @@ namespace Audiotica.Web.MatchEngine.Providers
                     if (string.IsNullOrEmpty(songTitle)) continue;
                     song.SetNameAndArtistFromTitle(songTitle, true);
 
+                    var meta =
+                        songNode.Descendants("span")
+                            .FirstOrDefault(p => p.Attributes["class"]?.Value == "label label-info")?
+                            .InnerText;
+
+                    if (!string.IsNullOrEmpty(meta))
+                    {
+                        var duration = meta.Substring(0, meta.IndexOf("|", StringComparison.Ordinal)).Trim();
+                        var seconds = int.Parse(duration.Substring(duration.Length - 2, 2));
+                        var minutes = int.Parse(duration.Remove(duration.Length - 3));
+                        song.Duration = new TimeSpan(0, 0, minutes, seconds);
+
+                        int bitrate;
+                        if (int.TryParse(meta.Substring(meta.IndexOf("|", StringComparison.Ordinal) + 1).Replace("kbps", ""), out bitrate))
+                        {
+                            song.BitRate = bitrate;
+                        }
+                    }
+
                     var linkNode =
                         songNode.Descendants("a")
                             .FirstOrDefault(p => p.Attributes["class"]?.Value.Contains("mp3download") ?? false);
-                    var url = linkNode?.Attributes["href"]?.Value;
+                    var url = linkNode?.Attributes["data-online"]?.Value;
 
                     if (string.IsNullOrEmpty(url)) continue;
 
-                    song.AudioUrl = await GetAudioUrl(url).DontMarshall();
+                    song.AudioUrl = await GetAudioUrlAsync(url).DontMarshall();
 
                     if (string.IsNullOrEmpty(song.AudioUrl)) continue;
 
@@ -64,16 +84,16 @@ namespace Audiotica.Web.MatchEngine.Providers
             }
         }
 
-        private async Task<string> GetAudioUrl(string downloadPage)
+        private async Task<string> GetAudioUrlAsync(string downloadPart)
         {
-            using (var response = await downloadPage.ToUri().GetAsync().DontMarshall())
+            using (var response = await ("http://mp3freex.net/listen-online/" + downloadPart).ToUri().GetAsync().DontMarshall())
             {
                 if (!response.IsSuccessStatusCode) return null;
 
                 var doc = await response.ParseHtmlAsync().DontMarshall();
 
-                var linkNode = doc.DocumentNode.Descendants("a").FirstOrDefault(p => p.InnerText.Contains("Download"));
-                return linkNode?.Attributes["href"]?.Value;
+                var linkNode = doc.DocumentNode.Descendants("div").FirstOrDefault(p => p.Attributes["class"]?.Value.Contains("player") ?? false);
+                return linkNode?.Attributes["data-url"]?.Value;
             }
         }
     }

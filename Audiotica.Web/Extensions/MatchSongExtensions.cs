@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using Audiotica.Web.Models;
 
@@ -27,7 +28,12 @@ namespace Audiotica.Web.Extensions
             var left = titleSplit[0];
             var right = string.Join($" {seperator} ", titleSplit.Skip(1));
 
-            if (artistOnLeft)
+
+            if (string.IsNullOrEmpty(right))
+            {
+                song.Title = left;
+            }
+            else if (artistOnLeft)
             {
                 song.Artist = left;
                 song.Title = right;
