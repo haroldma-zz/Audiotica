@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,9 +12,19 @@ namespace Audiotica.Core.Windows.Common
 {
     public abstract class IncrementalLoadingBase<T> : ObservableCollection<T>, ISupportIncrementalLoading
     {
+        private bool _busy;
+
         #region State 
 
-        public bool Busy { get; private set; }
+        public bool Busy
+        {
+            get { return _busy; }
+            private set
+            {
+                _busy = value;
+                OnPropertyChanged(new PropertyChangedEventArgs("Busy"));
+            }
+        }
 
         #endregion
 

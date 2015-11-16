@@ -26,8 +26,8 @@
                 <DataTemplate x:DataType="viewModels:MatchProviderPivotItem">
                     <Grid>
                         <ProgressBar
-                            IsIndeterminate="{x:Bind Results.Busy, Mode=OneWay, Converter={StaticResource NotConverter}}"
-                            Visibility="{x:Bind Results.Busy, Mode=OneWay, Converter={StaticResource ReverseVisibilityConverter}}"
+                            IsIndeterminate="{x:Bind Results.Busy, Mode=OneWay}"
+                            Visibility="{x:Bind Results.Busy, Mode=OneWay, Converter={StaticResource VisibilityConverter}}"
                             VerticalAlignment="Top" />
                         <controls:AlternatingRowListView OddRowBackground="{StaticResource SystemChromeLowBrush}" ItemsSource="{x:Bind Results}" IsItemClickEnabled="True" SelectionMode="None">
                             <interactivity:Interaction.Behaviors>
