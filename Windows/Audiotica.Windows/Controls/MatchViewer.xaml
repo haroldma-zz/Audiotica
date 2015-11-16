@@ -1,0 +1,68 @@
+﻿<UserControl
+    x:Class="Audiotica.Windows.Controls.MatchViewer"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Audiotica.Windows.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    d:DesignHeight="300"
+    d:DesignWidth="400">
+
+    <Grid>
+        <Grid>
+            <Grid Margin="0,15"
+                  Opacity="{x:Bind Match.IsLinkDeath, Converter={StaticResource BoolToOpacityConverter}, Mode=OneWay}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="32" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width=".2*" />
+                    <ColumnDefinition Width="32" />
+                </Grid.ColumnDefinitions>
+                <Grid Grid.Column="1">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="{x:Bind Match.Title, Mode=OneWay}"
+                               Style="{StaticResource BaseTextBlockStyle}" Margin="0,0,10,0" />
+                    <StackPanel Grid.Row="0" Grid.Column="1" Margin="20,0,20,0"
+                                Orientation="Horizontal"
+                                Visibility="{x:Bind IsSelected, Mode=OneWay, Converter={StaticResource VisibilityConverter}}">
+                        <Button Style="{StaticResource PlainButtonStyle}"
+                                Click="PlayButton_Click">
+                            <Grid Background="Transparent">
+                                <SymbolIcon Symbol="Play" RenderTransformOrigin="0.5,0.5">
+                                    <SymbolIcon.RenderTransform>
+                                        <CompositeTransform ScaleX=".7" ScaleY=".7" />
+                                    </SymbolIcon.RenderTransform>
+                                </SymbolIcon>
+                            </Grid>
+                        </Button>
+                        <Button Margin="40,0,0,0" Style="{StaticResource PlainButtonStyle}">
+                            <Grid Background="Transparent">
+                                <SymbolIcon Symbol="Add" RenderTransformOrigin="0.5,0.5">
+                                    <SymbolIcon.RenderTransform>
+                                        <CompositeTransform ScaleX=".7" ScaleY=".7" />
+                                    </SymbolIcon.RenderTransform>
+                                </SymbolIcon>
+                            </Grid>
+                        </Button>
+                    </StackPanel>
+                </Grid>
+                <TextBlock Grid.Column="2" Text="{x:Bind Match.Artist, Mode=OneWay}"
+                       Style="{StaticResource SubtleTextBlockStyle}" Margin="0,0,10,0" />
+                <TextBlock Grid.Column="3" Text="{x:Bind Match.Duration, Mode=OneWay}"
+                       Style="{StaticResource SubtleTextBlockStyle}" Margin="0,0,10,0" />
+                <TextBlock Grid.Column="4" Text="{x:Bind Match.FormattedBytes, Mode=OneWay}" HorizontalAlignment="Right"
+                       Style="{StaticResource SubtleTextBlockStyle}" />
+            </Grid>
+        </Grid>
+    </Grid>
+</UserControl>

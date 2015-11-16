@@ -10,6 +10,7 @@
     xmlns:models="using:Audiotica.Web.Models"
     xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
     xmlns:core="using:Microsoft.Xaml.Interactions.Core"
+    xmlns:controls="using:Audiotica.Windows.Controls"
     x:Name="Page"
     mc:Ignorable="d"
     DataContext="{Binding ManualMatchPage, Source={StaticResource ViewModelLocator}}">
@@ -28,26 +29,20 @@
                             IsIndeterminate="{x:Bind Results.Busy, Mode=OneWay, Converter={StaticResource NotConverter}}"
                             Visibility="{x:Bind Results.Busy, Mode=OneWay, Converter={StaticResource ReverseVisibilityConverter}}"
                             VerticalAlignment="Top" />
-                        <ListView ItemsSource="{x:Bind Results}" IsItemClickEnabled="True" SelectionMode="None">
+                        <controls:AlternatingRowListView OddRowBackground="{StaticResource SystemChromeLowBrush}" ItemsSource="{x:Bind Results}" IsItemClickEnabled="True" SelectionMode="None">
                             <interactivity:Interaction.Behaviors>
                                 <core:EventTriggerBehavior EventName="ItemClick">
-                                    <core:InvokeCommandAction Command="{Binding ElementName=Page, Path=ViewModel.MatchClickCommand}" />
+                                    <core:InvokeCommandAction
+                                        Command="{Binding ElementName=Page, Path=ViewModel.MatchClickCommand}" />
                                 </core:EventTriggerBehavior>
                             </interactivity:Interaction.Behaviors>
                             <ListView.ItemTemplate>
                                 <DataTemplate x:DataType="models:MatchSong">
-                                    <StackPanel>
-                                        <TextBlock Text="{x:Bind Title}" />
-                                        <TextBlock Text="{x:Bind Artist}" />
-                                        <TextBlock Text="{x:Bind Duration}" />
-                                        <TextBlock Text="{x:Bind FormattedBytes}" />
-                                        <TextBlock Text="{x:Bind BitRate}" />
-                                        <TextBlock Text="{x:Bind IsLinkDeath}" />
-                                        <TextBlock Text="{x:Bind IsMatch}" />
-                                    </StackPanel>
+                                    <controls:MatchViewer Match="{x:Bind}"
+                                                          IsSelected="{Binding Tag, Mode=TwoWay, RelativeSource={RelativeSource Mode=TemplatedParent}}" />
                                 </DataTemplate>
                             </ListView.ItemTemplate>
-                        </ListView>
+                        </controls:AlternatingRowListView>
                     </Grid>
                 </DataTemplate>
             </Pivot.ItemTemplate>

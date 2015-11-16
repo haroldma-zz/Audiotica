@@ -138,6 +138,9 @@
     <Compile Include="Controls\LibraryHeader.xaml.cs">
       <DependentUpon>LibraryHeader.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\MatchViewer.xaml.cs">
+      <DependentUpon>MatchViewer.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\SelectModeCommandBar.xaml.cs">
       <DependentUpon>SelectModeCommandBar.xaml</DependentUpon>
     </Compile>
@@ -310,6 +313,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Controls\MatchViewer.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Controls\SelectModeCommandBar.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -443,8 +450,8 @@
     <SDKReference Include="Microsoft.VCLibs.120, Version=14.0">
       <Name>Microsoft.VCLibs.120</Name>
     </SDKReference>
-    <SDKReference Include="SQLite.UAP.2015, Version=3.8.11.1">
-      <Name>SQLite for Universal App Platform</Name>
+    <SDKReference Include="SQLite.UAP.2015, Version=3.9.1">
+      <Name>SQLite for Universal App Platform %28SQLite.UAP.2015, Version=3.9.1%29</Name>
     </SDKReference>
     <SDKReference Include="WindowsMobile, Version=10.0.10240.0">
       <Name>Windows Mobile Extensions for the UWP</Name>

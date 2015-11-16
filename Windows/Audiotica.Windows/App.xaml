@@ -40,7 +40,16 @@
             <converters:ThemeIntToBoolConverter x:Key="IntToBoolConverter" />
             <converters:ZeroToVisibilityConverter x:Key="ZeroToVisibilityConverter" />
 
-                <converters:ContentConverter x:Key="SingleMultiSelectionModeConverter">
+            <converters:ContentConverter x:Key="BoolToOpacityConverter">
+                <converters:ContentConverter.TrueContent>
+                    <x:Double>.2</x:Double>
+                </converters:ContentConverter.TrueContent>
+                <converters:ContentConverter.FalseContent>
+                    <x:Double>1</x:Double>
+                </converters:ContentConverter.FalseContent>
+            </converters:ContentConverter>
+
+            <converters:ContentConverter x:Key="SingleMultiSelectionModeConverter">
                 <converters:ContentConverter.TrueContent>
                     <ListViewSelectionMode>Multiple</ListViewSelectionMode>
                 </converters:ContentConverter.TrueContent>
@@ -64,7 +73,7 @@
             <Thickness x:Key="PageThickness">30, 26</Thickness>
             <!--Padding for page on mobile-->
             <Thickness x:Key="MobilePageThickness">18, 26</Thickness>
-            
+
             <!--Thickness for top/bottom only-->
             <Thickness x:Key="TopBottomThickness">0, 26</Thickness>
 
