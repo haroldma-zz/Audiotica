@@ -50,6 +50,9 @@ namespace Audiotica.Windows.ViewModels
         private async void MatchClickExecute(ItemClickEventArgs e)
         {
             var match = (MatchSong) e.ClickedItem;
+
+            if (match.IsLinkDeath) return;
+
             // TODO: Update queue items that belong to this track
             Track.AudioWebUri = match.AudioUrl;
             Track.Status = TrackStatus.None;
