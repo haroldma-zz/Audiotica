@@ -363,14 +363,19 @@ namespace Audiotica.Database.Models
 
         public int GetHashCode(Track obj)
         {
-            return (obj.Title + obj.DisplayArtist
-                    + obj.AlbumArtist
-                    + obj.AlbumTitle).ToAudioticaSlug().GetHashCode();
+            return GetSlug(obj).GetHashCode();
         }
 
         public static bool AreEqual(Track x, Track y)
         {
             return new TrackComparer().Equals(x, y);
+        }
+
+        public static string GetSlug(Track track)
+        {
+            return (track.Title + track.DisplayArtist
+                        + track.AlbumArtist
+                        + track.AlbumTitle).ToAudioticaSlug();
         }
     }
 }
