@@ -1,7 +1,11 @@
 ﻿using System;
 using System.Windows.Input;
+using Windows.ApplicationModel.DataTransfer;
+using Windows.System;
 using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
+using Audiotica.Core.Windows.Helpers;
 using Audiotica.Web.Models;
 
 namespace Audiotica.Windows.Controls
@@ -62,6 +66,25 @@ namespace Audiotica.Windows.Controls
         {
             if (Match.IsLinkDeath) return;
             MatchSelectedCommand?.Execute(Match);
+        }
+
+        private async void OpenBrowser_Click(object sender, RoutedEventArgs e)
+        {
+            await Launcher.LaunchUriAsync(new Uri(Match.AudioUrl));
+        }
+
+        private void Viewer_RightTapped(object sender, RightTappedRoutedEventArgs e)
+        {
+            var grid = (Grid)sender;
+            FlyoutEx.ShowAttachedFlyoutAtPointer(grid);
+        }
+
+        private void Clipboard_Click(object sender, RoutedEventArgs e)
+        {
+            var dataPackage = new DataPackage();
+
+            dataPackage.SetText(Match.AudioUrl);
+            Clipboard.SetContent(dataPackage);
         }
     }
 }
