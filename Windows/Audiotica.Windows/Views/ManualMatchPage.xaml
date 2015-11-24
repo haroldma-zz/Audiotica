@@ -16,6 +16,7 @@
     DataContext="{Binding ManualMatchPage, Source={StaticResource ViewModelLocator}}">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <MediaElement x:Name="PlaybackPlayer" />
         <Pivot x:Name="ProviderPivot" Title="Manual Match" ItemsSource="{x:Bind ViewModel.ProviderPivots}">
             <Pivot.HeaderTemplate>
                 <DataTemplate x:DataType="viewModels:MatchProviderPivotItem">
@@ -32,7 +33,7 @@
                         <controls:AlternatingRowListView OddRowBackground="{StaticResource SystemChromeLowBrush}" ItemsSource="{x:Bind Results}" SelectionMode="Single">
                             <ListView.ItemTemplate>
                                 <DataTemplate x:DataType="models:MatchSong">
-                                    <controls:MatchViewer Match="{x:Bind}" MatchSelectedCommand="{Binding ElementName=Page, Path=ViewModel.MatchClickCommand}"
+                                    <controls:MatchViewer PlayClick="MatchViewer_OnPlayClick" Match="{x:Bind}" MatchSelectedCommand="{Binding ElementName=Page, Path=ViewModel.MatchClickCommand}"
                                                           IsSelected="{Binding Tag, Mode=TwoWay, RelativeSource={RelativeSource Mode=TemplatedParent}}" />
                                 </DataTemplate>
                             </ListView.ItemTemplate>

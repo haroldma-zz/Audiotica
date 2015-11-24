@@ -9,7 +9,7 @@
     d:DesignHeight="300"
     d:DesignWidth="400">
 
-    <Grid Background="Transparent" DoubleTapped="MatchButton_Click">
+    <Grid Background="Transparent" DoubleTapped="PlayButton_Click">
         <Grid>
             <Grid Margin="0,15"
                   Opacity="{x:Bind Match.IsLinkDeath, Converter={StaticResource BoolToOpacityConverter}, Mode=OneWay}">
