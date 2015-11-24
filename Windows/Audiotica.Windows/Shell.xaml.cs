@@ -1,17 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
+using System.Threading;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using Audiotica.Core.Utilities.Interfaces;
 using Audiotica.Core.Windows.Helpers;
+using Audiotica.Database.Models;
+using Audiotica.Web.Extensions;
+using Audiotica.Web.Metadata.Interfaces;
+using Audiotica.Windows.Services.Interfaces;
 using Audiotica.Windows.Tools.Mvvm;
 using Audiotica.Windows.ViewModels;
 using Microsoft.AdMediator.Universal;
 
 namespace Audiotica.Windows
 {
-    public sealed partial class Shell
+    public sealed partial class Shell : INotifyPropertyChanged
     {
         public static readonly DependencyProperty HamburgerPaddingProperty =
             DependencyProperty.RegisterAttached("HamburgerPadding", typeof (Thickness), typeof (Shell), null);
@@ -21,6 +28,13 @@ namespace Audiotica.Windows
 
         // back
         private Command _backCommand;
+        private CancellationTokenSource _cancellationTokenSource;
+
+        private string _currentSongSlug;
+
+        private bool _flyoutOpened;
+        private bool _isLyricsLoading;
+        private string _lyricsText;
         // menu
         private Command _menuCommand;
         // nav
@@ -48,7 +62,10 @@ namespace Audiotica.Windows
             Loaded += (s, e) =>
             {
                 update();
-                ConfigureAds();
+                if (AppSettings.Ads)
+                    ConfigureAds();
+                var playerService = App.Current.Kernel.Resolve<IPlayerService>();
+                playerService.TrackChanged += PlayerServiceOnTrackChanged;
             };
             ViewModel = App.Current.Kernel.Resolve<PlayerBarViewModel>();
             AppSettings = App.Current.Kernel.Resolve<IAppSettingsUtility>();
@@ -74,7 +91,35 @@ namespace Audiotica.Windows
         public Command MenuCommand => _menuCommand ?? (_menuCommand = new Command(ExecuteMenu));
         public Command<NavType> NavCommand => _navCommand ?? (_navCommand = new Command<NavType>(ExecuteNav));
 
-        private void ConfigureAds()
+        public string LyricsText
+        {
+            get { return _lyricsText; }
+            set
+            {
+                _lyricsText = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public bool IsLyricsLoading
+        {
+            get { return _isLyricsLoading; }
+            set
+            {
+                _isLyricsLoading = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        private void PlayerServiceOnTrackChanged(object sender, string s)
+        {
+            if (IsLyricsLoading || _flyoutOpened)
+                LyricsFlyout_OnOpened(null, null);
+        }
+
+        public void ConfigureAds()
         {
             /*
                Windows Desktop     Windows Phone & Windows Mobile
@@ -96,7 +141,6 @@ namespace Audiotica.Windows
                     Width = 320,
                     Height = 50
                 };
-
             }
             else
             {
@@ -111,6 +155,16 @@ namespace Audiotica.Windows
 
             Grid.SetRow(mediatorBar, 2);
             RootLayout.Children.Add(mediatorBar);
+            AdsLoaded = true;
+        }
+        public bool AdsLoaded { get; private set; }
+
+        public void DisableAds()
+        {
+            var mediatorBar = RootLayout.Children[(RootLayout.Children.Count - 1)] as AdMediatorControl;
+            mediatorBar.Dispose();
+            RootLayout.Children.Remove(mediatorBar);
+            AdsLoaded = false;
         }
 
         public bool CanBack()
@@ -167,6 +221,67 @@ namespace Audiotica.Windows
             // don't let the radiobutton check
             ((RadioButton) s).IsChecked = false;
         }
+
+        private async void LyricsFlyout_OnOpened(object sender, object e)
+        {
+            _flyoutOpened = true;
+            var track = ViewModel.CurrentQueueTrack.Track;
+            var newSlug = TrackComparer.GetSlug(track);
+            if (_currentSongSlug == newSlug) return;
+            _currentSongSlug = newSlug;
+
+            _cancellationTokenSource?.Cancel();
+            _cancellationTokenSource = new CancellationTokenSource();
+            IsLyricsLoading = true;
+            LyricsText = "Loading lyrics...";
+
+            if (!string.IsNullOrEmpty(track.Lyrics))
+            {
+                LyricsText = track.Lyrics;
+                IsLyricsLoading = false;
+                return;
+            }
+
+            var providers = App.Current.Kernel.Resolve<IMetadataProvider[]>().FilterAndSort<ILyricsMetadataProvider>();
+
+            try
+            {
+                foreach (var lyricsMetadataProvider in providers)
+                {
+                    var lyrics = await lyricsMetadataProvider.GetLyricAsync(track.Title, track.AlbumArtist);
+                    _cancellationTokenSource.Token.ThrowIfCancellationRequested();
+                    if (string.IsNullOrEmpty(lyrics))
+                        lyrics = await lyricsMetadataProvider.GetLyricAsync(track.Title, track.DisplayArtist);
+                    _cancellationTokenSource.Token.ThrowIfCancellationRequested();
+
+                    if (string.IsNullOrEmpty(lyrics)) continue;
+
+                    LyricsText = lyrics;
+                    break;
+                }
+
+                if (LyricsText == "Loading lyrics...")
+                    LyricsText = "No lyrics found.";
+            }
+            catch (OperationCanceledException)
+            {
+            }
+            catch
+            {
+                LyricsText = "Something happened :/";
+            }
+            finally
+            {
+                IsLyricsLoading = false;
+            }
+        }
+
+        private void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        private void LyricsFlyoutBase_OnClosed(object sender, object e) => _flyoutOpened = false;
     }
 
     public class NavType

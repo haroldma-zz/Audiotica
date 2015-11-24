@@ -10,6 +10,7 @@ namespace Audiotica.Core.Windows.Utilities
     {
         private readonly ISettingsUtility _settingsUtility;
         private int _theme;
+        private bool _ads;
 
         public AppSettingsUtility(ISettingsUtility settingsUtility)
         {
@@ -17,6 +18,7 @@ namespace Audiotica.Core.Windows.Utilities
             DownloadsPath = settingsUtility.Read("DownloadsPath", "virtual://Music/Audiotica/");
             TempDownloadsPath = settingsUtility.Read("TempDownloadsPath", ApplicationData.Current.TemporaryFolder.Path);
             _theme = _settingsUtility.Read(ApplicationSettingsConstants.Theme, (int)ElementTheme.Default);
+            _ads = _settingsUtility.Read(ApplicationSettingsConstants.Ads, true);
         }
 
         public string DownloadsPath { get; set; }
@@ -30,6 +32,16 @@ namespace Audiotica.Core.Windows.Utilities
             {
                 Set(ref _theme, value);
                 _settingsUtility.Write(ApplicationSettingsConstants.Theme, value);
+            }
+        }
+
+        public bool Ads
+        {
+            get { return _ads; }
+            set
+            {
+                Set(ref _ads, value);
+                _settingsUtility.Write(ApplicationSettingsConstants.Ads, value);
             }
         }
     }

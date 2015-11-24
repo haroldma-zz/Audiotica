@@ -22,5 +22,16 @@ namespace Audiotica.Windows.Views
             var isDark = ThemeSwitch.IsOn;
             StatusBar.GetForCurrentView().ForegroundColor = (isDark ? Colors.White : Colors.Black) as Color?;
         }
+
+        private void AdsSwitch_Toggled(object sender, RoutedEventArgs e)
+        {
+            if (AdsSwitch.IsOn)
+            {
+                if (!App.Current.Shell.AdsLoaded)
+                    App.Current.Shell.ConfigureAds();
+            }
+            else if (App.Current.Shell.AdsLoaded)
+                App.Current.Shell.DisableAds();
+        }
     }
 }
