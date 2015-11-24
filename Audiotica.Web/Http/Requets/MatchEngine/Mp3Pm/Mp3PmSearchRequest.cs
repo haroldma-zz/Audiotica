@@ -7,7 +7,7 @@ namespace Audiotica.Web.Http.Requets.MatchEngine.Mp3Pm
     {
         public Mp3PmSearchRequest(string query)
         {
-            this.Url("http://mp3pm.com/s/f/{query}/").UrlParam("query", query).Get();
+            this.Url("http://mp3pm.info/s/f/{query}/").UrlParam("query", query).Get();
         }
     }
 }

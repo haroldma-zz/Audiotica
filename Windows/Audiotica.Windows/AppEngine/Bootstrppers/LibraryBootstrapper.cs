@@ -34,11 +34,10 @@ namespace Audiotica.Windows.AppEngine.Bootstrppers
         private static async void CleanupFiles(Func<string, bool> shouldDelete, string folderPath)
         {
             var folder = await StorageHelper.GetFolderAsync(folderPath);
+            if (folder == null) return;
             var files = await folder.GetFilesAsync();
             foreach (var file in files.Where(file => shouldDelete(file.Name)))
-            {
                 await file.DeleteAsync();
-            }
         }
     }
 }

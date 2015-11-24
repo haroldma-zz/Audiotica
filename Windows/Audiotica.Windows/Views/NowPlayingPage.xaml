@@ -7,13 +7,42 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:navigationService="using:Audiotica.Windows.Services.NavigationService"
     xmlns:controls="using:Audiotica.Windows.Controls"
+    xmlns:customTriggers="using:Audiotica.Windows.CustomTriggers"
     mc:Ignorable="d"
     DataContext="{Binding NowPlaying, Source={StaticResource ViewModelLocator}}">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <controls:AlternatingRowListView ItemsSource="{x:Bind ViewModel.PlayerService.PlaybackQueue}"
+        <controls:AlternatingRowListView x:Name="NowPlayingListView" ItemsSource="{x:Bind ViewModel.PlayerService.PlaybackQueue}"
                                          Padding="{StaticResource PageThickness}"
                                          OddRowBackground="{StaticResource SystemChromeLowBrush}"
                                          ItemTemplate="{StaticResource QueueTrackTemplate}" />
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup x:Name="DeviceFamilyStates">
+                <VisualState>
+                    <VisualState.StateTriggers>
+                        <customTriggers:DeviceFamilyTrigger DeviceFamily="Mobile" />
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="NowPlayingListView.Padding" Value="{StaticResource MobilePageThickness}" />
+                    </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
+            <VisualStateGroup x:Name="WindowSizeStates">
+                <VisualState x:Name="NarrowScreen">
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="0" />
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="NowPlayingListView.ItemTemplate"
+                                Value="{StaticResource QueueTrackNarrowTemplate}" />
+                    </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="WideScreen">
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="600" />
+                    </VisualState.StateTriggers>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
     </Grid>
 </navigationService:NavigatablePage>

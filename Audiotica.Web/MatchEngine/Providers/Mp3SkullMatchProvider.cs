@@ -8,7 +8,7 @@ using Audiotica.Web.Models;
 
 namespace Audiotica.Web.MatchEngine.Providers
 {
-    public class Mp3SkullMatchProvider : MatchProviderBase
+    /*public class Mp3SkullMatchProvider : MatchProviderBase
     {
         public Mp3SkullMatchProvider(IEnumerable<ISongTypeValidator> validators, ISettingsUtility settingsUtility)
             : base(validators, settingsUtility)
@@ -24,5 +24,5 @@ namespace Audiotica.Web.MatchEngine.Providers
             // TODO: finish mp3 clan provider
             throw new NotImplementedException();
         }
-    }
+    }*/
 }

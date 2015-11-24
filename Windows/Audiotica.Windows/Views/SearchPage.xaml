@@ -16,9 +16,7 @@
 
     <ScrollViewer x:Name="ContentScrollViewer" Padding="{StaticResource PageSideThickness}" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <StackPanel Padding="{StaticResource TopBottomThickness}">
-            <TextBlock Text="Search works but needs a lot of refining, in the meantime is good for testing." />
-            <!--<TextBlock Text="Results for &quot;Gambino&quot;" Style="{StaticResource LargeHeaderTextBlockStyle}" />-->
-            <TextBox PlaceholderText="Search the catalog" Width="300" HorizontalAlignment="Left" Margin="0,0,0,10">
+            <TextBox PlaceholderText="Search the catalog" Width="280" HorizontalAlignment="Left" Margin="0,0,0,10">
                 <interactivity:Interaction.Behaviors>
                     <interactions:TextBoxEnterKeyBehavior>
                         <core:InvokeCommandAction Command="{x:Bind ViewModel.SearchCommand}" />
@@ -34,7 +32,7 @@
                     <RadioButton Content="In collection" />
                     <RadioButton Content="In catalog" />
                 </StackPanel>-->
-                <ComboBox Grid.Row="1" MinWidth="300" HorizontalAlignment="Left"
+                <ComboBox Grid.Row="1" Width="280" HorizontalAlignment="Left"
                           ItemsSource="{x:Bind ViewModel.SearchProviders}"
                           SelectedIndex="{x:Bind ViewModel.SelectedSearchProvider, Mode=TwoWay}"
                           Loaded="ComboBox_Loaded">

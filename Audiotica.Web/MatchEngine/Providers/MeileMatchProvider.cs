@@ -19,7 +19,7 @@ namespace Audiotica.Web.MatchEngine.Providers
         }
 
         public override string DisplayName => "Meile";
-        public override ProviderSpeed Speed => ProviderSpeed.Slow;
+        public override ProviderSpeed Speed => ProviderSpeed.SuperSlow;
         public override ProviderResultsQuality ResultsQuality => ProviderResultsQuality.Great;
 
         protected override async Task<List<MatchSong>> InternalGetSongsAsync(string title, string artist, int limit = 10)

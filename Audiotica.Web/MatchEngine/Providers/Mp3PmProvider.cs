@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Audiotica.Core.Extensions;
 using Audiotica.Core.Utilities.Interfaces;
@@ -19,12 +20,13 @@ namespace Audiotica.Web.MatchEngine.Providers
         }
 
         public override ProviderSpeed Speed => ProviderSpeed.Fast;
-        public override ProviderResultsQuality ResultsQuality => ProviderResultsQuality.SomewhatGreat;
+        public override ProviderResultsQuality ResultsQuality => ProviderResultsQuality.Excellent;
         public override string DisplayName => "Mp3Pm";
 
         protected override async Task<List<MatchSong>> InternalGetSongsAsync(string title, string artist, int limit = 10)
         {
-            using (var response = await new Mp3PmSearchRequest(title.Append(artist)).ToResponseAsync())
+            // in the query, the artist goes first. Results don't work otherwise.
+            using (var response = await new Mp3PmSearchRequest(artist.Append(title)).ToResponseAsync())
             {
                 if (!response.HasData) return null;
 
@@ -49,19 +51,19 @@ namespace Audiotica.Web.MatchEngine.Providers
                         songNode.Descendants("b")
                             .FirstOrDefault(p => p.Attributes["class"]?.Value == "cplayer-data-sound-title")?.InnerText;
                     if (string.IsNullOrEmpty(titleText)) continue;
-                    song.Title = titleText;
+                    song.Title = WebUtility.HtmlDecode(titleText);
 
                     var artistText =
                         songNode.Descendants("i")
                             .FirstOrDefault(p => p.Attributes["class"]?.Value == "cplayer-data-sound-author")?.InnerText;
                     if (string.IsNullOrEmpty(artistText)) continue;
-                    song.Artist = artistText;
+                    song.Artist = WebUtility.HtmlDecode(artistText);
 
                     var durationText =
                         songNode.Descendants("em")
                             .FirstOrDefault(p => p.Attributes["class"]?.Value == "cplayer-data-sound-time")?.InnerText;
                     TimeSpan duration;
-                    if (TimeSpan.TryParse(durationText, out duration))
+                    if (TimeSpan.TryParse("00:" + durationText, out duration))
                     {
                         song.Duration = duration;
                     }

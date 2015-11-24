@@ -55,13 +55,16 @@
     <Compile Include="Extensions\RestRequestExtensions.cs" />
     <Compile Include="Extensions\UriExtensions.cs" />
     <Compile Include="Extensions\MatchSongExtensions.cs" />
+    <Compile Include="Http\Requets\MatchEngine\AnyMaza\AnyMazaSearchRequest.cs" />
+    <Compile Include="Http\Requets\MatchEngine\AnyMaza\Model\GoogleSearchRoot.cs" />
     <Compile Include="Http\Requets\MatchEngine\Meile\MeileDetailsRequest.cs" />
     <Compile Include="Http\Requets\MatchEngine\Meile\MeileSearchRequest.cs" />
+    <Compile Include="Http\Requets\MatchEngine\MiMp3S\MiMp3SSearchRequest.cs" />
     <Compile Include="Http\Requets\MatchEngine\Mp3Freex\Mp3FreexSearchRequest.cs" />
     <Compile Include="Http\Requets\MatchEngine\Mp3Pm\Mp3PmSearchRequest.cs" />
     <Compile Include="Http\Requets\MatchEngine\Mp3Skull\Mp3SkullRequest.cs" />
     <Compile Include="Http\Requets\MatchEngine\Mp3lio\Mp3lioSearchRequest.cs" />
-    <Compile Include="Http\Requets\MatchEngine\Mp3Truck\Mp3TruckSearchRequest.cs" />
+    <Compile Include="Http\Requets\MatchEngine\Mp3Truck\Mp3GluSearchRequest.cs" />
     <Compile Include="Http\Requets\MatchEngine\Netease\NeteaseDetailsRequest.cs" />
     <Compile Include="Http\Requets\MatchEngine\Netease\NeteaseSearchRequest.cs" />
     <Compile Include="Http\Requets\MatchEngine\Pleer\PleerDetailsRequest.cs" />
@@ -103,6 +106,8 @@
     <Compile Include="Http\Requets\RestObjectRequest.cs" />
     <Compile Include="Http\Requets\MatchEngine\SoundCloud\SoundCloudSearchRequest.cs" />
     <Compile Include="IConfigurableProvider.cs" />
+    <Compile Include="MatchEngine\Providers\AnyMazaMatchProvider.cs" />
+    <Compile Include="MatchEngine\Providers\MiMp3SMatchProvider.cs" />
     <Compile Include="MatchEngine\Providers\Mp3FreexMatchProvider.cs" />
     <Compile Include="MatchEngine\Providers\Mp3lioMatchProvider.cs" />
     <Compile Include="MatchEngine\Providers\Mp3PmProvider.cs" />
@@ -113,7 +118,7 @@
     <Compile Include="MatchEngine\Interfaces\Validators\ISongTypeValidator.cs" />
     <Compile Include="MatchEngine\Providers\MeileMatchProvider.cs" />
     <Compile Include="MatchEngine\Providers\Mp3SkullMatchProvider.cs" />
-    <Compile Include="MatchEngine\Providers\Mp3TruckMatchProvider.cs" />
+    <Compile Include="MatchEngine\Providers\Mp3GluMatchProvider.cs" />
     <Compile Include="MatchEngine\Providers\NeteaseMatchProvider.cs" />
     <Compile Include="MatchEngine\Providers\PleerMatchProvider.cs" />
     <Compile Include="MatchEngine\Providers\MatchProviderBase.cs" />

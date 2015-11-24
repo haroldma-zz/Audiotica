@@ -168,7 +168,7 @@ namespace Audiotica.Web.Metadata.Providers
                 {
                     case WebResults.Type.Song:
                         results = CreateResults(response.Data.Tracks);
-                        results.Songs = response.Data.Tracks?.Items?.Select(CreateSong).ToList();
+                        results.Songs = response.Data.Tracks?.Items?.Select(CreateSong).Distinct(new WebSong.Comparer()).ToList();
                         break;
                     case WebResults.Type.Artist:
                         results = CreateResults(response.Data.Artists);

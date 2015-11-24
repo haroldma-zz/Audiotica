@@ -100,12 +100,12 @@
     </Content>
     <Content Include="Assets\Fonts\segxmvr.otf" />
     <Content Include="Assets\Fonts\Glyphter.otf" />
+    <Content Include="AdMediator.config" />
     <None Include="app.config" />
     <None Include="Audiotica.Windows_StoreKey.pfx" />
     <None Include="project.json" />
     <None Include="Service References\Application Insights\ConnectedService.json" />
     <!--Workaround for a bug in the current Universal SDK-->
-    <AppxSystemBinary Include="Audiotica.Windows.dll" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App.xaml.cs">
@@ -137,6 +137,9 @@
     <Compile Include="Controls\AlternatingRowListView.cs" />
     <Compile Include="Controls\LibraryHeader.xaml.cs">
       <DependentUpon>LibraryHeader.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\MatchViewer.xaml.cs">
+      <DependentUpon>MatchViewer.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\SelectModeCommandBar.xaml.cs">
       <DependentUpon>SelectModeCommandBar.xaml</DependentUpon>
@@ -202,7 +205,7 @@
     <Compile Include="Tools\Converters\EmptyListToVisibilityConverter.cs" />
     <Compile Include="Tools\Converters\EmptyStringToVisibilityConverter.cs" />
     <Compile Include="Tools\Converters\ImageSourceConverter.cs" />
-    <Compile Include="Tools\Converters\IntToBoolConverter.cs" />
+    <Compile Include="Tools\Converters\ThemeIntToBoolConverter.cs" />
     <Compile Include="Tools\Converters\IntToThemeConverter.cs" />
     <Compile Include="Tools\Converters\ListToStringConverter.cs" />
     <Compile Include="Tools\Converters\NotConverter.cs" />
@@ -214,6 +217,7 @@
     <Compile Include="Tools\Converters\UniformSpacingConverter.cs" />
     <Compile Include="Tools\Converters\UpperCaseConverter.cs" />
     <Compile Include="Tools\Converters\VisibilityConverter.cs" />
+    <Compile Include="Tools\Converters\ZeroToVisibilityConverter.cs" />
     <Compile Include="Tools\Mvvm\Command.cs" />
     <Compile Include="Tools\Mvvm\ViewModelBase.cs" />
     <Compile Include="Extensions\UriExtensions.cs" />
@@ -223,6 +227,7 @@
     <Compile Include="ViewModels\ArtistPageViewModel.cs" />
     <Compile Include="ViewModels\ExplorePageViewModel.cs" />
     <Compile Include="ViewModels\ArtistsPageViewModel.cs" />
+    <Compile Include="ViewModels\ManualMatchPageViewModel.cs" />
     <Compile Include="ViewModels\NowPlayingPageViewModel.cs" />
     <Compile Include="ViewModels\PlayerBarViewModel.cs" />
     <Compile Include="ViewModels\SearchPageViewModel.cs" />
@@ -231,6 +236,9 @@
     <Compile Include="ViewModels\ViewModelLocator.cs" />
     <Compile Include="Views\AboutPage.xaml.cs">
       <DependentUpon>AboutPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ManualMatchPage.xaml.cs">
+      <DependentUpon>ManualMatchPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\SearchPage.xaml.cs">
       <DependentUpon>SearchPage.xaml</DependentUpon>
@@ -305,6 +313,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Controls\MatchViewer.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Controls\SelectModeCommandBar.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -344,6 +356,10 @@
     <Page Include="Views\AboutPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\ManualMatchPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\SearchPage.xaml">
       <SubType>Designer</SubType>
@@ -419,11 +435,26 @@
     <SDKReference Include="BehaviorsXamlSDKManaged, Version=12.0">
       <Name>Behaviors SDK %28XAML%29</Name>
     </SDKReference>
+    <SDKReference Include="Microsoft.AdMediator.Universal, Version=1.0">
+      <Name>Microsoft Advertising Universal SDK</Name>
+    </SDKReference>
+    <SDKReference Include="Microsoft.Advertising.Xaml, Version=10.0">
+      <Name>Microsoft Advertising SDK for XAML</Name>
+    </SDKReference>
+    <SDKReference Include="Microsoft.VCLibs, Version=12.0">
+      <Name>Microsoft Visual C++ 2013 Runtime Package for Windows</Name>
+    </SDKReference>
     <SDKReference Include="Microsoft.VCLibs, Version=14.0">
       <Name>Visual C++ 2015 Runtime for Universal Windows Platform Apps</Name>
     </SDKReference>
-    <SDKReference Include="SQLite.UAP.2015, Version=3.8.11.1">
-      <Name>SQLite for Universal App Platform</Name>
+    <SDKReference Include="Microsoft.VCLibs.120, Version=14.0">
+      <Name>Microsoft.VCLibs.120</Name>
+    </SDKReference>
+    <SDKReference Include="SQLite.UAP.2015, Version=3.9.1">
+      <Name>SQLite for Universal App Platform %28SQLite.UAP.2015, Version=3.9.1%29</Name>
+    </SDKReference>
+    <SDKReference Include="WindowsMobile, Version=10.0.10240.0">
+      <Name>Windows Mobile Extensions for the UWP</Name>
     </SDKReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">

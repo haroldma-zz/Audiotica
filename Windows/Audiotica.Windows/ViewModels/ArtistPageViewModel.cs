@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Windows.UI;
+using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
@@ -33,6 +35,7 @@ namespace Audiotica.Windows.ViewModels
         private readonly IConverter<WebSong, Track> _webSongConverter;
         private Artist _artist;
         private SolidColorBrush _backgroundBrush;
+        private Color? _defaultStatusBarForeground;
         private SolidColorBrush _foregroundBrush;
         private bool _isAlbumsLoading;
         private bool _isNewAlbumsLoading;
@@ -132,8 +135,8 @@ namespace Audiotica.Windows.ViewModels
 
         private void AlbumClickExecute(ItemClickEventArgs e)
         {
-            var album = (Album)e.ClickedItem;
-            _navigationService.Navigate(typeof(AlbumPage),
+            var album = (Album) e.ClickedItem;
+            _navigationService.Navigate(typeof (AlbumPage),
                 new AlbumPageViewModel.AlbumPageParameter(album.Title, album.Artist.Name));
         }
 
@@ -176,7 +179,8 @@ namespace Audiotica.Windows.ViewModels
                 }
             }
 
-
+            if (DeviceHelper.IsType(DeviceFamily.Mobile))
+                _defaultStatusBarForeground = StatusBar.GetForCurrentView().ForegroundColor;
             if (_settingsUtility.Read(ApplicationSettingsConstants.IsArtistAdaptiveColorEnabled, true))
                 DetectColorFromArtwork();
             LoadWebData();
@@ -186,6 +190,8 @@ namespace Audiotica.Windows.ViewModels
         {
             // Bug: if we don't reset the theme when we go out it fucks with the TrackViewer control on other pages
             RequestedTheme = ElementTheme.Default;
+            if (DeviceHelper.IsType(DeviceFamily.Mobile))
+                StatusBar.GetForCurrentView().ForegroundColor = _defaultStatusBarForeground;
         }
 
         private async void DetectColorFromArtwork()
@@ -200,6 +206,9 @@ namespace Audiotica.Windows.ViewModels
 
                     BackgroundBrush = new SolidColorBrush(main.Color);
                     RequestedTheme = main.IsDark ? ElementTheme.Dark : ElementTheme.Light;
+                    if (DeviceHelper.IsType(DeviceFamily.Mobile))
+                        StatusBar.GetForCurrentView().ForegroundColor =
+                            (main.IsDark ? Colors.White : Colors.Black) as Color?;
                 }
             }
             catch
@@ -241,7 +250,10 @@ namespace Audiotica.Windows.ViewModels
                     {
                         if (TopAlbums == null)
                         {
-                            TopAlbums = await _webAlbumConverter.FillPartialAsync((await metadataProvider.GetArtistAlbumsAsync(webArtist.Token, 10)).Albums);
+                            TopAlbums =
+                                await
+                                    _webAlbumConverter.FillPartialAsync(
+                                        (await metadataProvider.GetArtistAlbumsAsync(webArtist.Token, 10)).Albums);
                             IsAlbumsLoading = false;
                         }
                     }

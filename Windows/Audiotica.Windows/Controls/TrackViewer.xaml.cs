@@ -236,5 +236,10 @@ namespace Audiotica.Windows.Controls
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+
+        private void ManualMatch_Click(object sender, RoutedEventArgs e)
+        {
+            App.Current.NavigationService.Navigate(typeof(ManualMatchPage), Track.Id);
+        }
     }
 }

@@ -11,7 +11,7 @@
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" >
         <StackPanel Margin="{StaticResource PageThickness}">
-            <ToggleSwitch Header="Theme" OnContent="Dark" OffContent="Light" IsOn="{x:Bind ViewModel.AppSettingsUtility.Theme, Mode=TwoWay, Converter={StaticResource IntToBoolConverter}}" />
+            <ToggleSwitch x:Name="ThemeSwitch" Header="Theme" OnContent="Dark" OffContent="Light" IsOn="{x:Bind ViewModel.AppSettingsUtility.Theme, Mode=TwoWay, Converter={StaticResource IntToBoolConverter}}" Toggled="ToggleSwitch_OnToggled" />
         </StackPanel>
     </Grid>
 </navigationService:NavigatablePage>

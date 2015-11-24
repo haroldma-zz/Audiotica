@@ -13,6 +13,7 @@ namespace Audiotica.Web.Extensions
             var doc = new HtmlDocument();
 
             var html = await response.Content.ReadAsStringAsync().DontMarshall();
+            
             doc.LoadHtml(html);
 
             return doc;

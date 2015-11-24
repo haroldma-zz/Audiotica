@@ -18,7 +18,7 @@ namespace Audiotica.Web.MatchEngine.Providers
         }
 
         public override string DisplayName => "Netease (163.com)";
-        public override ProviderSpeed Speed => ProviderSpeed.Fast;
+        public override ProviderSpeed Speed => ProviderSpeed.SuperSlow;
         public override ProviderResultsQuality ResultsQuality => ProviderResultsQuality.Excellent;
 
         protected override async Task<List<MatchSong>> InternalGetSongsAsync(string title, string artist, int limit = 10)

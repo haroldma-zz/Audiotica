@@ -105,6 +105,11 @@
                                        SelectionMode="{x:Bind ViewModel.IsSelectMode, Mode=OneWay, Converter={StaticResource NoneMultiSelectionModeConverter}}"
                                        ItemsSource="{x:Bind ViewModel.ViewSource.View, Mode=OneWay}"
                                        ItemTemplate="{StaticResource ArtistNarrowTemplate}">
+                    <interactivity:Interaction.Behaviors>
+                        <core:EventTriggerBehavior EventName="ItemClick">
+                            <core:InvokeCommandAction Command="{x:Bind ViewModel.ArtistClickCommand}" />
+                        </core:EventTriggerBehavior>
+                    </interactivity:Interaction.Behaviors>
                     <ListView.GroupStyle>
                         <GroupStyle HidesIfEmpty="True">
                             <GroupStyle.HeaderTemplate>
