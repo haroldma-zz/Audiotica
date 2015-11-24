@@ -14,5 +14,6 @@
         public const string SongSort = "SongSort";
         public const string AlbumSort = "AlbumSort";
         public const string Theme = "Theme";
+        public const string Ads = "Ads";
     }
 }

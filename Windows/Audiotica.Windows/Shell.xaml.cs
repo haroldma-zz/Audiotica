@@ -62,7 +62,8 @@ namespace Audiotica.Windows
             Loaded += (s, e) =>
             {
                 update();
-                ConfigureAds();
+                if (AppSettings.Ads)
+                    ConfigureAds();
                 var playerService = App.Current.Kernel.Resolve<IPlayerService>();
                 playerService.TrackChanged += PlayerServiceOnTrackChanged;
             };
@@ -118,7 +119,7 @@ namespace Audiotica.Windows
                 LyricsFlyout_OnOpened(null, null);
         }
 
-        private void ConfigureAds()
+        public void ConfigureAds()
         {
             /*
                Windows Desktop     Windows Phone & Windows Mobile
@@ -154,6 +155,16 @@ namespace Audiotica.Windows
 
             Grid.SetRow(mediatorBar, 2);
             RootLayout.Children.Add(mediatorBar);
+            AdsLoaded = true;
+        }
+        public bool AdsLoaded { get; private set; }
+
+        public void DisableAds()
+        {
+            var mediatorBar = RootLayout.Children[(RootLayout.Children.Count - 1)] as AdMediatorControl;
+            mediatorBar.Dispose();
+            RootLayout.Children.Remove(mediatorBar);
+            AdsLoaded = false;
         }
 
         public bool CanBack()
