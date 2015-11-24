@@ -27,7 +27,7 @@ namespace Audiotica.Windows.ViewModels
             _libraryService = libraryService;
             _navigationService = navigationService;
             _providers = providers.Where(p => p.IsEnabled).OrderByDescending(p => p.Priority).ToList();
-            MatchClickCommand = new Command<ItemClickEventArgs>(MatchClickExecute);
+            MatchClickCommand = new Command<MatchSong>(MatchClickExecute);
 
             if (IsInDesignMode)
                 OnNavigatedTo(0, NavigationMode.New, null);
@@ -39,7 +39,7 @@ namespace Audiotica.Windows.ViewModels
             set { Set(ref _track, value); }
         }
 
-        public Command<ItemClickEventArgs> MatchClickCommand { get; }
+        public Command<MatchSong> MatchClickCommand { get; }
 
         public List<MatchProviderPivotItem> ProviderPivots
         {
@@ -47,10 +47,8 @@ namespace Audiotica.Windows.ViewModels
             set { Set(ref _providerPivots, value); }
         }
 
-        private async void MatchClickExecute(ItemClickEventArgs e)
+        private async void MatchClickExecute(MatchSong match)
         {
-            var match = (MatchSong) e.ClickedItem;
-
             if (match.IsLinkDeath) return;
 
             // TODO: Update queue items that belong to this track

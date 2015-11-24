@@ -9,7 +9,7 @@
     d:DesignHeight="300"
     d:DesignWidth="400">
 
-    <Grid>
+    <Grid Background="Transparent" DoubleTapped="MatchButton_Click">
         <Grid>
             <Grid Margin="0,15"
                   Opacity="{x:Bind Match.IsLinkDeath, Converter={StaticResource BoolToOpacityConverter}, Mode=OneWay}">
@@ -45,9 +45,9 @@
                                 </SymbolIcon>
                             </Grid>
                         </Button>
-                        <Button Margin="40,0,0,0" Style="{StaticResource PlainButtonStyle}">
+                        <Button Margin="40,0,0,0" Style="{StaticResource PlainButtonStyle}" Click="MatchButton_Click">
                             <Grid Background="Transparent">
-                                <SymbolIcon Symbol="Add" RenderTransformOrigin="0.5,0.5">
+                                <SymbolIcon Symbol="Save" RenderTransformOrigin="0.5,0.5">
                                     <SymbolIcon.RenderTransform>
                                         <CompositeTransform ScaleX=".7" ScaleY=".7" />
                                     </SymbolIcon.RenderTransform>

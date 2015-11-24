@@ -1,4 +1,6 @@
-﻿using Windows.UI.Xaml;
+﻿using System.Windows.Input;
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Input;
 using Audiotica.Web.Models;
 
 namespace Audiotica.Windows.Controls
@@ -7,6 +9,9 @@ namespace Audiotica.Windows.Controls
     {
         public static readonly DependencyProperty IsSelectedProperty =
             DependencyProperty.Register("IsSelected", typeof (bool), typeof (MatchViewer), null);
+
+        public static readonly DependencyProperty MatchSelectedCommandProperty =
+           DependencyProperty.Register("MatchSelectedCommand", typeof(ICommand), typeof(MatchViewer), null);
 
         private MatchSong _match;
 
@@ -23,6 +28,14 @@ namespace Audiotica.Windows.Controls
             set { SetValue(IsSelectedProperty, value); }
         }
 
+        public ICommand MatchSelectedCommand
+
+        {
+            get { return (ICommand) GetValue(MatchSelectedCommandProperty); }
+
+            set { SetValue(MatchSelectedCommandProperty, value); }
+        }
+
         public MatchSong Match
         {
             get { return _match; }
@@ -35,6 +48,11 @@ namespace Audiotica.Windows.Controls
 
         private void PlayButton_Click(object sender, RoutedEventArgs e)
         {
+        }
+
+        private void MatchButton_Click(object sender, object e)
+        {
+            MatchSelectedCommand?.Execute(Match);
         }
     }
 }

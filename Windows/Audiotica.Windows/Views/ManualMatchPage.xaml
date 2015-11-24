@@ -29,16 +29,10 @@
                             IsIndeterminate="{x:Bind Results.Busy, Mode=OneWay}"
                             Visibility="{x:Bind Results.Busy, Mode=OneWay, Converter={StaticResource VisibilityConverter}}"
                             VerticalAlignment="Top" />
-                        <controls:AlternatingRowListView OddRowBackground="{StaticResource SystemChromeLowBrush}" ItemsSource="{x:Bind Results}" IsItemClickEnabled="True" SelectionMode="None">
-                            <interactivity:Interaction.Behaviors>
-                                <core:EventTriggerBehavior EventName="ItemClick">
-                                    <core:InvokeCommandAction
-                                        Command="{Binding ElementName=Page, Path=ViewModel.MatchClickCommand}" />
-                                </core:EventTriggerBehavior>
-                            </interactivity:Interaction.Behaviors>
+                        <controls:AlternatingRowListView OddRowBackground="{StaticResource SystemChromeLowBrush}" ItemsSource="{x:Bind Results}" SelectionMode="Single">
                             <ListView.ItemTemplate>
                                 <DataTemplate x:DataType="models:MatchSong">
-                                    <controls:MatchViewer Match="{x:Bind}"
+                                    <controls:MatchViewer Match="{x:Bind}" MatchSelectedCommand="{Binding ElementName=Page, Path=ViewModel.MatchClickCommand}"
                                                           IsSelected="{Binding Tag, Mode=TwoWay, RelativeSource={RelativeSource Mode=TemplatedParent}}" />
                                 </DataTemplate>
                             </ListView.ItemTemplate>
