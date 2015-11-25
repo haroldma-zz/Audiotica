@@ -171,7 +171,7 @@
                                 <Setter Property="Template">
                                     <Setter.Value>
                                         <ControlTemplate TargetType="FlyoutPresenter">
-                                            <Border Height="300" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}">
+                                            <Border Height="500" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}">
                                                 <ScrollViewer x:Name="ScrollViewer" AutomationProperties.AccessibilityView="Raw" HorizontalScrollMode="{TemplateBinding ScrollViewer.HorizontalScrollMode}" HorizontalScrollBarVisibility="{TemplateBinding ScrollViewer.HorizontalScrollBarVisibility}" VerticalScrollBarVisibility="{TemplateBinding ScrollViewer.VerticalScrollBarVisibility}" VerticalScrollMode="{TemplateBinding ScrollViewer.VerticalScrollMode}" ZoomMode="{TemplateBinding ScrollViewer.ZoomMode}">
                                                     <ContentPresenter ContentTemplate="{TemplateBinding ContentTemplate}" ContentTransitions="{TemplateBinding ContentTransitions}" Content="{TemplateBinding Content}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
                                                 </ScrollViewer>
@@ -181,13 +181,13 @@
                                 </Setter>
                             </Style>
                         </Flyout.FlyoutPresenterStyle>
-                        <Grid Width="250" >
+                        <Grid Width="425" >
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
                             <ProgressBar IsIndeterminate="{x:Bind IsLyricsLoading, Mode=OneWay}" Visibility="{x:Bind IsLyricsLoading, Mode=OneWay, Converter={StaticResource VisibilityConverter}}" />
-                            <TextBlock Grid.Row="1" Text="{x:Bind LyricsText, Mode=OneWay}" TextAlignment="Center" TextWrapping="Wrap" />
+                            <TextBlock Grid.Row="1" Text="{x:Bind LyricsText, Mode=OneWay}" FontSize="18" TextAlignment="Center" TextWrapping="Wrap" />
                         </Grid>
                     </Flyout>
                 </Button.Flyout>
