@@ -450,8 +450,8 @@
     <SDKReference Include="Microsoft.VCLibs.120, Version=14.0">
       <Name>Microsoft.VCLibs.120</Name>
     </SDKReference>
-    <SDKReference Include="SQLite.UAP.2015, Version=3.9.1">
-      <Name>SQLite for Universal App Platform %28SQLite.UAP.2015, Version=3.9.1%29</Name>
+    <SDKReference Include="SQLite.UAP.2015, Version=3.9.2">
+      <Name>SQLite for Universal App Platform</Name>
     </SDKReference>
     <SDKReference Include="WindowsMobile, Version=10.0.10240.0">
       <Name>Windows Mobile Extensions for the UWP</Name>
