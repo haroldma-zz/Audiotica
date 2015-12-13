@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Audiotica.Core.Extensions;
 using Audiotica.Core.Utilities.Interfaces;
@@ -45,7 +46,7 @@ namespace Audiotica.Web.MatchEngine.Providers
                             .FirstOrDefault(p => p.Attributes["class"]?.Value == "res_title")?
                             .InnerText;
                     if (string.IsNullOrEmpty(songTitle)) continue;
-                    song.SetNameAndArtistFromTitle(songTitle, true);
+                    song.SetNameAndArtistFromTitle(WebUtility.HtmlDecode(songTitle), true);
 
                     var meta =
                         songNode.Descendants("span")

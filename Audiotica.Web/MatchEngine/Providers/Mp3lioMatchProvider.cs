@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Audiotica.Core.Extensions;
 using Audiotica.Core.Utilities.Interfaces;
@@ -50,7 +51,7 @@ namespace Audiotica.Web.MatchEngine.Providers
 
                     var songTitle = songNode.Descendants("strong").FirstOrDefault()?.InnerText;
                     if (string.IsNullOrEmpty(songTitle)) continue;
-                    song.Title = songTitle.Substring(0, songTitle.Length - 4);
+                    song.Title = WebUtility.HtmlDecode(songTitle.Substring(0, songTitle.Length - 4));
 
                     var linkNode = songNode.Descendants("a").FirstOrDefault();
                     song.AudioUrl = linkNode?.Attributes["href"]?.Value;
