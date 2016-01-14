@@ -31,7 +31,7 @@
             </MenuFlyout>
         </FlyoutBase.AttachedFlyout>
         <Grid Margin="0,15"
-              Opacity="{x:Bind Track.Status, Converter={StaticResource TrackMatchingOpacityConverter}, Mode=OneWay}">
+              Opacity="{x:Bind Track.Status, Converter={StaticResource TrackMatchingOrNoMatchingOpacityConverter}, Mode=OneWay}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="32" />
                 <ColumnDefinition Width="*" />

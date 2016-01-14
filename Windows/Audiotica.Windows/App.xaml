@@ -14,7 +14,7 @@
 
             <SolidColorBrush x:Key="SystemChromeLowBrush" Color="{ThemeResource SystemChromeLowColor}" />
 
-            <converters:TrackStatusToContentConverter x:Name="TrackMatchingOpacityConverter" DesiredStatus="Matching">
+            <converters:TrackStatusToContentConverter x:Name="TrackMatchingOrNoMatchingOpacityConverter" DesiredStatus="Matching" OtherDesiredStatus="NoMatch" UseOther="True">
                 <converters:TrackStatusToContentConverter.TrueContent>
                     <x:Double>.2</x:Double>
                 </converters:TrackStatusToContentConverter.TrueContent>

@@ -110,11 +110,11 @@ namespace Audiotica.Windows.ViewModels
             }
         }
 
-        private void PlayAllExecute()
+        private async void PlayAllExecute()
         {
             if (Album.Tracks.Count == 0) return;
             var albumTracks = Album.Tracks.ToList();
-            _playerService.NewQueueAsync(albumTracks);
+            await _playerService.NewQueueAsync(albumTracks);
         }
 
         private void ViewInCatalogExecute()
