@@ -77,6 +77,10 @@
     <Compile Include="Http\Requets\Metadata\Deezer\DeezerSearchRequest.cs" />
     <Compile Include="Http\Requets\Metadata\Deezer\DeezerTrackRequest.cs" />
     <Compile Include="Http\Requets\Metadata\Deezer\Models\DataResponse.cs" />
+    <Compile Include="Http\Requets\Metadata\Google\MusixMatchAuthRequest.cs" />
+    <Compile Include="Http\Requets\Metadata\Google\MusixMatchBaseRequest.cs" />
+    <Compile Include="Http\Requets\Metadata\Google\MusixMatchGetTokenRequest.cs" />
+    <Compile Include="Http\Requets\Metadata\Google\MusixMatchLyricsRequest.cs" />
     <Compile Include="Http\Requets\Metadata\Spotify\Models\BasicModel.cs" />
     <Compile Include="Http\Requets\Metadata\Spotify\Models\ChartTrack.cs" />
     <Compile Include="Http\Requets\Metadata\Spotify\Models\Error.cs" />
@@ -133,6 +137,7 @@
     <Compile Include="Exceptions\ProviderException.cs" />
     <Compile Include="Metadata\Providers\MetadataProviderLyricsOnlyBase.cs" />
     <Compile Include="Metadata\Providers\GrooveMetadataProvider.cs" />
+    <Compile Include="Metadata\Providers\MusixMatchMetadataProvider.cs" />
     <Compile Include="Models\WebAlbum.cs" />
     <Compile Include="Models\WebArtist.cs" />
     <Compile Include="Models\WebItem.cs" />

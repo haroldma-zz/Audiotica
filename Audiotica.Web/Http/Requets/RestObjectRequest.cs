@@ -6,7 +6,7 @@ namespace Audiotica.Web.Http.Requets
 {
     public abstract class RestObjectRequest<T> : RestRequest
     {
-        public async Task<RestResponse<T>> ToResponseAsync()
+        public virtual async Task<RestResponse<T>> ToResponseAsync()
         {
             return await this.Fetch<T>().DontMarshall();
         }
