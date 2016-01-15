@@ -111,36 +111,29 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
-    <Compile Include="AppEngine\AppKernel.cs" />
-    <Compile Include="AppEngine\AppModule.cs" />
-    <Compile Include="AppEngine\Bootstrppers\BackgroundAudioBootstrapper.cs" />
-    <Compile Include="AppEngine\Bootstrppers\DownloadServiceBootstrapper.cs" />
-    <Compile Include="AppEngine\Bootstrppers\LibraryBootstrapper.cs" />
-    <Compile Include="AppEngine\Bootstrppers\IBootstrapper.cs" />
-    <Compile Include="AppEngine\Modules\ConverterModule.cs" />
-    <Compile Include="AppEngine\Modules\MatchEngineProviderModule.cs" />
-    <Compile Include="AppEngine\Modules\MatchEngineValidatorModule.cs" />
-    <Compile Include="AppEngine\Modules\MetadataProviderModule.cs" />
-    <Compile Include="AppEngine\Modules\ServiceModule.cs" />
-    <Compile Include="AppEngine\Modules\UtilityModule.cs" />
-    <Compile Include="AppEngine\Modules\ViewModelModule.cs" />
-    <Compile Include="AppEngine\Providers\IProvider.cs" />
-    <Compile Include="AppEngine\Providers\ProviderHelper.cs" />
-    <Compile Include="AppEngine\Providers\SQLiteConnectionProvider.cs" />
-    <Compile Include="Common\BootStrapper.cs" />
     <Compile Include="Common\ColorThief.cs" />
     <Compile Include="Common\CurtainPrompt.cs" />
     <Compile Include="Common\MMCQ.cs" />
     <Compile Include="Common\ScrollGridView.cs" />
     <Compile Include="Common\ScrollListView.cs" />
     <Compile Include="Common\UiBlocker.cs" />
+    <Compile Include="Common\WeakEvent.cs" />
     <Compile Include="Controls\AlternatingRowListView.cs" />
+    <Compile Include="Controls\CustomTitleBar.cs" />
+    <Compile Include="Controls\HamburgerButtonInfo.cs" />
+    <Compile Include="Controls\HamburgerMenu.xaml.cs">
+      <DependentUpon>HamburgerMenu.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\LibraryHeader.xaml.cs">
       <DependentUpon>LibraryHeader.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\MatchViewer.xaml.cs">
       <DependentUpon>MatchViewer.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\ModalDialog.cs" />
+    <Compile Include="Controls\PageHeader.cs" />
+    <Compile Include="Controls\PiePiece.cs" />
+    <Compile Include="Controls\Resizer.cs" />
     <Compile Include="Controls\SelectModeCommandBar.xaml.cs">
       <DependentUpon>SelectModeCommandBar.xaml</DependentUpon>
     </Compile>
@@ -160,7 +153,72 @@
     <Compile Include="CustomTriggers\DeviceFamilyTrigger.cs" />
     <Compile Include="CustomTriggers\InputTypeTrigger.cs" />
     <Compile Include="CustomTriggers\OrientationTrigger.cs" />
-    <Compile Include="Common\WeakEvent.cs" />
+    <Compile Include="Engine\AppKernel.cs" />
+    <Compile Include="Engine\AppKernelFactory.cs" />
+    <Compile Include="Engine\AppModule.cs" />
+    <Compile Include="Engine\Behaviors\BackButtonBehavior.cs" />
+    <Compile Include="Engine\Behaviors\CloseFlyoutAction.cs" />
+    <Compile Include="Engine\Behaviors\ConditionalAction.cs" />
+    <Compile Include="Engine\Behaviors\EllipsisBehavior.cs" />
+    <Compile Include="Engine\Behaviors\FocusAction.cs" />
+    <Compile Include="Engine\Behaviors\MessageDialogAction.cs" />
+    <Compile Include="Engine\Behaviors\NavButtonBehavior.cs" />
+    <Compile Include="Engine\Behaviors\OpenFlyoutAction.cs" />
+    <Compile Include="Engine\Behaviors\TextBoxEnterKeyBehavior.cs" />
+    <Compile Include="Engine\Behaviors\TimeoutAction.cs" />
+    <Compile Include="Engine\BootStrapper.cs" />
+    <Compile Include="Engine\Bootstrppers\BackgroundAudioBootstrapper.cs" />
+    <Compile Include="Engine\Bootstrppers\DownloadServiceBootstrapper.cs" />
+    <Compile Include="Engine\Bootstrppers\IBootstrapper.cs" />
+    <Compile Include="Engine\Bootstrppers\LibraryBootstrapper.cs" />
+    <Compile Include="Engine\ChangedEventArgs.cs" />
+    <Compile Include="Engine\HandledEventArgs.cs" />
+    <Compile Include="Engine\IStateItems.cs" />
+    <Compile Include="Engine\ItemPropertyChangedEventArgs.cs" />
+    <Compile Include="Engine\KeyboardService\KeyboardEventArgs.cs" />
+    <Compile Include="Engine\KeyboardService\KeyboardHelper.cs" />
+    <Compile Include="Engine\KeyboardService\KeyboardService.cs" />
+    <Compile Include="Engine\Mdl2.cs" />
+    <Compile Include="Engine\Modules\ConverterModule.cs" />
+    <Compile Include="Engine\Modules\MatchEngineProviderModule.cs" />
+    <Compile Include="Engine\Modules\MatchEngineValidatorModule.cs" />
+    <Compile Include="Engine\Modules\MetadataProviderModule.cs" />
+    <Compile Include="Engine\Modules\ServiceModule.cs" />
+    <Compile Include="Engine\Modules\UtilityModule.cs" />
+    <Compile Include="Engine\Modules\ViewModelModule.cs" />
+    <Compile Include="Engine\Mvvm\AwaitableDelegateCommand.cs" />
+    <Compile Include="Engine\Mvvm\BindableBase.cs" />
+    <Compile Include="Engine\Mvvm\DelegateCommand.cs" />
+    <Compile Include="Engine\Mvvm\IBindable.cs" />
+    <Compile Include="Engine\Mvvm\ViewModelBase.cs" />
+    <Compile Include="Engine\Navigation\AlternativeNavigationEventArgs.cs" />
+    <Compile Include="Engine\Navigation\FrameFacade.cs" />
+    <Compile Include="Engine\Navigation\INavigable.cs" />
+    <Compile Include="Engine\Navigation\INavigationService.cs" />
+    <Compile Include="Engine\Navigation\JournalEntry.cs" />
+    <Compile Include="Engine\Navigation\NavigatedEventArgs.cs" />
+    <Compile Include="Engine\Navigation\NavigatingEventArgs.cs" />
+    <Compile Include="Engine\Navigation\NavigationService.cs" />
+    <Compile Include="Engine\Navigation\NavigationServiceList.cs" />
+    <Compile Include="Engine\ObservableDictionary.cs" />
+    <Compile Include="Engine\ObservableItemCollection.cs" />
+    <Compile Include="Engine\Providers\IProvider.cs" />
+    <Compile Include="Engine\Providers\ProviderHelper.cs" />
+    <Compile Include="Engine\Providers\SQLiteConnectionProvider.cs" />
+    <Compile Include="Engine\StateItems.cs" />
+    <Compile Include="Engine\StateKey.cs" />
+    <Compile Include="Engine\TypedEventHandler.cs" />
+    <Compile Include="Engine\Utils\AudioUtils.cs" />
+    <Compile Include="Engine\Utils\ColorUtils.cs" />
+    <Compile Include="Engine\Utils\DeviceUtils.cs" />
+    <Compile Include="Engine\Utils\InkUtils.cs" />
+    <Compile Include="Engine\Utils\LinqUtils.cs" />
+    <Compile Include="Engine\Utils\MonitorUtils.cs" />
+    <Compile Include="Engine\Utils\TaskUtils.cs" />
+    <Compile Include="Engine\Utils\TypeUtil.cs" />
+    <Compile Include="Engine\Utils\XamlUtil.cs" />
+    <Compile Include="Engine\WeakReference.cs" />
+    <Compile Include="Engine\WindowWrapper.cs" />
     <Compile Include="Enums\AlbumSort.cs" />
     <Compile Include="Enums\ArtistSort.cs" />
     <Compile Include="Enums\TrackSort.cs" />
@@ -168,7 +226,6 @@
     <Compile Include="Extensions\ListViewBindableSelectionHandler.cs" />
     <Compile Include="Extensions\ListViewExtensions.cs" />
     <Compile Include="Extensions\VisualTreeHelperExtensions.cs" />
-    <Compile Include="Factories\AppKernelFactory.cs" />
     <Compile Include="Common\MessageBox.cs" />
     <Compile Include="Interactions\CloseFlyoutAction.cs" />
     <Compile Include="Interactions\OpenFlyoutAction.cs" />
@@ -191,12 +248,9 @@
     <Compile Include="Services\Interfaces\ITrackSaveService.cs" />
     <Compile Include="Services\RunTime\LibraryMatchingService.cs" />
     <Compile Include="Services\RunTime\TrackSaveService.cs" />
-    <Compile Include="Services\NavigationService\DesignNavigationService.cs" />
-    <Compile Include="Services\NavigationService\INavigatable.cs" />
-    <Compile Include="Services\NavigationService\INavigationService.cs" />
-    <Compile Include="Services\NavigationService\NavigationEventArgs.cs" />
-    <Compile Include="Services\NavigationService\NavigationFacade.cs" />
-    <Compile Include="Services\NavigationService\NavigationService.cs" />
+    <Compile Include="Shell.xaml.cs">
+      <DependentUpon>Shell.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Tools\ActualSizeProxy.cs" />
     <Compile Include="Tools\AlphaKeyGroup.cs" />
     <Compile Include="Tools\Converters\BooleanTemplateSelector.cs" />
@@ -218,8 +272,6 @@
     <Compile Include="Tools\Converters\UpperCaseConverter.cs" />
     <Compile Include="Tools\Converters\VisibilityConverter.cs" />
     <Compile Include="Tools\Converters\ZeroToVisibilityConverter.cs" />
-    <Compile Include="Tools\Mvvm\Command.cs" />
-    <Compile Include="Tools\Mvvm\ViewModelBase.cs" />
     <Compile Include="Extensions\UriExtensions.cs" />
     <Compile Include="ViewModels\AboutPageViewModel.cs" />
     <Compile Include="ViewModels\AlbumPageViewModel.cs" />
@@ -265,9 +317,6 @@
     <Compile Include="Views\NowPlayingPage.xaml.cs">
       <DependentUpon>NowPlayingPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Shell.xaml.cs">
-      <DependentUpon>Shell.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Views\SongsPage.xaml.cs">
       <DependentUpon>SongsPage.xaml</DependentUpon>
     </Compile>
@@ -309,6 +358,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="Controls\HamburgerMenu.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Controls\LibraryHeader.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -337,9 +390,9 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="DeviceFamily-Mobile\Shell.xaml">
-      <SubType>Designer</SubType>
+    <Page Include="Shell.xaml">
       <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Styles\ControlStyles.xaml">
       <SubType>Designer</SubType>
@@ -350,6 +403,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Styles\SplitViewStyles.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Themes\Generic.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -392,10 +449,6 @@
     <Page Include="Views\NowPlayingPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Shell.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\SongsPage.xaml">
       <SubType>Designer</SubType>

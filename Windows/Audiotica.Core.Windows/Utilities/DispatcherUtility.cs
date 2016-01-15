@@ -5,57 +5,119 @@ using Audiotica.Core.Utilities.Interfaces;
 
 namespace Audiotica.Core.Windows.Utilities
 {
+    // DOCS: https://github.com/Windows-XAML/Template10/wiki/Docs-%7C-DispatcherWrapper
     public class DispatcherUtility : IDispatcherUtility
     {
-        private readonly CoreDispatcher _coreDispatcher;
+        private readonly CoreDispatcher _dispatcher;
 
-        public DispatcherUtility(CoreDispatcher coreDispatcher)
+        public DispatcherUtility(CoreDispatcher dispatcher)
         {
-            _coreDispatcher = coreDispatcher;
+            _dispatcher = dispatcher;
         }
 
-        public void Run(Action action)
-        {
-            if (_coreDispatcher.HasThreadAccess)
-                action();
-            else
-                _coreDispatcher.RunAsync(CoreDispatcherPriority.Normal, new DispatchedHandler(action)).AsTask().Wait();
-        }
+        public bool HasThreadAccess() => _dispatcher.HasThreadAccess;
 
-        public Task RunAsync(Action action)
+        public async void Run(Action action, int delayms = 0)
         {
-            if (_coreDispatcher.HasThreadAccess)
+            await Task.Delay(delayms);
+            if (_dispatcher.HasThreadAccess)
             {
                 action();
-                return Task.FromResult(0);
             }
-            return _coreDispatcher.RunAsync(CoreDispatcherPriority.Normal, new DispatchedHandler(action)).AsTask();
-        }
-
-        public async Task<T> RunAsync<T>(Func<T> func)
-        {
-            var obj = default(T);
-            await RunAsync(() => { obj = func(); });
-            return obj;
-        }
-
-        public Task<T> RunAsync<T>(Func<Task<T>> func)
-        {
-            var src = new TaskCompletionSource<T>();
-#pragma warning disable 4014
-            RunAsync(async () =>
-#pragma warning restore 4014
+            else
             {
-                try
-                {
-                    src.SetResult(await func());
-                }
-                catch (Exception e)
-                {
-                    src.SetException(e);
-                }
-            });
-            return src.Task;
+                _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => action()).AsTask().Wait();
+            }
+        }
+
+        public T Run<T>(Func<T> action, int delayms = 0) where T : class
+        {
+            Task.Delay(delayms);
+            if (_dispatcher.HasThreadAccess)
+            {
+                return action();
+            }
+            T result = null;
+            _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => result = action()).AsTask().Wait();
+            return result;
+        }
+
+        public async Task RunAsync(Action action, int delayms = 0)
+        {
+            await Task.Delay(delayms);
+            if (_dispatcher.HasThreadAccess)
+            {
+                action();
+            }
+            else
+            {
+                var tcs = new TaskCompletionSource<object>();
+                await _dispatcher.RunAsync(CoreDispatcherPriority.Normal,
+                    () =>
+                        {
+                            try
+                            {
+                                action();
+                                tcs.TrySetResult(null);
+                            }
+                            catch (Exception ex)
+                            {
+                                tcs.TrySetException(ex);
+                            }
+                        });
+                await tcs.Task;
+            }
+        }
+
+        public async Task RunAsync(Func<Task> func, int delayms = 0)
+        {
+            await Task.Delay(delayms);
+            if (_dispatcher.HasThreadAccess)
+            {
+                await func?.Invoke();
+            }
+            else
+            {
+                var tcs = new TaskCompletionSource<object>();
+                await _dispatcher.RunAsync(CoreDispatcherPriority.Normal,
+                    async () =>
+                        {
+                            try
+                            {
+                                await func();
+                                tcs.TrySetResult(null);
+                            }
+                            catch (Exception ex)
+                            {
+                                tcs.TrySetException(ex);
+                            }
+                        });
+                await tcs.Task;
+            }
+        }
+
+        public async Task<T> RunAsync<T>(Func<T> func, int delayms = 0)
+        {
+            await Task.Delay(delayms);
+            if (_dispatcher.HasThreadAccess)
+            {
+                return func();
+            }
+            var tcs = new TaskCompletionSource<T>();
+            await _dispatcher.RunAsync(CoreDispatcherPriority.Normal,
+                () =>
+                    {
+                        try
+                        {
+                            tcs.TrySetResult(func());
+                        }
+                        catch (Exception ex)
+                        {
+                            tcs.TrySetException(ex);
+                        }
+                    });
+            await tcs.Task;
+            return tcs.Task.Result;
         }
     }
 }

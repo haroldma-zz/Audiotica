@@ -19,10 +19,10 @@ using Audiotica.Web.Extensions;
 using Audiotica.Web.Metadata.Interfaces;
 using Audiotica.Web.Models;
 using Audiotica.Windows.Common;
+using Audiotica.Windows.Engine.Mvvm;
+using Audiotica.Windows.Engine.Navigation;
 using Audiotica.Windows.Extensions;
 using Audiotica.Windows.Services.Interfaces;
-using Audiotica.Windows.Services.NavigationService;
-using Audiotica.Windows.Tools.Mvvm;
 using Audiotica.Windows.Views;
 
 namespace Audiotica.Windows.ViewModels
@@ -54,21 +54,21 @@ namespace Audiotica.Windows.ViewModels
             _playerService = playerService;
             _trackSaveService = trackSaveService;
             _metadataProviders = metadataProviders.FilterAndSort<IExtendedMetadataProvider>();
-
-            ViewInCatalogCommand = new Command(ViewInCatalogExecute);
-            PlayAllCommand = new Command(PlayAllExecute);
-            SaveAllCommand = new Command<object>(SaveAllExecute);
+            
+            ViewInCatalogCommand = new DelegateCommand(ViewInCatalogExecute);
+            PlayAllCommand = new DelegateCommand(PlayAllExecute);
+            SaveAllCommand = new DelegateCommand<object>(SaveAllExecute);
 
             if (IsInDesignMode)
                 OnNavigatedTo(new AlbumPageParameter("Kauai", "Childish Gambino"), NavigationMode.New,
                     new Dictionary<string, object>());
         }
 
-        public Command<object> SaveAllCommand { get; }
+        public DelegateCommand<object> SaveAllCommand { get; }
 
-        public Command PlayAllCommand { get; }
+        public DelegateCommand PlayAllCommand { get; }
 
-        public Command ViewInCatalogCommand { get; }
+        public DelegateCommand ViewInCatalogCommand { get; }
 
         public Album Album
         {
@@ -124,8 +124,7 @@ namespace Audiotica.Windows.ViewModels
                 new AlbumPageParameter(Album.Title, Album.Artist.Name) {IsCatalogMode = true});
         }
 
-        public override sealed async void OnNavigatedTo(object parameter, NavigationMode mode,
-            Dictionary<string, object> state)
+        public override async void OnNavigatedTo(object parameter, NavigationMode mode, IDictionary<string, object> state)
         {
             var albumParameter = (AlbumPageParameter) parameter;
             IsCatalogMode = albumParameter.IsCatalogMode;
@@ -202,7 +201,7 @@ namespace Audiotica.Windows.ViewModels
             }
         }
 
-        public override void OnNavigatedFrom()
+        public override void OnNavigatingFrom(NavigatingEventArgs args)
         {
             // Bug: if we don't reset the theme when we go out it fucks with the TrackViewer control on other pages
             RequestedTheme = ElementTheme.Default;

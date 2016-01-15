@@ -1,5 +1,5 @@
 ﻿using Audiotica.Core.Utilities.Interfaces;
-using Audiotica.Windows.Tools.Mvvm;
+using Audiotica.Windows.Engine.Mvvm;
 
 namespace Audiotica.Windows.ViewModels
 {

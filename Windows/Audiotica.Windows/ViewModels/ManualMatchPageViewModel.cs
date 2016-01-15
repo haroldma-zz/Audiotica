@@ -2,15 +2,14 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 using Audiotica.Core.Windows.Common;
 using Audiotica.Database.Models;
 using Audiotica.Database.Services.Interfaces;
 using Audiotica.Web.MatchEngine.Interfaces;
 using Audiotica.Web.Models;
-using Audiotica.Windows.Services.NavigationService;
-using Audiotica.Windows.Tools.Mvvm;
+using Audiotica.Windows.Engine.Mvvm;
+using Audiotica.Windows.Engine.Navigation;
 
 namespace Audiotica.Windows.ViewModels
 {
@@ -22,29 +21,58 @@ namespace Audiotica.Windows.ViewModels
         private List<MatchProviderPivotItem> _providerPivots;
         private Track _track;
 
-        public ManualMatchPageViewModel(IEnumerable<IMatchProvider> providers, ILibraryService libraryService, INavigationService navigationService)
+        public ManualMatchPageViewModel(
+            IEnumerable<IMatchProvider> providers,
+            ILibraryService libraryService,
+            INavigationService navigationService)
         {
             _libraryService = libraryService;
             _navigationService = navigationService;
             _providers = providers.Where(p => p.IsEnabled).OrderByDescending(p => p.Priority).ToList();
-            MatchClickCommand = new Command<MatchSong>(MatchClickExecute);
+            MatchClickCommand = new DelegateCommand<MatchSong>(MatchClickExecute);
 
             if (IsInDesignMode)
+            {
                 OnNavigatedTo(0, NavigationMode.New, null);
+            }
+        }
+
+        public DelegateCommand<MatchSong> MatchClickCommand { get; }
+
+        public List<MatchProviderPivotItem> ProviderPivots
+        {
+            get
+            {
+                return _providerPivots;
+            }
+            set
+            {
+                Set(ref _providerPivots, value);
+            }
         }
 
         public Track Track
         {
-            get { return _track; }
-            set { Set(ref _track, value); }
+            get
+            {
+                return _track;
+            }
+            set
+            {
+                Set(ref _track, value);
+            }
         }
 
-        public Command<MatchSong> MatchClickCommand { get; }
-
-        public List<MatchProviderPivotItem> ProviderPivots
+        public override void OnNavigatedTo(object parameter, NavigationMode mode, IDictionary<string, object> state)
         {
-            get { return _providerPivots; }
-            set { Set(ref _providerPivots, value); }
+            var id = (long)parameter;
+            Track = _libraryService.Tracks.FirstOrDefault(p => p.Id == id);
+
+            ProviderPivots = _providers.Select(p => new MatchProviderPivotItem
+            {
+                Title = p.DisplayName,
+                Results = new ManualMatchResults(p, Track.Title, Track.DisplayArtist)
+            }).ToList();
         }
 
         private async void MatchClickExecute(MatchSong match)
@@ -55,25 +83,13 @@ namespace Audiotica.Windows.ViewModels
             await _libraryService.UpdateTrackAsync(Track);
             _navigationService.GoBack();
         }
-
-        public override sealed void OnNavigatedTo(object parameter, NavigationMode mode,
-            Dictionary<string, object> state)
-        {
-            var id = (long) parameter;
-            Track = _libraryService.Tracks.FirstOrDefault(p => p.Id == id);
-
-            ProviderPivots = _providers.Select(p => new MatchProviderPivotItem
-            {
-                Title = p.DisplayName,
-                Results = new ManualMatchResults(p, Track.Title, Track.DisplayArtist)
-            }).ToList();
-        }
     }
 
     public class MatchProviderPivotItem
     {
-        public string Title { get; set; }
         public ManualMatchResults Results { get; set; }
+
+        public string Title { get; set; }
     }
 
     public class ManualMatchResults : IncrementalLoadingBase<MatchSong>
@@ -90,6 +106,8 @@ namespace Audiotica.Windows.ViewModels
             _artist = artist;
         }
 
+        protected override bool HasMoreItemsOverride() => _hasMore;
+
         protected override async Task<IList<MatchSong>> LoadMoreItemsOverrideAsync(CancellationToken c, uint count)
         {
             try
@@ -104,7 +122,5 @@ namespace Audiotica.Windows.ViewModels
                 return null;
             }
         }
-
-        protected override bool HasMoreItemsOverride() => _hasMore;
     }
 }

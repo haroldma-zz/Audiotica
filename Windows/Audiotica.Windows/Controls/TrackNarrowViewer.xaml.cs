@@ -10,40 +10,59 @@ using Audiotica.Core.Windows.Helpers;
 using Audiotica.Database.Models;
 using Audiotica.Database.Services.Interfaces;
 using Audiotica.Windows.Common;
+using Audiotica.Windows.Engine.Navigation;
 using Audiotica.Windows.Services.Interfaces;
-using Audiotica.Windows.Services.NavigationService;
 using Audiotica.Windows.Views;
 using Autofac;
 
 namespace Audiotica.Windows.Controls
 {
     // TODO: find a way to get state triggers to work on usercontrol, then we won't need a seperate control _sight_ (hopefully just a bug on the current SDK)
-    public sealed partial class TrackNarrowViewer: INotifyPropertyChanged
+    public sealed partial class TrackNarrowViewer : INotifyPropertyChanged
     {
+        public static readonly DependencyProperty IsCatalogProperty =
+            DependencyProperty.Register("IsCatalog", typeof (bool), typeof (TrackViewer), null);
+
+        public static readonly DependencyProperty IsQueueProperty =
+            DependencyProperty.Register("IsQueue", typeof (bool), typeof (TrackViewer), null);
+
         public static readonly DependencyProperty IsSelectedProperty =
             DependencyProperty.Register("IsSelected", typeof (bool), typeof (TrackNarrowViewer), null);
 
-        public static readonly DependencyProperty IsCatalogProperty =
-           DependencyProperty.Register("IsCatalog", typeof(bool), typeof(TrackViewer), null);
-
-
-        public static readonly DependencyProperty IsQueueProperty =
-            DependencyProperty.Register("IsQueue", typeof(bool), typeof(TrackViewer), null);
-
         public static readonly DependencyProperty QueueIdProperty =
-            DependencyProperty.Register("QueueId", typeof(string), typeof(TrackViewer), null);
+            DependencyProperty.Register("QueueId", typeof (string), typeof (TrackViewer), null);
+
+        private bool _isPlaying;
 
         private Track _track;
-        private bool _isPlaying;
 
         public TrackNarrowViewer()
         {
             InitializeComponent();
         }
 
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        public bool IsCatalog
+
+        {
+            get
+            {
+                return (bool)GetValue(IsCatalogProperty);
+            }
+
+            set
+            {
+                SetValue(IsCatalogProperty, value);
+            }
+        }
+
         public bool IsPlaying
         {
-            get { return _isPlaying; }
+            get
+            {
+                return _isPlaying;
+            }
             set
             {
                 _isPlaying = value;
@@ -51,88 +70,58 @@ namespace Audiotica.Windows.Controls
             }
         }
 
+        public bool IsQueue
+
+        {
+            get
+            {
+                return (bool)GetValue(IsQueueProperty);
+            }
+
+            set
+            {
+                SetValue(IsQueueProperty, value);
+            }
+        }
+
         public bool IsSelected
 
         {
-            get { return (bool) GetValue(IsSelectedProperty); }
+            get
+            {
+                return (bool)GetValue(IsSelectedProperty);
+            }
 
-            set { SetValue(IsSelectedProperty, value); }
+            set
+            {
+                SetValue(IsSelectedProperty, value);
+            }
         }
 
-        public bool IsCatalog
-
+        public string QueueId
         {
-            get { return (bool)GetValue(IsCatalogProperty); }
+            get
+            {
+                return (string)GetValue(QueueIdProperty);
+            }
 
-            set { SetValue(IsCatalogProperty, value); }
+            set
+            {
+                SetValue(QueueIdProperty, value);
+            }
         }
 
         public Track Track
         {
-            get { return _track; }
+            get
+            {
+                return _track;
+            }
             set
             {
                 _track = value;
                 Bindings.Update();
                 TrackChanged();
-            }
-        }
-
-        public bool IsQueue
-
-        {
-            get { return (bool)GetValue(IsQueueProperty); }
-
-            set { SetValue(IsQueueProperty, value); }
-        }
-
-        public string QueueId
-        {
-            get { return (string)GetValue(QueueIdProperty); }
-
-            set { SetValue(QueueIdProperty, value); }
-        }
-
-        private void TrackChanged()
-        {
-            var player = App.Current.Kernel.Resolve<IPlayerService>();
-
-            if (Track == null)
-                IsPlaying = false;
-            else
-            {
-                if (IsQueue && QueueId != null)
-                    IsPlaying = player.CurrentQueueId == QueueId;
-                else if (!IsQueue && player.CurrentQueueTrack?.Track != null)
-                    IsPlaying = (Track.Id > 0 && player.CurrentQueueTrack.Track.Id == Track.Id)
-                        || TrackComparer.AreEqual(player.CurrentQueueTrack.Track, Track);
-                else
-                    IsPlaying = false;
-            }
-
-            player.TrackChanged -= PlayerOnTrackChanged;
-            player.TrackChanged += PlayerOnTrackChanged;
-        }
-
-        private void PlayerOnTrackChanged(object sender, string s) => TrackChanged();
-
-        private async void PlayButton_Click(object sender, RoutedEventArgs e)
-        {
-            using (var lifetimeScope = App.Current.Kernel.BeginScope())
-            {
-                var playerService = lifetimeScope.Resolve<IPlayerService>();
-                try
-                {
-                    var queue = playerService.ContainsTrack(Track) ?? await playerService.AddAsync(Track);
-                    // player auto plays when there is only one track
-                    if (playerService.PlaybackQueue.Count > 1)
-                        playerService.Play(queue);
-                    IsSelected = false;
-                }
-                catch (AppException ex)
-                {
-                    CurtainPrompt.ShowError(ex.Message ?? "Something happened.");
-                }
             }
         }
 
@@ -195,31 +184,6 @@ namespace Audiotica.Windows.Controls
             }
         }
 
-        private void Viewer_RightTapped(object sender, RightTappedRoutedEventArgs e)
-        {
-            var grid = (Grid)sender;
-            FlyoutEx.ShowAttachedFlyoutAtPointer(grid);
-
-        }
-
-        private void ExploreArtist_Click(object sender, RoutedEventArgs e)
-        {
-            using (var scope = App.Current.Kernel.BeginScope())
-            {
-                var navigationService = scope.Resolve<INavigationService>();
-                navigationService.Navigate(typeof(ArtistPage), Track.DisplayArtist);
-            }
-        }
-
-        private void Download_Click(object sender, RoutedEventArgs e)
-        {
-            using (var scope = App.Current.Kernel.BeginScope())
-            {
-                var downloadService = scope.Resolve<IDownloadService>();
-                downloadService.StartDownloadAsync(Track);
-            }
-        }
-
         private async void Delete_Click(object sender, RoutedEventArgs e)
         {
             using (var scope = App.Current.Kernel.BeginScope())
@@ -232,16 +196,93 @@ namespace Audiotica.Windows.Controls
                 {
                     var album = libraryService.Albums.FirstOrDefault(p => p.Title.EqualsIgnoreCase(Track.AlbumTitle));
                     if (album == null)
+                    {
                         App.Current.NavigationService.GoBack();
+                    }
                 }
             }
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        private void Download_Click(object sender, RoutedEventArgs e)
+        {
+            using (var scope = App.Current.Kernel.BeginScope())
+            {
+                var downloadService = scope.Resolve<IDownloadService>();
+                downloadService.StartDownloadAsync(Track);
+            }
+        }
+
+        private void ExploreArtist_Click(object sender, RoutedEventArgs e)
+        {
+            using (var scope = App.Current.Kernel.BeginScope())
+            {
+                var navigationService = scope.Resolve<INavigationService>();
+                navigationService.Navigate(typeof (ArtistPage), Track.DisplayArtist);
+            }
+        }
 
         private void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        private async void PlayButton_Click(object sender, RoutedEventArgs e)
+        {
+            using (var lifetimeScope = App.Current.Kernel.BeginScope())
+            {
+                var playerService = lifetimeScope.Resolve<IPlayerService>();
+                try
+                {
+                    var queue = playerService.ContainsTrack(Track) ?? await playerService.AddAsync(Track);
+                    // player auto plays when there is only one track
+                    if (playerService.PlaybackQueue.Count > 1)
+                    {
+                        playerService.Play(queue);
+                    }
+                    IsSelected = false;
+                }
+                catch (AppException ex)
+                {
+                    CurtainPrompt.ShowError(ex.Message ?? "Something happened.");
+                }
+            }
+        }
+
+        private void PlayerOnTrackChanged(object sender, string s) => TrackChanged();
+
+        private void TrackChanged()
+        {
+            var player = App.Current.Kernel.Resolve<IPlayerService>();
+
+            if (Track == null)
+            {
+                IsPlaying = false;
+            }
+            else
+            {
+                if (IsQueue && QueueId != null)
+                {
+                    IsPlaying = player.CurrentQueueId == QueueId;
+                }
+                else if (!IsQueue && player.CurrentQueueTrack?.Track != null)
+                {
+                    IsPlaying = (Track.Id > 0 && player.CurrentQueueTrack.Track.Id == Track.Id)
+                        || TrackComparer.AreEqual(player.CurrentQueueTrack.Track, Track);
+                }
+                else
+                {
+                    IsPlaying = false;
+                }
+            }
+
+            player.TrackChanged -= PlayerOnTrackChanged;
+            player.TrackChanged += PlayerOnTrackChanged;
+        }
+
+        private void Viewer_RightTapped(object sender, RightTappedRoutedEventArgs e)
+        {
+            var grid = (Grid)sender;
+            FlyoutEx.ShowAttachedFlyoutAtPointer(grid);
         }
     }
 }

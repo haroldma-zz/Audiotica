@@ -4,8 +4,8 @@ using Windows.Media.Playback;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Audiotica.Database.Models;
+using Audiotica.Windows.Engine.Mvvm;
 using Audiotica.Windows.Services.Interfaces;
-using Audiotica.Windows.Tools.Mvvm;
 
 namespace Audiotica.Windows.ViewModels
 {
@@ -27,35 +27,58 @@ namespace Audiotica.Windows.ViewModels
             _playerService.TrackChanged += PlayerServiceOnTrackChanged;
             _playerService.MediaStateChanged += PlayerServiceOnMediaStateChanged;
 
-            PlayPauseCommand = new Command(() => _playerService.PlayOrPause());
-            NextCommand = new Command(() => _playerService.Next());
-            PrevCommand = new Command(() => _playerService.Previous());
+            PlayPauseCommand = new DelegateCommand(() => _playerService.PlayOrPause());
+            NextCommand = new DelegateCommand(() => _playerService.Next());
+            PrevCommand = new DelegateCommand(() => _playerService.Previous());
 
-            _timer = new DispatcherTimer {Interval = TimeSpan.FromMilliseconds(TimerInterval)};
+            _timer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(TimerInterval) };
             _timer.Tick += TimerOnTick;
         }
 
-        public Command PrevCommand { get; }
-
-        public Command NextCommand { get; }
-
-        public Command PlayPauseCommand { get; }
-
         public QueueTrack CurrentQueueTrack
         {
-            get { return _currentQueueTrack; }
-            set { Set(ref _currentQueueTrack, value); }
+            get
+            {
+                return _currentQueueTrack;
+            }
+            set
+            {
+                Set(ref _currentQueueTrack, value);
+            }
         }
 
-        public IconElement PlayPauseIcon
+        public DelegateCommand NextCommand { get; }
+
+        public double PlaybackDuration
         {
-            get { return _playPauseIcon; }
-            set { Set(ref _playPauseIcon, value); }
+            get
+            {
+                return _playbackDuration;
+            }
+            set
+            {
+                Set(ref _playbackDuration, value);
+            }
+        }
+
+        public string PlaybackDurationText
+        {
+            get
+            {
+                return _playbackDurationText;
+            }
+            set
+            {
+                Set(ref _playbackDurationText, value);
+            }
         }
 
         public double PlaybackPosition
         {
-            get { return _playbackPosition; }
+            get
+            {
+                return _playbackPosition;
+            }
             set
             {
                 Set(ref _playbackPosition, value);
@@ -63,41 +86,33 @@ namespace Audiotica.Windows.ViewModels
             }
         }
 
-        public double PlaybackDuration
-        {
-            get { return _playbackDuration; }
-            set { Set(ref _playbackDuration, value); }
-        }
-
         public string PlaybackPositionText
         {
-            get { return _playbackPositionText; }
-            set { Set(ref _playbackPositionText, value); }
+            get
+            {
+                return _playbackPositionText;
+            }
+            set
+            {
+                Set(ref _playbackPositionText, value);
+            }
         }
 
-        public string PlaybackDurationText
+        public DelegateCommand PlayPauseCommand { get; }
+
+        public IconElement PlayPauseIcon
         {
-            get { return _playbackDurationText; }
-            set { Set(ref _playbackDurationText, value); }
+            get
+            {
+                return _playPauseIcon;
+            }
+            set
+            {
+                Set(ref _playPauseIcon, value);
+            }
         }
 
-        private void UpdatePosition()
-        {
-            var playerPosition = BackgroundMediaPlayer.Current.Position.TotalMilliseconds;
-            var difference = Math.Abs(PlaybackPosition - playerPosition);
-            if (difference > TimerInterval)
-                BackgroundMediaPlayer.Current.Position = TimeSpan.FromMilliseconds(PlaybackPosition);
-        }
-
-        private void TimerOnTick(object sender, object o)
-        {
-            var position = BackgroundMediaPlayer.Current.Position;
-            var duration = BackgroundMediaPlayer.Current.NaturalDuration;
-            PlaybackPosition = position.TotalMilliseconds;
-            PlaybackDuration = duration.TotalMilliseconds;
-            PlaybackPositionText = position.ToString(@"m\:ss");
-            PlaybackDurationText = duration.ToString(@"m\:ss");
-        }
+        public DelegateCommand PrevCommand { get; }
 
         private void PlayerServiceOnMediaStateChanged(object sender, MediaPlayerState mediaPlayerState)
         {
@@ -119,6 +134,26 @@ namespace Audiotica.Windows.ViewModels
         {
             CurrentQueueTrack =
                 _playerService.PlaybackQueue.FirstOrDefault(queueTrack => queueTrack.Id == s);
+        }
+
+        private void TimerOnTick(object sender, object o)
+        {
+            var position = BackgroundMediaPlayer.Current.Position;
+            var duration = BackgroundMediaPlayer.Current.NaturalDuration;
+            PlaybackPosition = position.TotalMilliseconds;
+            PlaybackDuration = duration.TotalMilliseconds;
+            PlaybackPositionText = position.ToString(@"m\:ss");
+            PlaybackDurationText = duration.ToString(@"m\:ss");
+        }
+
+        private void UpdatePosition()
+        {
+            var playerPosition = BackgroundMediaPlayer.Current.Position.TotalMilliseconds;
+            var difference = Math.Abs(PlaybackPosition - playerPosition);
+            if (difference > TimerInterval)
+            {
+                BackgroundMediaPlayer.Current.Position = TimeSpan.FromMilliseconds(PlaybackPosition);
+            }
         }
     }
 }

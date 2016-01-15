@@ -6,8 +6,8 @@ using Audiotica.Web.Extensions;
 using Audiotica.Web.Metadata.Interfaces;
 using Audiotica.Web.Models;
 using Audiotica.Windows.Common;
-using Audiotica.Windows.Services.NavigationService;
-using Audiotica.Windows.Tools.Mvvm;
+using Audiotica.Windows.Engine.Mvvm;
+using Audiotica.Windows.Engine.Navigation;
 using Audiotica.Windows.Views;
 
 namespace Audiotica.Windows.ViewModels
@@ -23,8 +23,10 @@ namespace Audiotica.Windows.ViewModels
         private int _selectedSearchProvider;
         private List<Track> _tracksResults;
 
-        public SearchPageViewModel(IEnumerable<IMetadataProvider> metadataProviders,
-            IConverter<WebSong, Track> webToTrackConverter, IConverter<WebAlbum, Album> webToAlbumConverter,
+        public SearchPageViewModel(
+            IEnumerable<IMetadataProvider> metadataProviders,
+            IConverter<WebSong, Track> webToTrackConverter,
+            IConverter<WebAlbum, Album> webToAlbumConverter,
             INavigationService navigationService)
         {
             _webToTrackConverter = webToTrackConverter;
@@ -33,69 +35,94 @@ namespace Audiotica.Windows.ViewModels
             SearchProviders = metadataProviders.FilterAndSort<ISearchMetadataProvider>();
             SelectedSearchProvider = 0;
 
-            SearchCommand = new Command<string>(SearchExecute);
-            WebAlbumClickCommand = new Command<ItemClickEventArgs>(WebAlbumClickExecute);
-            WebArtistClickCommand = new Command<ItemClickEventArgs>(WebArtistClickExecute);
+            SearchCommand = new DelegateCommand<string>(SearchExecute);
+            WebAlbumClickCommand = new DelegateCommand<ItemClickEventArgs>(WebAlbumClickExecute);
+            WebArtistClickCommand = new DelegateCommand<ItemClickEventArgs>(WebArtistClickExecute);
 
             if (IsInDesignMode)
+            {
                 SearchExecute("childish gambino");
-        }
-
-        public Command<ItemClickEventArgs> WebArtistClickCommand { get; }
-
-        public Command<ItemClickEventArgs> WebAlbumClickCommand { get; }
-
-        public Command<string> SearchCommand { get; }
-
-        public int SelectedSearchProvider
-        {
-            get { return _selectedSearchProvider; }
-            set { Set(ref _selectedSearchProvider, value); }
-        }
-
-        public List<ISearchMetadataProvider> SearchProviders
-        {
-            get { return _searchProviders; }
-            set { Set(ref _searchProviders, value); }
+            }
         }
 
         public List<WebAlbum> AlbumsResults
         {
-            get { return _albumsResults; }
-            set { Set(ref _albumsResults, value); }
-        }
-
-        public List<Track> TracksResults
-        {
-            get { return _tracksResults; }
-            set { Set(ref _tracksResults, value); }
+            get
+            {
+                return _albumsResults;
+            }
+            set
+            {
+                Set(ref _albumsResults, value);
+            }
         }
 
         public List<WebArtist> ArtistsResults
         {
-            get { return _artistsResults; }
-            set { Set(ref _artistsResults, value); }
+            get
+            {
+                return _artistsResults;
+            }
+            set
+            {
+                Set(ref _artistsResults, value);
+            }
         }
 
-        private void WebArtistClickExecute(ItemClickEventArgs e)
+        public DelegateCommand<string> SearchCommand { get; }
+
+        public List<ISearchMetadataProvider> SearchProviders
         {
-            var artist = (WebArtist) e.ClickedItem;
-            _navigationService.Navigate(typeof (ArtistPage), artist.Name);
+            get
+            {
+                return _searchProviders;
+            }
+            set
+            {
+                Set(ref _searchProviders, value);
+            }
         }
 
-        private void WebAlbumClickExecute(ItemClickEventArgs e)
+        public int SelectedSearchProvider
         {
-            var album = (WebAlbum) e.ClickedItem;
-            _navigationService.Navigate(typeof (AlbumPage),
-                new AlbumPageViewModel.AlbumPageParameter(album.Title, album.Artist.Name, album) {IsCatalogMode = true});
+            get
+            {
+                return _selectedSearchProvider;
+            }
+            set
+            {
+                Set(ref _selectedSearchProvider, value);
+            }
         }
 
-        private void SearchExecute(string query)
+        public List<Track> TracksResults
         {
-            var provider = _searchProviders[SelectedSearchProvider];
-            SearchArtists(query, provider);
-            SearchAlbums(query, provider);
-            SearchTracks(query, provider);
+            get
+            {
+                return _tracksResults;
+            }
+            set
+            {
+                Set(ref _tracksResults, value);
+            }
+        }
+
+        public DelegateCommand<ItemClickEventArgs> WebAlbumClickCommand { get; }
+
+        public DelegateCommand<ItemClickEventArgs> WebArtistClickCommand { get; }
+
+        private async void SearchAlbums(string query, ISearchMetadataProvider provider)
+        {
+            try
+            {
+                AlbumsResults = null;
+                var result = await provider.SearchAsync(query, WebResults.Type.Album);
+                AlbumsResults = await _webToAlbumConverter.FillPartialAsync(result?.Albums);
+            }
+            catch
+            {
+                CurtainPrompt.ShowError("Something happened while searching for albums!");
+            }
         }
 
         private async void SearchArtists(string query, ISearchMetadataProvider provider)
@@ -112,18 +139,12 @@ namespace Audiotica.Windows.ViewModels
             }
         }
 
-        private async void SearchAlbums(string query, ISearchMetadataProvider provider)
+        private void SearchExecute(string query)
         {
-            try
-            {
-                AlbumsResults = null;
-                var result = await provider.SearchAsync(query, WebResults.Type.Album);
-                AlbumsResults = await _webToAlbumConverter.FillPartialAsync(result?.Albums);
-            }
-            catch
-            {
-                CurtainPrompt.ShowError("Something happened while searching for albums!");
-            }
+            var provider = _searchProviders[SelectedSearchProvider];
+            SearchArtists(query, provider);
+            SearchAlbums(query, provider);
+            SearchTracks(query, provider);
         }
 
         private async void SearchTracks(string query, ISearchMetadataProvider provider)
@@ -138,6 +159,22 @@ namespace Audiotica.Windows.ViewModels
             {
                 CurtainPrompt.ShowError("Something happened while searching for tracks!");
             }
+        }
+
+        private void WebAlbumClickExecute(ItemClickEventArgs e)
+        {
+            var album = (WebAlbum)e.ClickedItem;
+            _navigationService.Navigate(typeof (AlbumPage),
+                new AlbumPageViewModel.AlbumPageParameter(album.Title, album.Artist.Name, album)
+                {
+                    IsCatalogMode = true
+                });
+        }
+
+        private void WebArtistClickExecute(ItemClickEventArgs e)
+        {
+            var artist = (WebArtist)e.ClickedItem;
+            _navigationService.Navigate(typeof (ArtistPage), artist.Name);
         }
     }
 }

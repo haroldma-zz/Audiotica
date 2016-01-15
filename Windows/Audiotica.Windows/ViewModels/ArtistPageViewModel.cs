@@ -17,9 +17,9 @@ using Audiotica.Web.Extensions;
 using Audiotica.Web.Metadata.Interfaces;
 using Audiotica.Web.Models;
 using Audiotica.Windows.Common;
+using Audiotica.Windows.Engine.Mvvm;
+using Audiotica.Windows.Engine.Navigation;
 using Audiotica.Windows.Extensions;
-using Audiotica.Windows.Services.NavigationService;
-using Audiotica.Windows.Tools.Mvvm;
 using Audiotica.Windows.Views;
 
 namespace Audiotica.Windows.ViewModels
@@ -45,7 +45,8 @@ namespace Audiotica.Windows.ViewModels
         private List<WebAlbum> _topAlbums;
         private List<Track> _topSongs;
 
-        public ArtistPageViewModel(INavigationService navigationService,
+        public ArtistPageViewModel(
+            INavigationService navigationService,
             ILibraryService libraryService,
             IEnumerable<IMetadataProvider> metadataProviders,
             IConverter<WebAlbum, Album> webAlbumConverter,
@@ -62,92 +63,143 @@ namespace Audiotica.Windows.ViewModels
             _webSongConverter = webSongConverter;
             _settingsUtility = settingsUtility;
 
-            AlbumClickCommand = new Command<ItemClickEventArgs>(AlbumClickExecute);
-            WebAlbumClickCommand = new Command<ItemClickEventArgs>(WebAlbumClickExecute);
+            AlbumClickCommand = new DelegateCommand<ItemClickEventArgs>(AlbumClickExecute);
+            WebAlbumClickCommand = new DelegateCommand<ItemClickEventArgs>(WebAlbumClickExecute);
 
             if (IsInDesignMode)
+            {
                 OnNavigatedTo("Childish Gambino", NavigationMode.New, new Dictionary<string, object>());
+            }
         }
 
-        public Command<ItemClickEventArgs> AlbumClickCommand { get; set; }
+        public DelegateCommand<ItemClickEventArgs> AlbumClickCommand { get; set; }
 
-        public Command<ItemClickEventArgs> WebAlbumClickCommand { get; }
-
-        public bool IsNewAlbumsLoading
+        public Artist Artist
         {
-            get { return _isNewAlbumsLoading; }
-            set { Set(ref _isNewAlbumsLoading, value); }
-        }
-
-        public bool IsAlbumsLoading
-        {
-            get { return _isAlbumsLoading; }
-            set { Set(ref _isAlbumsLoading, value); }
-        }
-
-        public bool IsTopSongsLoading
-        {
-            get { return _isTopSongsLoading; }
-            set { Set(ref _isTopSongsLoading, value); }
-        }
-
-        public ElementTheme RequestedTheme
-        {
-            get { return _requestedTheme; }
-            set { Set(ref _requestedTheme, value); }
-        }
-
-        public SolidColorBrush ForegroundBrush
-        {
-            get { return _foregroundBrush; }
-            set { Set(ref _foregroundBrush, value); }
+            get
+            {
+                return _artist;
+            }
+            set
+            {
+                Set(ref _artist, value);
+            }
         }
 
         public SolidColorBrush BackgroundBrush
         {
-            get { return _backgroundBrush; }
-            set { Set(ref _backgroundBrush, value); }
+            get
+            {
+                return _backgroundBrush;
+            }
+            set
+            {
+                Set(ref _backgroundBrush, value);
+            }
         }
 
-        public Artist Artist
+        public SolidColorBrush ForegroundBrush
         {
-            get { return _artist; }
-            set { Set(ref _artist, value); }
+            get
+            {
+                return _foregroundBrush;
+            }
+            set
+            {
+                Set(ref _foregroundBrush, value);
+            }
+        }
+
+        public bool IsAlbumsLoading
+        {
+            get
+            {
+                return _isAlbumsLoading;
+            }
+            set
+            {
+                Set(ref _isAlbumsLoading, value);
+            }
+        }
+
+        public bool IsNewAlbumsLoading
+        {
+            get
+            {
+                return _isNewAlbumsLoading;
+            }
+            set
+            {
+                Set(ref _isNewAlbumsLoading, value);
+            }
+        }
+
+        public bool IsTopSongsLoading
+        {
+            get
+            {
+                return _isTopSongsLoading;
+            }
+            set
+            {
+                Set(ref _isTopSongsLoading, value);
+            }
         }
 
         public List<WebAlbum> NewAlbums
         {
-            get { return _newAlbums; }
-            set { Set(ref _newAlbums, value); }
+            get
+            {
+                return _newAlbums;
+            }
+            set
+            {
+                Set(ref _newAlbums, value);
+            }
+        }
+
+        public ElementTheme RequestedTheme
+        {
+            get
+            {
+                return _requestedTheme;
+            }
+            set
+            {
+                Set(ref _requestedTheme, value);
+            }
         }
 
         public List<WebAlbum> TopAlbums
         {
-            get { return _topAlbums; }
-            set { Set(ref _topAlbums, value); }
+            get
+            {
+                return _topAlbums;
+            }
+            set
+            {
+                Set(ref _topAlbums, value);
+            }
         }
 
         public List<Track> TopSongs
         {
-            get { return _topSongs; }
-            set { Set(ref _topSongs, value); }
+            get
+            {
+                return _topSongs;
+            }
+            set
+            {
+                Set(ref _topSongs, value);
+            }
         }
 
-        private void AlbumClickExecute(ItemClickEventArgs e)
-        {
-            var album = (Album) e.ClickedItem;
-            _navigationService.Navigate(typeof (AlbumPage),
-                new AlbumPageViewModel.AlbumPageParameter(album.Title, album.Artist.Name));
-        }
+        public DelegateCommand<ItemClickEventArgs> WebAlbumClickCommand { get; }
 
-        private void WebAlbumClickExecute(ItemClickEventArgs e)
-        {
-            var album = (WebAlbum) e.ClickedItem;
-            _navigationService.Navigate(typeof (AlbumPage),
-                new AlbumPageViewModel.AlbumPageParameter(album.Title, album.Artist.Name, album) {IsCatalogMode = true});
-        }
-
-        public override async void OnNavigatedTo(object parameter, NavigationMode mode, Dictionary<string, object> state)
+        public override async void OnNavigatedTo(
+            object parameter,
+            NavigationMode mode,
+            IDictionary<string, object> state)
         {
             var name = parameter as string;
 
@@ -161,10 +213,17 @@ namespace Audiotica.Windows.ViewModels
                         var webArtist = await provider.GetArtistByNameAsync(name);
 
                         if (Artist != null && Artist.ArtworkUri == null)
+                        {
                             Artist.ArtworkUri = webArtist.Artwork.ToString();
+                        }
                         else
+                        {
                             Artist = await _webArtistConverter.ConvertAsync(webArtist);
-                        if (Artist != null) break;
+                        }
+                        if (Artist != null)
+                        {
+                            break;
+                        }
                     }
                     catch
                     {
@@ -180,23 +239,39 @@ namespace Audiotica.Windows.ViewModels
             }
 
             if (DeviceHelper.IsType(DeviceFamily.Mobile))
+            {
                 _defaultStatusBarForeground = StatusBar.GetForCurrentView().ForegroundColor;
+            }
             if (_settingsUtility.Read(ApplicationSettingsConstants.IsArtistAdaptiveColorEnabled, true))
+            {
                 DetectColorFromArtwork();
+            }
             LoadWebData();
         }
 
-        public override void OnNavigatedFrom()
+        public override void OnNavigatingFrom(NavigatingEventArgs args)
         {
             // Bug: if we don't reset the theme when we go out it fucks with the TrackViewer control on other pages
             RequestedTheme = ElementTheme.Default;
             if (DeviceHelper.IsType(DeviceFamily.Mobile))
+            {
                 StatusBar.GetForCurrentView().ForegroundColor = _defaultStatusBarForeground;
+            }
+        }
+
+        private void AlbumClickExecute(ItemClickEventArgs e)
+        {
+            var album = (Album)e.ClickedItem;
+            _navigationService.Navigate(typeof (AlbumPage),
+                new AlbumPageViewModel.AlbumPageParameter(album.Title, album.Artist.Name));
         }
 
         private async void DetectColorFromArtwork()
         {
-            if (string.IsNullOrWhiteSpace(Artist.ArtworkUri)) return;
+            if (string.IsNullOrWhiteSpace(Artist.ArtworkUri))
+            {
+                return;
+            }
 
             try
             {
@@ -207,8 +282,10 @@ namespace Audiotica.Windows.ViewModels
                     BackgroundBrush = new SolidColorBrush(main.Color);
                     RequestedTheme = main.IsDark ? ElementTheme.Dark : ElementTheme.Light;
                     if (DeviceHelper.IsType(DeviceFamily.Mobile))
+                    {
                         StatusBar.GetForCurrentView().ForegroundColor =
-                            (main.IsDark ? Colors.White : Colors.Black) as Color?;
+                            main.IsDark ? Colors.White : Colors.Black;
+                    }
                 }
             }
             catch
@@ -228,7 +305,10 @@ namespace Audiotica.Windows.ViewModels
                 try
                 {
                     var webArtist = await metadataProvider.GetArtistByNameAsync(Artist.Name);
-                    if (webArtist == null) continue;
+                    if (webArtist == null)
+                    {
+                        continue;
+                    }
 
                     try
                     {
@@ -276,8 +356,10 @@ namespace Audiotica.Windows.ViewModels
                         // ignored
                     }
 
-
-                    if (TopSongs != null && TopAlbums != null && NewAlbums != null) break;
+                    if (TopSongs != null && TopAlbums != null && NewAlbums != null)
+                    {
+                        break;
+                    }
                 }
                 catch
                 {
@@ -288,6 +370,16 @@ namespace Audiotica.Windows.ViewModels
             IsNewAlbumsLoading = false;
             IsAlbumsLoading = false;
             IsTopSongsLoading = false;
+        }
+
+        private void WebAlbumClickExecute(ItemClickEventArgs e)
+        {
+            var album = (WebAlbum)e.ClickedItem;
+            _navigationService.Navigate(typeof (AlbumPage),
+                new AlbumPageViewModel.AlbumPageParameter(album.Title, album.Artist.Name, album)
+                {
+                    IsCatalogMode = true
+                });
         }
     }
 }
