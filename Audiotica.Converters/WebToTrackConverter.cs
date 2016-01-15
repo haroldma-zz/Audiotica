@@ -26,11 +26,16 @@ namespace Audiotica.Converters
         public async Task<WebSong> FillPartialAsync(WebSong other)
         {
             var provider = _providers.FirstOrDefault(p => p.GetType() == other.MetadataProvider);
-
+            
             if (other.IsPartial)
             {
+                var prevAlbum = other.Album;
                 var web = await provider.GetSongAsync(other.Token);
                 other.SetFrom(web);
+
+                // If the album previously set wasn't a partial, then use that one instead.
+                if (prevAlbum != null && !prevAlbum.IsPartial)
+                    other.Album = prevAlbum;
             }
 
             if (other.Album == null)

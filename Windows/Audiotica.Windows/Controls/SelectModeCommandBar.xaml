@@ -5,7 +5,7 @@
             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
             mc:Ignorable="d"
-            RequestedTheme="{Binding AppSettings.Theme, Converter={StaticResource IntToThemeConverter}}"
+            RequestedTheme="{x:Bind AppSettings.Theme, Converter={StaticResource IntToThemeConverter}}"
             d:DesignHeight="200"
             d:DesignWidth="400">
     <AppBarButton Label="Play" Icon="Play" Click="Play_Click" />

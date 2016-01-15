@@ -1,17 +1,18 @@
 ﻿{
   "dependencies": {
-    "AdDuplexWin10": "10.0.0.2",
+    "AdDuplexWin10": "10.0.1.2",
     "Autofac": "3.5.2",
+    "Comet": "0.2.0",
     "Microsoft.AdMediator.Universal.AdDuplex": "2.1.0",
-    "Microsoft.ApplicationInsights": "1.2.0",
-    "Microsoft.ApplicationInsights.PersistenceChannel": "1.2.0",
-    "Microsoft.ApplicationInsights.WindowsApps": "1.1.0",
-    "Microsoft.Bcl.Build": "1.0.21",
+    "Microsoft.ApplicationInsights": "1.2.3",
+    "Microsoft.ApplicationInsights.PersistenceChannel": "1.2.3",
+    "Microsoft.ApplicationInsights.WindowsApps": "1.1.1",
     "Microsoft.Net.Http": "2.2.29",
     "Microsoft.NETCore.UniversalWindowsPlatform": "5.0.0",
     "PCLStorage": "1.0.2",
-    "SQLite.Net-PCL": "3.0.5",
-    "TagLib.Portable": "1.0.2",
+    "SQLite.Net-PCL": "3.1.1",
+    "TagLib.Portable": "1.0.4",
+    "Win2D.uwp": "1.13.0",
     "WriteableBitmapEx": "1.5.0"
   },
   "frameworks": {

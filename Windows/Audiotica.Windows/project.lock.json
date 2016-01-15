@@ -3,7 +3,7 @@
   "version": 1,
   "targets": {
     "UAP,Version=v10.0": {
-      "AdDuplexWin10/10.0.0.2": {
+      "AdDuplexWin10/10.0.1.2": {
         "compile": {
           "lib/uap10.0/AdDuplex.winmd": {}
         },
@@ -19,6 +19,27 @@
           "lib/portable-net4+sl5+netcore45+wpa81+wp8+MonoAndroid1+MonoTouch1/Autofac.dll": {}
         }
       },
+      "Comet/0.2.0": {
+        "dependencies": {
+          "System.Collections": "[4.0.10, )",
+          "System.Diagnostics.Debug": "[4.0.10, )",
+          "System.Diagnostics.Tools": "[4.0.0, )",
+          "System.ObjectModel": "[4.0.10, )",
+          "System.Runtime": "[4.0.20, )",
+          "System.Runtime.Extensions": "[4.0.10, )",
+          "System.Runtime.InteropServices.WindowsRuntime": "[4.0.0, )",
+          "System.Runtime.WindowsRuntime": "[4.0.10, )",
+          "System.Runtime.WindowsRuntime.UI.Xaml": "[4.0.0, )",
+          "System.Threading": "[4.0.10, )",
+          "System.Threading.Tasks": "[4.0.10, )"
+        },
+        "compile": {
+          "lib/uap10.0/Comet.dll": {}
+        },
+        "runtime": {
+          "lib/uap10.0/Comet.dll": {}
+        }
+      },
       "Microsoft.AdMediator.Universal.AdDuplex/2.1.0": {
         "compile": {
           "lib/uap10.0/Microsoft.AdMediator.Universal.AdDuplex.dll": {}
@@ -27,7 +48,7 @@
           "lib/uap10.0/Microsoft.AdMediator.Universal.AdDuplex.dll": {}
         }
       },
-      "Microsoft.ApplicationInsights/1.2.0": {
+      "Microsoft.ApplicationInsights/1.2.3": {
         "compile": {
           "lib/portable-win81+wpa81/Microsoft.ApplicationInsights.dll": {}
         },
@@ -35,9 +56,9 @@
           "lib/portable-win81+wpa81/Microsoft.ApplicationInsights.dll": {}
         }
       },
-      "Microsoft.ApplicationInsights.PersistenceChannel/1.2.0": {
+      "Microsoft.ApplicationInsights.PersistenceChannel/1.2.3": {
         "dependencies": {
-          "Microsoft.ApplicationInsights": "[1.2.0, )"
+          "Microsoft.ApplicationInsights": "[1.2.3, )"
         },
         "compile": {
           "lib/portable-win81+wpa81/Microsoft.ApplicationInsights.PersistenceChannel.dll": {}
@@ -46,10 +67,10 @@
           "lib/portable-win81+wpa81/Microsoft.ApplicationInsights.PersistenceChannel.dll": {}
         }
       },
-      "Microsoft.ApplicationInsights.WindowsApps/1.1.0": {
+      "Microsoft.ApplicationInsights.WindowsApps/1.1.1": {
         "dependencies": {
-          "Microsoft.ApplicationInsights": "[1.1.0, )",
-          "Microsoft.ApplicationInsights.PersistenceChannel": "[1.1.0, )"
+          "Microsoft.ApplicationInsights": "[1.2.3, 1.2.3]",
+          "Microsoft.ApplicationInsights.PersistenceChannel": "[1.2.3, 1.2.3]"
         },
         "compile": {
           "lib/win81/Microsoft.ApplicationInsights.Extensibility.Windows.dll": {}
@@ -69,7 +90,7 @@
           "lib/win8/_._": {}
         }
       },
-      "Microsoft.Bcl.Build/1.0.21": {},
+      "Microsoft.Bcl.Build/1.0.14": {},
       "Microsoft.CSharp/4.0.0": {
         "dependencies": {
           "System.Collections": "[4.0.10, )",
@@ -282,7 +303,7 @@
           "lib/dotnet/Microsoft.Win32.Primitives.dll": {}
         }
       },
-      "Newtonsoft.Json/7.0.1": {
+      "Newtonsoft.Json/8.0.2": {
         "compile": {
           "lib/portable-net45+wp80+win8+wpa81+dnxcore50/Newtonsoft.Json.dll": {}
         },
@@ -300,14 +321,23 @@
           "lib/portable-win8+wpa81/PCLStorage.dll": {}
         }
       },
-      "SQLite.Net-PCL/3.0.5": {
+      "SQLite.Net-PCL/3.1.1": {
+        "dependencies": {
+          "SQLite.Net.Core-PCL": "[3.1.1, )"
+        },
         "compile": {
-          "lib/Windows8/SQLite.Net.dll": {},
           "lib/Windows8/SQLite.Net.Platform.WinRT.dll": {}
         },
         "runtime": {
-          "lib/Windows8/SQLite.Net.dll": {},
           "lib/Windows8/SQLite.Net.Platform.WinRT.dll": {}
+        }
+      },
+      "SQLite.Net.Core-PCL/3.1.1": {
+        "compile": {
+          "lib/portable-win8+net45+wp8+wpa81+MonoAndroid1+MonoTouch1/SQLite.Net.dll": {}
+        },
+        "runtime": {
+          "lib/portable-win8+net45+wp8+wpa81+MonoAndroid1+MonoTouch1/SQLite.Net.dll": {}
         }
       },
       "System.AppContext/4.0.0": {
@@ -1645,12 +1675,20 @@
           "lib/netcore50/System.Xml.XmlSerializer.dll": {}
         }
       },
-      "TagLib.Portable/1.0.2": {
+      "TagLib.Portable/1.0.4": {
         "compile": {
-          "lib/portable-net45+win8+wpa81/TagLib.Portable.dll": {}
+          "lib/portable-net45+win+wpa81+wp8+MonoAndroid10+xamarinios10+MonoTouch10/TagLib.Portable.dll": {}
         },
         "runtime": {
-          "lib/portable-net45+win8+wpa81/TagLib.Portable.dll": {}
+          "lib/portable-net45+win+wpa81+wp8+MonoAndroid10+xamarinios10+MonoTouch10/TagLib.Portable.dll": {}
+        }
+      },
+      "Win2D.uwp/1.13.0": {
+        "compile": {
+          "lib/uap10.0/Microsoft.Graphics.Canvas.winmd": {}
+        },
+        "runtime": {
+          "lib/uap10.0/Microsoft.Graphics.Canvas.winmd": {}
         }
       },
       "WriteableBitmapEx/1.5.0": {
@@ -1663,7 +1701,7 @@
       }
     },
     "UAP,Version=v10.0/win10-arm": {
-      "AdDuplexWin10/10.0.0.2": {
+      "AdDuplexWin10/10.0.1.2": {
         "compile": {
           "lib/uap10.0/AdDuplex.winmd": {}
         },
@@ -1679,6 +1717,27 @@
           "lib/portable-net4+sl5+netcore45+wpa81+wp8+MonoAndroid1+MonoTouch1/Autofac.dll": {}
         }
       },
+      "Comet/0.2.0": {
+        "dependencies": {
+          "System.Collections": "[4.0.10, )",
+          "System.Diagnostics.Debug": "[4.0.10, )",
+          "System.Diagnostics.Tools": "[4.0.0, )",
+          "System.ObjectModel": "[4.0.10, )",
+          "System.Runtime": "[4.0.20, )",
+          "System.Runtime.Extensions": "[4.0.10, )",
+          "System.Runtime.InteropServices.WindowsRuntime": "[4.0.0, )",
+          "System.Runtime.WindowsRuntime": "[4.0.10, )",
+          "System.Runtime.WindowsRuntime.UI.Xaml": "[4.0.0, )",
+          "System.Threading": "[4.0.10, )",
+          "System.Threading.Tasks": "[4.0.10, )"
+        },
+        "compile": {
+          "lib/uap10.0/Comet.dll": {}
+        },
+        "runtime": {
+          "lib/uap10.0/Comet.dll": {}
+        }
+      },
       "Microsoft.AdMediator.Universal.AdDuplex/2.1.0": {
         "compile": {
           "lib/uap10.0/Microsoft.AdMediator.Universal.AdDuplex.dll": {}
@@ -1687,7 +1746,7 @@
           "lib/uap10.0/Microsoft.AdMediator.Universal.AdDuplex.dll": {}
         }
       },
-      "Microsoft.ApplicationInsights/1.2.0": {
+      "Microsoft.ApplicationInsights/1.2.3": {
         "compile": {
           "lib/portable-win81+wpa81/Microsoft.ApplicationInsights.dll": {}
         },
@@ -1695,9 +1754,9 @@
           "lib/portable-win81+wpa81/Microsoft.ApplicationInsights.dll": {}
         }
       },
-      "Microsoft.ApplicationInsights.PersistenceChannel/1.2.0": {
+      "Microsoft.ApplicationInsights.PersistenceChannel/1.2.3": {
         "dependencies": {
-          "Microsoft.ApplicationInsights": "[1.2.0, )"
+          "Microsoft.ApplicationInsights": "[1.2.3, )"
         },
         "compile": {
           "lib/portable-win81+wpa81/Microsoft.ApplicationInsights.PersistenceChannel.dll": {}
@@ -1706,10 +1765,10 @@
           "lib/portable-win81+wpa81/Microsoft.ApplicationInsights.PersistenceChannel.dll": {}
         }
       },
-      "Microsoft.ApplicationInsights.WindowsApps/1.1.0": {
+      "Microsoft.ApplicationInsights.WindowsApps/1.1.1": {
         "dependencies": {
-          "Microsoft.ApplicationInsights": "[1.1.0, )",
-          "Microsoft.ApplicationInsights.PersistenceChannel": "[1.1.0, )"
+          "Microsoft.ApplicationInsights": "[1.2.3, 1.2.3]",
+          "Microsoft.ApplicationInsights.PersistenceChannel": "[1.2.3, 1.2.3]"
         },
         "compile": {
           "lib/win81/Microsoft.ApplicationInsights.Extensibility.Windows.dll": {}
@@ -1729,7 +1788,7 @@
           "lib/win8/_._": {}
         }
       },
-      "Microsoft.Bcl.Build/1.0.21": {},
+      "Microsoft.Bcl.Build/1.0.14": {},
       "Microsoft.CSharp/4.0.0": {
         "dependencies": {
           "System.Collections": "[4.0.10, )",
@@ -1985,7 +2044,7 @@
           "lib/dotnet/Microsoft.Win32.Primitives.dll": {}
         }
       },
-      "Newtonsoft.Json/7.0.1": {
+      "Newtonsoft.Json/8.0.2": {
         "compile": {
           "lib/portable-net45+wp80+win8+wpa81+dnxcore50/Newtonsoft.Json.dll": {}
         },
@@ -2003,14 +2062,23 @@
           "lib/portable-win8+wpa81/PCLStorage.dll": {}
         }
       },
-      "SQLite.Net-PCL/3.0.5": {
+      "SQLite.Net-PCL/3.1.1": {
+        "dependencies": {
+          "SQLite.Net.Core-PCL": "[3.1.1, )"
+        },
         "compile": {
-          "lib/Windows8/SQLite.Net.dll": {},
           "lib/Windows8/SQLite.Net.Platform.WinRT.dll": {}
         },
         "runtime": {
-          "lib/Windows8/SQLite.Net.dll": {},
           "lib/Windows8/SQLite.Net.Platform.WinRT.dll": {}
+        }
+      },
+      "SQLite.Net.Core-PCL/3.1.1": {
+        "compile": {
+          "lib/portable-win8+net45+wp8+wpa81+MonoAndroid1+MonoTouch1/SQLite.Net.dll": {}
+        },
+        "runtime": {
+          "lib/portable-win8+net45+wp8+wpa81+MonoAndroid1+MonoTouch1/SQLite.Net.dll": {}
         }
       },
       "System.AppContext/4.0.0": {
@@ -3395,12 +3463,23 @@
           "lib/netcore50/System.Xml.XmlSerializer.dll": {}
         }
       },
-      "TagLib.Portable/1.0.2": {
+      "TagLib.Portable/1.0.4": {
         "compile": {
-          "lib/portable-net45+win8+wpa81/TagLib.Portable.dll": {}
+          "lib/portable-net45+win+wpa81+wp8+MonoAndroid10+xamarinios10+MonoTouch10/TagLib.Portable.dll": {}
         },
         "runtime": {
-          "lib/portable-net45+win8+wpa81/TagLib.Portable.dll": {}
+          "lib/portable-net45+win+wpa81+wp8+MonoAndroid10+xamarinios10+MonoTouch10/TagLib.Portable.dll": {}
+        }
+      },
+      "Win2D.uwp/1.13.0": {
+        "compile": {
+          "lib/uap10.0/Microsoft.Graphics.Canvas.winmd": {}
+        },
+        "runtime": {
+          "lib/uap10.0/Microsoft.Graphics.Canvas.winmd": {}
+        },
+        "native": {
+          "runtimes/win10-arm/native/Microsoft.Graphics.Canvas.dll": {}
         }
       },
       "WriteableBitmapEx/1.5.0": {
@@ -3413,7 +3492,7 @@
       }
     },
     "UAP,Version=v10.0/win10-arm-aot": {
-      "AdDuplexWin10/10.0.0.2": {
+      "AdDuplexWin10/10.0.1.2": {
         "compile": {
           "lib/uap10.0/AdDuplex.winmd": {}
         },
@@ -3429,6 +3508,27 @@
           "lib/portable-net4+sl5+netcore45+wpa81+wp8+MonoAndroid1+MonoTouch1/Autofac.dll": {}
         }
       },
+      "Comet/0.2.0": {
+        "dependencies": {
+          "System.Collections": "[4.0.10, )",
+          "System.Diagnostics.Debug": "[4.0.10, )",
+          "System.Diagnostics.Tools": "[4.0.0, )",
+          "System.ObjectModel": "[4.0.10, )",
+          "System.Runtime": "[4.0.20, )",
+          "System.Runtime.Extensions": "[4.0.10, )",
+          "System.Runtime.InteropServices.WindowsRuntime": "[4.0.0, )",
+          "System.Runtime.WindowsRuntime": "[4.0.10, )",
+          "System.Runtime.WindowsRuntime.UI.Xaml": "[4.0.0, )",
+          "System.Threading": "[4.0.10, )",
+          "System.Threading.Tasks": "[4.0.10, )"
+        },
+        "compile": {
+          "lib/uap10.0/Comet.dll": {}
+        },
+        "runtime": {
+          "lib/uap10.0/Comet.dll": {}
+        }
+      },
       "Microsoft.AdMediator.Universal.AdDuplex/2.1.0": {
         "compile": {
           "lib/uap10.0/Microsoft.AdMediator.Universal.AdDuplex.dll": {}
@@ -3437,7 +3537,7 @@
           "lib/uap10.0/Microsoft.AdMediator.Universal.AdDuplex.dll": {}
         }
       },
-      "Microsoft.ApplicationInsights/1.2.0": {
+      "Microsoft.ApplicationInsights/1.2.3": {
         "compile": {
           "lib/portable-win81+wpa81/Microsoft.ApplicationInsights.dll": {}
         },
@@ -3445,9 +3545,9 @@
           "lib/portable-win81+wpa81/Microsoft.ApplicationInsights.dll": {}
         }
       },
-      "Microsoft.ApplicationInsights.PersistenceChannel/1.2.0": {
+      "Microsoft.ApplicationInsights.PersistenceChannel/1.2.3": {
         "dependencies": {
-          "Microsoft.ApplicationInsights": "[1.2.0, )"
+          "Microsoft.ApplicationInsights": "[1.2.3, )"
         },
         "compile": {
           "lib/portable-win81+wpa81/Microsoft.ApplicationInsights.PersistenceChannel.dll": {}
@@ -3456,10 +3556,10 @@
           "lib/portable-win81+wpa81/Microsoft.ApplicationInsights.PersistenceChannel.dll": {}
         }
       },
-      "Microsoft.ApplicationInsights.WindowsApps/1.1.0": {
+      "Microsoft.ApplicationInsights.WindowsApps/1.1.1": {
         "dependencies": {
-          "Microsoft.ApplicationInsights": "[1.1.0, )",
-          "Microsoft.ApplicationInsights.PersistenceChannel": "[1.1.0, )"
+          "Microsoft.ApplicationInsights": "[1.2.3, 1.2.3]",
+          "Microsoft.ApplicationInsights.PersistenceChannel": "[1.2.3, 1.2.3]"
         },
         "compile": {
           "lib/win81/Microsoft.ApplicationInsights.Extensibility.Windows.dll": {}
@@ -3479,7 +3579,7 @@
           "lib/win8/_._": {}
         }
       },
-      "Microsoft.Bcl.Build/1.0.21": {},
+      "Microsoft.Bcl.Build/1.0.14": {},
       "Microsoft.CSharp/4.0.0": {
         "dependencies": {
           "System.Collections": "[4.0.10, )",
@@ -3721,7 +3821,7 @@
           "lib/dotnet/Microsoft.Win32.Primitives.dll": {}
         }
       },
-      "Newtonsoft.Json/7.0.1": {
+      "Newtonsoft.Json/8.0.2": {
         "compile": {
           "lib/portable-net45+wp80+win8+wpa81+dnxcore50/Newtonsoft.Json.dll": {}
         },
@@ -3739,14 +3839,23 @@
           "lib/portable-win8+wpa81/PCLStorage.dll": {}
         }
       },
-      "SQLite.Net-PCL/3.0.5": {
+      "SQLite.Net-PCL/3.1.1": {
+        "dependencies": {
+          "SQLite.Net.Core-PCL": "[3.1.1, )"
+        },
         "compile": {
-          "lib/Windows8/SQLite.Net.dll": {},
           "lib/Windows8/SQLite.Net.Platform.WinRT.dll": {}
         },
         "runtime": {
-          "lib/Windows8/SQLite.Net.dll": {},
           "lib/Windows8/SQLite.Net.Platform.WinRT.dll": {}
+        }
+      },
+      "SQLite.Net.Core-PCL/3.1.1": {
+        "compile": {
+          "lib/portable-win8+net45+wp8+wpa81+MonoAndroid1+MonoTouch1/SQLite.Net.dll": {}
+        },
+        "runtime": {
+          "lib/portable-win8+net45+wp8+wpa81+MonoAndroid1+MonoTouch1/SQLite.Net.dll": {}
         }
       },
       "System.AppContext/4.0.0": {
@@ -5117,12 +5226,23 @@
           "runtimes/win8-aot/lib/netcore50/System.Xml.XmlSerializer.dll": {}
         }
       },
-      "TagLib.Portable/1.0.2": {
+      "TagLib.Portable/1.0.4": {
         "compile": {
-          "lib/portable-net45+win8+wpa81/TagLib.Portable.dll": {}
+          "lib/portable-net45+win+wpa81+wp8+MonoAndroid10+xamarinios10+MonoTouch10/TagLib.Portable.dll": {}
         },
         "runtime": {
-          "lib/portable-net45+win8+wpa81/TagLib.Portable.dll": {}
+          "lib/portable-net45+win+wpa81+wp8+MonoAndroid10+xamarinios10+MonoTouch10/TagLib.Portable.dll": {}
+        }
+      },
+      "Win2D.uwp/1.13.0": {
+        "compile": {
+          "lib/uap10.0/Microsoft.Graphics.Canvas.winmd": {}
+        },
+        "runtime": {
+          "lib/uap10.0/Microsoft.Graphics.Canvas.winmd": {}
+        },
+        "native": {
+          "runtimes/win10-arm/native/Microsoft.Graphics.Canvas.dll": {}
         }
       },
       "WriteableBitmapEx/1.5.0": {
@@ -5135,7 +5255,7 @@
       }
     },
     "UAP,Version=v10.0/win10-x64": {
-      "AdDuplexWin10/10.0.0.2": {
+      "AdDuplexWin10/10.0.1.2": {
         "compile": {
           "lib/uap10.0/AdDuplex.winmd": {}
         },
@@ -5151,6 +5271,27 @@
           "lib/portable-net4+sl5+netcore45+wpa81+wp8+MonoAndroid1+MonoTouch1/Autofac.dll": {}
         }
       },
+      "Comet/0.2.0": {
+        "dependencies": {
+          "System.Collections": "[4.0.10, )",
+          "System.Diagnostics.Debug": "[4.0.10, )",
+          "System.Diagnostics.Tools": "[4.0.0, )",
+          "System.ObjectModel": "[4.0.10, )",
+          "System.Runtime": "[4.0.20, )",
+          "System.Runtime.Extensions": "[4.0.10, )",
+          "System.Runtime.InteropServices.WindowsRuntime": "[4.0.0, )",
+          "System.Runtime.WindowsRuntime": "[4.0.10, )",
+          "System.Runtime.WindowsRuntime.UI.Xaml": "[4.0.0, )",
+          "System.Threading": "[4.0.10, )",
+          "System.Threading.Tasks": "[4.0.10, )"
+        },
+        "compile": {
+          "lib/uap10.0/Comet.dll": {}
+        },
+        "runtime": {
+          "lib/uap10.0/Comet.dll": {}
+        }
+      },
       "Microsoft.AdMediator.Universal.AdDuplex/2.1.0": {
         "compile": {
           "lib/uap10.0/Microsoft.AdMediator.Universal.AdDuplex.dll": {}
@@ -5159,7 +5300,7 @@
           "lib/uap10.0/Microsoft.AdMediator.Universal.AdDuplex.dll": {}
         }
       },
-      "Microsoft.ApplicationInsights/1.2.0": {
+      "Microsoft.ApplicationInsights/1.2.3": {
         "compile": {
           "lib/portable-win81+wpa81/Microsoft.ApplicationInsights.dll": {}
         },
@@ -5167,9 +5308,9 @@
           "lib/portable-win81+wpa81/Microsoft.ApplicationInsights.dll": {}
         }
       },
-      "Microsoft.ApplicationInsights.PersistenceChannel/1.2.0": {
+      "Microsoft.ApplicationInsights.PersistenceChannel/1.2.3": {
         "dependencies": {
-          "Microsoft.ApplicationInsights": "[1.2.0, )"
+          "Microsoft.ApplicationInsights": "[1.2.3, )"
         },
         "compile": {
           "lib/portable-win81+wpa81/Microsoft.ApplicationInsights.PersistenceChannel.dll": {}
@@ -5178,10 +5319,10 @@
           "lib/portable-win81+wpa81/Microsoft.ApplicationInsights.PersistenceChannel.dll": {}
         }
       },
-      "Microsoft.ApplicationInsights.WindowsApps/1.1.0": {
+      "Microsoft.ApplicationInsights.WindowsApps/1.1.1": {
         "dependencies": {
-          "Microsoft.ApplicationInsights": "[1.1.0, )",
-          "Microsoft.ApplicationInsights.PersistenceChannel": "[1.1.0, )"
+          "Microsoft.ApplicationInsights": "[1.2.3, 1.2.3]",
+          "Microsoft.ApplicationInsights.PersistenceChannel": "[1.2.3, 1.2.3]"
         },
         "compile": {
           "lib/win81/Microsoft.ApplicationInsights.Extensibility.Windows.dll": {}
@@ -5201,7 +5342,7 @@
           "lib/win8/_._": {}
         }
       },
-      "Microsoft.Bcl.Build/1.0.21": {},
+      "Microsoft.Bcl.Build/1.0.14": {},
       "Microsoft.CSharp/4.0.0": {
         "dependencies": {
           "System.Collections": "[4.0.10, )",
@@ -5462,7 +5603,7 @@
           "lib/dotnet/Microsoft.Win32.Primitives.dll": {}
         }
       },
-      "Newtonsoft.Json/7.0.1": {
+      "Newtonsoft.Json/8.0.2": {
         "compile": {
           "lib/portable-net45+wp80+win8+wpa81+dnxcore50/Newtonsoft.Json.dll": {}
         },
@@ -5480,14 +5621,23 @@
           "lib/portable-win8+wpa81/PCLStorage.dll": {}
         }
       },
-      "SQLite.Net-PCL/3.0.5": {
+      "SQLite.Net-PCL/3.1.1": {
+        "dependencies": {
+          "SQLite.Net.Core-PCL": "[3.1.1, )"
+        },
         "compile": {
-          "lib/Windows8/SQLite.Net.dll": {},
           "lib/Windows8/SQLite.Net.Platform.WinRT.dll": {}
         },
         "runtime": {
-          "lib/Windows8/SQLite.Net.dll": {},
           "lib/Windows8/SQLite.Net.Platform.WinRT.dll": {}
+        }
+      },
+      "SQLite.Net.Core-PCL/3.1.1": {
+        "compile": {
+          "lib/portable-win8+net45+wp8+wpa81+MonoAndroid1+MonoTouch1/SQLite.Net.dll": {}
+        },
+        "runtime": {
+          "lib/portable-win8+net45+wp8+wpa81+MonoAndroid1+MonoTouch1/SQLite.Net.dll": {}
         }
       },
       "System.AppContext/4.0.0": {
@@ -6872,12 +7022,23 @@
           "lib/netcore50/System.Xml.XmlSerializer.dll": {}
         }
       },
-      "TagLib.Portable/1.0.2": {
+      "TagLib.Portable/1.0.4": {
         "compile": {
-          "lib/portable-net45+win8+wpa81/TagLib.Portable.dll": {}
+          "lib/portable-net45+win+wpa81+wp8+MonoAndroid10+xamarinios10+MonoTouch10/TagLib.Portable.dll": {}
         },
         "runtime": {
-          "lib/portable-net45+win8+wpa81/TagLib.Portable.dll": {}
+          "lib/portable-net45+win+wpa81+wp8+MonoAndroid10+xamarinios10+MonoTouch10/TagLib.Portable.dll": {}
+        }
+      },
+      "Win2D.uwp/1.13.0": {
+        "compile": {
+          "lib/uap10.0/Microsoft.Graphics.Canvas.winmd": {}
+        },
+        "runtime": {
+          "lib/uap10.0/Microsoft.Graphics.Canvas.winmd": {}
+        },
+        "native": {
+          "runtimes/win10-x64/native/Microsoft.Graphics.Canvas.dll": {}
         }
       },
       "WriteableBitmapEx/1.5.0": {
@@ -6890,7 +7051,7 @@
       }
     },
     "UAP,Version=v10.0/win10-x64-aot": {
-      "AdDuplexWin10/10.0.0.2": {
+      "AdDuplexWin10/10.0.1.2": {
         "compile": {
           "lib/uap10.0/AdDuplex.winmd": {}
         },
@@ -6906,6 +7067,27 @@
           "lib/portable-net4+sl5+netcore45+wpa81+wp8+MonoAndroid1+MonoTouch1/Autofac.dll": {}
         }
       },
+      "Comet/0.2.0": {
+        "dependencies": {
+          "System.Collections": "[4.0.10, )",
+          "System.Diagnostics.Debug": "[4.0.10, )",
+          "System.Diagnostics.Tools": "[4.0.0, )",
+          "System.ObjectModel": "[4.0.10, )",
+          "System.Runtime": "[4.0.20, )",
+          "System.Runtime.Extensions": "[4.0.10, )",
+          "System.Runtime.InteropServices.WindowsRuntime": "[4.0.0, )",
+          "System.Runtime.WindowsRuntime": "[4.0.10, )",
+          "System.Runtime.WindowsRuntime.UI.Xaml": "[4.0.0, )",
+          "System.Threading": "[4.0.10, )",
+          "System.Threading.Tasks": "[4.0.10, )"
+        },
+        "compile": {
+          "lib/uap10.0/Comet.dll": {}
+        },
+        "runtime": {
+          "lib/uap10.0/Comet.dll": {}
+        }
+      },
       "Microsoft.AdMediator.Universal.AdDuplex/2.1.0": {
         "compile": {
           "lib/uap10.0/Microsoft.AdMediator.Universal.AdDuplex.dll": {}
@@ -6914,7 +7096,7 @@
           "lib/uap10.0/Microsoft.AdMediator.Universal.AdDuplex.dll": {}
         }
       },
-      "Microsoft.ApplicationInsights/1.2.0": {
+      "Microsoft.ApplicationInsights/1.2.3": {
         "compile": {
           "lib/portable-win81+wpa81/Microsoft.ApplicationInsights.dll": {}
         },
@@ -6922,9 +7104,9 @@
           "lib/portable-win81+wpa81/Microsoft.ApplicationInsights.dll": {}
         }
       },
-      "Microsoft.ApplicationInsights.PersistenceChannel/1.2.0": {
+      "Microsoft.ApplicationInsights.PersistenceChannel/1.2.3": {
         "dependencies": {
-          "Microsoft.ApplicationInsights": "[1.2.0, )"
+          "Microsoft.ApplicationInsights": "[1.2.3, )"
         },
         "compile": {
           "lib/portable-win81+wpa81/Microsoft.ApplicationInsights.PersistenceChannel.dll": {}
@@ -6933,10 +7115,10 @@
           "lib/portable-win81+wpa81/Microsoft.ApplicationInsights.PersistenceChannel.dll": {}
         }
       },
-      "Microsoft.ApplicationInsights.WindowsApps/1.1.0": {
+      "Microsoft.ApplicationInsights.WindowsApps/1.1.1": {
         "dependencies": {
-          "Microsoft.ApplicationInsights": "[1.1.0, )",
-          "Microsoft.ApplicationInsights.PersistenceChannel": "[1.1.0, )"
+          "Microsoft.ApplicationInsights": "[1.2.3, 1.2.3]",
+          "Microsoft.ApplicationInsights.PersistenceChannel": "[1.2.3, 1.2.3]"
         },
         "compile": {
           "lib/win81/Microsoft.ApplicationInsights.Extensibility.Windows.dll": {}
@@ -6956,7 +7138,7 @@
           "lib/win8/_._": {}
         }
       },
-      "Microsoft.Bcl.Build/1.0.21": {},
+      "Microsoft.Bcl.Build/1.0.14": {},
       "Microsoft.CSharp/4.0.0": {
         "dependencies": {
           "System.Collections": "[4.0.10, )",
@@ -7198,7 +7380,7 @@
           "lib/dotnet/Microsoft.Win32.Primitives.dll": {}
         }
       },
-      "Newtonsoft.Json/7.0.1": {
+      "Newtonsoft.Json/8.0.2": {
         "compile": {
           "lib/portable-net45+wp80+win8+wpa81+dnxcore50/Newtonsoft.Json.dll": {}
         },
@@ -7216,14 +7398,23 @@
           "lib/portable-win8+wpa81/PCLStorage.dll": {}
         }
       },
-      "SQLite.Net-PCL/3.0.5": {
+      "SQLite.Net-PCL/3.1.1": {
+        "dependencies": {
+          "SQLite.Net.Core-PCL": "[3.1.1, )"
+        },
         "compile": {
-          "lib/Windows8/SQLite.Net.dll": {},
           "lib/Windows8/SQLite.Net.Platform.WinRT.dll": {}
         },
         "runtime": {
-          "lib/Windows8/SQLite.Net.dll": {},
           "lib/Windows8/SQLite.Net.Platform.WinRT.dll": {}
+        }
+      },
+      "SQLite.Net.Core-PCL/3.1.1": {
+        "compile": {
+          "lib/portable-win8+net45+wp8+wpa81+MonoAndroid1+MonoTouch1/SQLite.Net.dll": {}
+        },
+        "runtime": {
+          "lib/portable-win8+net45+wp8+wpa81+MonoAndroid1+MonoTouch1/SQLite.Net.dll": {}
         }
       },
       "System.AppContext/4.0.0": {
@@ -8594,12 +8785,23 @@
           "runtimes/win8-aot/lib/netcore50/System.Xml.XmlSerializer.dll": {}
         }
       },
-      "TagLib.Portable/1.0.2": {
+      "TagLib.Portable/1.0.4": {
         "compile": {
-          "lib/portable-net45+win8+wpa81/TagLib.Portable.dll": {}
+          "lib/portable-net45+win+wpa81+wp8+MonoAndroid10+xamarinios10+MonoTouch10/TagLib.Portable.dll": {}
         },
         "runtime": {
-          "lib/portable-net45+win8+wpa81/TagLib.Portable.dll": {}
+          "lib/portable-net45+win+wpa81+wp8+MonoAndroid10+xamarinios10+MonoTouch10/TagLib.Portable.dll": {}
+        }
+      },
+      "Win2D.uwp/1.13.0": {
+        "compile": {
+          "lib/uap10.0/Microsoft.Graphics.Canvas.winmd": {}
+        },
+        "runtime": {
+          "lib/uap10.0/Microsoft.Graphics.Canvas.winmd": {}
+        },
+        "native": {
+          "runtimes/win10-x64/native/Microsoft.Graphics.Canvas.dll": {}
         }
       },
       "WriteableBitmapEx/1.5.0": {
@@ -8612,7 +8814,7 @@
       }
     },
     "UAP,Version=v10.0/win10-x86": {
-      "AdDuplexWin10/10.0.0.2": {
+      "AdDuplexWin10/10.0.1.2": {
         "compile": {
           "lib/uap10.0/AdDuplex.winmd": {}
         },
@@ -8628,6 +8830,27 @@
           "lib/portable-net4+sl5+netcore45+wpa81+wp8+MonoAndroid1+MonoTouch1/Autofac.dll": {}
         }
       },
+      "Comet/0.2.0": {
+        "dependencies": {
+          "System.Collections": "[4.0.10, )",
+          "System.Diagnostics.Debug": "[4.0.10, )",
+          "System.Diagnostics.Tools": "[4.0.0, )",
+          "System.ObjectModel": "[4.0.10, )",
+          "System.Runtime": "[4.0.20, )",
+          "System.Runtime.Extensions": "[4.0.10, )",
+          "System.Runtime.InteropServices.WindowsRuntime": "[4.0.0, )",
+          "System.Runtime.WindowsRuntime": "[4.0.10, )",
+          "System.Runtime.WindowsRuntime.UI.Xaml": "[4.0.0, )",
+          "System.Threading": "[4.0.10, )",
+          "System.Threading.Tasks": "[4.0.10, )"
+        },
+        "compile": {
+          "lib/uap10.0/Comet.dll": {}
+        },
+        "runtime": {
+          "lib/uap10.0/Comet.dll": {}
+        }
+      },
       "Microsoft.AdMediator.Universal.AdDuplex/2.1.0": {
         "compile": {
           "lib/uap10.0/Microsoft.AdMediator.Universal.AdDuplex.dll": {}
@@ -8636,7 +8859,7 @@
           "lib/uap10.0/Microsoft.AdMediator.Universal.AdDuplex.dll": {}
         }
       },
-      "Microsoft.ApplicationInsights/1.2.0": {
+      "Microsoft.ApplicationInsights/1.2.3": {
         "compile": {
           "lib/portable-win81+wpa81/Microsoft.ApplicationInsights.dll": {}
         },
@@ -8644,9 +8867,9 @@
           "lib/portable-win81+wpa81/Microsoft.ApplicationInsights.dll": {}
         }
       },
-      "Microsoft.ApplicationInsights.PersistenceChannel/1.2.0": {
+      "Microsoft.ApplicationInsights.PersistenceChannel/1.2.3": {
         "dependencies": {
-          "Microsoft.ApplicationInsights": "[1.2.0, )"
+          "Microsoft.ApplicationInsights": "[1.2.3, )"
         },
         "compile": {
           "lib/portable-win81+wpa81/Microsoft.ApplicationInsights.PersistenceChannel.dll": {}
@@ -8655,10 +8878,10 @@
           "lib/portable-win81+wpa81/Microsoft.ApplicationInsights.PersistenceChannel.dll": {}
         }
       },
-      "Microsoft.ApplicationInsights.WindowsApps/1.1.0": {
+      "Microsoft.ApplicationInsights.WindowsApps/1.1.1": {
         "dependencies": {
-          "Microsoft.ApplicationInsights": "[1.1.0, )",
-          "Microsoft.ApplicationInsights.PersistenceChannel": "[1.1.0, )"
+          "Microsoft.ApplicationInsights": "[1.2.3, 1.2.3]",
+          "Microsoft.ApplicationInsights.PersistenceChannel": "[1.2.3, 1.2.3]"
         },
         "compile": {
           "lib/win81/Microsoft.ApplicationInsights.Extensibility.Windows.dll": {}
@@ -8678,7 +8901,7 @@
           "lib/win8/_._": {}
         }
       },
-      "Microsoft.Bcl.Build/1.0.21": {},
+      "Microsoft.Bcl.Build/1.0.14": {},
       "Microsoft.CSharp/4.0.0": {
         "dependencies": {
           "System.Collections": "[4.0.10, )",
@@ -8939,7 +9162,7 @@
           "lib/dotnet/Microsoft.Win32.Primitives.dll": {}
         }
       },
-      "Newtonsoft.Json/7.0.1": {
+      "Newtonsoft.Json/8.0.2": {
         "compile": {
           "lib/portable-net45+wp80+win8+wpa81+dnxcore50/Newtonsoft.Json.dll": {}
         },
@@ -8957,14 +9180,23 @@
           "lib/portable-win8+wpa81/PCLStorage.dll": {}
         }
       },
-      "SQLite.Net-PCL/3.0.5": {
+      "SQLite.Net-PCL/3.1.1": {
+        "dependencies": {
+          "SQLite.Net.Core-PCL": "[3.1.1, )"
+        },
         "compile": {
-          "lib/Windows8/SQLite.Net.dll": {},
           "lib/Windows8/SQLite.Net.Platform.WinRT.dll": {}
         },
         "runtime": {
-          "lib/Windows8/SQLite.Net.dll": {},
           "lib/Windows8/SQLite.Net.Platform.WinRT.dll": {}
+        }
+      },
+      "SQLite.Net.Core-PCL/3.1.1": {
+        "compile": {
+          "lib/portable-win8+net45+wp8+wpa81+MonoAndroid1+MonoTouch1/SQLite.Net.dll": {}
+        },
+        "runtime": {
+          "lib/portable-win8+net45+wp8+wpa81+MonoAndroid1+MonoTouch1/SQLite.Net.dll": {}
         }
       },
       "System.AppContext/4.0.0": {
@@ -10349,12 +10581,23 @@
           "lib/netcore50/System.Xml.XmlSerializer.dll": {}
         }
       },
-      "TagLib.Portable/1.0.2": {
+      "TagLib.Portable/1.0.4": {
         "compile": {
-          "lib/portable-net45+win8+wpa81/TagLib.Portable.dll": {}
+          "lib/portable-net45+win+wpa81+wp8+MonoAndroid10+xamarinios10+MonoTouch10/TagLib.Portable.dll": {}
         },
         "runtime": {
-          "lib/portable-net45+win8+wpa81/TagLib.Portable.dll": {}
+          "lib/portable-net45+win+wpa81+wp8+MonoAndroid10+xamarinios10+MonoTouch10/TagLib.Portable.dll": {}
+        }
+      },
+      "Win2D.uwp/1.13.0": {
+        "compile": {
+          "lib/uap10.0/Microsoft.Graphics.Canvas.winmd": {}
+        },
+        "runtime": {
+          "lib/uap10.0/Microsoft.Graphics.Canvas.winmd": {}
+        },
+        "native": {
+          "runtimes/win10-x86/native/Microsoft.Graphics.Canvas.dll": {}
         }
       },
       "WriteableBitmapEx/1.5.0": {
@@ -10367,7 +10610,7 @@
       }
     },
     "UAP,Version=v10.0/win10-x86-aot": {
-      "AdDuplexWin10/10.0.0.2": {
+      "AdDuplexWin10/10.0.1.2": {
         "compile": {
           "lib/uap10.0/AdDuplex.winmd": {}
         },
@@ -10383,6 +10626,27 @@
           "lib/portable-net4+sl5+netcore45+wpa81+wp8+MonoAndroid1+MonoTouch1/Autofac.dll": {}
         }
       },
+      "Comet/0.2.0": {
+        "dependencies": {
+          "System.Collections": "[4.0.10, )",
+          "System.Diagnostics.Debug": "[4.0.10, )",
+          "System.Diagnostics.Tools": "[4.0.0, )",
+          "System.ObjectModel": "[4.0.10, )",
+          "System.Runtime": "[4.0.20, )",
+          "System.Runtime.Extensions": "[4.0.10, )",
+          "System.Runtime.InteropServices.WindowsRuntime": "[4.0.0, )",
+          "System.Runtime.WindowsRuntime": "[4.0.10, )",
+          "System.Runtime.WindowsRuntime.UI.Xaml": "[4.0.0, )",
+          "System.Threading": "[4.0.10, )",
+          "System.Threading.Tasks": "[4.0.10, )"
+        },
+        "compile": {
+          "lib/uap10.0/Comet.dll": {}
+        },
+        "runtime": {
+          "lib/uap10.0/Comet.dll": {}
+        }
+      },
       "Microsoft.AdMediator.Universal.AdDuplex/2.1.0": {
         "compile": {
           "lib/uap10.0/Microsoft.AdMediator.Universal.AdDuplex.dll": {}
@@ -10391,7 +10655,7 @@
           "lib/uap10.0/Microsoft.AdMediator.Universal.AdDuplex.dll": {}
         }
       },
-      "Microsoft.ApplicationInsights/1.2.0": {
+      "Microsoft.ApplicationInsights/1.2.3": {
         "compile": {
           "lib/portable-win81+wpa81/Microsoft.ApplicationInsights.dll": {}
         },
@@ -10399,9 +10663,9 @@
           "lib/portable-win81+wpa81/Microsoft.ApplicationInsights.dll": {}
         }
       },
-      "Microsoft.ApplicationInsights.PersistenceChannel/1.2.0": {
+      "Microsoft.ApplicationInsights.PersistenceChannel/1.2.3": {
         "dependencies": {
-          "Microsoft.ApplicationInsights": "[1.2.0, )"
+          "Microsoft.ApplicationInsights": "[1.2.3, )"
         },
         "compile": {
           "lib/portable-win81+wpa81/Microsoft.ApplicationInsights.PersistenceChannel.dll": {}
@@ -10410,10 +10674,10 @@
           "lib/portable-win81+wpa81/Microsoft.ApplicationInsights.PersistenceChannel.dll": {}
         }
       },
-      "Microsoft.ApplicationInsights.WindowsApps/1.1.0": {
+      "Microsoft.ApplicationInsights.WindowsApps/1.1.1": {
         "dependencies": {
-          "Microsoft.ApplicationInsights": "[1.1.0, )",
-          "Microsoft.ApplicationInsights.PersistenceChannel": "[1.1.0, )"
+          "Microsoft.ApplicationInsights": "[1.2.3, 1.2.3]",
+          "Microsoft.ApplicationInsights.PersistenceChannel": "[1.2.3, 1.2.3]"
         },
         "compile": {
           "lib/win81/Microsoft.ApplicationInsights.Extensibility.Windows.dll": {}
@@ -10433,7 +10697,7 @@
           "lib/win8/_._": {}
         }
       },
-      "Microsoft.Bcl.Build/1.0.21": {},
+      "Microsoft.Bcl.Build/1.0.14": {},
       "Microsoft.CSharp/4.0.0": {
         "dependencies": {
           "System.Collections": "[4.0.10, )",
@@ -10675,7 +10939,7 @@
           "lib/dotnet/Microsoft.Win32.Primitives.dll": {}
         }
       },
-      "Newtonsoft.Json/7.0.1": {
+      "Newtonsoft.Json/8.0.2": {
         "compile": {
           "lib/portable-net45+wp80+win8+wpa81+dnxcore50/Newtonsoft.Json.dll": {}
         },
@@ -10693,14 +10957,23 @@
           "lib/portable-win8+wpa81/PCLStorage.dll": {}
         }
       },
-      "SQLite.Net-PCL/3.0.5": {
+      "SQLite.Net-PCL/3.1.1": {
+        "dependencies": {
+          "SQLite.Net.Core-PCL": "[3.1.1, )"
+        },
         "compile": {
-          "lib/Windows8/SQLite.Net.dll": {},
           "lib/Windows8/SQLite.Net.Platform.WinRT.dll": {}
         },
         "runtime": {
-          "lib/Windows8/SQLite.Net.dll": {},
           "lib/Windows8/SQLite.Net.Platform.WinRT.dll": {}
+        }
+      },
+      "SQLite.Net.Core-PCL/3.1.1": {
+        "compile": {
+          "lib/portable-win8+net45+wp8+wpa81+MonoAndroid1+MonoTouch1/SQLite.Net.dll": {}
+        },
+        "runtime": {
+          "lib/portable-win8+net45+wp8+wpa81+MonoAndroid1+MonoTouch1/SQLite.Net.dll": {}
         }
       },
       "System.AppContext/4.0.0": {
@@ -12071,12 +12344,23 @@
           "runtimes/win8-aot/lib/netcore50/System.Xml.XmlSerializer.dll": {}
         }
       },
-      "TagLib.Portable/1.0.2": {
+      "TagLib.Portable/1.0.4": {
         "compile": {
-          "lib/portable-net45+win8+wpa81/TagLib.Portable.dll": {}
+          "lib/portable-net45+win+wpa81+wp8+MonoAndroid10+xamarinios10+MonoTouch10/TagLib.Portable.dll": {}
         },
         "runtime": {
-          "lib/portable-net45+win8+wpa81/TagLib.Portable.dll": {}
+          "lib/portable-net45+win+wpa81+wp8+MonoAndroid10+xamarinios10+MonoTouch10/TagLib.Portable.dll": {}
+        }
+      },
+      "Win2D.uwp/1.13.0": {
+        "compile": {
+          "lib/uap10.0/Microsoft.Graphics.Canvas.winmd": {}
+        },
+        "runtime": {
+          "lib/uap10.0/Microsoft.Graphics.Canvas.winmd": {}
+        },
+        "native": {
+          "runtimes/win10-x86/native/Microsoft.Graphics.Canvas.dll": {}
         }
       },
       "WriteableBitmapEx/1.5.0": {
@@ -12090,8 +12374,8 @@
     }
   },
   "libraries": {
-    "AdDuplexWin10/10.0.0.2": {
-      "sha512": "CO9LA2Jy9vy6RMtxVXeef6PBtyJem3gPpHhz8DEMzjztyAa/hITyFMUMbisM0xIUZ+6sajRq6q3MK5ABEOHOYw==",
+    "AdDuplexWin10/10.0.1.2": {
+      "sha512": "0mC96aMHWfTv8PQF1uVAiGJ2/v/+fPNWza0SlBVLsRAQr2mySUAks2UEppl993TX8/rLNDcddC7cXFZePRWFVg==",
       "type": "Package",
       "files": [
         "[Content_Types].xml",
@@ -12102,7 +12386,7 @@
         "lib/uap10.0/AdDuplex/InterstitialUserControl.xbf",
         "lib/uap10.0/AdDuplex/Themes/Generic.xbf",
         "lib/uap10.0/AdDuplex/Windows 10 SDK.xr.xml",
-        "package/services/metadata/core-properties/d0e8d12b8267424686248b7106411eab.psmdcp"
+        "package/services/metadata/core-properties/227a4b19e1f941f185933c78afa3b427.psmdcp"
       ]
     },
     "Autofac/3.5.2": {
@@ -12119,6 +12403,21 @@
         "package/services/metadata/core-properties/14b288cae4b6435c88f25cef31d271e1.psmdcp"
       ]
     },
+    "Comet/0.2.0": {
+      "sha512": "xIargCBt6VZk2nOc1nN7hnt/pa+bAQ3nowo2aZFQXrTP2cfuswkZ3CaJILtCb33f+hTnEOYzsyfG5uGU8iILnQ==",
+      "type": "Package",
+      "files": [
+        "[Content_Types].xml",
+        "_rels/.rels",
+        "Comet.nuspec",
+        "lib/uap10.0/Comet.dll",
+        "lib/uap10.0/Comet.pri",
+        "lib/uap10.0/Comet/Comet.xr.xml",
+        "lib/uap10.0/Comet/Properties/Comet.rd.xml",
+        "lib/uap10.0/Comet/Themes/Generic.xbf",
+        "package/services/metadata/core-properties/436b0e550ce04179ba434b732fb4a907.psmdcp"
+      ]
+    },
     "Microsoft.AdMediator.Universal.AdDuplex/2.1.0": {
       "sha512": "C9GcHjLh8dparM5pVLvriBV5kmBc38tzNpIFq3PfVVGrQgRbUGoTjR0Egzer1c+aMv0LYlBVMfzniUvhJPqgcg==",
       "type": "Package",
@@ -12130,8 +12429,8 @@
         "package/services/metadata/core-properties/54d51b84d6d74068ac240144c537da78.psmdcp"
       ]
     },
-    "Microsoft.ApplicationInsights/1.2.0": {
-      "sha512": "1WyfkRQc7aa2KObTCxfmS3ygUNRRvpjMWbn0xmQFzhZBbGzwzPZxldtARK5gbSzs7ohAhhcnnuJc8YQiHlZ/oA==",
+    "Microsoft.ApplicationInsights/1.2.3": {
+      "sha512": "a34atobxpucCTTX9VCD7aIu6Ydzry+Va7TxK2tTQcfaMvefGW4kUKtg9GHKIn19IaXe+A4oZt/GBqsOt5vQrBA==",
       "type": "Package",
       "files": [
         "[Content_Types].xml",
@@ -12145,11 +12444,11 @@
         "lib/wp8/Microsoft.ApplicationInsights.dll",
         "lib/wp8/Microsoft.ApplicationInsights.XML",
         "Microsoft.ApplicationInsights.nuspec",
-        "package/services/metadata/core-properties/da5f06b2e3b04210bf9a363361c5d800.psmdcp"
+        "package/services/metadata/core-properties/3b36eef276524f5d883c618d5fd8c500.psmdcp"
       ]
     },
-    "Microsoft.ApplicationInsights.PersistenceChannel/1.2.0": {
-      "sha512": "pTv9pUubCwzK1BCkB6d364EFFo6rMtL3+vCTcq20bfVwz1/5lqQwrx0Wdib9dAM8veySnnN4rjSNwIS9Kp5Zsg==",
+    "Microsoft.ApplicationInsights.PersistenceChannel/1.2.3": {
+      "sha512": "5MGcvPQVaGlGyAVh9adg4sSkIVSYDKn+H3+YnZa9hi1gH/g6UsRt4HLc8vp/IxjlbmXbJyAB7dYJV/NHmAGAgA==",
       "type": "Package",
       "files": [
         "[Content_Types].xml",
@@ -12163,11 +12462,11 @@
         "lib/wp8/Microsoft.ApplicationInsights.PersistenceChannel.dll",
         "lib/wp8/Microsoft.ApplicationInsights.PersistenceChannel.XML",
         "Microsoft.ApplicationInsights.PersistenceChannel.nuspec",
-        "package/services/metadata/core-properties/42ce22c3a6204867bb9fd1c714f1a6cf.psmdcp"
+        "package/services/metadata/core-properties/f973733421c14c3594986b3f2c22213a.psmdcp"
       ]
     },
-    "Microsoft.ApplicationInsights.WindowsApps/1.1.0": {
-      "sha512": "H6nhyM+ZVOhLmF8cqQj70fc5HZOS6dxh18nNwEM7+HD8NzArdSLK0gwGJkEOUYPtjner/0/3aOxgGZbFi9OVdA==",
+    "Microsoft.ApplicationInsights.WindowsApps/1.1.1": {
+      "sha512": "Orj0UQrjQ2z0aWZZoexl734Ge7Q4oVev3VFSsk6t8l2kImrfJ1eygkJWtQ1d7u0kF6MLLrvUvsMSxo+0rgPiMQ==",
       "type": "Package",
       "files": [
         "[Content_Types].xml",
@@ -12179,7 +12478,7 @@
         "lib/wpa81/Microsoft.ApplicationInsights.Extensibility.Windows.dll",
         "lib/wpa81/Microsoft.ApplicationInsights.Extensibility.Windows.XML",
         "Microsoft.ApplicationInsights.WindowsApps.nuspec",
-        "package/services/metadata/core-properties/441e5d0bc7164e089277ae041b2043cc.psmdcp"
+        "package/services/metadata/core-properties/8265b8c93c244c80b4e8bce27f31849d.psmdcp"
       ]
     },
     "Microsoft.Bcl/1.1.10": {
@@ -12273,17 +12572,24 @@
         "package/services/metadata/core-properties/b43ef6ce7de9447f9f8b39e2e41a185e.psmdcp"
       ]
     },
-    "Microsoft.Bcl.Build/1.0.21": {
-      "sha512": "sgHu4mIt0+NVGyI12Bj4hLPypNK55UOH+ologj2LqDCjxq3EbIxe/uAtHjY+fEwbE1dtsAHG8SXHf+V/EYbKTg==",
+    "Microsoft.Bcl.Build/1.0.14": {
+      "sha512": "cDLKSvNvRa519hplsbSoYqO69TjdDIhfjtKUM0g20/nVROoWsGav9KCI9HtnGjLmdV1+TcUUDhbotcllibjPEA==",
       "type": "Package",
       "files": [
         "[Content_Types].xml",
         "_rels/.rels",
-        "build/Microsoft.Bcl.Build.targets",
-        "build/Microsoft.Bcl.Build.Tasks.dll",
+        "content/net40/_._",
+        "content/netcore45/_._",
+        "content/portable-net40+win8+sl4+wp71+wpa81/_._",
+        "content/sl4/_._",
+        "content/sl4-windowsphone71/_._",
         "License-Stable.rtf",
         "Microsoft.Bcl.Build.nuspec",
-        "package/services/metadata/core-properties/642092c96f444452801a3d9f187d628b.psmdcp"
+        "package/services/metadata/core-properties/ded9cfb683144eaba586f13af4ae979c.psmdcp",
+        "tools/Install.ps1",
+        "tools/Microsoft.Bcl.Build.targets",
+        "tools/Microsoft.Bcl.Build.Tasks.dll",
+        "tools/Uninstall.ps1"
       ]
     },
     "Microsoft.CSharp/4.0.0": {
@@ -13007,8 +13313,8 @@
         "ref/xamarinmac20/_._"
       ]
     },
-    "Newtonsoft.Json/7.0.1": {
-      "sha512": "q3V4KLetMLnt1gpAVWgtXnHjKs0UG/RalBc29u2ZKxd5t5Ze4JBL5WiiYIklJyK/5CRiIiNwigVQUo0FgbsuWA==",
+    "Newtonsoft.Json/8.0.2": {
+      "sha512": "e5yWmEfu68rmtG431zl9N/7PlNKQDIuiDW5MHlEFAZcecakcxrIGnKqrPAtWNILzK2oNanRB5cD150MYhECK3g==",
       "type": "Package",
       "files": [
         "[Content_Types].xml",
@@ -13026,7 +13332,7 @@
         "lib/portable-net45+wp80+win8+wpa81+dnxcore50/Newtonsoft.Json.dll",
         "lib/portable-net45+wp80+win8+wpa81+dnxcore50/Newtonsoft.Json.xml",
         "Newtonsoft.Json.nuspec",
-        "package/services/metadata/core-properties/49e907fc018c4c7ab632e6d4ad4766f8.psmdcp",
+        "package/services/metadata/core-properties/cc8c591d554640789c6a6ef6456f7772.psmdcp",
         "tools/install.ps1"
       ]
     },
@@ -13076,33 +13382,35 @@
         "PCLStorage.nuspec"
       ]
     },
-    "SQLite.Net-PCL/3.0.5": {
-      "sha512": "K2La4B09cI6LXNaNiVhzUdRnoTw1Yyn5Rmb85/l7UXkF6vo/MOnJch8KBvzErbzxcxhoST/tb2t5ZO41iJWC0A==",
+    "SQLite.Net-PCL/3.1.1": {
+      "sha512": "eIaIk+k4MwvBeKyzj1kgIegWXYZlaDAHNzsaYP7wNDgSqAdaza8FgCRun7mIZScJD/RIuKxN/b1V+bkC+/WIeA==",
       "type": "Package",
       "files": [
         "[Content_Types].xml",
         "_rels/.rels",
-        "lib/MonoAndroid/SQLite.Net.dll",
         "lib/MonoAndroid/SQLite.Net.Platform.XamarinAndroid.dll",
-        "lib/monotouch/SQLite.Net.dll",
         "lib/monotouch/SQLite.Net.Platform.XamarinIOS.dll",
-        "lib/net4/SQLite.Net.dll",
         "lib/net4/SQLite.Net.Platform.Win32.dll",
-        "lib/net40/SQLite.Net.dll",
         "lib/net40/SQLite.Net.Platform.Generic.dll",
         "lib/portable-win8+net45+wp8+wpa81+MonoAndroid1+MonoTouch1/SQLite.Net.dll",
-        "lib/portable-win81+wpa81/SQLite.Net.dll",
         "lib/portable-win81+wpa81/SQLite.Net.Platform.WinRT.dll",
-        "lib/Windows8/SQLite.Net.dll",
         "lib/Windows8/SQLite.Net.Platform.WinRT.dll",
-        "lib/windowsphone8/ARM/SQLite.Net.dll",
         "lib/windowsphone8/ARM/SQLite.Net.Platform.WindowsPhone8.dll",
-        "lib/windowsphone8/x86/SQLite.Net.dll",
         "lib/windowsphone8/x86/SQLite.Net.Platform.WindowsPhone8.dll",
-        "lib/Xamarin.iOS10/SQLite.Net.dll",
         "lib/Xamarin.iOS10/SQLite.Net.Platform.XamarinIOS.Unified.dll",
-        "package/services/metadata/core-properties/0ce7ba880c5a46fb85a378331db2636b.psmdcp",
+        "package/services/metadata/core-properties/42617fe08935462ea38a3073a9954c4b.psmdcp",
         "SQLite.Net-PCL.nuspec"
+      ]
+    },
+    "SQLite.Net.Core-PCL/3.1.1": {
+      "sha512": "/0VdXnyj2srEh5rM1RW/snXJrVGRsxGB3xjW4EkhZIig9N/8EocZZrEr0vwRJU8a9Lz4BrweoLyKwp2evmSIzg==",
+      "type": "Package",
+      "files": [
+        "[Content_Types].xml",
+        "_rels/.rels",
+        "lib/portable-win8+net45+wp8+wpa81+MonoAndroid1+MonoTouch1/SQLite.Net.dll",
+        "package/services/metadata/core-properties/23cc4adcea6c40a7a0e82fb6b4a09ba7.psmdcp",
+        "SQLite.Net.Core-PCL.nuspec"
       ]
     },
     "System.AppContext/4.0.0": {
@@ -15800,15 +16108,35 @@
         "System.Xml.XmlSerializer.nuspec"
       ]
     },
-    "TagLib.Portable/1.0.2": {
-      "sha512": "+0XJXi5+/Sg9vtEIkElOCQ6CvaH3h0iYXE3t7bNR4HKWAV8ph5TVOHqYfe+G8pUF/qkybBg3uKrRu0yqfTOLIw==",
+    "TagLib.Portable/1.0.4": {
+      "sha512": "c/Van3wkeEhN2TtQH8soZdD+vixe/ZsczC9ciRXgEY6txp1TlaIEzHtiRxQGZPVVXWFlxXcl0pn/vqr0nYVD3w==",
       "type": "Package",
       "files": [
         "[Content_Types].xml",
         "_rels/.rels",
-        "lib/portable-net45+win8+wpa81/TagLib.Portable.dll",
-        "package/services/metadata/core-properties/b02689813d8546fca0b61857126583d5.psmdcp",
+        "lib/portable-net45+win+wpa81+wp8+MonoAndroid10+xamarinios10+MonoTouch10/TagLib.Portable.dll",
+        "package/services/metadata/core-properties/df13909997974900b7bdd9d4f777fdf1.psmdcp",
         "TagLib.Portable.nuspec"
+      ]
+    },
+    "Win2D.uwp/1.13.0": {
+      "sha512": "Aa7ESMMe5GWXLig9L/HCIanvKd7DACMaytp+dnnB/ic1OqKjqlHiki8t4zde0RMk6QyvkvpYC6gb3taulY5XXw==",
+      "type": "Package",
+      "files": [
+        "[Content_Types].xml",
+        "_rels/.rels",
+        "build/native/Win2D.uwp.targets",
+        "include/Microsoft.Graphics.Canvas.h",
+        "include/Microsoft.Graphics.Canvas.native.h",
+        "lib/uap10.0/en/Microsoft.Graphics.Canvas.xml",
+        "lib/uap10.0/Microsoft.Graphics.Canvas.winmd",
+        "lib/uap10.0/Microsoft.Graphics.Canvas.xml",
+        "package/services/metadata/core-properties/335e2338bbf1463f8fd92714cd162c2b.psmdcp",
+        "runtimes/win10-arm/native/Microsoft.Graphics.Canvas.dll",
+        "runtimes/win10-x64/native/Microsoft.Graphics.Canvas.dll",
+        "runtimes/win10-x86/native/Microsoft.Graphics.Canvas.dll",
+        "Win2d.githash.txt",
+        "Win2D.uwp.nuspec"
       ]
     },
     "WriteableBitmapEx/1.5.0": {
@@ -15848,18 +16176,19 @@
   },
   "projectFileDependencyGroups": {
     "": [
-      "AdDuplexWin10 >= 10.0.0.2",
+      "AdDuplexWin10 >= 10.0.1.2",
       "Autofac >= 3.5.2",
+      "Comet >= 0.2.0",
       "Microsoft.AdMediator.Universal.AdDuplex >= 2.1.0",
-      "Microsoft.ApplicationInsights >= 1.2.0",
-      "Microsoft.ApplicationInsights.PersistenceChannel >= 1.2.0",
-      "Microsoft.ApplicationInsights.WindowsApps >= 1.1.0",
-      "Microsoft.Bcl.Build >= 1.0.21",
+      "Microsoft.ApplicationInsights >= 1.2.3",
+      "Microsoft.ApplicationInsights.PersistenceChannel >= 1.2.3",
+      "Microsoft.ApplicationInsights.WindowsApps >= 1.1.1",
       "Microsoft.Net.Http >= 2.2.29",
       "Microsoft.NETCore.UniversalWindowsPlatform >= 5.0.0",
       "PCLStorage >= 1.0.2",
-      "SQLite.Net-PCL >= 3.0.5",
-      "TagLib.Portable >= 1.0.2",
+      "SQLite.Net-PCL >= 3.1.1",
+      "TagLib.Portable >= 1.0.4",
+      "Win2D.uwp >= 1.13.0",
       "WriteableBitmapEx >= 1.5.0"
     ],
     "UAP,Version=v10.0": []

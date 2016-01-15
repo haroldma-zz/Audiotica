@@ -1,8 +1,7 @@
 ﻿{
   "dependencies": {
-    "microsoft.bcl.build": "1.0.21",
     "Microsoft.NETCore.UniversalWindowsPlatform": "5.0.0",
-    "Newtonsoft.Json": "7.0.1",
+    "Newtonsoft.Json": "8.0.2",
     "PCLStorage": "1.0.2"
   },
   "frameworks": {

@@ -24,7 +24,6 @@ namespace Audiotica.Windows.Controls
         {
             InitializeComponent();
             AppSettings = App.Current.Kernel.Resolve<IAppSettingsUtility>();
-            DataContext = this;
         }
 
         public IAppSettingsUtility AppSettings { get; }
