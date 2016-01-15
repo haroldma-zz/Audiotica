@@ -8,7 +8,6 @@
     xmlns:core="using:Microsoft.Xaml.Interactions.Core"
     xmlns:controls="using:Audiotica.Windows.Controls"
     xmlns:views="using:Audiotica.Windows.Views"
-    RequestedTheme="{x:Bind AppSettings.Theme, Mode=OneWay, Converter={StaticResource IntToThemeConverter}}"
     mc:Ignorable="d">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
@@ -20,8 +19,15 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
-                    <controls:HamburgerMenu x:Name="BurgerMenu" AccentColor="{ThemeResource SystemAccentColor}"
-                                            NavAreaBackground="{ThemeResource SplitViewBackgroundBrush}" 
+                    <controls:HamburgerMenu x:Name="BurgerMenu" 
+                                            HamburgerBackground="{ThemeResource SystemControlForegroundAccentBrush}"
+                                            SecondarySeparator="{ThemeResource SystemControlForegroundBaseLowBrush}"
+                                            NavAreaBackground="{ThemeResource SplitViewBackgroundBrush}"
+                                            HamburgerForeground="{ThemeResource SplitViewForegroundBrush}"
+                                            NavButtonForeground="{ThemeResource SplitViewForegroundBrush}"
+                                            NavButtonCheckedBackground="{ThemeResource NavButtonCheckedBackgroundBrush}"
+                                            NavButtonHoverBackground="{ThemeResource NavButtonHoverBackgroundBrush}"
+                                            NavButtonPressedBackground="{ThemeResource NavButtonPressedBackgroundBrush}"
                                             IsFullScreen="False" VisualStateNarrowMinWidth="0"
                                             VisualStateNormalMinWidth="800">
                         <controls:HamburgerMenu.PrimaryButtons>

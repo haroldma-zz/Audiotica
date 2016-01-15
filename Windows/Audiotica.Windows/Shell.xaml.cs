@@ -33,6 +33,16 @@ namespace Audiotica.Windows
             Loaded += Shell_Loaded;
             ViewModel = App.Current.Kernel.Resolve<PlayerBarViewModel>();
             AppSettings = App.Current.Kernel.Resolve<IAppSettingsUtility>();
+            RequestedTheme = (ElementTheme)AppSettings.Theme;
+            HamburgerMenu.RefreshStyles((ElementTheme)AppSettings.Theme);
+            AppSettings.PropertyChanged += (sender, args) =>
+                {
+                    if (args.PropertyName == nameof(AppSettings.Theme))
+                    {
+                        RequestedTheme = (ElementTheme)AppSettings.Theme;
+                        HamburgerMenu.RefreshStyles((ElementTheme)AppSettings.Theme);
+                    }
+                };
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

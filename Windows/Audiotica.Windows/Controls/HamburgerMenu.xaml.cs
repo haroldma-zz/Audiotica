@@ -193,15 +193,15 @@ namespace Audiotica.Windows.Controls
             DependencyProperty.Register(nameof(AccentColor), typeof(Color),
                 typeof(HamburgerMenu), new PropertyMetadata(null, (d, e) => (d as HamburgerMenu).RefreshStyles((Color)e.NewValue)));
 
-        public void RefreshStyles(ApplicationTheme? theme = null)
+        public void RefreshStyles(ElementTheme? theme = null)
         {
-            RequestedTheme = theme?.ToElementTheme() ?? RequestedTheme;
+            RequestedTheme = theme ?? RequestedTheme;
             RefreshStyles(AccentColor);
         }
 
         public void RefreshStyles(Color? color = null)
         {
-            if (color == null)
+           /* if (color == null)
             {
                 // manually setting the brushes is a way of ignoring the themes
                 // in this block we will unset, then re-set the values
@@ -251,15 +251,17 @@ namespace Audiotica.Windows.Controls
                 {
                     case ElementTheme.Light:
                         HamburgerBackground = color?.ToSolidColorBrush();
-                        HamburgerForeground = Colors.White.ToSolidColorBrush();
-                        NavAreaBackground = Colors.DimGray.ToSolidColorBrush();
+                        HamburgerForeground = Colors.Black.ToSolidColorBrush();
+
+                        if (NavAreaBackground == null)
+                            NavAreaBackground = Colors.DimGray.ToSolidColorBrush();
                         NavButtonBackground = Colors.Transparent.ToSolidColorBrush();
-                        NavButtonForeground = Colors.White.ToSolidColorBrush();
-                        NavButtonCheckedForeground = Colors.White.ToSolidColorBrush();
+                        NavButtonForeground = Colors.Black.ToSolidColorBrush();
+                        NavButtonCheckedForeground = Colors.Black.ToSolidColorBrush();
                         NavButtonCheckedBackground = color?.Lighten(ColorUtils.Accents.Plus20).ToSolidColorBrush();
                         NavButtonPressedBackground = Colors.Gainsboro.Darken(ColorUtils.Accents.Plus40).ToSolidColorBrush();
                         NavButtonHoverBackground = Colors.Gainsboro.Darken(ColorUtils.Accents.Plus60).ToSolidColorBrush();
-                        NavButtonCheckedForeground = Colors.White.ToSolidColorBrush();
+                        NavButtonCheckedForeground = Colors.Black.ToSolidColorBrush();
                         SecondarySeparator = PaneBorderBrush = Colors.Gainsboro.Darken(ColorUtils.Accents.Plus40).ToSolidColorBrush();
                         break;
                     case ElementTheme.Default:
@@ -279,7 +281,7 @@ namespace Audiotica.Windows.Controls
                         SecondarySeparator = PaneBorderBrush = Colors.Gainsboro.ToSolidColorBrush();
                         break;
                 }
-            }
+            }*/
         }
 
         public SolidColorBrush HamburgerBackground

@@ -21,7 +21,7 @@ namespace Audiotica.Windows.Engine.Modules
         public override void LoadRunTime(ContainerBuilder builder)
         {
             builder.RegisterType<SQLiteConnection, SQLiteConnectionProvider>().SingleInstance();
-            builder.RegisterType<Core.Windows.Utilities.DispatcherUtility>().As<IDispatcherUtility>();
+            builder.RegisterType<DispatcherUtility>().As<IDispatcherUtility>();
             builder.RegisterType<CredentialUtility>().As<ICredentialUtility>();
             builder.RegisterType<SettingsUtility>().As<ISettingsUtility>();
             builder.RegisterType<AppSettingsUtility>().As<IAppSettingsUtility>().SingleInstance();
