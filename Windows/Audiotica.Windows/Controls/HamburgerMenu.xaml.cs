@@ -266,6 +266,8 @@ namespace Audiotica.Windows.Controls
                     case ElementTheme.Dark:
                         HamburgerBackground = color?.ToSolidColorBrush();
                         HamburgerForeground = Colors.White.ToSolidColorBrush();
+
+                        if (NavAreaBackground == null)
                         NavAreaBackground = Colors.Gainsboro.Darken(ColorUtils.Accents.Plus80).ToSolidColorBrush();
                         NavButtonBackground = Colors.Transparent.ToSolidColorBrush();
                         NavButtonForeground = Colors.White.ToSolidColorBrush();
