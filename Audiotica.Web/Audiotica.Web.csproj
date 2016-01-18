@@ -61,6 +61,7 @@
     <Compile Include="Http\Requets\MatchEngine\Meile\MeileSearchRequest.cs" />
     <Compile Include="Http\Requets\MatchEngine\MiMp3S\MiMp3SSearchRequest.cs" />
     <Compile Include="Http\Requets\MatchEngine\Mp3Freex\Mp3FreexSearchRequest.cs" />
+    <Compile Include="Http\Requets\MatchEngine\Mp3Miner\Mp3MinerSearchRequest.cs" />
     <Compile Include="Http\Requets\MatchEngine\Mp3Pm\Mp3PmSearchRequest.cs" />
     <Compile Include="Http\Requets\MatchEngine\Mp3Skull\Mp3SkullRequest.cs" />
     <Compile Include="Http\Requets\MatchEngine\Mp3lio\Mp3lioSearchRequest.cs" />
@@ -111,6 +112,7 @@
     <Compile Include="MatchEngine\Providers\MiMp3SMatchProvider.cs" />
     <Compile Include="MatchEngine\Providers\Mp3FreexMatchProvider.cs" />
     <Compile Include="MatchEngine\Providers\Mp3lioMatchProvider.cs" />
+    <Compile Include="MatchEngine\Providers\Mp3MinerProvider.cs" />
     <Compile Include="MatchEngine\Providers\Mp3PmProvider.cs" />
     <Compile Include="MatchEngine\Services\DesignMatchEngineService.cs" />
     <Compile Include="MatchEngine\Validators\SongSlowedTypeValidator.cs" />
