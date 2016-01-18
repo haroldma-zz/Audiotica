@@ -82,6 +82,7 @@
     <Compile Include="Http\Requets\Metadata\Google\MusixMatchGetTokenRequest.cs" />
     <Compile Include="Http\Requets\Metadata\Google\MusixMatchLyricsRequest.cs" />
     <Compile Include="Http\Requets\Metadata\Spotify\Models\BasicModel.cs" />
+    <Compile Include="Http\Requets\Metadata\Spotify\Models\ChartItem.cs" />
     <Compile Include="Http\Requets\Metadata\Spotify\Models\ChartTrack.cs" />
     <Compile Include="Http\Requets\Metadata\Spotify\Models\Error.cs" />
     <Compile Include="Http\Requets\Metadata\Spotify\Models\FullAlbum.cs" />
