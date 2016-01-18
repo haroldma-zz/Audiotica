@@ -7,13 +7,13 @@ namespace Audiotica.Web.Http.Requets.Metadata.Spotify
     {
         public SpotifyChartRequest()
         {
-            this.Url("http://charts.spotify.com/api/tracks/{type}/{country}/{time}/latest")
-                .MostStreamed().Time("weekly").Country("US");
+            this.Url("https://spotifycharts.com/api/?limit={limit}&country={country}&recurrence={time}&date=latest&type={type}")
+                .Regional().Time("weekly").Country("US");
         }
 
-        public SpotifyChartRequest MostStreamed()
+        public SpotifyChartRequest Regional()
         {
-            return this.UrlParam("type", "most_streamed");
+            return this.UrlParam("type", "regional");
         }
 
         public SpotifyChartRequest Viral()
@@ -29,6 +29,11 @@ namespace Audiotica.Web.Http.Requets.Metadata.Spotify
         public SpotifyChartRequest Country(string country)
         {
             return this.UrlParam("country", country);
+        }
+
+        public SpotifyChartRequest Limit(int limit)
+        {
+            return this.UrlParam("limit", limit);
         }
     }
 }

@@ -23,13 +23,13 @@ namespace Audiotica.Web.Metadata.Providers
 
         public async Task<WebResults> GetTopSongsAsync(int limit = 20, string pageToken = null)
         {
-            using (var response = await new SpotifyChartRequest().ToResponseAsync())
+            using (var response = await new SpotifyChartRequest().Limit(limit).ToResponseAsync())
             {
                 if (response.HasData)
                     return new WebResults
                     {
                         HasMore = false,
-                        Songs = response.Data.Tracks.Select(CreateSong).Take(limit).ToList()
+                        Songs = response.Data.Entries.Items.Select(CreateSong).ToList()
                     };
 
                 throw new ProviderException();
@@ -218,8 +218,9 @@ namespace Audiotica.Web.Metadata.Providers
             return webArtist;
         }
 
-        private WebSong CreateSong(ChartTrack track)
+        private WebSong CreateSong(ChartItem item)
         {
+            var track = item.Track;
             var song = new WebSong(GetType())
             {
                 Title = track.Name,
@@ -229,17 +230,17 @@ namespace Audiotica.Web.Metadata.Providers
                 {
                     new WebArtist(GetType())
                     {
-                        Name = track.ArtistName,
+                        Name = track.Artist.Name,
                         IsPartial = true,
-                        Token = track.ArtistId
+                        Token = track.Artist.Id
                     }
                 },
                 Album = new WebAlbum(GetType())
                 {
-                    Title = track.AlbumName,
+                    Title = track.Album.Name,
                     IsPartial = true,
-                    Token = track.AlbumId,
-                    Artwork = new Uri(track.ArtworkUrl)
+                    Token = track.Album.Id,
+                    Artwork = new Uri(track.Album.Images.Select(i => i.Url).FirstOrDefault())
                 }
             };
 
