@@ -29,7 +29,7 @@
                                             NavButtonHoverBackground="{ThemeResource NavButtonHoverBackgroundBrush}"
                                             NavButtonPressedBackground="{ThemeResource NavButtonPressedBackgroundBrush}"
                                             IsFullScreen="False" VisualStateNarrowMinWidth="0"
-                                            VisualStateNormalMinWidth="800">
+                                            VisualStateNormalMinWidth="600">
                         <controls:HamburgerMenu.PrimaryButtons>
                             <!-- albums button -->
                             <controls:HamburgerButtonInfo ClearHistory="True" PageType="views:AlbumsPage">
