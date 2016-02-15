@@ -10,6 +10,7 @@ using Audiotica.Web.MatchEngine.Interfaces;
 using Audiotica.Web.Models;
 using Audiotica.Windows.Engine.Mvvm;
 using Audiotica.Windows.Engine.Navigation;
+using Audiotica.Windows.Services.Interfaces;
 
 namespace Audiotica.Windows.ViewModels
 {
@@ -17,6 +18,8 @@ namespace Audiotica.Windows.ViewModels
     {
         private readonly ILibraryService _libraryService;
         private readonly INavigationService _navigationService;
+        private readonly IDownloadService _downloadService;
+        private readonly IPlayerService _playerService;
         private readonly IEnumerable<IMatchProvider> _providers;
         private List<MatchProviderPivotItem> _providerPivots;
         private Track _track;
@@ -24,10 +27,14 @@ namespace Audiotica.Windows.ViewModels
         public ManualMatchPageViewModel(
             IEnumerable<IMatchProvider> providers,
             ILibraryService libraryService,
-            INavigationService navigationService)
+            INavigationService navigationService,
+            IDownloadService downloadService,
+            IPlayerService playerService)
         {
             _libraryService = libraryService;
             _navigationService = navigationService;
+            _downloadService = downloadService;
+            _playerService = playerService;
             _providers = providers.Where(p => p.IsEnabled).OrderByDescending(p => p.Priority).ToList();
             MatchClickCommand = new DelegateCommand<MatchSong>(MatchClickExecute);
 
@@ -77,10 +84,12 @@ namespace Audiotica.Windows.ViewModels
 
         private async void MatchClickExecute(MatchSong match)
         {
-            // TODO: Update queue items that belong to this track
             Track.AudioWebUri = match.AudioUrl;
+            Track.AudioLocalUri = null;
             Track.Status = TrackStatus.None;
+            _playerService.UpdateUrl(Track);
             await _libraryService.UpdateTrackAsync(Track);
+            await _downloadService.StartDownloadAsync(Track);
             _navigationService.GoBack();
         }
     }

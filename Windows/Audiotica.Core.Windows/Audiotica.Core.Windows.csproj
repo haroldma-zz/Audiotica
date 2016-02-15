@@ -135,6 +135,7 @@
     <Compile Include="Messages\UpdatePlaylistMessage.cs" />
     <Compile Include="Helpers\EnumHelper.cs" />
     <Compile Include="Helpers\StorageHelper.cs" />
+    <Compile Include="Messages\UpdateUrlMessage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utilities\AppSettingsUtility.cs" />
     <Compile Include="Utilities\CredentialUtility.cs" />

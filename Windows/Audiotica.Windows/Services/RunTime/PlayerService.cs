@@ -128,6 +128,11 @@ namespace Audiotica.Windows.Services.RunTime
 
         }
 
+        public void UpdateUrl(Track track)
+        {
+            MessageHelper.SendMessageToBackground(new UpdateUrlMessage(track.Id, track.AudioWebUri, track.AudioLocalUri, track.Type));
+        }
+
         public void Play(QueueTrack queue)
         {
             // Switch to the selected track

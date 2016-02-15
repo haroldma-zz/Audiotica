@@ -44,17 +44,20 @@ namespace Audiotica.Windows.Services.RunTime
     public class DownloadService : IDownloadService
     {
         private readonly IAppSettingsUtility _appSettingsUtility;
+        private readonly IPlayerService _playerService;
         private readonly IDispatcherUtility _dispatcherUtility;
         private readonly ILibraryService _libraryService;
 
         public DownloadService(
             ILibraryService libraryService,
             IDispatcherUtility dispatcherUtility,
-            IAppSettingsUtility appSettingsUtility)
+            IAppSettingsUtility appSettingsUtility,
+            IPlayerService playerService)
         {
             _libraryService = libraryService;
             _dispatcherUtility = dispatcherUtility;
             _appSettingsUtility = appSettingsUtility;
+            _playerService = playerService;
             ActiveDownloads = new ObservableCollection<Track>();
         }
 
@@ -352,6 +355,7 @@ namespace Audiotica.Windows.Services.RunTime
             track.Type = TrackType.Download;
             track.BackgroundDownload = null;
             await _libraryService.UpdateTrackAsync(track);
+            _playerService.UpdateUrl(track);
         }
 
         #endregion

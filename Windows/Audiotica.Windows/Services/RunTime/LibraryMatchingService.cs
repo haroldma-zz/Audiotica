@@ -12,16 +12,18 @@ namespace Audiotica.Windows.Services.RunTime
     internal class LibraryMatchingService : ILibraryMatchingService
     {
         private readonly IInsightsService _insightsService;
+        private readonly IDownloadService _downloadService;
         private readonly ILibraryService _libraryService;
         private readonly IMatchEngineService _matchEngineService;
         private readonly SemaphoreSlim _semaphoreSlim = new SemaphoreSlim(5, 5);
 
         public LibraryMatchingService(ILibraryService libraryService, IMatchEngineService matchEngineService,
-            IInsightsService insightsService)
+            IInsightsService insightsService, IDownloadService downloadService)
         {
             _libraryService = libraryService;
             _matchEngineService = matchEngineService;
             _insightsService = insightsService;
+            _downloadService = downloadService;
         }
 
         public void OnStartup()
@@ -54,14 +56,14 @@ namespace Audiotica.Windows.Services.RunTime
                         timer.AddProperty("Status", "Found match");
                         track.AudioWebUri = uri.ToString();
                         track.Status = TrackStatus.None;
-                        await _libraryService.UpdateTrackAsync(track);
+                        await _downloadService.StartDownloadAsync(track);
                     }
                     else
                     {
                         timer.AddProperty("Status", "No match");
                         track.Status = TrackStatus.NoMatch;
-                        await _libraryService.UpdateTrackAsync(track);
                     }
+                    await _libraryService.UpdateTrackAsync(track);
                 }
                 catch
                 {

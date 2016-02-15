@@ -75,6 +75,11 @@ namespace Audiotica.Windows.Services.DesignTime
             throw new NotImplementedException();
         }
 
+        public void UpdateUrl(Track track)
+        {
+            throw new NotImplementedException();
+        }
+
         public void Play(QueueTrack queue)
         {
             throw new NotImplementedException();

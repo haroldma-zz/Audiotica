@@ -9,6 +9,7 @@
     "Microsoft.ApplicationInsights.WindowsApps": "1.1.1",
     "Microsoft.Net.Http": "2.2.29",
     "Microsoft.NETCore.UniversalWindowsPlatform": "5.0.0",
+    "Microsoft.Xaml.Behaviors.Uwp.Managed": "1.0.3",
     "PCLStorage": "1.0.2",
     "SQLite.Net-PCL": "3.1.1",
     "TagLib.Portable": "1.0.4",

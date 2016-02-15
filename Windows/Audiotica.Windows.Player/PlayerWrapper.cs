@@ -341,6 +341,17 @@ namespace Audiotica.Windows.Player
             _foregroundMessenger.AddToPlaylist += ForegroundMessengerOnAddToPlaylist;
             _foregroundMessenger.AppSuspended += ForegroundMessengerOnAppSuspended;
             _foregroundMessenger.AppResumed += ForegroundMessengerOnAppResumed;
+            _foregroundMessenger.TrackUpdateUrl += ForegroundMessengerOnTrackUpdateUrl;
+        }
+
+        private void ForegroundMessengerOnTrackUpdateUrl(object sender, UpdateUrlMessage updateUrlMessage)
+        {
+            foreach (var queueTrack in _mediaPlaybackList.Items.Select(mediaPlaybackItem => mediaPlaybackItem.Source.Queue()).Where(queueTrack => queueTrack.Track.Id == updateUrlMessage.Id))
+            {
+                queueTrack.Track.AudioWebUri = updateUrlMessage.Web;
+                queueTrack.Track.AudioLocalUri = updateUrlMessage.Local;
+                queueTrack.Track.Type = updateUrlMessage.Type;
+            }
         }
 
         private void UnsubscribeFromMessenger()
