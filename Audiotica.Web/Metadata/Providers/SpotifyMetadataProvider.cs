@@ -255,8 +255,8 @@ namespace Audiotica.Web.Metadata.Providers
                 Title = track.Name,
                 Token = track.Id,
                 IsPartial = true,
-                TrackNumber = track.TrackNumber,
-                DiskNumber = track.DiscNumber
+                TrackNumber = (uint)track.TrackNumber,
+                DiskNumber = (uint)track.DiscNumber
             };
 
             var full = track as FullTrack;

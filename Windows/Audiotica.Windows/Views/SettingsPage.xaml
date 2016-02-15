@@ -12,6 +12,8 @@
         <StackPanel Margin="{StaticResource PageThickness}">
             <ToggleSwitch x:Name="ThemeSwitch" Header="Theme" OnContent="Dark" OffContent="Light" IsOn="{x:Bind ViewModel.AppSettingsUtility.Theme, Mode=TwoWay, Converter={StaticResource IntToBoolConverter}}" Toggled="ToggleSwitch_OnToggled" />
             <ToggleSwitch x:Name="AdsSwitch" Header="Ads" IsOn="{x:Bind ViewModel.AppSettingsUtility.Ads, Mode=TwoWay}" Toggled="AdsSwitch_Toggled"/>
+            <Button Content="Scan and import" Command="{x:Bind ViewModel.ImportCommand}" />
+            <Button Content="Delete imported" Margin="0, 10,0,0" Command="{x:Bind ViewModel.DeleteCommand}" />
         </StackPanel>
     </Grid>
 </Page>

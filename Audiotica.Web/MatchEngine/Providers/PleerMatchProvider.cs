@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Audiotica.Core.Extensions;
 using Audiotica.Core.Utilities.Interfaces;
@@ -20,7 +21,7 @@ namespace Audiotica.Web.MatchEngine.Providers
         }
 
         public override string DisplayName => "ProstoPleer";
-        public override ProviderSpeed Speed => ProviderSpeed.SuperSlow;
+        public override ProviderSpeed Speed => ProviderSpeed.Average;
         public override ProviderResultsQuality ResultsQuality => ProviderResultsQuality.SomewhatGreat;
 
         protected override async Task<List<MatchSong>> InternalGetSongsAsync(string title, string artist, int limit = 10)
@@ -45,8 +46,8 @@ namespace Audiotica.Web.MatchEngine.Providers
                     var song = new MatchSong
                     {
                         Id = songNode.Attributes["file_id"].Value,
-                        Title = songNode.Attributes["song"].Value,
-                        Artist = songNode.Attributes["singer"].Value
+                        Title = WebUtility.HtmlDecode(songNode.Attributes["song"].Value),
+                        Artist = WebUtility.HtmlDecode(songNode.Attributes["singer"].Value)
                     };
 
 

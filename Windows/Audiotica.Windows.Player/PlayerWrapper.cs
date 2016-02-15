@@ -344,13 +344,25 @@ namespace Audiotica.Windows.Player
             _foregroundMessenger.TrackUpdateUrl += ForegroundMessengerOnTrackUpdateUrl;
         }
 
-        private void ForegroundMessengerOnTrackUpdateUrl(object sender, UpdateUrlMessage updateUrlMessage)
+        private async void ForegroundMessengerOnTrackUpdateUrl(object sender, UpdateUrlMessage updateUrlMessage)
         {
-            foreach (var queueTrack in _mediaPlaybackList.Items.Select(mediaPlaybackItem => mediaPlaybackItem.Source.Queue()).Where(queueTrack => queueTrack.Track.Id == updateUrlMessage.Id))
+            foreach (var media in _mediaPlaybackList.Items.Select((mediaPlaybackItem, i) => new { Queue = mediaPlaybackItem.Source.Queue(), Index = i}).Where(queueTrack => queueTrack.Queue.Track.Id == updateUrlMessage.Id).ToList())
             {
-                queueTrack.Track.AudioWebUri = updateUrlMessage.Web;
-                queueTrack.Track.AudioLocalUri = updateUrlMessage.Local;
-                queueTrack.Track.Type = updateUrlMessage.Type;
+                media.Queue.Track.AudioWebUri = updateUrlMessage.Web;
+                media.Queue.Track.AudioLocalUri = updateUrlMessage.Local;
+                media.Queue.Track.Type = updateUrlMessage.Type;
+
+                MediaSource source;
+                if (media.Queue.Track.Type == TrackType.Stream)
+                    source = MediaSource.CreateFromUri(new Uri(media.Queue.Track.AudioWebUri));
+                else
+                {
+                    source = MediaSource.CreateFromStorageFile(
+                            await StorageHelper.GetFileFromPathAsync(media.Queue.Track.AudioLocalUri));
+                }
+                source.Queue(media.Queue);
+                _mediaPlaybackList.Items.RemoveAt(media.Index);
+                _mediaPlaybackList.Items.Insert(media.Index, new MediaPlaybackItem(source));
             }
         }
 

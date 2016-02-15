@@ -10,6 +10,7 @@ using Audiotica.Database.Services.Interfaces;
 using Audiotica.Web.Extensions;
 using Audiotica.Web.Models;
 using Audiotica.Windows.Services.Interfaces;
+using TagLib;
 
 namespace Audiotica.Windows.Services.RunTime
 {
@@ -38,14 +39,7 @@ namespace Audiotica.Windows.Services.RunTime
             _downloadService = downloadService;
         }
 
-        public async Task<Track> SaveAsync(WebSong song)
-        {
-            var track = await _webSongConverter.ConvertAsync(song);
-            await SaveAsync(track);
-            return track;
-        }
-
-        public async Task SaveAsync(Track track)
+        public async Task InternalSaveAsync(Track track, byte[] albumData, byte[] artistData)
         {
             using (_insightsService.TrackTimeEvent("SongSaved",
                 new Dictionary<string, string>
@@ -61,8 +55,8 @@ namespace Audiotica.Windows.Services.RunTime
                 track.Status = isMatching ? TrackStatus.Matching : TrackStatus.None;
 
                 // Download artwork
-                await DownloadAlbumArtworkAsync(track);
-                await DownloadArtistArtworkAsync(track);
+                await DownloadAlbumArtworkAsync(track, albumData);
+                await DownloadArtistArtworkAsync(track, artistData);
 
                 await _libraryService.AddTrackAsync(track);
 
@@ -71,14 +65,33 @@ namespace Audiotica.Windows.Services.RunTime
                 {
                     _matchingService.Queue(track);
                 }
-                else
+                else if (track.AudioLocalUri == null)
                 {
                     await _downloadService.StartDownloadAsync(track);
                 }
             }
         }
 
-        private async Task DownloadAlbumArtworkAsync(Track track)
+        public async Task<Track> SaveAsync(WebSong song)
+        {
+            var track = await _webSongConverter.ConvertAsync(song);
+            await SaveAsync(track);
+            return track;
+        }
+
+        public Task SaveAsync(Track track)
+        {
+            return InternalSaveAsync(track, null, null);
+        }
+
+        public Task SaveAsync(Track track, Tag tag)
+        {
+            var albumArtwork = tag.Pictures.FirstOrDefault(p => p.Type == PictureType.FrontCover);
+            var artistArtwork = tag.Pictures.FirstOrDefault(p => p.Type == PictureType.Artist);
+            return InternalSaveAsync(track, albumArtwork?.Data?.Data, artistArtwork?.Data?.Data);
+        }
+
+        private async Task DownloadAlbumArtworkAsync(Track track, byte[] data)
         {
             var albumHash = track.GetAlbumHash();
             const string prefix = "ms-appdata:///local/";
@@ -89,7 +102,14 @@ namespace Audiotica.Windows.Services.RunTime
 
             if (!exists)
             {
-                if (!await DownloadArtworkAsync(track.ArtworkUri, path))
+                if (data != null)
+                {
+                    if (!await SaveArtworkAsync(data, path))
+                    {
+                        return;
+                    }
+                }
+                else if (!await DownloadArtworkAsync(track.ArtworkUri, path))
                 {
                     return;
                 }
@@ -98,7 +118,7 @@ namespace Audiotica.Windows.Services.RunTime
             track.ArtworkUri = uri;
         }
 
-        private async Task DownloadArtistArtworkAsync(Track track)
+        private async Task DownloadArtistArtworkAsync(Track track, byte[] data)
         {
             var artistHash = track.GetArtistHash();
             const string prefix = "ms-appdata:///local/";
@@ -109,7 +129,14 @@ namespace Audiotica.Windows.Services.RunTime
 
             if (!exists)
             {
-                if (!await DownloadArtworkAsync(track.ArtistArtworkUri, path))
+                if (data != null)
+                {
+                    if (!await SaveArtworkAsync(data, path))
+                    {
+                        return;
+                    }
+                }
+                else if (!await DownloadArtworkAsync(track.ArtistArtworkUri, path))
                 {
                     return;
                 }
@@ -139,6 +166,17 @@ namespace Audiotica.Windows.Services.RunTime
                     }
             }
             return false;
+        }
+
+        private async Task<bool> SaveArtworkAsync(byte[] data, string path)
+        {
+            // make sure it doesn't exists (when track is deleted, artwork won't be deleted until next startup)
+            if (await _storageUtility.ExistsAsync(path))
+            {
+                return false;
+            }
+            await _storageUtility.WriteBytesAsync(path, data);
+            return true;
         }
     }
 }

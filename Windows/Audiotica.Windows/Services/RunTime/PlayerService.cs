@@ -299,7 +299,8 @@ namespace Audiotica.Windows.Services.RunTime
                     throw new AppException("The audio file is not available.");
             }
 
-            if (track.AudioWebUri == null)
+            if (track.Type == TrackType.Stream
+                && track.AudioWebUri == null)
                 using (var blocker = new UiBlocker())
                 {
                     blocker.UpdateProgress("Matching...");

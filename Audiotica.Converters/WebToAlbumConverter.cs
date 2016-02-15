@@ -60,7 +60,7 @@ namespace Audiotica.Converters
                 Title = other.Title,
                 ArtworkUri = other.Artwork.ToString(),
                 Artist = await _webArtistConverter.ConvertAsync(other.Artist),
-                Year = other.ReleaseDate?.Year,
+                Year = (uint?)other.ReleaseDate?.Year,
             };
 
             // TODO: ISupportIncrementalLoading?

@@ -31,6 +31,7 @@ namespace Audiotica.Windows.Engine.Modules
             builder.RegisterType<LibraryService>().As<ILibraryService>().SingleInstance();
             builder.RegisterType<MatchEngineService>().As<IMatchEngineService>().SingleInstance();
             builder.RegisterType<TrackSaveService>().As<ITrackSaveService>();
+            builder.RegisterType<MusicImportService>().As<IMusicImportService>();
             builder.RegisterType<LibraryMatchingService>().As<ILibraryMatchingService>().SingleInstance();
             builder.RegisterType<LibraryCollectionService>()
                 .As<ILibraryCollectionService>()
