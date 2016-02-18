@@ -11,7 +11,18 @@
     DataContext="{Binding NowPlaying, Source={StaticResource ViewModelLocator}}">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <controls:AlternatingRowListView x:Name="NowPlayingListView" ItemsSource="{x:Bind ViewModel.PlayerService.PlaybackQueue}"
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <controls:PageHeader x:Name="PageHeader" Text="Now playing" VisualStateNarrowMinWidth="0"
+                             VisualStateNormalMinWidth="600">
+            <controls:PageHeader.PrimaryCommands>
+                <AppBarButton Label="Clear" Icon="Clear" />
+            </controls:PageHeader.PrimaryCommands>
+        </controls:PageHeader>
+        <controls:AlternatingRowListView Grid.Row="1" x:Name="NowPlayingListView"
+                                         ItemsSource="{x:Bind ViewModel.PlayerService.PlaybackQueue}"
                                          Padding="{StaticResource PageThickness}"
                                          OddRowBackground="{StaticResource SystemChromeLowBrush}"
                                          ItemTemplate="{StaticResource QueueTrackTemplate}" />

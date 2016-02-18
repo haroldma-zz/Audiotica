@@ -13,65 +13,80 @@
     mc:Ignorable="d"
     DataContext="{Binding SearchPage, Source={StaticResource ViewModelLocator}}">
 
-    <ScrollViewer x:Name="ContentScrollViewer" Padding="{StaticResource PageSideThickness}" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <StackPanel Padding="{StaticResource TopBottomThickness}">
-            <TextBox PlaceholderText="Search the catalog" Width="280" HorizontalAlignment="Left" Margin="0,0,0,10">
-                <interactivity:Interaction.Behaviors>
-                    <interactions:TextBoxEnterKeyBehavior>
-                        <core:InvokeCommandAction Command="{x:Bind ViewModel.SearchCommand}" />
-                    </interactions:TextBoxEnterKeyBehavior>
-                </interactivity:Interaction.Behaviors>
-            </TextBox>
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                </Grid.RowDefinitions>
-                <!--<StackPanel Orientation="Horizontal">
-                    <RadioButton Content="In collection" />
-                    <RadioButton Content="In catalog" />
-                </StackPanel>-->
-                <ComboBox Grid.Row="1" Width="280" HorizontalAlignment="Left"
-                          ItemsSource="{x:Bind ViewModel.SearchProviders}"
-                          SelectedIndex="{x:Bind ViewModel.SelectedSearchProvider, Mode=TwoWay}"
-                          Loaded="ComboBox_Loaded">
-                    <ComboBox.ItemTemplate>
-                        <DataTemplate>
-                            <TextBlock Text="{Binding DisplayName}" />
-                        </DataTemplate>
-                    </ComboBox.ItemTemplate>
-                </ComboBox>
-            </Grid>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <controls:PageHeader x:Name="PageHeader" HorizontalContentAlignment="Stretch" VisualStateNarrowMinWidth="0"
+                             VisualStateNormalMinWidth="600">
+            <controls:PageHeader.Content>
+                <TextBox PlaceholderText="Search the catalog">
+                    <interactivity:Interaction.Behaviors>
+                        <interactions:TextBoxEnterKeyBehavior>
+                            <core:InvokeCommandAction Command="{x:Bind ViewModel.SearchCommand}" />
+                        </interactions:TextBoxEnterKeyBehavior>
+                    </interactivity:Interaction.Behaviors>
+                </TextBox>
+            </controls:PageHeader.Content>
+            <controls:PageHeader.SecondaryCommands>
+                <AppBarButton Label="Provider" Icon="Find">
+                    <AppBarButton.Flyout>
+                        <Flyout FlyoutPresenterStyle="{StaticResource FlyoutPresenterStyle1}">
+                            <ListBox x:Name="ListBox"
+                                     ItemsSource="{x:Bind ViewModel.SearchProviders}"
+                                     SelectedIndex="{x:Bind ViewModel.SelectedSearchProvider, Mode=TwoWay}">
+                                <interactivity:Interaction.Behaviors>
+                                    <core:EventTriggerBehavior EventName="SelectionChanged">
+                                        <interactions:CloseFlyoutAction />
+                                    </core:EventTriggerBehavior>
+                                </interactivity:Interaction.Behaviors>
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding DisplayName}" />
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </Flyout>
+                    </AppBarButton.Flyout>
+                </AppBarButton>
+            </controls:PageHeader.SecondaryCommands>
+        </controls:PageHeader>
+        <ScrollViewer Grid.Row="1" x:Name="ContentScrollViewer" Padding="{StaticResource PageSideThickness}"
+                      Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+            <StackPanel Padding="{StaticResource TopBottomThickness}">
+                <TextBlock Text="Tracks" />
+                <controls:AlternatingRowListView x:Name="TrackResults"
+                                                 ItemsSource="{x:Bind ViewModel.TracksResults, Mode=OneWay}"
+                                                 ItemTemplate="{StaticResource CatalogTrackTemplate}"
+                                                 OddRowBackground="{StaticResource SystemChromeLowBrush}"
+                                                 ScrollViewer.VerticalScrollBarVisibility="Disabled" />
 
-            <TextBlock Text="Tracks" />
-            <controls:AlternatingRowListView x:Name="TrackResults" ItemsSource="{x:Bind ViewModel.TracksResults, Mode=OneWay}"
-                                             ItemTemplate="{StaticResource CatalogTrackTemplate}"
-                                             OddRowBackground="{StaticResource SystemChromeLowBrush}"
-                                             ScrollViewer.VerticalScrollBarVisibility="Disabled" />
+                <TextBlock Text="Artists" />
+                <GridView IsItemClickEnabled="True"
+                          SelectionMode="None" ItemTemplate="{StaticResource WebArtistTemplate}"
+                          ItemsSource="{x:Bind ViewModel.ArtistsResults, Mode=OneWay}">
+                    <interactivity:Interaction.Behaviors>
+                        <core:EventTriggerBehavior EventName="ItemClick">
+                            <core:InvokeCommandAction Command="{x:Bind ViewModel.WebArtistClickCommand}" />
+                        </core:EventTriggerBehavior>
+                    </interactivity:Interaction.Behaviors>
+                </GridView>
 
-            <TextBlock Text="Artists" />
-            <GridView IsItemClickEnabled="True"
-                      SelectionMode="None" ItemTemplate="{StaticResource WebArtistTemplate}"
-                      ItemsSource="{x:Bind ViewModel.ArtistsResults, Mode=OneWay}">
-                <interactivity:Interaction.Behaviors>
-                    <core:EventTriggerBehavior EventName="ItemClick">
-                        <core:InvokeCommandAction Command="{x:Bind ViewModel.WebArtistClickCommand}" />
-                    </core:EventTriggerBehavior>
-                </interactivity:Interaction.Behaviors>
-            </GridView>
+                <TextBlock Text="Albums" />
+                <GridView IsItemClickEnabled="True"
+                          SelectionMode="None"
+                          ItemTemplate="{StaticResource WebAlbumTemplate}"
+                          ItemsSource="{x:Bind ViewModel.AlbumsResults, Mode=OneWay}">
+                    <interactivity:Interaction.Behaviors>
+                        <core:EventTriggerBehavior EventName="ItemClick">
+                            <core:InvokeCommandAction Command="{x:Bind ViewModel.WebAlbumClickCommand}" />
+                        </core:EventTriggerBehavior>
+                    </interactivity:Interaction.Behaviors>
+                </GridView>
+            </StackPanel>
 
-            <TextBlock Text="Albums" />
-            <GridView IsItemClickEnabled="True"
-                      SelectionMode="None"
-                      ItemTemplate="{StaticResource WebAlbumTemplate}"
-                      ItemsSource="{x:Bind ViewModel.AlbumsResults, Mode=OneWay}">
-                <interactivity:Interaction.Behaviors>
-                    <core:EventTriggerBehavior EventName="ItemClick">
-                        <core:InvokeCommandAction Command="{x:Bind ViewModel.WebAlbumClickCommand}" />
-                    </core:EventTriggerBehavior>
-                </interactivity:Interaction.Behaviors>
-            </GridView>
-        </StackPanel>
+        </ScrollViewer>
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroup x:Name="DeviceFamilyStates">
                 <VisualState>
@@ -79,7 +94,8 @@
                         <customTriggers:DeviceFamilyTrigger DeviceFamily="Mobile" />
                     </VisualState.StateTriggers>
                     <VisualState.Setters>
-                        <Setter Target="ContentScrollViewer.Padding" Value="{StaticResource MobilePageSideThickness}" />
+                        <Setter Target="ContentScrollViewer.Padding"
+                                Value="{StaticResource MobilePageSideThickness}" />
                     </VisualState.Setters>
                 </VisualState>
             </VisualStateGroup>
@@ -89,7 +105,8 @@
                         <AdaptiveTrigger MinWindowWidth="0" />
                     </VisualState.StateTriggers>
                     <VisualState.Setters>
-                        <Setter Target="TrackResults.ItemTemplate" Value="{StaticResource CatalogTrackNarrowTemplate}" />
+                        <Setter Target="TrackResults.ItemTemplate"
+                                Value="{StaticResource CatalogTrackNarrowTemplate}" />
                     </VisualState.Setters>
                 </VisualState>
                 <VisualState x:Name="WideScreen">
@@ -99,5 +116,5 @@
                 </VisualState>
             </VisualStateGroup>
         </VisualStateManager.VisualStateGroups>
-    </ScrollViewer>
+    </Grid>
 </Page>

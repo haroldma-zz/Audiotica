@@ -11,12 +11,7 @@ namespace Audiotica.Windows.Views
             InitializeComponent();
             ViewModel = DataContext as SearchPageViewModel;
         }
-
+        
         public SearchPageViewModel ViewModel { get; }
-
-        private void ComboBox_Loaded(object sender, RoutedEventArgs e)
-        {
-            ((ComboBox) sender).SelectedIndex = 0;
-        }
     }
 }

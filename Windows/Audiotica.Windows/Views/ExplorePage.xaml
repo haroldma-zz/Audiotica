@@ -15,86 +15,100 @@
     xmlns:tools="using:Audiotica.Windows.Tools"
     mc:Ignorable="d"
     DataContext="{Binding ExplorePage, Source={StaticResource ViewModelLocator}}">
-    <ScrollViewer x:Name="LayoutRoot" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <controls:PageHeader x:Name="PageHeader" Text="Explore" VisualStateNarrowMinWidth="0"
+                             VisualStateNormalMinWidth="600">
+            <controls:PageHeader.PrimaryCommands>
+                <AppBarButton Label="Refresh" Icon="Refresh" />
+            </controls:PageHeader.PrimaryCommands>
+        </controls:PageHeader>
+        <ScrollViewer Grid.Row="1" x:Name="LayoutRoot" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
                   Padding="{StaticResource PageThickness}">
-        <Grid x:Name="ContentRoot">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
-            <Grid x:Name="SideBySideContent">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width=".65*" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
+            <Grid x:Name="ContentRoot">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
-                <StackPanel x:Name="TopSongsPanel">
-                    <TextBlock Text="Top Songs" Style="{StaticResource HeaderTextBlockStyle}" />
-                    <controls:AlternatingRowListView ItemsSource="{x:Bind ViewModel.TopSongs, Mode=OneWay}"
+                <Grid x:Name="SideBySideContent">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width=".65*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <StackPanel x:Name="TopSongsPanel">
+                        <TextBlock Text="Top Songs" Style="{StaticResource HeaderTextBlockStyle}" />
+                        <controls:AlternatingRowListView ItemsSource="{x:Bind ViewModel.TopSongs, Mode=OneWay}"
                                                      ItemTemplate="{StaticResource CatalogTrackNarrowTemplate}" />
-                </StackPanel>
+                    </StackPanel>
 
-                <StackPanel x:Name="TopAlbumsPanel" Grid.Row="0" Grid.Column="1">
-                    <StackPanel.Resources>
-                        <tools:ActualSizePropertyProxy Element="{Binding ElementName=ItemsWrapGrid}" x:Name="Proxy" />
-                    </StackPanel.Resources>
-                    <TextBlock Text="Top Albums" Style="{StaticResource HeaderTextBlockStyle}" />
-                    <GridView ItemsSource="{x:Bind ViewModel.TopAlbums, Mode=OneWay}" IsItemClickEnabled="True" SelectionMode="None"
+                    <StackPanel x:Name="TopAlbumsPanel" Grid.Row="0" Grid.Column="1">
+                        <StackPanel.Resources>
+                            <tools:ActualSizePropertyProxy Element="{Binding ElementName=ItemsWrapGrid}" x:Name="Proxy" />
+                        </StackPanel.Resources>
+                        <TextBlock Text="Top Albums" Style="{StaticResource HeaderTextBlockStyle}" />
+                        <GridView ItemsSource="{x:Bind ViewModel.TopAlbums, Mode=OneWay}" IsItemClickEnabled="True" SelectionMode="None"
                               ScrollViewer.VerticalScrollBarVisibility="Disabled">
-                        <interactivity:Interaction.Behaviors>
-                            <core:EventTriggerBehavior EventName="ItemClick">
-                                <core:InvokeCommandAction Command="{x:Bind ViewModel.AlbumClickCommand}" />
-                            </core:EventTriggerBehavior>
-                        </interactivity:Interaction.Behaviors>
+                            <interactivity:Interaction.Behaviors>
+                                <core:EventTriggerBehavior EventName="ItemClick">
+                                    <core:InvokeCommandAction Command="{x:Bind ViewModel.AlbumClickCommand}" />
+                                </core:EventTriggerBehavior>
+                            </interactivity:Interaction.Behaviors>
+                            <GridView.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <ItemsWrapGrid x:Name="ItemsWrapGrid"
+                                   ItemWidth="{Binding ActualWidthValue, Source={StaticResource Proxy}, Converter={StaticResource UniformSpacingConverter}, ConverterParameter=160}"
+                                   Orientation="Horizontal" />
+                                </ItemsPanelTemplate>
+                            </GridView.ItemsPanel>
+                            <GridView.ItemTemplate>
+                                <DataTemplate x:DataType="webModels:WebAlbum">
+                                    <Grid Width="140" Height="140">
+                                        <Grid.Background>
+                                            <ImageBrush Stretch="UniformToFill" Opacity=".5"
+                                                    ImageSource="{x:Bind Artwork, Converter={StaticResource ImageSourceConverter}}" />
+                                        </Grid.Background>
+                                        <TextBlock Text="{x:Bind Title}" Margin="2"
+                                               VerticalAlignment="Center" TextAlignment="Center"
+                                               TextTrimming="CharacterEllipsis" />
+                                    </Grid>
+                                </DataTemplate>
+                            </GridView.ItemTemplate>
+                        </GridView>
+                    </StackPanel>
+
+                </Grid>
+                <StackPanel Grid.Row="1" x:Name="TopArtistsPanel">
+                    <StackPanel.Resources>
+                        <tools:ActualSizePropertyProxy Element="{Binding ElementName=ItemsWrapGrid2}" x:Name="Proxy2" />
+                    </StackPanel.Resources>
+                    <TextBlock Text="Top Artists" Style="{StaticResource HeaderTextBlockStyle}" />
+                    <GridView ItemsSource="{x:Bind ViewModel.TopArtists, Mode=OneWay}" IsItemClickEnabled="True" SelectionMode="None" ItemTemplate="{StaticResource WebArtistTemplate}"
+                          ScrollViewer.VerticalScrollBarVisibility="Disabled">
                         <GridView.ItemsPanel>
                             <ItemsPanelTemplate>
-                                <ItemsWrapGrid x:Name="ItemsWrapGrid"
-                                   ItemWidth="{Binding ActualWidthValue, Source={StaticResource Proxy}, Converter={StaticResource UniformSpacingConverter}, ConverterParameter=160}"
+                                <ItemsWrapGrid x:Name="ItemsWrapGrid2"
+                                   ItemWidth="{Binding ActualWidthValue, Source={StaticResource Proxy2}, Converter={StaticResource UniformSpacingConverter}, ConverterParameter=160}"
                                    Orientation="Horizontal" />
                             </ItemsPanelTemplate>
                         </GridView.ItemsPanel>
-                        <GridView.ItemTemplate>
-                            <DataTemplate x:DataType="webModels:WebAlbum">
-                                <Grid Width="140" Height="140">
-                                    <Grid.Background>
-                                        <ImageBrush Stretch="UniformToFill" Opacity=".5"
-                                                    ImageSource="{x:Bind Artwork, Converter={StaticResource ImageSourceConverter}}" />
-                                    </Grid.Background>
-                                    <TextBlock Text="{x:Bind Title}" Margin="2"
-                                               VerticalAlignment="Center" TextAlignment="Center"
-                                               TextTrimming="CharacterEllipsis" />
-                                </Grid>
-                            </DataTemplate>
-                        </GridView.ItemTemplate>
+                        <interactivity:Interaction.Behaviors>
+                            <core:EventTriggerBehavior EventName="ItemClick">
+                                <core:InvokeCommandAction Command="{x:Bind ViewModel.ArtistClickCommand}" />
+                            </core:EventTriggerBehavior>
+                        </interactivity:Interaction.Behaviors>
                     </GridView>
                 </StackPanel>
-
             </Grid>
-            <StackPanel Grid.Row="1" x:Name="TopArtistsPanel">
-                <StackPanel.Resources>
-                    <tools:ActualSizePropertyProxy Element="{Binding ElementName=ItemsWrapGrid2}" x:Name="Proxy2" />
-                </StackPanel.Resources>
-                <TextBlock Text="Top Artists" Style="{StaticResource HeaderTextBlockStyle}" />
-                <GridView ItemsSource="{x:Bind ViewModel.TopArtists, Mode=OneWay}" IsItemClickEnabled="True" SelectionMode="None" ItemTemplate="{StaticResource WebArtistTemplate}"
-                          ScrollViewer.VerticalScrollBarVisibility="Disabled">
-                    <GridView.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <ItemsWrapGrid x:Name="ItemsWrapGrid2"
-                                   ItemWidth="{Binding ActualWidthValue, Source={StaticResource Proxy2}, Converter={StaticResource UniformSpacingConverter}, ConverterParameter=160}"
-                                   Orientation="Horizontal" />
-                        </ItemsPanelTemplate>
-                    </GridView.ItemsPanel>
-                    <interactivity:Interaction.Behaviors>
-                        <core:EventTriggerBehavior EventName="ItemClick">
-                            <core:InvokeCommandAction Command="{x:Bind ViewModel.ArtistClickCommand}" />
-                        </core:EventTriggerBehavior>
-                    </interactivity:Interaction.Behaviors>
-                </GridView>
-            </StackPanel>
-        </Grid>
+        </ScrollViewer>
+
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroup x:Name="DeviceFamilyStates">
                 <VisualState>
@@ -128,5 +142,5 @@
             </VisualStateGroup>
 
         </VisualStateManager.VisualStateGroups>
-    </ScrollViewer>
+    </Grid>
 </Page>
