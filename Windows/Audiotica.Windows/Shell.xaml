@@ -20,7 +20,7 @@
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
                     <controls:HamburgerMenu x:Name="BurgerMenu" 
-                                            HamburgerBackground="{ThemeResource SystemControlForegroundAccentBrush}"
+                                            HamburgerBackground="{ThemeResource SystemControlForegroundBaseLowBrush}"
                                             SecondarySeparator="{ThemeResource SystemControlForegroundBaseLowBrush}"
                                             NavAreaBackground="{ThemeResource SplitViewBackgroundBrush}"
                                             HamburgerForeground="{ThemeResource SplitViewForegroundBrush}"

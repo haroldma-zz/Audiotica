@@ -36,6 +36,8 @@ namespace Audiotica.Windows
                 var appSettings = Kernel.Resolve<IAppSettingsUtility>();
                 var isDark = appSettings.Theme == 2 || appSettings.Theme == 0;
                 StatusBar.GetForCurrentView().ForegroundColor = isDark ? Colors.White : Colors.Black;
+                StatusBar.GetForCurrentView().BackgroundColor = isDark ? Colors.Black : Colors.White;
+                StatusBar.GetForCurrentView().BackgroundOpacity = 1;
             }
 
             await Task.CompletedTask;

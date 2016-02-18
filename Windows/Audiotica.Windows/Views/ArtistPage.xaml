@@ -19,9 +19,10 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <controls:PageHeader Text="{x:Bind ViewModel.Artist.Name, Mode=OneWay}" VisualStateNarrowMinWidth="0" VisualStateNormalMinWidth="600" />
+        <controls:PageHeader Text="{x:Bind ViewModel.Artist.Name, Mode=OneWay}" VisualStateNarrowMinWidth="0"
+                             VisualStateNormalMinWidth="600" />
 
-            <ScrollViewer Grid.Row="1" x:Name="ContentScrollViewer" Padding="{StaticResource PageSideThickness}">
+        <ScrollViewer Grid.Row="1" x:Name="ContentScrollViewer" Padding="{StaticResource PageSideThickness}">
             <StackPanel Margin="{StaticResource TopBottomThickness}">
                 <Grid x:Name="HeaderGrid" Margin="0,0,0,20">
                     <Grid.ColumnDefinitions>
@@ -32,7 +33,9 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
-                    <Image Source="{x:Bind ViewModel.Artist.ArtworkUri, Mode=OneWay, Converter={StaticResource ImageSourceConverter}}" Stretch="UniformToFill" />
+                    <Image
+                        Source="{x:Bind ViewModel.Artist.ArtworkUri, Mode=OneWay, Converter={StaticResource ImageSourceConverter}}"
+                        Stretch="UniformToFill" />
                 </Grid>
                 <TextBlock Text="In Collection" Margin="0, 0, 0, 5"
                            Visibility="{x:Bind ViewModel.Artist.Albums.Count, Mode=OneWay, Converter={StaticResource EmptyListToVisibilityConverter}}" />

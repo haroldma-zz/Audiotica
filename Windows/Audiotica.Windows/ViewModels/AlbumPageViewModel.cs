@@ -38,8 +38,7 @@ namespace Audiotica.Windows.ViewModels
         private readonly IConverter<WebAlbum, Album> _webAlbumConverter;
         private Album _album;
         private SolidColorBrush _backgroundBrush;
-
-        private Color? _defaultStatusBarForeground;
+        
         private bool _isCatalogMode;
         private ElementTheme _requestedTheme;
 
@@ -151,8 +150,6 @@ namespace Audiotica.Windows.ViewModels
                 }
             }
 
-            if (DeviceHelper.IsType(DeviceFamily.Mobile))
-                _defaultStatusBarForeground = StatusBar.GetForCurrentView().ForegroundColor;
             if (_settingsUtility.Read(ApplicationSettingsConstants.IsAlbumAdaptiveColorEnabled, true))
                 DetectColorFromArtwork();
         }
@@ -205,8 +202,12 @@ namespace Audiotica.Windows.ViewModels
         {
             // Bug: if we don't reset the theme when we go out it fucks with the TrackViewer control on other pages
             RequestedTheme = ElementTheme.Default;
-            if (DeviceHelper.IsType(DeviceFamily.Mobile))
-                StatusBar.GetForCurrentView().ForegroundColor = _defaultStatusBarForeground;
+
+            if (!DeviceHelper.IsType(DeviceFamily.Mobile)) return;
+            var isDark = App.Current.Shell.RequestedTheme != ElementTheme.Light;
+            StatusBar.GetForCurrentView().ForegroundColor = isDark ? Colors.White : Colors.Black;
+            StatusBar.GetForCurrentView().BackgroundColor = isDark ? Colors.Black : Colors.White;
+            StatusBar.GetForCurrentView().BackgroundOpacity = 1;
         }
 
         private async Task<WebAlbum> GetAlbumByTitleAsync(string title, string artist, int providerIndex)
@@ -235,9 +236,11 @@ namespace Audiotica.Windows.ViewModels
 
                     BackgroundBrush = new SolidColorBrush(main.Color);
                     RequestedTheme = main.IsDark ? ElementTheme.Dark : ElementTheme.Light;
-                    if (DeviceHelper.IsType(DeviceFamily.Mobile))
-                        StatusBar.GetForCurrentView().ForegroundColor =
-                            main.IsDark ? Colors.White : Colors.Black;
+                    
+                    if (!DeviceHelper.IsType(DeviceFamily.Mobile)) return;
+                    StatusBar.GetForCurrentView().ForegroundColor = main.IsDark ? Colors.White : Colors.Black;
+                    StatusBar.GetForCurrentView().BackgroundColor = main.IsDark ? Colors.Black : Colors.White;
+                    StatusBar.GetForCurrentView().BackgroundOpacity = 1;
                 }
             }
             catch

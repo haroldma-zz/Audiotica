@@ -5,11 +5,17 @@
     xmlns:local="using:Audiotica.Windows.Views"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:controls="using:Audiotica.Windows.Controls"
     mc:Ignorable="d"
     DataContext="{Binding SettingsPage, Source={StaticResource ViewModelLocator}}">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" >
-        <StackPanel Margin="{StaticResource PageThickness}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <controls:PageHeader Text="Settings" VisualStateNarrowMinWidth="0" VisualStateNormalMinWidth="600" />
+        <StackPanel Grid.Row="1" Margin="{StaticResource PageThickness}">
             <ToggleSwitch x:Name="ThemeSwitch" Header="Theme" OnContent="Dark" OffContent="Light" IsOn="{x:Bind ViewModel.AppSettingsUtility.Theme, Mode=TwoWay, Converter={StaticResource IntToBoolConverter}}" Toggled="ToggleSwitch_OnToggled" />
             <ToggleSwitch x:Name="AdsSwitch" Header="Ads" IsOn="{x:Bind ViewModel.AppSettingsUtility.Ads, Mode=TwoWay}" Toggled="AdsSwitch_Toggled"/>
             <Button Content="Scan and import" Command="{x:Bind ViewModel.ImportCommand}" />

@@ -20,7 +20,9 @@ namespace Audiotica.Windows.Views
         {
             if (!DeviceHelper.IsType(DeviceFamily.Mobile)) return;
             var isDark = ThemeSwitch.IsOn;
-            StatusBar.GetForCurrentView().ForegroundColor = (isDark ? Colors.White : Colors.Black) as Color?;
+            StatusBar.GetForCurrentView().ForegroundColor = isDark ? Colors.White : Colors.Black;
+            StatusBar.GetForCurrentView().BackgroundColor = isDark ? Colors.Black : Colors.White;
+            StatusBar.GetForCurrentView().BackgroundOpacity = 1;
         }
 
         private void AdsSwitch_Toggled(object sender, RoutedEventArgs e)
