@@ -100,76 +100,69 @@
 
                     </controls:HamburgerMenu>
 
-                    <Grid Grid.Row="1" Background="{ThemeResource SplitViewBackgroundBrush}" Height="48" Visibility="{x:Bind ViewModel.PlaybackDuration, Mode=OneWay, Converter={StaticResource ZeroToVisibilityConverter}}">
+                    <!-- More Controls -->
+                    <Grid Grid.Row="1" Background="{ThemeResource SystemControlBackgroundAltMediumLowBrush}"
+                  Visibility="{x:Bind MoreToggle.IsChecked, Mode=OneWay, Converter={StaticResource VisibilityConverter}}">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Style="{StaticResource BaseSmallTextBlockStyle}" TextLineBounds="Tight" Margin="5,0,0,0"
+                           Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
+                           Text="{x:Bind ViewModel.PlaybackPositionText, Mode=OneWay}" VerticalAlignment="Center" />
+                        <Slider Margin="10,0,10,0" Grid.Column="1" IsThumbToolTipEnabled="False" VerticalAlignment="Center"
+                        Value="{x:Bind ViewModel.PlaybackPosition, Mode=TwoWay}"
+                        Maximum="{x:Bind ViewModel.PlaybackDuration, Mode=OneWay}" />
+                        <TextBlock Style="{StaticResource BaseSmallTextBlockStyle}" TextLineBounds="Tight"
+                           Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}" Grid.Column="2"
+                           Text="{x:Bind ViewModel.PlaybackDurationText, Mode=OneWay}" VerticalAlignment="Center" />
+                        <StackPanel Orientation="Horizontal" Margin="5,0,0,0" Grid.Column="3">
+                            <AppBarToggleButton Icon="Shuffle" IsCompact="True" IsEnabled="False" />
+                            <AppBarToggleButton Icon="Sync" IsCompact="True" IsEnabled="False" />
+                        </StackPanel>
+                    </Grid>
+                    <!-- Player -->
+                    <Grid Grid.Row="2" Background="{ThemeResource SplitViewBackgroundBrush}"
+                  Visibility="{x:Bind ViewModel.PlaybackDuration, Mode=OneWay, Converter={StaticResource ZeroToVisibilityConverter}}">
+                        <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
                         <Button Style="{StaticResource PlainButtonStyle}">
                             <Button.Flyout>
-                                <Flyout Opened="LyricsFlyout_OnOpened" Closed="LyricsFlyoutBase_OnClosed">
-                                    <Flyout.FlyoutPresenterStyle>
-                                        <Style TargetType="FlyoutPresenter">
-                                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                                            <Setter Property="VerticalContentAlignment" Value="Stretch"/>
-                                            <Setter Property="IsTabStop" Value="False"/>
-                                            <Setter Property="Background" Value="{ThemeResource SystemControlBackgroundChromeMediumLowBrush}"/>
-                                            <Setter Property="BorderBrush" Value="{ThemeResource SystemControlForegroundChromeHighBrush}"/>
-                                            <Setter Property="BorderThickness" Value="{ThemeResource FlyoutBorderThemeThickness}"/>
-                                            <Setter Property="Padding" Value="{ThemeResource FlyoutContentThemePadding}"/>
-                                            <Setter Property="ScrollViewer.HorizontalScrollMode" Value="Auto"/>
-                                            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>
-                                            <Setter Property="ScrollViewer.VerticalScrollMode" Value="Auto"/>
-                                            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
-                                            <Setter Property="ScrollViewer.ZoomMode" Value="Disabled"/>
-                                            <Setter Property="Template">
-                                                <Setter.Value>
-                                                    <ControlTemplate TargetType="FlyoutPresenter">
-                                                        <Border Height="500" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}">
-                                                            <ScrollViewer x:Name="ScrollViewer" AutomationProperties.AccessibilityView="Raw" HorizontalScrollMode="{TemplateBinding ScrollViewer.HorizontalScrollMode}" HorizontalScrollBarVisibility="{TemplateBinding ScrollViewer.HorizontalScrollBarVisibility}" VerticalScrollBarVisibility="{TemplateBinding ScrollViewer.VerticalScrollBarVisibility}" VerticalScrollMode="{TemplateBinding ScrollViewer.VerticalScrollMode}" ZoomMode="{TemplateBinding ScrollViewer.ZoomMode}">
-                                                                <ContentPresenter ContentTemplate="{TemplateBinding ContentTemplate}" ContentTransitions="{TemplateBinding ContentTransitions}" Content="{TemplateBinding Content}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
-                                                            </ScrollViewer>
-                                                        </Border>
-                                                    </ControlTemplate>
-                                                </Setter.Value>
-                                            </Setter>
-                                        </Style>
-                                    </Flyout.FlyoutPresenterStyle>
-                                    <Grid Width="425" >
+                                <Flyout Placement="Full" Opened="LyricsFlyout_OnOpened" Closed="LyricsFlyoutBase_OnClosed">
+                                    <Grid Width="275" Margin="0,5,0,0">
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="Auto" />
                                             <RowDefinition Height="Auto" />
                                         </Grid.RowDefinitions>
-                                        <ProgressBar IsIndeterminate="{x:Bind IsLyricsLoading, Mode=OneWay}" Visibility="{x:Bind IsLyricsLoading, Mode=OneWay, Converter={StaticResource VisibilityConverter}}" />
-                                        <TextBlock Grid.Row="1" Text="{x:Bind LyricsText, Mode=OneWay}" FontSize="18" TextAlignment="Center" TextWrapping="Wrap" />
+                                        <ProgressBar IsIndeterminate="{x:Bind IsLyricsLoading, Mode=OneWay}"
+                                             Visibility="{x:Bind IsLyricsLoading, Mode=OneWay, Converter={StaticResource VisibilityConverter}}" />
+                                        <TextBlock Grid.Row="1" Text="{x:Bind LyricsText, Mode=OneWay}" TextAlignment="Center"
+                                           TextWrapping="Wrap" />
                                     </Grid>
                                 </Flyout>
                             </Button.Flyout>
-                            <StackPanel Orientation="Horizontal" Margin="5" Width="200">
-                                <Image Width="38" Height="38" Source="{x:Bind ViewModel.CurrentQueueTrack.Track.ArtworkUri, Mode=OneWay, Converter={StaticResource ImageSourceConverter}}" Stretch="UniformToFill" Margin="0,0,2,0" />
+
+                            <StackPanel Orientation="Horizontal" Margin="5">
+                                <Image Width="38" Height="38"
+                               Source="{x:Bind ViewModel.CurrentQueueTrack.Track.ArtworkUri, Mode=OneWay, Converter={StaticResource ImageSourceConverter}}"
+                               Stretch="UniformToFill" Margin="0,0,2,0" />
                                 <StackPanel Margin="5,0,0,0" VerticalAlignment="Center">
-                                    <TextBlock Text="{x:Bind ViewModel.CurrentQueueTrack.Track.Title, Mode=OneWay}" Style="{StaticResource BaseTextBlockStyle}" TextTrimming="CharacterEllipsis" />
-                                    <TextBlock Text="{x:Bind ViewModel.CurrentQueueTrack.Track.Artists, Mode=OneWay}" Style="{StaticResource BaseSmallTextBlockStyle}" TextTrimming="CharacterEllipsis" />
+                                    <TextBlock Text="{x:Bind ViewModel.CurrentQueueTrack.Track.Title, Mode=OneWay}"
+                                       Style="{StaticResource BaseTextBlockStyle}" TextTrimming="CharacterEllipsis" />
+                                    <TextBlock Text="{x:Bind ViewModel.CurrentQueueTrack.Track.Artists, Mode=OneWay}"
+                                       Style="{StaticResource BaseSmallTextBlockStyle}"
+                                       TextTrimming="CharacterEllipsis" />
                                 </StackPanel>
                             </StackPanel>
                         </Button>
-                        <Grid Grid.Column="1" Margin="5">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Style="{StaticResource BaseSmallTextBlockStyle}" TextLineBounds="Tight" Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}" Text="{x:Bind ViewModel.PlaybackPositionText, Mode=OneWay}" VerticalAlignment="Center" />
-                            <Slider Margin="10,0,10,0" Grid.Column="1" IsThumbToolTipEnabled="False" VerticalAlignment="Center" Value="{x:Bind ViewModel.PlaybackPosition, Mode=TwoWay}" Maximum="{x:Bind ViewModel.PlaybackDuration, Mode=OneWay}" />
-                            <TextBlock Style="{StaticResource BaseSmallTextBlockStyle}" TextLineBounds="Tight" Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}" Grid.Column="2" Text="{x:Bind ViewModel.PlaybackDurationText, Mode=OneWay}" VerticalAlignment="Center" />
-                        </Grid>
-                        <StackPanel Orientation="Horizontal" Grid.Column="2">
-                            <AppBarButton Icon="Previous" IsCompact="True" Command="{x:Bind ViewModel.PrevCommand}" />
-                            <AppBarButton Icon="{x:Bind ViewModel.PlayPauseIcon, Mode=OneWay}" IsCompact="True" Command="{x:Bind ViewModel.PlayPauseCommand}"/>
-                            <AppBarButton Icon="Next" IsCompact="True" Command="{x:Bind ViewModel.NextCommand}" />
-                            <AppBarToggleButton Icon="Shuffle" IsCompact="True" IsEnabled="False" />
-                            <AppBarToggleButton Icon="Sync" IsCompact="True" IsEnabled="False" />
+                        <StackPanel Orientation="Horizontal" Grid.Column="1">
+                            <AppBarToggleButton x:Name="MoreToggle" Icon="More" IsCompact="True" />
+                            <AppBarButton Icon="{x:Bind ViewModel.PlayPauseIcon, Mode=OneWay}" IsCompact="True"
+                                  Command="{x:Bind ViewModel.PlayPauseCommand}" />
                         </StackPanel>
                     </Grid>
                 </Grid>
