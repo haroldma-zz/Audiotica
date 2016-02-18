@@ -13,6 +13,10 @@
     DataContext="{Binding AlbumPage, Source={StaticResource ViewModelLocator}}">
 
     <Grid Background="{Binding BackgroundBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
         <Grid.Resources>
             <converters:BooleanTemplateSelector x:Key="TrackTemplateSelector"
                                                 IsTrue="{x:Bind ViewModel.IsCatalogMode, Mode=OneWay}"
@@ -23,7 +27,19 @@
                                                 TrueTemplate="{StaticResource CatalogTrackNarrowTemplate}"
                                                 FalseTemplate="{StaticResource TrackNarrowTemplate}" />
         </Grid.Resources>
-        <controls:AlternatingRowListView x:Name="AlbumTracksListView" Padding="{StaticResource PageThickness}"
+        <controls:PageHeader VisualStateNarrowMinWidth="0" VisualStateNormalMinWidth="600">
+            <controls:PageHeader.PrimaryCommands>
+                <AppBarButton Label="Play" Icon="Play" Command="{x:Bind ViewModel.PlayAllCommand, Mode=OneWay}"
+                              Visibility="{x:Bind ViewModel.IsCatalogMode, Mode=OneWay, Converter={StaticResource ReverseVisibilityConverter}}" />
+                <AppBarButton Label="Catalog" Icon="View"
+                              Command="{x:Bind ViewModel.ViewInCatalogCommand, Mode=OneWay}"
+                              Visibility="{x:Bind ViewModel.IsCatalogMode, Mode=OneWay, Converter={StaticResource ReverseVisibilityConverter}}" />
+                <AppBarButton Label="Save" Icon="Save" Command="{x:Bind ViewModel.SaveAllCommand, Mode=OneWay}"
+                              Visibility="{x:Bind ViewModel.IsCatalogMode, Mode=OneWay, Converter={StaticResource VisibilityConverter}}" />
+            </controls:PageHeader.PrimaryCommands>
+        </controls:PageHeader>
+        <controls:AlternatingRowListView Grid.Row="1" x:Name="AlbumTracksListView"
+                                         Padding="{StaticResource PageThickness}"
                                          OddRowBackground="{StaticResource SystemChromeLowBrush}"
                                          ItemsSource="{x:Bind ViewModel.Album.Tracks, Mode=OneWay}"
                                          ItemTemplateSelector="{StaticResource TrackTemplateSelector}">
@@ -38,38 +54,12 @@
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
                     <Image Stretch="UniformToFill"
-                        Source="{x:Bind ViewModel.Album.ArtworkUri, Mode=OneWay, Converter={StaticResource ImageSourceConverter}}" />
+                           Source="{x:Bind ViewModel.Album.ArtworkUri, Mode=OneWay, Converter={StaticResource ImageSourceConverter}}" />
                     <StackPanel x:Name="AlbumMetadataPanel" Margin="10" Grid.Row="0" Grid.Column="1">
                         <TextBlock Text="{x:Bind ViewModel.Album.Title, Mode=OneWay}" TextWrapping="Wrap"
                                    Style="{ThemeResource TitleTextBlockStyle}" />
                         <TextBlock Text="{x:Bind ViewModel.Album.Artist.Name, Mode=OneWay}"
                                    Style="{StaticResource SubtleTextBlockStyle}" />
-                        <StackPanel Orientation="Horizontal">
-                            <HyperlinkButton Margin="0,0,20,0" Command="{x:Bind ViewModel.PlayAllCommand, Mode=OneWay}"
-                                             Visibility="{x:Bind ViewModel.IsCatalogMode, Mode=OneWay, Converter={StaticResource ReverseVisibilityConverter}}"
-                                             Foreground="{ThemeResource SystemControlForegroundBaseHighBrush}">
-                                <StackPanel Orientation="Horizontal" Background="Transparent">
-                                    <SymbolIcon Symbol="Play" Margin="0,0,10,0" />
-                                    <TextBlock Text="Play" />
-                                </StackPanel>
-                            </HyperlinkButton>
-                            <HyperlinkButton Command="{x:Bind ViewModel.ViewInCatalogCommand, Mode=OneWay}"
-                                             Visibility="{x:Bind ViewModel.IsCatalogMode, Mode=OneWay, Converter={StaticResource ReverseVisibilityConverter}}"
-                                             Foreground="{ThemeResource SystemControlForegroundBaseHighBrush}">
-                                <StackPanel Orientation="Horizontal" Background="Transparent">
-                                    <SymbolIcon Margin="0,0,5,0" Symbol="View" />
-                                    <TextBlock Text="View in catalog" />
-                                </StackPanel>
-                            </HyperlinkButton>
-                            <HyperlinkButton Command="{x:Bind ViewModel.SaveAllCommand, Mode=OneWay}"
-                                             Visibility="{x:Bind ViewModel.IsCatalogMode, Mode=OneWay, Converter={StaticResource VisibilityConverter}}"
-                                             Foreground="{ThemeResource SystemControlForegroundBaseHighBrush}">
-                                <StackPanel Orientation="Horizontal" Background="Transparent">
-                                    <SymbolIcon Margin="0,0,5,0" Symbol="Save" />
-                                    <TextBlock Text="Save" />
-                                </StackPanel>
-                            </HyperlinkButton>
-                        </StackPanel>
                     </StackPanel>
                 </Grid>
             </ListView.Header>
