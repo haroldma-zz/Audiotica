@@ -237,7 +237,7 @@
 
     <DataTemplate x:Key="WebArtistTemplate" x:DataType="webModels:WebArtist">
         <Grid>
-            <Ellipse Width="140" Height="140">
+            <Ellipse Width="120" Height="120">
                 <Ellipse.Fill>
                     <ImageBrush Stretch="UniformToFill" Opacity=".5"
                                 ImageSource="{x:Bind Artwork, Converter={StaticResource ImageSourceConverter}, ConverterParameter=150}" />

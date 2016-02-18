@@ -28,8 +28,8 @@
             </controls:PageHeader.PrimaryCommands>
         </controls:PageHeader>
         <ScrollViewer Grid.Row="1" x:Name="LayoutRoot" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
-                  Padding="{StaticResource PageThickness}">
-            <Grid x:Name="ContentRoot">
+                  Padding="{StaticResource PageSideThickness}">
+            <Grid x:Name="ContentRoot" Margin="0,20,0,0">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
@@ -64,13 +64,13 @@
                             <GridView.ItemsPanel>
                                 <ItemsPanelTemplate>
                                     <ItemsWrapGrid x:Name="ItemsWrapGrid"
-                                   ItemWidth="{Binding ActualWidthValue, Source={StaticResource Proxy}, Converter={StaticResource UniformSpacingConverter}, ConverterParameter=160}"
+                                   ItemWidth="{Binding ActualWidthValue, Source={StaticResource Proxy}, Converter={StaticResource UniformSpacingConverter}, ConverterParameter=140}"
                                    Orientation="Horizontal" />
                                 </ItemsPanelTemplate>
                             </GridView.ItemsPanel>
                             <GridView.ItemTemplate>
                                 <DataTemplate x:DataType="webModels:WebAlbum">
-                                    <Grid Width="140" Height="140">
+                                    <Grid Width="130" Height="130">
                                         <Grid.Background>
                                             <ImageBrush Stretch="UniformToFill" Opacity=".5"
                                                     ImageSource="{x:Bind Artwork, Converter={StaticResource ImageSourceConverter}}" />
@@ -95,7 +95,7 @@
                         <GridView.ItemsPanel>
                             <ItemsPanelTemplate>
                                 <ItemsWrapGrid x:Name="ItemsWrapGrid2"
-                                   ItemWidth="{Binding ActualWidthValue, Source={StaticResource Proxy2}, Converter={StaticResource UniformSpacingConverter}, ConverterParameter=160}"
+                                   ItemWidth="{Binding ActualWidthValue, Source={StaticResource Proxy2}, Converter={StaticResource UniformSpacingConverter}, ConverterParameter=140}"
                                    Orientation="Horizontal" />
                             </ItemsPanelTemplate>
                         </GridView.ItemsPanel>
@@ -116,8 +116,7 @@
                         <customTriggers:DeviceFamilyTrigger DeviceFamily="Mobile" />
                     </VisualState.StateTriggers>
                     <VisualState.Setters>
-                        <Setter Target="ContentRoot.Padding" Value="{StaticResource MobileStatusBarThickness}" />
-                        <Setter Target="LayoutRoot.Padding" Value="{StaticResource MobilePageThickness}" />
+                        <Setter Target="LayoutRoot.Padding" Value="{StaticResource MobilePageSideThickness}" />
                     </VisualState.Setters>
                 </VisualState>
             </VisualStateGroup>
