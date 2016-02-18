@@ -87,9 +87,12 @@ namespace Audiotica.Windows.ViewModels
             Track.AudioWebUri = match.AudioUrl;
             Track.AudioLocalUri = null;
             Track.Status = TrackStatus.None;
-            _playerService.UpdateUrl(Track);
+            Track.Type = TrackType.Stream;
+
             await _libraryService.UpdateTrackAsync(Track);
             await _downloadService.StartDownloadAsync(Track);
+            _playerService.UpdateUrl(Track);
+
             _navigationService.GoBack();
         }
     }

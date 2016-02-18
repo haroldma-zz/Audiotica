@@ -203,6 +203,10 @@ namespace Audiotica.Windows.Controls
             }
         }
 
+        private void ManualMatch_Click(object sender, RoutedEventArgs e)
+        {
+            App.Current.NavigationService.Navigate(typeof(ManualMatchPage), Track.Id);
+        }
         private void Download_Click(object sender, RoutedEventArgs e)
         {
             using (var scope = App.Current.Kernel.BeginScope())

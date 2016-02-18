@@ -41,5 +41,6 @@
                 </DataTemplate>
             </Pivot.ItemTemplate>
         </Pivot>
+        <controls:PageHeader Text="Manual match" VisualStateNarrowMinWidth="0" VisualStateNormalMinWidth="600" />
     </Grid>
 </Page>
