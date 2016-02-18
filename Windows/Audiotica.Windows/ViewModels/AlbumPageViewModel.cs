@@ -237,7 +237,7 @@ namespace Audiotica.Windows.ViewModels
                     RequestedTheme = main.IsDark ? ElementTheme.Dark : ElementTheme.Light;
                     if (DeviceHelper.IsType(DeviceFamily.Mobile))
                         StatusBar.GetForCurrentView().ForegroundColor =
-                            (main.IsDark ? Colors.White : Colors.Black) as Color?;
+                            main.IsDark ? Colors.White : Colors.Black;
                 }
             }
             catch

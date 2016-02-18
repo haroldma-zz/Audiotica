@@ -77,7 +77,7 @@ namespace Audiotica.Windows.Controls
             var header = (LibraryHeader) o;
             var sortItems = e.NewValue as IList<ListBoxItem>;
 
-            header.SortHyperlinkButton.IsEnabled = sortItems?.Count > 1;
+            header.SortButton.IsEnabled = sortItems?.Count > 1;
         }
 
         private void ListBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)

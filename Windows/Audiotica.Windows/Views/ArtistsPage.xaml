@@ -51,7 +51,6 @@
         <controls:LibraryHeader x:Name="LibraryHeader" Title="Artists" SortItems="{x:Bind ViewModel.SortItems}"
                                 ShuffleAllCommand="{x:Bind ViewModel.ShuffleAllCommand}"
                                 CurrentSortChangedCommand="{x:Bind ViewModel.SortChangedCommand}"
-                                Margin="{StaticResource PageTopSideThickness}"
                                 IsSelectMode="{x:Bind ViewModel.IsSelectMode, Mode=TwoWay}" />
 
         <!--No Music-->
@@ -137,7 +136,6 @@
                         <customTriggers:DeviceFamilyTrigger DeviceFamily="Mobile" />
                     </VisualState.StateTriggers>
                     <VisualState.Setters>
-                        <Setter Target="LibraryHeader.Margin" Value="{StaticResource MobilePageTopSideThickness}" />
                         <Setter Target="NoMusicPanel.Margin" Value="{StaticResource MobilePageSideThickness}" />
                         <Setter Target="ArtistsGridView.Padding" Value="{StaticResource MobilePageThickness}" />
                         <Setter Target="ArtistsZoomedOutGridView.Padding" Value="{StaticResource MobilePageThickness}" />
