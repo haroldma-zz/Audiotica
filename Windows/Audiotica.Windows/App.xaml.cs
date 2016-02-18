@@ -30,15 +30,9 @@ namespace Audiotica.Windows
             // Wrap the frame in the shell (hamburger menu)
             Shell = new Shell();
             Window.Current.Content = Shell;
-
-            // Set the bounds for the view to the core window
-            ApplicationView.GetForCurrentView().SetDesiredBoundsMode(ApplicationViewBoundsMode.UseCoreWindow);
-
+            
             if (DeviceHelper.IsType(DeviceFamily.Mobile))
             {
-                ApplicationView.GetForCurrentView().VisibleBoundsChanged += OnVisibleBoundsChanged;
-                OnVisibleBoundsChanged(null, null);
-
                 var appSettings = Kernel.Resolve<IAppSettingsUtility>();
                 var isDark = appSettings.Theme == 2 || appSettings.Theme == 0;
                 StatusBar.GetForCurrentView().ForegroundColor = isDark ? Colors.White : Colors.Black;
@@ -66,20 +60,6 @@ namespace Audiotica.Windows
                             "Crash prevented");
                     });
             return true;
-        }
-
-        private void OnVisibleBoundsChanged(ApplicationView sender, object args)
-        {
-            var bounds = ApplicationView.GetForCurrentView().VisibleBounds;
-            var h = Window.Current.Bounds.Height;
-            var w = Window.Current.Bounds.Width;
-
-            var top = Math.Ceiling(bounds.Top + h - h);
-            var left = Math.Ceiling(bounds.Left + w - w);
-            var right = Math.Ceiling(w - bounds.Right);
-            var bottom = Math.Ceiling(h - bounds.Bottom);
-            RootFrame.Margin = new Thickness(left, 0, right, bottom);
-            Shell.Padding = new Thickness(left, top, 0, 0);
         }
     }
 }

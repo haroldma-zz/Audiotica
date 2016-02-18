@@ -8,14 +8,18 @@
     xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
     xmlns:core="using:Microsoft.Xaml.Interactions.Core"
     xmlns:interactions="using:Audiotica.Windows.Interactions"
+    xmlns:customTriggers="using:Audiotica.Windows.CustomTriggers"
     mc:Ignorable="d"
     d:DesignHeight="300"
     d:DesignWidth="400">
 
-    <local:PageHeader Text="{x:Bind Title, Mode=OneWay}" VisualStateNarrowMinWidth="0"
+    <local:PageHeader x:Name="PageHeader" Text="{x:Bind Title, Mode=OneWay}" VisualStateNarrowMinWidth="0"
         VisualStateNormalMinWidth="600" >
         <local:PageHeader.PrimaryCommands>
             <AppBarButton Icon="Shuffle" Label="Shuffle" Click="ShuffleAll_Click" />
+            <AppBarToggleButton Icon="List" Label="Select" IsChecked="{x:Bind IsSelectMode, Mode=TwoWay}" />
+        </local:PageHeader.PrimaryCommands>
+        <local:PageHeader.SecondaryCommands>
             <AppBarButton Icon="Sort" Label="Sort" x:Name="SortButton">
                 <AppBarButton.Flyout>
                     <Flyout FlyoutPresenterStyle="{StaticResource FlyoutPresenterStyle1}">
@@ -31,7 +35,6 @@
                     </Flyout>
                 </AppBarButton.Flyout>
             </AppBarButton>
-            <AppBarToggleButton Icon="List" Label="Select" IsChecked="{x:Bind IsSelectMode, Mode=TwoWay}" />
-        </local:PageHeader.PrimaryCommands>
+        </local:PageHeader.SecondaryCommands>
     </local:PageHeader>
 </UserControl>
