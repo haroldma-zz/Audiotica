@@ -19,10 +19,10 @@ using Audiotica.Web.Extensions;
 using Audiotica.Web.Metadata.Interfaces;
 using Audiotica.Web.Models;
 using Audiotica.Windows.Common;
+using Audiotica.Windows.Engine.Mvvm;
+using Audiotica.Windows.Engine.Navigation;
 using Audiotica.Windows.Extensions;
 using Audiotica.Windows.Services.Interfaces;
-using Audiotica.Windows.Services.NavigationService;
-using Audiotica.Windows.Tools.Mvvm;
 using Audiotica.Windows.Views;
 
 namespace Audiotica.Windows.ViewModels
@@ -38,8 +38,7 @@ namespace Audiotica.Windows.ViewModels
         private readonly IConverter<WebAlbum, Album> _webAlbumConverter;
         private Album _album;
         private SolidColorBrush _backgroundBrush;
-
-        private Color? _defaultStatusBarForeground;
+        
         private bool _isCatalogMode;
         private ElementTheme _requestedTheme;
 
@@ -54,21 +53,21 @@ namespace Audiotica.Windows.ViewModels
             _playerService = playerService;
             _trackSaveService = trackSaveService;
             _metadataProviders = metadataProviders.FilterAndSort<IExtendedMetadataProvider>();
-
-            ViewInCatalogCommand = new Command(ViewInCatalogExecute);
-            PlayAllCommand = new Command(PlayAllExecute);
-            SaveAllCommand = new Command<object>(SaveAllExecute);
+            
+            ViewInCatalogCommand = new DelegateCommand(ViewInCatalogExecute);
+            PlayAllCommand = new DelegateCommand(PlayAllExecute);
+            SaveAllCommand = new DelegateCommand<object>(SaveAllExecute);
 
             if (IsInDesignMode)
                 OnNavigatedTo(new AlbumPageParameter("Kauai", "Childish Gambino"), NavigationMode.New,
                     new Dictionary<string, object>());
         }
 
-        public Command<object> SaveAllCommand { get; }
+        public DelegateCommand<object> SaveAllCommand { get; }
 
-        public Command PlayAllCommand { get; }
+        public DelegateCommand PlayAllCommand { get; }
 
-        public Command ViewInCatalogCommand { get; }
+        public DelegateCommand ViewInCatalogCommand { get; }
 
         public Album Album
         {
@@ -110,11 +109,11 @@ namespace Audiotica.Windows.ViewModels
             }
         }
 
-        private void PlayAllExecute()
+        private async void PlayAllExecute()
         {
             if (Album.Tracks.Count == 0) return;
             var albumTracks = Album.Tracks.ToList();
-            _playerService.NewQueueAsync(albumTracks);
+            await _playerService.NewQueueAsync(albumTracks);
         }
 
         private void ViewInCatalogExecute()
@@ -124,8 +123,7 @@ namespace Audiotica.Windows.ViewModels
                 new AlbumPageParameter(Album.Title, Album.Artist.Name) {IsCatalogMode = true});
         }
 
-        public override sealed async void OnNavigatedTo(object parameter, NavigationMode mode,
-            Dictionary<string, object> state)
+        public override async void OnNavigatedTo(object parameter, NavigationMode mode, IDictionary<string, object> state)
         {
             var albumParameter = (AlbumPageParameter) parameter;
             IsCatalogMode = albumParameter.IsCatalogMode;
@@ -152,8 +150,6 @@ namespace Audiotica.Windows.ViewModels
                 }
             }
 
-            if (DeviceHelper.IsType(DeviceFamily.Mobile))
-                _defaultStatusBarForeground = StatusBar.GetForCurrentView().ForegroundColor;
             if (_settingsUtility.Read(ApplicationSettingsConstants.IsAlbumAdaptiveColorEnabled, true))
                 DetectColorFromArtwork();
         }
@@ -202,12 +198,16 @@ namespace Audiotica.Windows.ViewModels
             }
         }
 
-        public override void OnNavigatedFrom()
+        public override void OnNavigatingFrom(NavigatingEventArgs args)
         {
             // Bug: if we don't reset the theme when we go out it fucks with the TrackViewer control on other pages
             RequestedTheme = ElementTheme.Default;
-            if (DeviceHelper.IsType(DeviceFamily.Mobile))
-                StatusBar.GetForCurrentView().ForegroundColor = _defaultStatusBarForeground;
+
+            if (!DeviceHelper.IsType(DeviceFamily.Mobile)) return;
+            var isDark = App.Current.Shell.RequestedTheme != ElementTheme.Light;
+            StatusBar.GetForCurrentView().ForegroundColor = isDark ? Colors.White : Colors.Black;
+            StatusBar.GetForCurrentView().BackgroundColor = isDark ? Colors.Black : Colors.White;
+            StatusBar.GetForCurrentView().BackgroundOpacity = 1;
         }
 
         private async Task<WebAlbum> GetAlbumByTitleAsync(string title, string artist, int providerIndex)
@@ -236,9 +236,11 @@ namespace Audiotica.Windows.ViewModels
 
                     BackgroundBrush = new SolidColorBrush(main.Color);
                     RequestedTheme = main.IsDark ? ElementTheme.Dark : ElementTheme.Light;
-                    if (DeviceHelper.IsType(DeviceFamily.Mobile))
-                        StatusBar.GetForCurrentView().ForegroundColor =
-                            (main.IsDark ? Colors.White : Colors.Black) as Color?;
+                    
+                    if (!DeviceHelper.IsType(DeviceFamily.Mobile)) return;
+                    StatusBar.GetForCurrentView().ForegroundColor = main.IsDark ? Colors.White : Colors.Black;
+                    StatusBar.GetForCurrentView().BackgroundColor = main.IsDark ? Colors.Black : Colors.White;
+                    StatusBar.GetForCurrentView().BackgroundOpacity = 1;
                 }
             }
             catch

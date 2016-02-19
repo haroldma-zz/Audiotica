@@ -11,8 +11,8 @@
     <AssemblyName>Audiotica.Core.Windows</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
-    <TargetPlatformVersion>10.0.10240.0</TargetPlatformVersion>
-    <TargetPlatformMinVersion>10.0.10240.0</TargetPlatformMinVersion>
+    <TargetPlatformVersion>10.0.10586.0</TargetPlatformVersion>
+    <TargetPlatformMinVersion>10.0.10586.0</TargetPlatformMinVersion>
     <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -135,6 +135,7 @@
     <Compile Include="Messages\UpdatePlaylistMessage.cs" />
     <Compile Include="Helpers\EnumHelper.cs" />
     <Compile Include="Helpers\StorageHelper.cs" />
+    <Compile Include="Messages\UpdateUrlMessage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utilities\AppSettingsUtility.cs" />
     <Compile Include="Utilities\CredentialUtility.cs" />
@@ -150,6 +151,10 @@
     <ProjectReference Include="..\..\Audiotica.Database\Audiotica.Database.csproj">
       <Project>{3d53e627-45b5-410d-8043-ec7f22c3e010}</Project>
       <Name>Audiotica.Database</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Audiotica.Web\Audiotica.Web.csproj">
+      <Project>{0b8c5a00-8c9c-4663-a741-1b494c0e9e46}</Project>
+      <Name>Audiotica.Web</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />

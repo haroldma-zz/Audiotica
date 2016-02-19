@@ -1,18 +1,28 @@
-﻿<navigationService:NavigatablePage
+﻿<Page
     x:Class="Audiotica.Windows.Views.NowPlayingPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:Audiotica.Windows.Views"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:navigationService="using:Audiotica.Windows.Services.NavigationService"
     xmlns:controls="using:Audiotica.Windows.Controls"
     xmlns:customTriggers="using:Audiotica.Windows.CustomTriggers"
     mc:Ignorable="d"
     DataContext="{Binding NowPlaying, Source={StaticResource ViewModelLocator}}">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <controls:AlternatingRowListView x:Name="NowPlayingListView" ItemsSource="{x:Bind ViewModel.PlayerService.PlaybackQueue}"
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <controls:PageHeader x:Name="PageHeader" Text="Now playing" VisualStateNarrowMinWidth="0"
+                             VisualStateNormalMinWidth="600">
+           <!-- <controls:PageHeader.PrimaryCommands>
+                <AppBarButton Label="Clear" Icon="Clear" />
+            </controls:PageHeader.PrimaryCommands>-->
+        </controls:PageHeader>
+        <controls:AlternatingRowListView Grid.Row="1" x:Name="NowPlayingListView"
+                                         ItemsSource="{x:Bind ViewModel.PlayerService.PlaybackQueue}"
                                          Padding="{StaticResource PageThickness}"
                                          OddRowBackground="{StaticResource SystemChromeLowBrush}"
                                          ItemTemplate="{StaticResource QueueTrackTemplate}" />
@@ -45,4 +55,4 @@
             </VisualStateGroup>
         </VisualStateManager.VisualStateGroups>
     </Grid>
-</navigationService:NavigatablePage>
+</Page>

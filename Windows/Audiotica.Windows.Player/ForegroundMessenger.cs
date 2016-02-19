@@ -27,6 +27,7 @@ namespace Audiotica.Windows.Player
         public event EventHandler SkipToNext;
         public event EventHandler SkipToPrev;
         public event EventHandler<string> TrackChanged;
+        public event EventHandler<UpdateUrlMessage> TrackUpdateUrl;
         public event EventHandler<List<QueueTrack>> UpdatePlaylist;
         public event TypedEventHandler<List<QueueTrack>, int> AddToPlaylist;
 
@@ -67,6 +68,12 @@ namespace Audiotica.Windows.Player
                         var addMessage = message as AddToPlaylistMessage;
                         if (addMessage != null)
                             AddToPlaylist?.Invoke(addMessage.Tracks, addMessage.Position);
+                        else
+                        {
+                            var updateMessage = message as UpdateUrlMessage;
+                            if (updateMessage != null)
+                                TrackUpdateUrl?.Invoke(this, updateMessage);
+                        }
                     }
                 }
             }

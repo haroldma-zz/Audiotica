@@ -8,30 +8,24 @@
     xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
     xmlns:core="using:Microsoft.Xaml.Interactions.Core"
     xmlns:interactions="using:Audiotica.Windows.Interactions"
+    xmlns:customTriggers="using:Audiotica.Windows.CustomTriggers"
     mc:Ignorable="d"
     d:DesignHeight="300"
     d:DesignWidth="400">
-    
-    <StackPanel>
-        <TextBlock Text="{x:Bind Title, Mode=OneWay}" Style="{ThemeResource TitleTextBlockStyle}" FontSize="34" />
-        <StackPanel Orientation="Horizontal" Margin="0, 20, 0, 15">
-            <HyperlinkButton Margin="0,0,20,0" Padding="0" Foreground="{ThemeResource SystemControlForegroundBaseHighBrush}" Click="ShuffleAll_Click">
-                <StackPanel Orientation="Horizontal">
-                    <SymbolIcon Symbol="Shuffle" Margin="0,0,10,0" />
-                    <TextBlock Text="Shuffle all" />
-                </StackPanel>
-            </HyperlinkButton>
-            <TextBlock Text="Sort by:" TextLineBounds="TrimToBaseline" />
-            <HyperlinkButton x:Name="SortHyperlinkButton" Content="{Binding SelectedItem.Content, ElementName=ListBox}" Padding="0" Margin="5,0,20,0" 
-                                 ContentTemplate="{StaticResource HyperlinkTemplate}">
-                <interactivity:Interaction.Behaviors>
-                    <core:EventTriggerBehavior EventName="Click">
-                        <interactions:OpenFlyoutAction />
-                    </core:EventTriggerBehavior>
-                </interactivity:Interaction.Behaviors>
-                <FlyoutBase.AttachedFlyout>
+
+    <local:PageHeader x:Name="PageHeader" Text="{x:Bind Title, Mode=OneWay}" VisualStateNarrowMinWidth="0"
+        VisualStateNormalMinWidth="600" >
+        <local:PageHeader.PrimaryCommands>
+            <AppBarButton Icon="Shuffle" Label="Shuffle" Click="ShuffleAll_Click" />
+            <AppBarToggleButton Icon="List" Label="Select" IsChecked="{x:Bind IsSelectMode, Mode=TwoWay}" />
+        </local:PageHeader.PrimaryCommands>
+        <local:PageHeader.SecondaryCommands>
+            <AppBarButton Icon="Sort" Label="Sort" x:Name="SortButton">
+                <AppBarButton.Flyout>
                     <Flyout FlyoutPresenterStyle="{StaticResource FlyoutPresenterStyle1}">
-                        <ListBox x:Name="ListBox" ItemsSource="{x:Bind SortItems, Mode=OneWay}" SelectedIndex="{x:Bind DefaultSortIndex}" SelectionChanged="ListBox_OnSelectionChanged">
+                        <ListBox x:Name="ListBox" ItemsSource="{x:Bind SortItems, Mode=OneWay}"
+                                 SelectedIndex="{x:Bind DefaultSortIndex}"
+                                 SelectionChanged="ListBox_OnSelectionChanged">
                             <interactivity:Interaction.Behaviors>
                                 <core:EventTriggerBehavior EventName="SelectionChanged">
                                     <interactions:CloseFlyoutAction />
@@ -39,14 +33,8 @@
                             </interactivity:Interaction.Behaviors>
                         </ListBox>
                     </Flyout>
-                </FlyoutBase.AttachedFlyout>
-            </HyperlinkButton>
-            <ToggleButton Background="Transparent" Padding="0" Style="{StaticResource ToggleButtonStyle}" IsChecked="{x:Bind IsSelectMode, Mode=TwoWay}">
-                <StackPanel Orientation="Horizontal">
-                    <SymbolIcon Symbol="List" Margin="0,0,10,0" />
-                    <TextBlock Text="Select" />
-                </StackPanel>
-            </ToggleButton>
-        </StackPanel>
-    </StackPanel>
+                </AppBarButton.Flyout>
+            </AppBarButton>
+        </local:PageHeader.SecondaryCommands>
+    </local:PageHeader>
 </UserControl>

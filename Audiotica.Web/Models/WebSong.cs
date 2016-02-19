@@ -19,8 +19,8 @@ namespace Audiotica.Web.Models
         public List<string> Genres { get; set; }
         public List<WebArtist> Artists { get; set; }
         public WebAlbum Album { get; set; }
-        public int TrackNumber { get; set; }
-        public int DiskNumber { get; set; }
+        public uint TrackNumber { get; set; }
+        public uint DiskNumber { get; set; }
         public object PreviousConversion { get; set; }
 
         public class Comparer : IEqualityComparer<WebSong>

@@ -128,6 +128,11 @@ namespace Audiotica.Windows.Services.RunTime
 
         }
 
+        public void UpdateUrl(Track track)
+        {
+            MessageHelper.SendMessageToBackground(new UpdateUrlMessage(track.Id, track.AudioWebUri, track.AudioLocalUri, track.Type));
+        }
+
         public void Play(QueueTrack queue)
         {
             // Switch to the selected track
@@ -294,7 +299,8 @@ namespace Audiotica.Windows.Services.RunTime
                     throw new AppException("The audio file is not available.");
             }
 
-            if (track.AudioWebUri == null)
+            if (track.Type == TrackType.Stream
+                && track.AudioWebUri == null)
                 using (var blocker = new UiBlocker())
                 {
                     blocker.UpdateProgress("Matching...");

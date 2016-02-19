@@ -2,16 +2,17 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading.Tasks;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Navigation;
 using Audiotica.Core.Extensions;
 using Audiotica.Database.Models;
 using Audiotica.Database.Services.Interfaces;
+using Audiotica.Windows.Engine.Mvvm;
+using Audiotica.Windows.Engine.Navigation;
 using Audiotica.Windows.Enums;
 using Audiotica.Windows.Services.Interfaces;
-using Audiotica.Windows.Services.NavigationService;
-using Audiotica.Windows.Tools.Mvvm;
 using Audiotica.Windows.Views;
 
 namespace Audiotica.Windows.ViewModels
@@ -27,8 +28,10 @@ namespace Audiotica.Windows.ViewModels
         private ObservableCollection<object> _selectedItems = new ObservableCollection<object>();
         private CollectionViewSource _viewSource;
 
-        public ArtistsPageViewModel(ILibraryCollectionService libraryCollectionService,
-            ILibraryService libraryService, IPlayerService playerService,
+        public ArtistsPageViewModel(
+            ILibraryCollectionService libraryCollectionService,
+            ILibraryService libraryService,
+            IPlayerService playerService,
             INavigationService navigationService)
         {
             LibraryService = libraryService;
@@ -36,79 +39,91 @@ namespace Audiotica.Windows.ViewModels
             _playerService = playerService;
             _navigationService = navigationService;
 
-            ArtistClickCommand = new Command<ItemClickEventArgs>(ArtistClickExecute);
-            SortChangedCommand = new Command<ListBoxItem>(SortChangedExecute);
-            ShuffleAllCommand = new Command(ShuffleAllExecute);
+            ArtistClickCommand = new DelegateCommand<ItemClickEventArgs>(ArtistClickExecute);
+            SortChangedCommand = new DelegateCommand<ListBoxItem>(SortChangedExecute);
+            ShuffleAllCommand = new DelegateCommand(ShuffleAllExecute);
 
             SortItems =
                 Enum.GetValues(typeof (ArtistSort))
                     .Cast<ArtistSort>()
-                    .Select(sort => new ListBoxItem {Content = sort.GetEnumText(), Tag = sort})
+                    .Select(sort => new ListBoxItem { Content = sort.GetEnumText(), Tag = sort })
                     .ToList();
             ChangeSort(ArtistSort.AtoZ);
         }
 
-        public Command ShuffleAllCommand { get; }
-
-        public Command<ListBoxItem> SortChangedCommand { get; }
-
-        public ILibraryService LibraryService { get; set; }
-
-        public List<ListBoxItem> SortItems { get; }
-
-        public Command<ItemClickEventArgs> ArtistClickCommand { get; set; }
-
-        public CollectionViewSource ViewSource
-        {
-            get { return _viewSource; }
-            set { Set(ref _viewSource, value); }
-        }
-
-        public double ListViewVerticalOffset
-        {
-            get { return _listViewVerticalOffset; }
-            set { Set(ref _listViewVerticalOffset, value); }
-        }
+        public DelegateCommand<ItemClickEventArgs> ArtistClickCommand { get; set; }
 
         public double GridViewVerticalOffset
         {
-            get { return _gridViewVerticalOffset; }
-            set { Set(ref _gridViewVerticalOffset, value); }
+            get
+            {
+                return _gridViewVerticalOffset;
+            }
+            set
+            {
+                Set(ref _gridViewVerticalOffset, value);
+            }
         }
 
         public bool? IsSelectMode
         {
-            get { return _isSelectMode; }
-            set { Set(ref _isSelectMode, value); }
+            get
+            {
+                return _isSelectMode;
+            }
+            set
+            {
+                Set(ref _isSelectMode, value);
+            }
+        }
+
+        public ILibraryService LibraryService { get; set; }
+
+        public double ListViewVerticalOffset
+        {
+            get
+            {
+                return _listViewVerticalOffset;
+            }
+            set
+            {
+                Set(ref _listViewVerticalOffset, value);
+            }
         }
 
         public ObservableCollection<object> SelectedItems
         {
-            get { return _selectedItems; }
-            set { Set(ref _selectedItems, value); }
+            get
+            {
+                return _selectedItems;
+            }
+            set
+            {
+                Set(ref _selectedItems, value);
+            }
         }
 
-        private async void ShuffleAllExecute()
-        {
-            var playable = LibraryService.Tracks
-                .Where(p => p.Status == TrackStatus.None || p.Status == TrackStatus.Downloading)
-                .ToList();
-            if (!playable.Any()) return;
+        public DelegateCommand ShuffleAllCommand { get; }
 
-            var tracks = playable.Shuffle();
-            await _playerService.NewQueueAsync(tracks);
-        }
+        public DelegateCommand<ListBoxItem> SortChangedCommand { get; }
 
-        private void SortChangedExecute(ListBoxItem item)
+        public List<ListBoxItem> SortItems { get; }
+
+        public CollectionViewSource ViewSource
         {
-            if (!(item?.Tag is ArtistSort)) return;
-            var sort = (ArtistSort) item.Tag;
-            ChangeSort(sort);
+            get
+            {
+                return _viewSource;
+            }
+            set
+            {
+                Set(ref _viewSource, value);
+            }
         }
 
         public void ChangeSort(ArtistSort sort)
         {
-            ViewSource = new CollectionViewSource {IsSourceGrouped = true};
+            ViewSource = new CollectionViewSource { IsSourceGrouped = true };
 
             switch (sort)
             {
@@ -120,28 +135,55 @@ namespace Audiotica.Windows.ViewModels
             }
         }
 
-        private void ArtistClickExecute(ItemClickEventArgs e)
-        {
-            if (IsSelectMode == true) return;
-            var artist = (Artist) e.ClickedItem;
-            _navigationService.Navigate(typeof (ArtistPage), artist.Name);
-        }
-
-        public override void OnNavigatedTo(object parameter, NavigationMode mode, Dictionary<string, object> state)
+        public override void OnNavigatedTo(object parameter, NavigationMode mode, IDictionary<string, object> state)
         {
             if (state.ContainsKey("GridViewVerticalOffset"))
             {
-                var gridOffset = (double) state["GridViewVerticalOffset"];
-                var listOffset = (double) state["ListViewVerticalOffset"];
+                var gridOffset = (double)state["GridViewVerticalOffset"];
+                var listOffset = (double)state["ListViewVerticalOffset"];
                 GridViewVerticalOffset = gridOffset;
                 ListViewVerticalOffset = listOffset;
             }
         }
 
-        public override void OnSaveState(bool suspending, Dictionary<string, object> state)
+        public override void OnSaveState(IDictionary<string, object> state, bool suspending)
         {
             state["GridViewVerticalOffset"] = GridViewVerticalOffset;
             state["ListViewVerticalOffset"] = ListViewVerticalOffset;
+        }
+
+        private void ArtistClickExecute(ItemClickEventArgs e)
+        {
+            if (IsSelectMode == true)
+            {
+                return;
+            }
+            var artist = (Artist)e.ClickedItem;
+            _navigationService.Navigate(typeof (ArtistPage), artist.Name);
+        }
+
+        private async void ShuffleAllExecute()
+        {
+            var playable = LibraryService.Tracks
+                .Where(p => p.Status == TrackStatus.None || p.Status == TrackStatus.Downloading)
+                .ToList();
+            if (!playable.Any())
+            {
+                return;
+            }
+
+            var tracks = playable.Shuffle();
+            await _playerService.NewQueueAsync(tracks);
+        }
+
+        private void SortChangedExecute(ListBoxItem item)
+        {
+            if (!(item?.Tag is ArtistSort))
+            {
+                return;
+            }
+            var sort = (ArtistSort)item.Tag;
+            ChangeSort(sort);
         }
     }
 }

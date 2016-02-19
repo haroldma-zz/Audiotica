@@ -9,7 +9,7 @@
     d:DesignHeight="300"
     d:DesignWidth="400">
 
-    <StackPanel>
+    <StackPanel Margin="0,20,0,0">
         <TextBlock Text="Get some music"
                    Style="{StaticResource HeaderTextBlockStyle}" />
         <TextBlock Text="There are a few ways you can add songs:"

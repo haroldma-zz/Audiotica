@@ -20,7 +20,7 @@ namespace Audiotica.Web.MatchEngine.Providers
         }
 
         public override ProviderSpeed Speed => ProviderSpeed.Fast;
-        public override ProviderResultsQuality ResultsQuality => ProviderResultsQuality.Excellent;
+        public override ProviderResultsQuality ResultsQuality => ProviderResultsQuality.SomewhatGreat;
         public override string DisplayName => "Mp3Pm";
 
         protected override async Task<List<MatchSong>> InternalGetSongsAsync(string title, string artist, int limit = 10)

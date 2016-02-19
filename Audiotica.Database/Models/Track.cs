@@ -14,6 +14,7 @@ namespace Audiotica.Database.Models
         Stream,
         Download
     }
+
     public enum TrackStatus
     {
         None,
@@ -28,54 +29,18 @@ namespace Audiotica.Database.Models
     /// </summary>
     public class Track : DatabaseEntryBase
     {
+        private BackgroundDownload _backgroundDownload;
         private bool _isFromLibrary;
         private TrackStatus _status;
         private TrackType _type;
-        private BackgroundDownload _backgroundDownload;
 
         /// <summary>
-        ///     Gets or sets a value indicating whether this instance is from the music library.
+        ///     Gets or sets the album artist.
         /// </summary>
         /// <value>
-        ///     <c>true</c> if this instance is from the library; otherwise, <c>false</c>.
+        ///     The album artist.
         /// </value>
-        [Ignore]
-        public bool IsFromLibrary
-        {
-            get { return _isFromLibrary; }
-            set
-            {
-                Set(ref _isFromLibrary, value);
-                RaisePropertyChanged("IsDownloadable");
-            }
-        }
-
-        [Ignore, JsonIgnore]
-        public bool IsDownloadable => Type == TrackType.Stream && Status == TrackStatus.None && IsFromLibrary;
-
-        /// <summary>
-        ///     Gets or sets the track's title.
-        /// </summary>
-        /// <value>
-        ///     The title.
-        /// </value>
-        public string Title { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the artists, using ';' delimiter.
-        /// </summary>
-        /// <value>
-        ///     The artists.
-        /// </value>
-        public string Artists { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the display artist.
-        /// </summary>
-        /// <value>
-        ///     The display artist.
-        /// </value>
-        public string DisplayArtist { get; set; }
+        public string AlbumArtist { get; set; }
 
         /// <summary>
         ///     Gets or sets the album.
@@ -86,60 +51,36 @@ namespace Audiotica.Database.Models
         public string AlbumTitle { get; set; }
 
         /// <summary>
-        ///     Gets or sets the year.
+        ///     Gets or sets the artist artwork URI.
         /// </summary>
         /// <value>
-        ///     The year.
+        ///     The artist artwork URI.
         /// </value>
-        public int? Year { get; set; }
+        public string ArtistArtworkUri { get; set; }
 
         /// <summary>
-        ///     Gets or sets the track number.
+        ///     Gets or sets the artists, using ';' delimiter.
         /// </summary>
         /// <value>
-        ///     The track number.
+        ///     The artists.
         /// </value>
-        public int TrackNumber { get; set; }
+        public string Artists { get; set; }
 
         /// <summary>
-        ///     Gets or sets the track count.
+        ///     Gets or sets the artwork URI.
         /// </summary>
         /// <value>
-        ///     The track count.
+        ///     The artwork URI.
         /// </value>
-        public int TrackCount { get; set; }
+        public string ArtworkUri { get; set; }
 
         /// <summary>
-        ///     Gets or sets the disc number.
+        ///     Gets or sets the local audio URI.
         /// </summary>
         /// <value>
-        ///     The disc number.
+        ///     The audio local URI.
         /// </value>
-        public int DiscNumber { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the disc count.
-        /// </summary>
-        /// <value>
-        ///     The disc count.
-        /// </value>
-        public int DiscCount { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the genre.
-        /// </summary>
-        /// <value>
-        ///     The genre.
-        /// </value>
-        public string Genres { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the comment.
-        /// </summary>
-        /// <value>
-        ///     The comment.
-        /// </value>
-        public string Comment { get; set; }
+        public string AudioLocalUri { get; set; }
 
         /// <summary>
         ///     Gets or sets the web audio URI.
@@ -151,20 +92,47 @@ namespace Audiotica.Database.Models
         public string AudioWebUri { get; set; }
 
         /// <summary>
-        ///     Gets or sets the local audio URI.
+        ///     Gets or sets the background download.
         /// </summary>
         /// <value>
-        ///     The audio local URI.
+        ///     The current background download.
         /// </value>
-        public string AudioLocalUri { get; set; }
+        [Ignore, JsonIgnore]
+        public BackgroundDownload BackgroundDownload
+        {
+            get
+            {
+                return _backgroundDownload;
+            }
+            set
+            {
+                Set(ref _backgroundDownload, value);
+            }
+        }
 
         /// <summary>
-        ///     Gets or sets the album artist.
+        ///     Gets or sets the bitrate.
         /// </summary>
         /// <value>
-        ///     The album artist.
+        ///     The bitrate.
         /// </value>
-        public string AlbumArtist { get; set; }
+        public int Bitrate { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the channels.
+        /// </summary>
+        /// <value>
+        ///     The channels.
+        /// </value>
+        public int Channels { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the comment.
+        /// </summary>
+        /// <value>
+        ///     The comment.
+        /// </value>
+        public string Comment { get; set; }
 
         /// <summary>
         ///     Gets or sets the composers.
@@ -191,12 +159,79 @@ namespace Audiotica.Database.Models
         public string Copyright { get; set; }
 
         /// <summary>
-        ///     Gets or sets the publisher.
+        ///     Gets or sets the disc count.
         /// </summary>
         /// <value>
-        ///     The publisher.
+        ///     The disc count.
         /// </value>
-        public string Publisher { get; set; }
+        public uint DiscCount { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the disc number.
+        /// </summary>
+        /// <value>
+        ///     The disc number.
+        /// </value>
+        public uint DiscNumber { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the display artist.
+        /// </summary>
+        /// <value>
+        ///     The display artist.
+        /// </value>
+        public string DisplayArtist { get; set; }
+
+        public TimeSpan Duration { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the size of the file, in bytes.
+        /// </summary>
+        /// <value>
+        ///     The size of the file.
+        /// </value>
+        public long FileSize { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the genre.
+        /// </summary>
+        /// <value>
+        ///     The genre.
+        /// </value>
+        public string Genres { get; set; }
+
+        [Ignore, JsonIgnore]
+        public bool IsDownloadable => Type == TrackType.Stream && Status == TrackStatus.None && IsFromLibrary;
+
+        /// <summary>
+        ///     Gets or sets a value indicating whether this instance is from the music library.
+        /// </summary>
+        /// <value>
+        ///     <c>true</c> if this instance is from the library; otherwise, <c>false</c>.
+        /// </value>
+        [Ignore]
+        public bool IsFromLibrary
+        {
+            get
+            {
+                return _isFromLibrary;
+            }
+            set
+            {
+                Set(ref _isFromLibrary, value);
+                RaisePropertyChanged("IsDownloadable");
+            }
+        }
+
+        /// <summary>
+        ///     Gets or sets the last played.
+        /// </summary>
+        /// <value>
+        ///     The last played.
+        /// </value>
+        public DateTime? LastPlayed { get; set; }
+
+        public LikeState LikeState { get; set; }
 
         /// <summary>
         ///     Gets or sets the lyrics.
@@ -215,12 +250,12 @@ namespace Audiotica.Database.Models
         public int PlayCount { get; set; }
 
         /// <summary>
-        ///     Gets or sets the bitrate.
+        ///     Gets or sets the publisher.
         /// </summary>
         /// <value>
-        ///     The bitrate.
+        ///     The publisher.
         /// </value>
-        public int Bitrate { get; set; }
+        public string Publisher { get; set; }
 
         /// <summary>
         ///     Gets or sets the sample rate.
@@ -230,29 +265,42 @@ namespace Audiotica.Database.Models
         /// </value>
         public int SampleRate { get; set; }
 
-        /// <summary>
-        ///     Gets or sets the channels.
-        /// </summary>
-        /// <value>
-        ///     The channels.
-        /// </value>
-        public int Channels { get; set; }
+        public TrackStatus Status
+        {
+            get
+            {
+                return _status;
+            }
+            set
+            {
+                Set(ref _status, value);
+                RaisePropertyChanged("IsDownloadable");
+            }
+        }
 
         /// <summary>
-        ///     Gets or sets the size of the file, in bytes.
+        ///     Gets or sets the track's title.
         /// </summary>
         /// <value>
-        ///     The size of the file.
+        ///     The title.
         /// </value>
-        public long FileSize { get; set; }
+        public string Title { get; set; }
 
         /// <summary>
-        ///     Gets or sets the last played.
+        ///     Gets or sets the track count.
         /// </summary>
         /// <value>
-        ///     The last played.
+        ///     The track count.
         /// </value>
-        public DateTime? LastPlayed { get; set; }
+        public uint TrackCount { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the track number.
+        /// </summary>
+        /// <value>
+        ///     The track number.
+        /// </value>
+        public uint TrackNumber { get; set; }
 
         /// <summary>
         ///     Gets or sets the track type.
@@ -262,7 +310,10 @@ namespace Audiotica.Database.Models
         /// </value>
         public TrackType Type
         {
-            get { return _type; }
+            get
+            {
+                return _type;
+            }
             set
             {
                 Set(ref _type, value);
@@ -270,44 +321,13 @@ namespace Audiotica.Database.Models
             }
         }
 
-        public TrackStatus Status
-        {
-            get { return _status; }
-            set
-            {
-                Set(ref _status, value);
-                RaisePropertyChanged("IsDownloadable");
-            }
-        }
-
         /// <summary>
-        ///     Gets or sets the artwork URI.
+        ///     Gets or sets the year.
         /// </summary>
         /// <value>
-        ///     The artwork URI.
+        ///     The year.
         /// </value>
-        public string ArtworkUri { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the artist artwork URI.
-        /// </summary>
-        /// <value>
-        ///     The artist artwork URI.
-        /// </value>
-        public string ArtistArtworkUri { get; set; }
-
-        /// <summary>
-        /// Gets or sets the background download.
-        /// </summary>
-        /// <value>
-        /// The current background download.
-        /// </value>
-        [Ignore, JsonIgnore]
-        public BackgroundDownload BackgroundDownload
-        {
-            get { return _backgroundDownload; }
-            set { Set(ref _backgroundDownload, value); }
-        }
+        public uint? Year { get; set; }
 
         public override string ToString()
         {
@@ -315,11 +335,18 @@ namespace Audiotica.Database.Models
         }
     }
 
+    public enum LikeState
+    {
+        None,
+        Like,
+        Dislike
+    }
+
     public class BackgroundDownload : ObservableObject
     {
-        private string _status = "Waiting";
         private double _bytesReceived;
         private double _bytesToReceive = 1;
+        private string _status = "Waiting";
 
         public BackgroundDownload(object downloadOperation)
         {
@@ -327,45 +354,49 @@ namespace Audiotica.Database.Models
             CancellationTokenSrc = new CancellationTokenSource();
         }
 
+        public double BytesReceived
+        {
+            get
+            {
+                return _bytesReceived;
+            }
+            set
+            {
+                Set(ref _bytesReceived, value);
+            }
+        }
+
+        public double BytesToReceive
+        {
+            get
+            {
+                return _bytesToReceive;
+            }
+            set
+            {
+                Set(ref _bytesToReceive, value);
+            }
+        }
+
         public CancellationTokenSource CancellationTokenSrc { get; }
 
         public object DownloadOperation { get; }
 
-        public double BytesToReceive
-        {
-            get { return _bytesToReceive; }
-            set { Set(ref _bytesToReceive, value); }
-        }
-
-        public double BytesReceived
-        {
-            get { return _bytesReceived; }
-            set { Set(ref _bytesReceived, value); }
-        }
-
         public string Status
         {
-            get { return _status; }
-            set { Set(ref _status, value); }
+            get
+            {
+                return _status;
+            }
+            set
+            {
+                Set(ref _status, value);
+            }
         }
     }
 
     public class TrackComparer : IEqualityComparer<Track>
     {
-        public bool Equals(Track x, Track y)
-        {
-            if (x == null && y == null) return true;
-            if (x == null || y == null) return false;
-            if (x.IsFromLibrary && y.IsFromLibrary)
-                return x.Id == y.Id;
-            return GetHashCode(x) == GetHashCode(y);
-        }
-
-        public int GetHashCode(Track obj)
-        {
-            return GetSlug(obj).GetHashCode();
-        }
-
         public static bool AreEqual(Track x, Track y)
         {
             return new TrackComparer().Equals(x, y);
@@ -374,8 +405,30 @@ namespace Audiotica.Database.Models
         public static string GetSlug(Track track)
         {
             return (track.Title + track.DisplayArtist
-                        + track.AlbumArtist
-                        + track.AlbumTitle).ToAudioticaSlug();
+                + track.AlbumArtist
+                + track.AlbumTitle).ToAudioticaSlug();
+        }
+
+        public bool Equals(Track x, Track y)
+        {
+            if (x == null && y == null)
+            {
+                return true;
+            }
+            if (x == null || y == null)
+            {
+                return false;
+            }
+            if (x.IsFromLibrary && y.IsFromLibrary)
+            {
+                return x.Id == y.Id;
+            }
+            return GetHashCode(x) == GetHashCode(y);
+        }
+
+        public int GetHashCode(Track obj)
+        {
+            return GetSlug(obj).GetHashCode();
         }
     }
 }

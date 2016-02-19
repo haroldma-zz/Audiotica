@@ -8,7 +8,9 @@ namespace Audiotica.Windows.Tools.Converters
     public class TrackStatusToContentConverter : IValueConverter
     {
         public TrackStatus DesiredStatus { get; set; }
+        public TrackStatus OtherDesiredStatus { get; set; }
         public bool NotDesired { get; set; }
+        public bool UseOther { get; set; }
         public object TrueContent { get; set; }
         public object FalseContent { get; set; }
 
@@ -18,7 +20,12 @@ namespace Audiotica.Windows.Tools.Converters
                 return FalseContent;
 
             var status = (TrackStatus)value;
-            var visible = (NotDesired && status != DesiredStatus) || (!NotDesired && status == DesiredStatus);
+            bool visible;
+            if (UseOther)
+                visible = (NotDesired && (status != DesiredStatus || status != OtherDesiredStatus)) ||
+                          (!NotDesired && (status == DesiredStatus || status == OtherDesiredStatus));
+            else
+                visible = (NotDesired && status != DesiredStatus) || (!NotDesired && status == DesiredStatus);
             return visible ? TrueContent : FalseContent;
         }
 

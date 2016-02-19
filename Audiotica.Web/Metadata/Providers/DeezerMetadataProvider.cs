@@ -328,11 +328,11 @@ namespace Audiotica.Web.Metadata.Providers
             };
 
             if (deezerSong.TrackPosition != null)
-                song.TrackNumber = deezerSong.TrackPosition.Value;
+                song.TrackNumber = (uint)deezerSong.TrackPosition.Value;
             else
                 song.IsPartial = true;
             if (deezerSong.DiskNumber != null)
-                song.DiskNumber = deezerSong.DiskNumber.Value;
+                song.DiskNumber = (uint)deezerSong.DiskNumber.Value;
             else
                 song.IsPartial = true;
 

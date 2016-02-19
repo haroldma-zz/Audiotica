@@ -1,43 +1,22 @@
 using Newtonsoft.Json;
+using System.Collections.Generic;
 
 namespace Audiotica.Web.Http.Requets.Metadata.Spotify.Models
 {
-    public class ChartTrack
+    public class ChartEntry
     {
-        public string Date { get; set; }
-        public string Country { get; set; }
+        public string Href { get; set; }
 
-        [JsonProperty("track_id")]
-        public string Id => Url.Replace("https://play.spotify.com/track/", "");
+        public List<ChartItem> Items { get; set; }
 
-        [JsonProperty("artist_id")]
-        public string ArtistId => ArtistUrl.Replace("https://play.spotify.com/artist/", "");
+        public string Limit { get; set; }
 
-        [JsonProperty("album_id")]
-        public string AlbumId => AlbumUrl.Replace("https://play.spotify.com/album/", "");
+        public string Next { get; set; }
 
-        [JsonProperty("track_url")]
-        public string Url { get; set; }
+        public string Offset { get; set; }
 
-        [JsonProperty(PropertyName = "track_name")]
-        public string Name { get; set; }
+        public string Previous { get; set; }
 
-        [JsonProperty(PropertyName = "artist_name")]
-        public string ArtistName { get; set; }
-
-        [JsonProperty("artist_url")]
-        public string ArtistUrl { get; set; }
-
-        [JsonProperty("album_name")]
-        public string AlbumName { get; set; }
-
-        [JsonProperty("album_url")]
-        public string AlbumUrl { get; set; }
-
-        [JsonProperty(PropertyName = "artwork_url")]
-        public string ArtworkUrl { get; set; }
-
-        [JsonProperty("num_streams")]
-        public int NumStreams { get; set; }
+        public string Total { get; set; }
     }
 }

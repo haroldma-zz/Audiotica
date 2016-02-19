@@ -49,7 +49,7 @@ namespace Audiotica.Web.MatchEngine.Providers
                     var songTitle = titleNode.InnerText;
                     if (string.IsNullOrEmpty(songTitle)) continue;
 
-                    song.Title = songTitle.Remove(songTitle.LastIndexOf(" - MP3", StringComparison.Ordinal)).Trim();
+                    song.Title = WebUtility.HtmlDecode(songTitle.Remove(songTitle.LastIndexOf(" - MP3", StringComparison.Ordinal)).Trim());
 
                     var meta =
                         WebUtility.HtmlDecode(

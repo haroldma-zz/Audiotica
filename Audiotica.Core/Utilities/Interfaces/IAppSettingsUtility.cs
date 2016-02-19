@@ -1,6 +1,8 @@
-﻿namespace Audiotica.Core.Utilities.Interfaces
+﻿using System.ComponentModel;
+
+namespace Audiotica.Core.Utilities.Interfaces
 {
-    public interface IAppSettingsUtility
+    public interface IAppSettingsUtility : INotifyPropertyChanged
     {
         string DownloadsPath { get; set; }
         string TempDownloadsPath { get; }

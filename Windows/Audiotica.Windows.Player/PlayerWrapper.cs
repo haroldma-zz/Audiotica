@@ -140,7 +140,7 @@ namespace Audiotica.Windows.Player
             foreach (var song in queues)
             {
                 MediaSource source;
-                if (song.Track.Type == TrackType.Stream)
+                if (song.Track.Type == TrackType.Stream || song.Track.AudioLocalUri == null)
                     source = MediaSource.CreateFromUri(new Uri(song.Track.AudioWebUri));
                 else
                 {
@@ -173,7 +173,7 @@ namespace Audiotica.Windows.Player
                 foreach (var item in queue)
                 {
                     MediaSource source;
-                    if (item.Track.Type == TrackType.Stream)
+                    if (item.Track.Type == TrackType.Stream || item.Track.AudioLocalUri == null)
                         source = MediaSource.CreateFromUri(new Uri(item.Track.AudioWebUri));
                     else
                     {
@@ -341,6 +341,29 @@ namespace Audiotica.Windows.Player
             _foregroundMessenger.AddToPlaylist += ForegroundMessengerOnAddToPlaylist;
             _foregroundMessenger.AppSuspended += ForegroundMessengerOnAppSuspended;
             _foregroundMessenger.AppResumed += ForegroundMessengerOnAppResumed;
+            _foregroundMessenger.TrackUpdateUrl += ForegroundMessengerOnTrackUpdateUrl;
+        }
+
+        private async void ForegroundMessengerOnTrackUpdateUrl(object sender, UpdateUrlMessage updateUrlMessage)
+        {
+            foreach (var media in _mediaPlaybackList.Items.Select((mediaPlaybackItem, i) => new { Queue = mediaPlaybackItem.Source.Queue(), Index = i}).Where(queueTrack => queueTrack.Queue.Track.Id == updateUrlMessage.Id).ToList())
+            {
+                media.Queue.Track.AudioWebUri = updateUrlMessage.Web;
+                media.Queue.Track.AudioLocalUri = updateUrlMessage.Local;
+                media.Queue.Track.Type = updateUrlMessage.Type;
+
+                MediaSource source;
+                if (media.Queue.Track.Type == TrackType.Stream || media.Queue.Track.AudioLocalUri == null)
+                    source = MediaSource.CreateFromUri(new Uri(media.Queue.Track.AudioWebUri));
+                else
+                {
+                    source = MediaSource.CreateFromStorageFile(
+                            await StorageHelper.GetFileFromPathAsync(media.Queue.Track.AudioLocalUri));
+                }
+                source.Queue(media.Queue);
+                _mediaPlaybackList.Items.RemoveAt(media.Index);
+                _mediaPlaybackList.Items.Insert(media.Index, new MediaPlaybackItem(source));
+            }
         }
 
         private void UnsubscribeFromMessenger()

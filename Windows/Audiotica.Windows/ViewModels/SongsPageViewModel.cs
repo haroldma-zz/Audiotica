@@ -10,9 +10,9 @@ using Audiotica.Core.Utilities.Interfaces;
 using Audiotica.Core.Windows.Helpers;
 using Audiotica.Database.Models;
 using Audiotica.Database.Services.Interfaces;
+using Audiotica.Windows.Engine.Mvvm;
 using Audiotica.Windows.Enums;
 using Audiotica.Windows.Services.Interfaces;
-using Audiotica.Windows.Tools.Mvvm;
 
 namespace Audiotica.Windows.ViewModels
 {
@@ -27,8 +27,11 @@ namespace Audiotica.Windows.ViewModels
         private double _verticalOffset;
         private CollectionViewSource _viewSource;
 
-        public SongsPageViewModel(ILibraryCollectionService libraryCollectionService, ILibraryService libraryService,
-            ISettingsUtility settingsUtility, IPlayerService playerService)
+        public SongsPageViewModel(
+            ILibraryCollectionService libraryCollectionService,
+            ILibraryService libraryService,
+            ISettingsUtility settingsUtility,
+            IPlayerService playerService)
         {
             _libraryCollectionService = libraryCollectionService;
             _settingsUtility = settingsUtility;
@@ -38,79 +41,92 @@ namespace Audiotica.Windows.ViewModels
             SortItems =
                 Enum.GetValues(typeof (TrackSort))
                     .Cast<TrackSort>()
-                    .Select(sort => new ListBoxItem {Content = sort.GetEnumText(), Tag = sort})
+                    .Select(sort => new ListBoxItem { Content = sort.GetEnumText(), Tag = sort })
                     .ToList();
-            SortChangedCommand = new Command<ListBoxItem>(SortChangedExecute);
-            ShuffleAllCommand = new Command(ShuffleAllExecute);
+            SortChangedCommand = new DelegateCommand<ListBoxItem>(SortChangedExecute);
+            ShuffleAllCommand = new DelegateCommand(ShuffleAllExecute);
 
-            var defaultSort = _settingsUtility.Read(ApplicationSettingsConstants.SongSort, TrackSort.DateAdded,
+            var defaultSort = _settingsUtility.Read(ApplicationSettingsConstants.SongSort,
+                TrackSort.DateAdded,
                 SettingsStrategy.Roam);
-            DefaultSort = SortItems.IndexOf(SortItems.FirstOrDefault(p => (TrackSort) p.Tag == defaultSort));
+            DefaultSort = SortItems.IndexOf(SortItems.FirstOrDefault(p => (TrackSort)p.Tag == defaultSort));
             ChangeSort(defaultSort);
         }
 
-        public Command ShuffleAllCommand { get; }
-
-        public Command<ListBoxItem> SortChangedCommand { get; }
-
         public int DefaultSort { get; }
 
-        public List<ListBoxItem> SortItems { get; }
+        public bool? IsSelectMode
+        {
+            get
+            {
+                return _isSelectMode;
+            }
+            set
+            {
+                Set(ref _isSelectMode, value);
+            }
+        }
 
         public ILibraryService LibraryService { get; set; }
 
+        public int SelectedIndex
+        {
+            get
+            {
+                return _selectedIndex;
+            }
+            set
+            {
+                Set(ref _selectedIndex, value);
+            }
+        }
+
         public ObservableCollection<object> SelectedItems
         {
-            get { return _selectedItems; }
-            set { Set(ref _selectedItems, value); }
+            get
+            {
+                return _selectedItems;
+            }
+            set
+            {
+                Set(ref _selectedItems, value);
+            }
+        }
+
+        public DelegateCommand ShuffleAllCommand { get; }
+
+        public DelegateCommand<ListBoxItem> SortChangedCommand { get; }
+
+        public List<ListBoxItem> SortItems { get; }
+
+        public double VerticalOffset
+        {
+            get
+            {
+                return _verticalOffset;
+            }
+            set
+            {
+                Set(ref _verticalOffset, value);
+            }
         }
 
         public CollectionViewSource ViewSource
         {
-            get { return _viewSource; }
-            set { Set(ref _viewSource, value); }
-        }
-
-        public int SelectedIndex
-        {
-            get { return _selectedIndex; }
-            set { Set(ref _selectedIndex, value); }
-        }
-
-        public double VerticalOffset
-        {
-            get { return _verticalOffset; }
-            set { Set(ref _verticalOffset, value); }
-        }
-
-        public bool? IsSelectMode
-        {
-            get { return _isSelectMode; }
-            set { Set(ref _isSelectMode, value); }
-        }
-
-        private async void ShuffleAllExecute()
-        {
-            var playable = LibraryService.Tracks
-                .Where(p => p.Status == TrackStatus.None || p.Status == TrackStatus.Downloading)
-                .ToList();
-            if (!playable.Any()) return;
-
-            var tracks = playable.Shuffle();
-            await _playerService.NewQueueAsync(tracks);
-        }
-
-        private void SortChangedExecute(ListBoxItem item)
-        {
-            if (!(item?.Tag is TrackSort)) return;
-            var sort = (TrackSort) item.Tag;
-            ChangeSort(sort);
+            get
+            {
+                return _viewSource;
+            }
+            set
+            {
+                Set(ref _viewSource, value);
+            }
         }
 
         public void ChangeSort(TrackSort sort)
         {
             _settingsUtility.Write(ApplicationSettingsConstants.SongSort, sort, SettingsStrategy.Roam);
-            ViewSource = new CollectionViewSource {IsSourceGrouped = sort != TrackSort.DateAdded};
+            ViewSource = new CollectionViewSource { IsSourceGrouped = sort != TrackSort.DateAdded };
 
             switch (sort)
             {
@@ -131,19 +147,43 @@ namespace Audiotica.Windows.ViewModels
             }
         }
 
-        public override void OnNavigatedTo(object parameter, NavigationMode mode, Dictionary<string, object> state)
+        public override void OnNavigatedTo(object parameter, NavigationMode mode, IDictionary<string, object> state)
         {
             if (state.ContainsKey("VerticalOffset"))
             {
-                VerticalOffset = (double) state["VerticalOffset"];
+                VerticalOffset = (double)state["VerticalOffset"];
                 SelectedIndex = int.Parse(state["SelectedIndex"].ToString());
             }
         }
 
-        public override void OnSaveState(bool suspending, Dictionary<string, object> state)
+        public override void OnSaveState(IDictionary<string, object> state, bool suspending)
         {
             state["VerticalOffset"] = VerticalOffset;
             state["SelectedIndex"] = SelectedIndex;
+        }
+
+        private async void ShuffleAllExecute()
+        {
+            var playable = LibraryService.Tracks
+                .Where(p => p.Status == TrackStatus.None || p.Status == TrackStatus.Downloading)
+                .ToList();
+            if (!playable.Any())
+            {
+                return;
+            }
+
+            var tracks = playable.Shuffle();
+            await _playerService.NewQueueAsync(tracks);
+        }
+
+        private void SortChangedExecute(ListBoxItem item)
+        {
+            if (!(item?.Tag is TrackSort))
+            {
+                return;
+            }
+            var sort = (TrackSort)item.Tag;
+            ChangeSort(sort);
         }
     }
 }

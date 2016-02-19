@@ -61,6 +61,7 @@
     <Compile Include="Http\Requets\MatchEngine\Meile\MeileSearchRequest.cs" />
     <Compile Include="Http\Requets\MatchEngine\MiMp3S\MiMp3SSearchRequest.cs" />
     <Compile Include="Http\Requets\MatchEngine\Mp3Freex\Mp3FreexSearchRequest.cs" />
+    <Compile Include="Http\Requets\MatchEngine\Mp3Miner\Mp3MinerSearchRequest.cs" />
     <Compile Include="Http\Requets\MatchEngine\Mp3Pm\Mp3PmSearchRequest.cs" />
     <Compile Include="Http\Requets\MatchEngine\Mp3Skull\Mp3SkullRequest.cs" />
     <Compile Include="Http\Requets\MatchEngine\Mp3lio\Mp3lioSearchRequest.cs" />
@@ -77,11 +78,12 @@
     <Compile Include="Http\Requets\Metadata\Deezer\DeezerSearchRequest.cs" />
     <Compile Include="Http\Requets\Metadata\Deezer\DeezerTrackRequest.cs" />
     <Compile Include="Http\Requets\Metadata\Deezer\Models\DataResponse.cs" />
-    <Compile Include="Http\Requets\Metadata\LyricsFind\LyricsFindRequest.cs" />
-    <Compile Include="Http\Requets\Metadata\LyricsFind\Models\LyricsFindArtist.cs" />
-    <Compile Include="Http\Requets\Metadata\LyricsFind\Models\LyricsFindResponse.cs" />
-    <Compile Include="Http\Requets\Metadata\LyricsFind\Models\LyricsTrack.cs" />
+    <Compile Include="Http\Requets\Metadata\Google\MusixMatchAuthRequest.cs" />
+    <Compile Include="Http\Requets\Metadata\Google\MusixMatchBaseRequest.cs" />
+    <Compile Include="Http\Requets\Metadata\Google\MusixMatchGetTokenRequest.cs" />
+    <Compile Include="Http\Requets\Metadata\Google\MusixMatchLyricsRequest.cs" />
     <Compile Include="Http\Requets\Metadata\Spotify\Models\BasicModel.cs" />
+    <Compile Include="Http\Requets\Metadata\Spotify\Models\ChartItem.cs" />
     <Compile Include="Http\Requets\Metadata\Spotify\Models\ChartTrack.cs" />
     <Compile Include="Http\Requets\Metadata\Spotify\Models\Error.cs" />
     <Compile Include="Http\Requets\Metadata\Spotify\Models\FullAlbum.cs" />
@@ -110,6 +112,7 @@
     <Compile Include="MatchEngine\Providers\MiMp3SMatchProvider.cs" />
     <Compile Include="MatchEngine\Providers\Mp3FreexMatchProvider.cs" />
     <Compile Include="MatchEngine\Providers\Mp3lioMatchProvider.cs" />
+    <Compile Include="MatchEngine\Providers\Mp3MinerProvider.cs" />
     <Compile Include="MatchEngine\Providers\Mp3PmProvider.cs" />
     <Compile Include="MatchEngine\Services\DesignMatchEngineService.cs" />
     <Compile Include="MatchEngine\Validators\SongSlowedTypeValidator.cs" />
@@ -129,7 +132,6 @@
     <Compile Include="Metadata\Providers\DesignMetadataProvider.cs" />
     <Compile Include="Metadata\Providers\ILocalMetadataProvider.cs" />
     <Compile Include="Metadata\Providers\LastFmMetadataProvider.cs" />
-    <Compile Include="Metadata\Providers\LyricsFindMetadataProvider.cs" />
     <Compile Include="Metadata\Providers\MetadataProviderBase.cs" />
     <Compile Include="Http\Requets\MatchEngine\Netease\Models\NeteaseAlbum.cs" />
     <Compile Include="Http\Requets\MatchEngine\Netease\Models\NeteaseResult.cs" />
@@ -138,6 +140,7 @@
     <Compile Include="Exceptions\ProviderException.cs" />
     <Compile Include="Metadata\Providers\MetadataProviderLyricsOnlyBase.cs" />
     <Compile Include="Metadata\Providers\GrooveMetadataProvider.cs" />
+    <Compile Include="Metadata\Providers\MusixMatchMetadataProvider.cs" />
     <Compile Include="Models\WebAlbum.cs" />
     <Compile Include="Models\WebArtist.cs" />
     <Compile Include="Models\WebItem.cs" />
@@ -187,15 +190,15 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="crypto, Version=1.7.0.0, Culture=neutral, PublicKeyToken=52d7d8cd84e8295f, processorArchitecture=MSIL">
-      <HintPath>..\packages\Portable.BouncyCastle-Signed.1.7.0.1\lib\portable-net4+sl5+wp8+win8+wpa81\crypto.dll</HintPath>
+      <HintPath>..\packages\Portable.BouncyCastle-Signed.1.7.0.2\lib\portable-net45+dnxcore50+wp80+win+wpa81+MonoTouch10+MonoAndroid10+xamarinmac20+xamarinios10\crypto.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="HtmlAgilityPack, Version=1.4.9.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\HtmlAgilityPack.1.4.9\lib\portable-net45+netcore45+wpa81+wp8+MonoAndroid+MonoTouch\HtmlAgilityPack.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="IF.Lastfm.Core, Version=0.2.0.211, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Inflatable.Lastfm.0.2.0.211\lib\portable-win8+net45+wp8+wpa81\IF.Lastfm.Core.dll</HintPath>
+    <Reference Include="IF.Lastfm.Core, Version=0.2.2.252, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Inflatable.Lastfm.0.2.2.252\lib\portable-win8+net45+wp8+wpa81\IF.Lastfm.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Threading.Tasks, Version=1.0.12.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
@@ -214,16 +217,20 @@
       <HintPath>..\packages\XboxMusicSDK.Zumicts.1.0.0\lib\portable-net45+netcore45+wpa81+wp8+MonoAndroid1+MonoTouch1\Microsoft.Xbox.Music.Platform.Contract.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\portable-net40+sl5+wp80+win8+wpa81\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.8.0.2\lib\portable-net40+sl5+wp80+win8+wpa81\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="RestSharp.Portable, Version=2.4.0.0, Culture=neutral, PublicKeyToken=be81bb0f53eab22f, processorArchitecture=MSIL">
-      <HintPath>..\packages\FubarCoder.RestSharp.Portable.2.4.4\lib\portable-net40+sl50+win+wpa81+wp80+MonoAndroid10+MonoTouch10+Xamarin.iOS10\RestSharp.Portable.dll</HintPath>
+    <Reference Include="RestSharp.Portable.Core, Version=3.1.0.0, Culture=neutral, PublicKeyToken=be81bb0f53eab22f, processorArchitecture=MSIL">
+      <HintPath>..\packages\FubarCoder.RestSharp.Portable.Core.3.1.0\lib\portable-net45+win+wpa81+wp80+MonoAndroid10+MonoTouch10+Xamarin.iOS10\RestSharp.Portable.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="RestSharp.Portable.OAuth, Version=2.4.0.0, Culture=neutral, PublicKeyToken=be81bb0f53eab22f, processorArchitecture=MSIL">
-      <HintPath>..\packages\FubarCoder.RestSharp.Portable.OAuth.2.4.4\lib\portable-net40+sl50+win+wpa81+wp80+MonoAndroid10+MonoTouch10+Xamarin.iOS10\RestSharp.Portable.OAuth.dll</HintPath>
+    <Reference Include="RestSharp.Portable.HttpClient, Version=3.1.0.0, Culture=neutral, PublicKeyToken=be81bb0f53eab22f, processorArchitecture=MSIL">
+      <HintPath>..\packages\FubarCoder.RestSharp.Portable.HttpClient.3.1.0\lib\portable-net40+sl50+win+wpa81+wp80+MonoAndroid10+MonoTouch10+Xamarin.iOS10\RestSharp.Portable.HttpClient.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="RestSharp.Portable.OAuth, Version=3.1.0.0, Culture=neutral, PublicKeyToken=be81bb0f53eab22f, processorArchitecture=MSIL">
+      <HintPath>..\packages\FubarCoder.RestSharp.Portable.OAuth.3.1.0\lib\portable-net45+win+wpa81+wp80+MonoAndroid10+MonoTouch10+Xamarin.iOS10\RestSharp.Portable.OAuth.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Net.Http, Version=1.5.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">

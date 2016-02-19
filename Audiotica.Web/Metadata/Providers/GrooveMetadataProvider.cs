@@ -259,7 +259,7 @@ namespace Audiotica.Web.Metadata.Providers
             {
                 Title = xboxTrack.Name + (string.IsNullOrEmpty(xboxTrack.Subtitle) ? "" : $" ({xboxTrack.Subtitle})"),
                 Token = xboxTrack.Id,
-                TrackNumber = xboxTrack.TrackNumber ?? 1,
+                TrackNumber = (uint?)xboxTrack.TrackNumber ?? 1,
                 DiskNumber = 1
             };
 

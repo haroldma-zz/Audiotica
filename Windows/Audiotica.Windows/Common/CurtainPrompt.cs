@@ -178,6 +178,10 @@ namespace Audiotica.Windows.Common
         private void grid_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
             var transform = (TranslateTransform) _popup.RenderTransform;
+            if (transform == null)
+            {
+                return;
+            }
             transform.Y += e.Delta.Translation.Y;
 
             if (transform.Y >= 0)
@@ -254,7 +258,7 @@ namespace Audiotica.Windows.Common
             //Animate transition
             var slideAnimation = new DoubleAnimation
             {
-                From = ((TranslateTransform) _popup.RenderTransform).Y,
+                From = ((TranslateTransform) _popup.RenderTransform)?.Y,
                 To = -((Grid) _popup.Child).ActualHeight,
                 Duration = new Duration(TimeSpan.FromMilliseconds(100)),
                 EasingFunction = new SineEase()
