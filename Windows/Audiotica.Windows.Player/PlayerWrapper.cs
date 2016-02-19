@@ -140,7 +140,7 @@ namespace Audiotica.Windows.Player
             foreach (var song in queues)
             {
                 MediaSource source;
-                if (song.Track.Type == TrackType.Stream)
+                if (song.Track.Type == TrackType.Stream || song.Track.AudioLocalUri == null)
                     source = MediaSource.CreateFromUri(new Uri(song.Track.AudioWebUri));
                 else
                 {
@@ -173,7 +173,7 @@ namespace Audiotica.Windows.Player
                 foreach (var item in queue)
                 {
                     MediaSource source;
-                    if (item.Track.Type == TrackType.Stream)
+                    if (item.Track.Type == TrackType.Stream || item.Track.AudioLocalUri == null)
                         source = MediaSource.CreateFromUri(new Uri(item.Track.AudioWebUri));
                     else
                     {
@@ -353,7 +353,7 @@ namespace Audiotica.Windows.Player
                 media.Queue.Track.Type = updateUrlMessage.Type;
 
                 MediaSource source;
-                if (media.Queue.Track.Type == TrackType.Stream)
+                if (media.Queue.Track.Type == TrackType.Stream || media.Queue.Track.AudioLocalUri == null)
                     source = MediaSource.CreateFromUri(new Uri(media.Queue.Track.AudioWebUri));
                 else
                 {

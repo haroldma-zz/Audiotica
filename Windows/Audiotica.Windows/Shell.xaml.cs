@@ -120,30 +120,22 @@ namespace Audiotica.Windows
                300×600	
                */
 
-            AdMediatorControl mediatorBar;
-
+            var mediatorBar = new AdMediatorControl
+            {
+                Id = "AdMediator-Id-13B224DA-AEC5-41E6-9B0A-FE01E4E1EB2B",
+                Name = "AdMediator_3CB848",
+                Width = 728,
+                Height = 90
+            };
+            var row = 2;
             if (DeviceHelper.IsType(DeviceFamily.Mobile))
             {
-                mediatorBar = new AdMediatorControl
-                {
-                    Id = "AdMediator-Id-13B224DA-AEC5-41E6-9B0A-FE01E4E1EB2B",
-                    Name = "AdMediator_3CB848",
-                    Width = 320,
-                    Height = 50
-                };
-            }
-            else
-            {
-                mediatorBar = new AdMediatorControl
-                {
-                    Id = "AdMediator-Id-05738009-2BFC-470B-825B-821C7D1FC6E9",
-                    Name = "AdMediator_E307A7",
-                    Width = 728,
-                    Height = 90
-                };
+                row = 3;
+                mediatorBar.Width = 320;
+                mediatorBar.Height = 50;
             }
 
-            Grid.SetRow(mediatorBar, 2);
+            Grid.SetRow(mediatorBar, row);
             RootLayout.Children.Add(mediatorBar);
             AdsLoaded = true;
         }
@@ -239,10 +231,10 @@ namespace Audiotica.Windows
         {
             HamburgerMenu.NavigationService = App.Current.NavigationService;
 
-            /*if (AppSettings.Ads)
+            if (AppSettings.Ads)
             {
                 ConfigureAds();
-            }*/
+            }
             var playerService = App.Current.Kernel.Resolve<IPlayerService>();
             playerService.TrackChanged += PlayerServiceOnTrackChanged;
         }

@@ -3,7 +3,7 @@
   "version": 1,
   "targets": {
     "UAP,Version=v10.0": {
-      "AdDuplexWin10/10.0.1.2": {
+      "AdDuplexWin10/10.0.1.3": {
         "compile": {
           "lib/uap10.0/AdDuplex.winmd": {}
         },
@@ -19,7 +19,7 @@
           "lib/portable-net4+sl5+netcore45+wpa81+wp8+MonoAndroid1+MonoTouch1/Autofac.dll": {}
         }
       },
-      "Comet/0.2.0": {
+      "Comet/0.2.0.1": {
         "dependencies": {
           "System.Collections": "[4.0.10, )",
           "System.Diagnostics.Debug": "[4.0.10, )",
@@ -1693,7 +1693,7 @@
           "lib/portable-net45+win+wpa81+wp8+MonoAndroid10+xamarinios10+MonoTouch10/TagLib.Portable.dll": {}
         }
       },
-      "Win2D.uwp/1.13.0": {
+      "Win2D.uwp/1.15.0": {
         "compile": {
           "lib/uap10.0/Microsoft.Graphics.Canvas.winmd": {}
         },
@@ -1711,7 +1711,7 @@
       }
     },
     "UAP,Version=v10.0/win10-arm": {
-      "AdDuplexWin10/10.0.1.2": {
+      "AdDuplexWin10/10.0.1.3": {
         "compile": {
           "lib/uap10.0/AdDuplex.winmd": {}
         },
@@ -1727,7 +1727,7 @@
           "lib/portable-net4+sl5+netcore45+wpa81+wp8+MonoAndroid1+MonoTouch1/Autofac.dll": {}
         }
       },
-      "Comet/0.2.0": {
+      "Comet/0.2.0.1": {
         "dependencies": {
           "System.Collections": "[4.0.10, )",
           "System.Diagnostics.Debug": "[4.0.10, )",
@@ -3491,7 +3491,7 @@
           "lib/portable-net45+win+wpa81+wp8+MonoAndroid10+xamarinios10+MonoTouch10/TagLib.Portable.dll": {}
         }
       },
-      "Win2D.uwp/1.13.0": {
+      "Win2D.uwp/1.15.0": {
         "compile": {
           "lib/uap10.0/Microsoft.Graphics.Canvas.winmd": {}
         },
@@ -3512,7 +3512,7 @@
       }
     },
     "UAP,Version=v10.0/win10-arm-aot": {
-      "AdDuplexWin10/10.0.1.2": {
+      "AdDuplexWin10/10.0.1.3": {
         "compile": {
           "lib/uap10.0/AdDuplex.winmd": {}
         },
@@ -3528,7 +3528,7 @@
           "lib/portable-net4+sl5+netcore45+wpa81+wp8+MonoAndroid1+MonoTouch1/Autofac.dll": {}
         }
       },
-      "Comet/0.2.0": {
+      "Comet/0.2.0.1": {
         "dependencies": {
           "System.Collections": "[4.0.10, )",
           "System.Diagnostics.Debug": "[4.0.10, )",
@@ -5264,7 +5264,7 @@
           "lib/portable-net45+win+wpa81+wp8+MonoAndroid10+xamarinios10+MonoTouch10/TagLib.Portable.dll": {}
         }
       },
-      "Win2D.uwp/1.13.0": {
+      "Win2D.uwp/1.15.0": {
         "compile": {
           "lib/uap10.0/Microsoft.Graphics.Canvas.winmd": {}
         },
@@ -5285,7 +5285,7 @@
       }
     },
     "UAP,Version=v10.0/win10-x64": {
-      "AdDuplexWin10/10.0.1.2": {
+      "AdDuplexWin10/10.0.1.3": {
         "compile": {
           "lib/uap10.0/AdDuplex.winmd": {}
         },
@@ -5301,7 +5301,7 @@
           "lib/portable-net4+sl5+netcore45+wpa81+wp8+MonoAndroid1+MonoTouch1/Autofac.dll": {}
         }
       },
-      "Comet/0.2.0": {
+      "Comet/0.2.0.1": {
         "dependencies": {
           "System.Collections": "[4.0.10, )",
           "System.Diagnostics.Debug": "[4.0.10, )",
@@ -7070,7 +7070,7 @@
           "lib/portable-net45+win+wpa81+wp8+MonoAndroid10+xamarinios10+MonoTouch10/TagLib.Portable.dll": {}
         }
       },
-      "Win2D.uwp/1.13.0": {
+      "Win2D.uwp/1.15.0": {
         "compile": {
           "lib/uap10.0/Microsoft.Graphics.Canvas.winmd": {}
         },
@@ -7091,7 +7091,7 @@
       }
     },
     "UAP,Version=v10.0/win10-x64-aot": {
-      "AdDuplexWin10/10.0.1.2": {
+      "AdDuplexWin10/10.0.1.3": {
         "compile": {
           "lib/uap10.0/AdDuplex.winmd": {}
         },
@@ -7107,7 +7107,7 @@
           "lib/portable-net4+sl5+netcore45+wpa81+wp8+MonoAndroid1+MonoTouch1/Autofac.dll": {}
         }
       },
-      "Comet/0.2.0": {
+      "Comet/0.2.0.1": {
         "dependencies": {
           "System.Collections": "[4.0.10, )",
           "System.Diagnostics.Debug": "[4.0.10, )",
@@ -8843,7 +8843,7 @@
           "lib/portable-net45+win+wpa81+wp8+MonoAndroid10+xamarinios10+MonoTouch10/TagLib.Portable.dll": {}
         }
       },
-      "Win2D.uwp/1.13.0": {
+      "Win2D.uwp/1.15.0": {
         "compile": {
           "lib/uap10.0/Microsoft.Graphics.Canvas.winmd": {}
         },
@@ -8864,7 +8864,7 @@
       }
     },
     "UAP,Version=v10.0/win10-x86": {
-      "AdDuplexWin10/10.0.1.2": {
+      "AdDuplexWin10/10.0.1.3": {
         "compile": {
           "lib/uap10.0/AdDuplex.winmd": {}
         },
@@ -8880,7 +8880,7 @@
           "lib/portable-net4+sl5+netcore45+wpa81+wp8+MonoAndroid1+MonoTouch1/Autofac.dll": {}
         }
       },
-      "Comet/0.2.0": {
+      "Comet/0.2.0.1": {
         "dependencies": {
           "System.Collections": "[4.0.10, )",
           "System.Diagnostics.Debug": "[4.0.10, )",
@@ -10649,7 +10649,7 @@
           "lib/portable-net45+win+wpa81+wp8+MonoAndroid10+xamarinios10+MonoTouch10/TagLib.Portable.dll": {}
         }
       },
-      "Win2D.uwp/1.13.0": {
+      "Win2D.uwp/1.15.0": {
         "compile": {
           "lib/uap10.0/Microsoft.Graphics.Canvas.winmd": {}
         },
@@ -10670,7 +10670,7 @@
       }
     },
     "UAP,Version=v10.0/win10-x86-aot": {
-      "AdDuplexWin10/10.0.1.2": {
+      "AdDuplexWin10/10.0.1.3": {
         "compile": {
           "lib/uap10.0/AdDuplex.winmd": {}
         },
@@ -10686,7 +10686,7 @@
           "lib/portable-net4+sl5+netcore45+wpa81+wp8+MonoAndroid1+MonoTouch1/Autofac.dll": {}
         }
       },
-      "Comet/0.2.0": {
+      "Comet/0.2.0.1": {
         "dependencies": {
           "System.Collections": "[4.0.10, )",
           "System.Diagnostics.Debug": "[4.0.10, )",
@@ -12422,7 +12422,7 @@
           "lib/portable-net45+win+wpa81+wp8+MonoAndroid10+xamarinios10+MonoTouch10/TagLib.Portable.dll": {}
         }
       },
-      "Win2D.uwp/1.13.0": {
+      "Win2D.uwp/1.15.0": {
         "compile": {
           "lib/uap10.0/Microsoft.Graphics.Canvas.winmd": {}
         },
@@ -12444,8 +12444,8 @@
     }
   },
   "libraries": {
-    "AdDuplexWin10/10.0.1.2": {
-      "sha512": "0mC96aMHWfTv8PQF1uVAiGJ2/v/+fPNWza0SlBVLsRAQr2mySUAks2UEppl993TX8/rLNDcddC7cXFZePRWFVg==",
+    "AdDuplexWin10/10.0.1.3": {
+      "sha512": "YV5yJWI/REaMKXK7fSsyGuvmsmnnbNpRB6XNeAvwZr0NDyOSKSf5sWhBkM8U8VwRX9IDwkcXaefTMvU7OTbpBg==",
       "type": "Package",
       "files": [
         "[Content_Types].xml",
@@ -12456,7 +12456,7 @@
         "lib/uap10.0/AdDuplex/InterstitialUserControl.xbf",
         "lib/uap10.0/AdDuplex/Themes/Generic.xbf",
         "lib/uap10.0/AdDuplex/Windows 10 SDK.xr.xml",
-        "package/services/metadata/core-properties/227a4b19e1f941f185933c78afa3b427.psmdcp"
+        "package/services/metadata/core-properties/24f66cc569a34832bced71dd67bd80a6.psmdcp"
       ]
     },
     "Autofac/3.5.2": {
@@ -12473,8 +12473,8 @@
         "package/services/metadata/core-properties/14b288cae4b6435c88f25cef31d271e1.psmdcp"
       ]
     },
-    "Comet/0.2.0": {
-      "sha512": "xIargCBt6VZk2nOc1nN7hnt/pa+bAQ3nowo2aZFQXrTP2cfuswkZ3CaJILtCb33f+hTnEOYzsyfG5uGU8iILnQ==",
+    "Comet/0.2.0.1": {
+      "sha512": "cq6JgJVyxu+QQZQ6fm6Rm3AER+aPZx24vNlDt7xzj3hgG0KVemS4Pmb9al3xjReYiBUDkL38bjvbnxMDUZ2rZQ==",
       "type": "Package",
       "files": [
         "[Content_Types].xml",
@@ -12485,7 +12485,7 @@
         "lib/uap10.0/Comet/Comet.xr.xml",
         "lib/uap10.0/Comet/Properties/Comet.rd.xml",
         "lib/uap10.0/Comet/Themes/Generic.xbf",
-        "package/services/metadata/core-properties/436b0e550ce04179ba434b732fb4a907.psmdcp"
+        "package/services/metadata/core-properties/4ac801990a934ca79a973956fa81ee5d.psmdcp"
       ]
     },
     "Microsoft.AdMediator.Universal.AdDuplex/2.1.0": {
@@ -16209,8 +16209,8 @@
         "TagLib.Portable.nuspec"
       ]
     },
-    "Win2D.uwp/1.13.0": {
-      "sha512": "Aa7ESMMe5GWXLig9L/HCIanvKd7DACMaytp+dnnB/ic1OqKjqlHiki8t4zde0RMk6QyvkvpYC6gb3taulY5XXw==",
+    "Win2D.uwp/1.15.0": {
+      "sha512": "XRWV08p8DThX92CfTGdg6mrK1CoNIklme8R/i9rjZOvzAx+6lfTDNjMseweIZqaaIdL+8+gMiqvqu+etfj+0LA==",
       "type": "Package",
       "files": [
         "[Content_Types].xml",
@@ -16218,10 +16218,9 @@
         "build/native/Win2D.uwp.targets",
         "include/Microsoft.Graphics.Canvas.h",
         "include/Microsoft.Graphics.Canvas.native.h",
-        "lib/uap10.0/en/Microsoft.Graphics.Canvas.xml",
         "lib/uap10.0/Microsoft.Graphics.Canvas.winmd",
         "lib/uap10.0/Microsoft.Graphics.Canvas.xml",
-        "package/services/metadata/core-properties/335e2338bbf1463f8fd92714cd162c2b.psmdcp",
+        "package/services/metadata/core-properties/4c29eb45b89442779b2a0409ff1a16b0.psmdcp",
         "runtimes/win10-arm/native/Microsoft.Graphics.Canvas.dll",
         "runtimes/win10-x64/native/Microsoft.Graphics.Canvas.dll",
         "runtimes/win10-x86/native/Microsoft.Graphics.Canvas.dll",
@@ -16266,9 +16265,9 @@
   },
   "projectFileDependencyGroups": {
     "": [
-      "AdDuplexWin10 >= 10.0.1.2",
+      "AdDuplexWin10 >= 10.0.1.3",
       "Autofac >= 3.5.2",
-      "Comet >= 0.2.0",
+      "Comet >= 0.2.0.1",
       "Microsoft.AdMediator.Universal.AdDuplex >= 2.1.0",
       "Microsoft.ApplicationInsights >= 1.2.3",
       "Microsoft.ApplicationInsights.PersistenceChannel >= 1.2.3",
@@ -16279,7 +16278,7 @@
       "PCLStorage >= 1.0.2",
       "SQLite.Net-PCL >= 3.1.1",
       "TagLib.Portable >= 1.0.4",
-      "Win2D.uwp >= 1.13.0",
+      "Win2D.uwp >= 1.15.0",
       "WriteableBitmapEx >= 1.5.0"
     ],
     "UAP,Version=v10.0": []

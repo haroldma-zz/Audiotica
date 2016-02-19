@@ -23,9 +23,9 @@
         </Grid.RowDefinitions>
         <controls:PageHeader x:Name="PageHeader" Text="Explore" VisualStateNarrowMinWidth="0"
                              VisualStateNormalMinWidth="600">
-            <controls:PageHeader.PrimaryCommands>
+           <!-- <controls:PageHeader.PrimaryCommands>
                 <AppBarButton Label="Refresh" Icon="Refresh" />
-            </controls:PageHeader.PrimaryCommands>
+            </controls:PageHeader.PrimaryCommands>-->
         </controls:PageHeader>
         <ScrollViewer Grid.Row="1" x:Name="LayoutRoot" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
                   Padding="{StaticResource PageSideThickness}">

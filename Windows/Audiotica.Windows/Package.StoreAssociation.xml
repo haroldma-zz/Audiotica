@@ -358,13 +358,13 @@
     <Language Code="zu-za" InMinimumRequirementSet="true" />
   </SupportedLocales>
   <ProductReservedInfo>
-    <MainPackageIdentityName>3237Zumicts.AudioticaBeta</MainPackageIdentityName>
+    <MainPackageIdentityName>3237Zumicts.Audiotica</MainPackageIdentityName>
     <ReservedNames>
-      <ReservedName>Audiotica Beta</ReservedName>
+      <ReservedName>Audiotica</ReservedName>
     </ReservedNames>
   </ProductReservedInfo>
   <AccountPackageIdentityNames>
-    <MainPackageIdentityName>3237Zumicts.Audiotica</MainPackageIdentityName>
+    <MainPackageIdentityName>3237Zumicts.AudioticaBeta</MainPackageIdentityName>
     <MainPackageIdentityName>3237Zumicts.Bine</MainPackageIdentityName>
     <MainPackageIdentityName>3237Zumicts.DogeMuch</MainPackageIdentityName>
     <MainPackageIdentityName>3237Zumicts.GIPHY.AlltheGIFs</MainPackageIdentityName>
@@ -373,5 +373,5 @@
     <MainPackageIdentityName>3237Zumicts.PopcornTimeforWindows10</MainPackageIdentityName>
     <MainPackageIdentityName>3237Zumicts.ShottyforShots</MainPackageIdentityName>
   </AccountPackageIdentityNames>
-  <PackageInfoList LandingUrl="https://dev.windows.com/dashboard/Application?appId=9WZDNCRDN9JH" />
+  <PackageInfoList LandingUrl="https://dev.windows.com/dashboard/Application?appId=9WZDNCRDN9JJ" />
 </StoreAssociation>

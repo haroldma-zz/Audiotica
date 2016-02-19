@@ -18,6 +18,7 @@
                         <RowDefinition Height="*" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
                     <controls:HamburgerMenu x:Name="BurgerMenu" 
                                             HamburgerBackground="{ThemeResource SystemControlForegroundBaseLowBrush}"
