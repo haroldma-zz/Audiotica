@@ -1,8 +1,10 @@
-﻿using Audiotica.Database.Services.DesignTime;
+﻿using Windows.ApplicationModel;
+using Audiotica.Database.Services.DesignTime;
 using Audiotica.Database.Services.Interfaces;
 using Audiotica.Database.Services.RunTime;
 using Audiotica.Web.MatchEngine.Interfaces.Providers;
 using Audiotica.Web.MatchEngine.Services;
+using Audiotica.Web.Services;
 using Audiotica.Windows.Engine.Navigation;
 using Audiotica.Windows.Services.DesignTime;
 using Audiotica.Windows.Services.Interfaces;
@@ -15,7 +17,7 @@ namespace Audiotica.Windows.Engine.Modules
     {
         public override void LoadDesignTime(ContainerBuilder builder)
         {
-            builder.RegisterType<DesignInsightsService>().As<IInsightsService>();
+            builder.RegisterType<DesignAnalyticService>().As<IAnalyticService>();
             builder.RegisterType<DesignPlayerService>().As<IPlayerService>();
             //builder.RegisterType<DesignNavigationService>().As<INavigationService>();
             builder.RegisterType<DesignLibraryService>().As<ILibraryService>();
@@ -25,7 +27,8 @@ namespace Audiotica.Windows.Engine.Modules
 
         public override void LoadRunTime(ContainerBuilder builder)
         {
-            builder.RegisterType<InsightsService>().As<IInsightsService>();
+            builder.RegisterType<AnalyticService>().As<IAnalyticService>().SingleInstance();
+            builder.RegisterType<GoogleAnalyticsService>().As<IGoogleAnalyticsService>();
             builder.RegisterType<PlayerService>().As<IPlayerService>().SingleInstance();
             builder.RegisterType<NavigationService>().As<INavigationService>().SingleInstance();
             builder.RegisterType<LibraryService>().As<ILibraryService>().SingleInstance();

@@ -3,6 +3,7 @@ using System.Linq;
 using Audiotica.Core.Extensions;
 using Audiotica.Core.Windows.Helpers;
 using Audiotica.Database.Services.Interfaces;
+using Audiotica.Web.Services;
 using Audiotica.Windows.Services.Interfaces;
 using Autofac;
 
@@ -13,12 +14,12 @@ namespace Audiotica.Windows.Engine.Bootstrppers
         public override void OnStart(IComponentContext context)
         {
             var service = context.Resolve<ILibraryService>();
-            var insights = context.Resolve<IInsightsService>();
+            var insights = context.Resolve<IAnalyticService>();
 
-            using (var timer = insights.TrackTimeEvent("LibraryLoaded"))
+            using (var timer = insights.TrackTimeEvent("Library Loaded"))
             {
                 service.Load();
-                timer.AddProperty("Track count", service.Tracks.Count.ToString());
+                timer.AddProperty("track count", service.Tracks.Count.ToString());
             }
 
 

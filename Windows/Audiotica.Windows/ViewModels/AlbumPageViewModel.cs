@@ -18,6 +18,7 @@ using Audiotica.Database.Services.Interfaces;
 using Audiotica.Web.Extensions;
 using Audiotica.Web.Metadata.Interfaces;
 using Audiotica.Web.Models;
+using Audiotica.Web.Services;
 using Audiotica.Windows.Common;
 using Audiotica.Windows.Engine.Mvvm;
 using Audiotica.Windows.Engine.Navigation;
@@ -149,6 +150,13 @@ namespace Audiotica.Windows.ViewModels
                     return;
                 }
             }
+
+            AnalyticService.TrackPageView("Album",
+                new Dictionary<string, object>
+                {
+                    { "title", Album.Title },
+                    { "artist", Album.Artist.Name }
+                });
 
             if (_settingsUtility.Read(ApplicationSettingsConstants.IsAlbumAdaptiveColorEnabled, true))
                 DetectColorFromArtwork();

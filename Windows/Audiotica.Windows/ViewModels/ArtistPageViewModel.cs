@@ -194,7 +194,7 @@ namespace Audiotica.Windows.ViewModels
         }
 
         public DelegateCommand<ItemClickEventArgs> WebAlbumClickCommand { get; }
-
+        
         public override async void OnNavigatedTo(
             object parameter,
             NavigationMode mode,
@@ -236,7 +236,13 @@ namespace Audiotica.Windows.ViewModels
                     return;
                 }
             }
-            
+
+            AnalyticService.TrackPageView("Artist",
+                new Dictionary<string, object>
+                {
+                    { "name", Artist.Name },
+                });
+
             if (_settingsUtility.Read(ApplicationSettingsConstants.IsArtistAdaptiveColorEnabled, true))
             {
                 DetectColorFromArtwork();

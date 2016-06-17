@@ -16,9 +16,9 @@ namespace Audiotica.Windows.ViewModels
 {
     public class ManualMatchPageViewModel : ViewModelBase
     {
+        private readonly IDownloadService _downloadService;
         private readonly ILibraryService _libraryService;
         private readonly INavigationService _navigationService;
-        private readonly IDownloadService _downloadService;
         private readonly IPlayerService _playerService;
         private readonly IEnumerable<IMatchProvider> _providers;
         private List<MatchProviderPivotItem> _providerPivots;
@@ -80,6 +80,8 @@ namespace Audiotica.Windows.ViewModels
                 Title = p.DisplayName,
                 Results = new ManualMatchResults(p, Track.Title, Track.DisplayArtist)
             }).ToList();
+
+            AnalyticService.TrackPageView("Manual Match");
         }
 
         private async void MatchClickExecute(MatchSong match)

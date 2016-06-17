@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Navigation;
 using Audiotica.Core.Common;
 using Audiotica.Database.Models;
 using Audiotica.Web.Extensions;
@@ -111,6 +112,11 @@ namespace Audiotica.Windows.ViewModels
 
         public DelegateCommand<ItemClickEventArgs> WebArtistClickCommand { get; }
 
+        public override void OnNavigatedTo(object parameter, NavigationMode mode, IDictionary<string, object> state)
+        {
+            AnalyticService.TrackPageView("Search");
+        }
+
         private async void SearchAlbums(string query, ISearchMetadataProvider provider)
         {
             try
@@ -164,7 +170,7 @@ namespace Audiotica.Windows.ViewModels
         private void WebAlbumClickExecute(ItemClickEventArgs e)
         {
             var album = (WebAlbum)e.ClickedItem;
-            _navigationService.Navigate(typeof (AlbumPage),
+            _navigationService.Navigate(typeof(AlbumPage),
                 new AlbumPageViewModel.AlbumPageParameter(album.Title, album.Artist.Name, album)
                 {
                     IsCatalogMode = true
@@ -174,7 +180,7 @@ namespace Audiotica.Windows.ViewModels
         private void WebArtistClickExecute(ItemClickEventArgs e)
         {
             var artist = (WebArtist)e.ClickedItem;
-            _navigationService.Navigate(typeof (ArtistPage), artist.Name);
+            _navigationService.Navigate(typeof(ArtistPage), artist.Name);
         }
     }
 }

@@ -12,7 +12,7 @@
     <DefaultLanguage>en-US</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
     <TargetPlatformVersion>10.0.10586.0</TargetPlatformVersion>
-    <TargetPlatformMinVersion>10.0.10586.0</TargetPlatformMinVersion>
+    <TargetPlatformMinVersion>10.0.10240.0</TargetPlatformMinVersion>
     <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
     <EnableDotNetNativeCompatibleProfile>true</EnableDotNetNativeCompatibleProfile>
     <FileAlignment>512</FileAlignment>
@@ -95,12 +95,13 @@
   </PropertyGroup>
   <ItemGroup>
     <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
-    <Content Include="ApplicationInsights.config">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    <Content Include="analytics.xml" />
     <Content Include="Assets\Fonts\segxmvr.otf" />
     <Content Include="Assets\Fonts\Glyphter.otf" />
     <Content Include="AdMediator.config" />
+    <None Include="analytics.xsd">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="app.config" />
     <None Include="Audiotica.Windows_StoreKey.pfx" />
     <None Include="project.json" />
@@ -229,20 +230,18 @@
     <Compile Include="Common\MessageBox.cs" />
     <Compile Include="Interactions\CloseFlyoutAction.cs" />
     <Compile Include="Interactions\OpenFlyoutAction.cs" />
+    <Compile Include="Services\RunTime\GoogleAnalyticsService.cs" />
     <Compile Include="Services\Interfaces\IMusicImportService.cs" />
     <Compile Include="Services\RunTime\MusicImportService.cs" />
     <Compile Include="Services\DesignTime\DesignPlayerService.cs" />
-    <Compile Include="Services\DesignTime\DesignInsightsService.cs" />
     <Compile Include="Services\Interfaces\IDownloadService.cs" />
     <Compile Include="Services\Interfaces\IPlayerService.cs" />
-    <Compile Include="Services\Interfaces\IInsightsService.cs" />
     <Compile Include="Services\DesignTime\DesignLibraryCollectionService.cs" />
     <Compile Include="Services\Interfaces\ILibraryCollectionService.cs" />
     <Compile Include="Services\Interfaces\ITrackSaveService.cs" />
     <Compile Include="Services\RunTime\DownloadService.cs" />
     <Compile Include="Services\RunTime\LibraryCollectionService.cs" />
     <Compile Include="Services\RunTime\PlayerService.cs" />
-    <Compile Include="Services\RunTime\InsightsService.cs" />
     <Compile Include="Interactions\NavigateToPageAction.cs" />
     <Compile Include="CustomTriggers\NetworkAvailableStateTrigger.cs" />
     <Compile Include="Interactions\TextBoxEnterKeyBehavior.cs" />

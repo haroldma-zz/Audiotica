@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Windows.UI.Xaml.Navigation;
 using Audiotica.Core.Utilities.Interfaces;
+using Audiotica.Web.Services;
 
 namespace Audiotica.Windows.Engine.Navigation
 {
@@ -15,5 +16,6 @@ namespace Audiotica.Windows.Engine.Navigation
         INavigationService NavigationService { get; set; }
         IDispatcherUtility Dispatcher { get; set; }
         IStateItems SessionState { get; set; }
+        IAnalyticService AnalyticService { get; set; }
     }
 }

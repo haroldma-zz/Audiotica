@@ -163,6 +163,8 @@ namespace Audiotica.Windows.ViewModels
                 GridViewVerticalOffset = gridOffset;
                 ListViewVerticalOffset = listOffset;
             }
+
+            AnalyticService.TrackPageView("Albums");
         }
 
         public override void OnSaveState(IDictionary<string, object> state, bool suspending)

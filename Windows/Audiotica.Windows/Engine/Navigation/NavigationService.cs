@@ -11,6 +11,7 @@ using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Navigation;
 using Audiotica.Core.Utilities.Interfaces;
 using Audiotica.Core.Windows.Utilities;
+using Audiotica.Web.Services;
 
 namespace Audiotica.Windows.Engine.Navigation
 {
@@ -110,28 +111,30 @@ namespace Audiotica.Windows.Engine.Navigation
             }
 
             var page = FrameFacade.Content as Page;
-            if (page != null)
-            {
-                if (page.DataContext == null)
-                {
-                    // to support dependency injection, but keeping it optional.
-                    var viewmodel = BootStrapper.Current.ResolveForPage(page.GetType(), this);
-                    if (viewmodel != null)
-                        page.DataContext = viewmodel;
-                }
+            if (page == null)
+                return;
 
-                // call viewmodel
-                var dataContext = page.DataContext as INavigable;
-                if (dataContext != null)
-                {
-                    // prepare for state load
-                    dataContext.NavigationService = this;
-                    dataContext.Dispatcher = WindowWrapper.Current(this)?.Dispatcher;
-                    dataContext.SessionState = BootStrapper.Current.SessionState;
-                    var pageState = FrameFacade.PageStateContainer(page.GetType());
-                    dataContext.OnNavigatedTo(parameter, mode, pageState);
-                }
+            if (page.DataContext == null)
+            {
+                // to support dependency injection, but keeping it optional.
+                var viewmodel = BootStrapper.Current.ResolveForPage(page.GetType(), this);
+                if (viewmodel != null)
+                    page.DataContext = viewmodel;
             }
+
+            // call viewmodel
+            var dataContext = page.DataContext as INavigable;
+
+            if (dataContext == null)
+                return;
+
+            // prepare for state load
+            dataContext.NavigationService = this;
+            dataContext.Dispatcher = WindowWrapper.Current(this)?.Dispatcher;
+            dataContext.SessionState = BootStrapper.Current.SessionState;
+            dataContext.AnalyticService = BootStrapper.Current.Kernel.Resolve<IAnalyticService>();
+            var pageState = FrameFacade.PageStateContainer(page.GetType());
+            dataContext.OnNavigatedTo(parameter, mode, pageState);
         }
 
         public async Task OpenAsync(Type page, object parameter = null, string title = null, ViewSizePreference size = ViewSizePreference.UseHalf)
@@ -295,10 +298,7 @@ namespace Audiotica.Windows.Engine.Navigation
             if (flyout == null)
                 throw new ArgumentNullException(nameof(flyout));
             var dataContext = flyout.DataContext as INavigable;
-            if (dataContext != null)
-            {
-                dataContext.OnNavigatedTo(parameter, NavigationMode.New, null);
-            }
+            dataContext?.OnNavigatedTo(parameter, NavigationMode.New, null);
             flyout.Show();
         }
 

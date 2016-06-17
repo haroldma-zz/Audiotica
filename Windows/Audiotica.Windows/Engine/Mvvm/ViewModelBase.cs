@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.UI.Xaml.Navigation;
 using Audiotica.Core.Utilities.Interfaces;
+using Audiotica.Web.Services;
 using Audiotica.Windows.Engine.Navigation;
 using Newtonsoft.Json;
 
@@ -19,6 +20,8 @@ namespace Audiotica.Windows.Engine.Mvvm
 
         [JsonIgnore]
         public IStateItems SessionState { get; set; }
+
+        public IAnalyticService AnalyticService { get; set; }
 
         public bool IsInDesignMode => DesignMode.DesignModeEnabled;
 

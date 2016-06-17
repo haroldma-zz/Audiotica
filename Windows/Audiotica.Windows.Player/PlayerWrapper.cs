@@ -47,7 +47,7 @@ namespace Audiotica.Windows.Player
         public void Dispose()
         {
             // save state
-            _settingsUtility.Write(ApplicationSettingsConstants.QueueId, CurrentQueue.Id);
+            _settingsUtility.Write(ApplicationSettingsConstants.QueueId, CurrentQueue?.Id);
             _settingsUtility.Write(ApplicationSettingsConstants.Position, BackgroundMediaPlayer.Current.Position);
             _settingsUtility.Write(ApplicationSettingsConstants.BackgroundTaskState, BackgroundTaskState.Canceled);
             _settingsUtility.Write(ApplicationSettingsConstants.AppState, _foregroundMessenger);

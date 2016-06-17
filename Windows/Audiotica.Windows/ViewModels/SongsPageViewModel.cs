@@ -39,7 +39,7 @@ namespace Audiotica.Windows.ViewModels
             LibraryService = libraryService;
 
             SortItems =
-                Enum.GetValues(typeof (TrackSort))
+                Enum.GetValues(typeof(TrackSort))
                     .Cast<TrackSort>()
                     .Select(sort => new ListBoxItem { Content = sort.GetEnumText(), Tag = sort })
                     .ToList();
@@ -68,7 +68,7 @@ namespace Audiotica.Windows.ViewModels
         }
 
         public ILibraryService LibraryService { get; set; }
-
+        
         public int SelectedIndex
         {
             get
@@ -154,6 +154,8 @@ namespace Audiotica.Windows.ViewModels
                 VerticalOffset = (double)state["VerticalOffset"];
                 SelectedIndex = int.Parse(state["SelectedIndex"].ToString());
             }
+
+            AnalyticService.TrackPageView("Songs");
         }
 
         public override void OnSaveState(IDictionary<string, object> state, bool suspending)

@@ -88,6 +88,7 @@ namespace Audiotica.Windows.ViewModels
 
         public override void OnNavigatedTo(object parameter, NavigationMode mode, IDictionary<string, object> state)
         {
+            AnalyticService.TrackPageView("Explore");
             var count = DeviceHelper.IsType(DeviceFamily.Mobile) ? 6 : 20;
             LoadTopSongs(count);
             LoadTopArtists(count);
@@ -97,7 +98,7 @@ namespace Audiotica.Windows.ViewModels
         private void AlbumClickExecute(ItemClickEventArgs e)
         {
             var album = (WebAlbum)e.ClickedItem;
-            _navigationService.Navigate(typeof (AlbumPage),
+            _navigationService.Navigate(typeof(AlbumPage),
                 new AlbumPageViewModel.AlbumPageParameter(album.Title, album.Artist.Name, album)
                 {
                     IsCatalogMode = true
@@ -107,7 +108,7 @@ namespace Audiotica.Windows.ViewModels
         private void ArtistClickExecute(ItemClickEventArgs e)
         {
             var artist = (WebArtist)e.ClickedItem;
-            _navigationService.Navigate(typeof (ArtistPage), artist.Name);
+            _navigationService.Navigate(typeof(ArtistPage), artist.Name);
         }
 
         private async void LoadTopAlbums(int count)

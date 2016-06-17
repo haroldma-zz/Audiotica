@@ -9,6 +9,7 @@ using Audiotica.Database.Models;
 using Audiotica.Database.Services.Interfaces;
 using Audiotica.Web.Extensions;
 using Audiotica.Web.Models;
+using Audiotica.Web.Services;
 using Audiotica.Windows.Services.Interfaces;
 using TagLib;
 
@@ -17,7 +18,7 @@ namespace Audiotica.Windows.Services.RunTime
     internal class TrackSaveService : ITrackSaveService
     {
         private readonly IDownloadService _downloadService;
-        private readonly IInsightsService _insightsService;
+        private readonly IAnalyticService _analyticService;
         private readonly ILibraryService _libraryService;
         private readonly ILibraryMatchingService _matchingService;
         private readonly IStorageUtility _storageUtility;
@@ -27,28 +28,28 @@ namespace Audiotica.Windows.Services.RunTime
             ILibraryService libraryService,
             IConverter<WebSong, Track> webSongConverter,
             ILibraryMatchingService matchingService,
-            IInsightsService insightsService,
+            IAnalyticService analyticService,
             IStorageUtility storageUtility,
             IDownloadService downloadService)
         {
             _libraryService = libraryService;
             _webSongConverter = webSongConverter;
             _matchingService = matchingService;
-            _insightsService = insightsService;
+            _analyticService = analyticService;
             _storageUtility = storageUtility;
             _downloadService = downloadService;
         }
 
         public async Task InternalSaveAsync(Track track, byte[] albumData, byte[] artistData)
         {
-            using (_insightsService.TrackTimeEvent("SongSaved",
-                new Dictionary<string, string>
+            using (_analyticService.TrackTimeEvent("Song Saved",
+                new Dictionary<string, object>
                 {
-                    { "Track type", track.Type.ToString() },
-                    { "Title", track.Title },
-                    { "Artists", track.Artists },
-                    { "Album", track.AlbumTitle },
-                    { "Album artist", track.AlbumArtist }
+                    { "track type", track.Type.ToString() },
+                    { "title", track.Title },
+                    { "artists", track.Artists },
+                    { "album", track.AlbumTitle },
+                    { "album artist", track.AlbumArtist }
                 }))
             {
                 var isMatching = track.AudioWebUri == null && track.AudioLocalUri == null;
